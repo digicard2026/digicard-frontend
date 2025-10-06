@@ -1,0 +1,8 @@
+
+node_modules/
+
+**/themes/
+
+dist/
+.env/
+.env.local/
