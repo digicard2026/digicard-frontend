@@ -57,6 +57,8 @@ export async function verifyUser(values) {
   
   export async function getUserById(user_id) {
     try {
+       console.log("getUserById called with user_id:", user_id);
+    console.log("USER_URL:", USER_URL);
       const response = await fetch(`${USER_URL}/${user_id}`, GET_METHOD_NO_AUTH);
       const data = await response.json();
       // if (!response.ok) {

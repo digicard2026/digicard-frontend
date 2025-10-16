@@ -31,12 +31,12 @@ const DropdownUser = () => {
         try {
           const { data } = await getUserById(user_id); // Ensure email is sent correctly
           console.log('User data:', data); // Log user data
-          setfirst_name(data.first_name);
+          setfirst_name(data.name);
           setEmail(data.email);
           setPhone(data.phone_number)
-          setImageUrl(data.profile_url);
+          // setImageUrl(data.profile_url);
           //setImage(data.filepath)
-          setUin(data.uin_no)
+          // setUin(data.uin_no)
         } catch (error) {
           console.error('Error fetching user data:', error);
         }
@@ -70,18 +70,30 @@ const DropdownUser = () => {
 
   useEffect(() => {
     if (loggedOut) {
-      navigate('/');
+      navigate('/SignIn');
     }
   }, [loggedOut, navigate]);
 
-  const handleLogout = () => {
-    const user_id = getCookie('user_id');
-    if (user_id) {
-      deleteCookie('user_id'); // Ensure the cookie name is passed correctly
-    }
-    navigate('/');
-    setLoggedOut(true); // Update the state to trigger navigation
-  };
+ const handleLogout = async () => {
+  try {
+    // Call backend to clear httpOnly cookie
+    await fetch('path/api/v1/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
+    });
+
+    // Delete any frontend cookies you set manually
+    deleteCookie('user_id');
+    deleteCookie('token');
+
+    // Navigate after cookies are gone
+    setLoggedOut(true);
+    navigate('/SignIn');
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+};
+
 
 
 

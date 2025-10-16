@@ -489,6 +489,29 @@ function App() {
       <Route path="/create" element={<DefaultLayout><CreateCard /></DefaultLayout>} />
       <Route path="/preview" element={ <DefaultLayout> <PreviewCard /> </DefaultLayout> } />
       <Route path="/card/public" element={<PublicCard />} />
+       <Route path="/signin" element={<SignIn/>} />
+
+          <Route
+        path="forgot"
+        element={
+          <>
+            <PageTitle title="ForgotPage | Digi_card Admin Dashboard" />
+            <ForgotPage />
+            
+
+          </>
+        }
+      />
+        <Route
+        path="/reset-password"
+        element={
+          <>
+            <PageTitle title="SetNewPassword | Digi_card Admin Dashboard" />
+            <SetNewPassword />
+
+          </>
+        }
+      />
 
     </Routes>
 

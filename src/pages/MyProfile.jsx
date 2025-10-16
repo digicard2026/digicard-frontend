@@ -179,7 +179,7 @@ const MyProfile = () => {
       showToast("Address is required", "error");
       return;
     }
-    if (!first_name) {
+    if (name) {
       showToast("Name is required", "error");
       return;
     }
@@ -188,7 +188,7 @@ const MyProfile = () => {
       return;
     }
     const updatedData = {
-      first_name: first_name,
+      name: name,
       email: email,
       phone_number: phoneNumber,
 
@@ -202,7 +202,7 @@ const MyProfile = () => {
           navigate('/');
         }, 3000);
       }
-      console.log(data)
+      console.log("profile dataaaaa",data)
       if (response.ok) {
         console.log('User updated successfully:', data);
         showToast("updated user profile info", "success");

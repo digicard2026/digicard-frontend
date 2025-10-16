@@ -46,49 +46,38 @@ const SignIn = () => {
         .min(8, 'Password must be at least 8 characters')
         .required('Password is required'),
     }),
+   
     onSubmit: async (values) => {
-      setIsLoading(true);
-      try {
-          const { response, data } = await verifyUser(values);
-          if (response.ok) {
-            setMessage({ text: 'Login successful!', type: 'success' });
-            console.log(data)
-            // updateRole(data.role);
-            dispatch(setRole(data.role));
-          setCookie('user_id', data.user_id, 7);
-          console.log('cookie',getCookie('user_id'));
-          updateKycStatus(data.isKYCVerified); 
-          updateKycSubmitted(data.kycSubmitted);       
-            if (data.isKYCVerified) {            
-              setTimeout(() => {       
-                if(data.role === 'admin'){      
-                navigate('/purchase');
-                }else if(data.role === 'agent'){
-                 navigate('/calls');
-                }
-              }, 1000);
-            }  
-            else if(data.kycSubmitted){
-              setTimeout(()=>{
-                navigate('/Kycsubmitted'); 
-              },1000)
-             }       
-            else {
-              setTimeout(() => {
-                navigate('/KycNotVerified'); 
-              }, 1000);
-            }
-          } else {
-            setMessage({ text: data.message, type: 'error' });
-          }
-      } catch (error) {
-        console.error('Error:', error);
-        setMessage({ text: 'An error occurred. Please try again.', type: 'error' });
-      }
-      finally {
-        setIsLoading(false);
-      }
-    },
+  setIsLoading(true);
+  try {
+    const { response, data } = await verifyUser(values);
+
+    if (response.ok) {
+      setMessage({ text: 'Login successful!', type: 'success' });
+      console.log("dataaaaaaaaaaaaaaaaaa",data);
+      
+      dispatch(setRole(data.role));
+      setCookie('user_id', data.user_id, 7);
+      console.log('cookie', getCookie('user_id'));
+
+      // Navigate to Create Card page after successful login
+   setTimeout(() => {
+  if (data.role === 'admin') {
+    navigate('/create');
+  }
+}, 1000);
+
+    } else {
+      setMessage({ text: data.message, type: 'error' });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    setMessage({ text: 'An error occurred. Please try again.', type: 'error' });
+  } finally {
+    setIsLoading(false);
+  }
+},
+
   });
   return (
     <>
@@ -105,7 +94,7 @@ const SignIn = () => {
                       <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
             
                         <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                          Sign In to UConnect
+                          Sign In to Digi_card
                         </h2>
                         {message.text && (
                           <p className={`mt-4 text-center ${message.type === 'success' ? 'text-green-500' : 'text-red-500'}`}>
