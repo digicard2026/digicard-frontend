@@ -124,7 +124,7 @@ const MyProfile = () => {
           console.log('User data:', data); // Log user data
           setfirst_name(data.first_name);
           setEmail(data.email);
-          setPhone(data.phone_number)
+          setPhone(data.phoneNumber)
           setcompany_name(data.company_name)
           setlandline_number(data.landline_number)
           setaddress(data.address)

@@ -59,9 +59,7 @@ const SetNewPassword = () => {
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
         .required('Confirm Password is required'),
     }),
-
-
-    onSubmit: async (values) => {
+onSubmit: async (values) => {
   if (!resetToken) {
     setMessage({ text: 'Invalid reset token', type: 'error' });
     return;
@@ -69,7 +67,7 @@ const SetNewPassword = () => {
 
   setIsLoading(true);
   try {
-    const response = await fetch(`${SavePass_URL}/saveNewPassword`, {
+    const response = await fetch(`${SavePass_URL}/save-new-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

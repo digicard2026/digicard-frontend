@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+ import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -27,9 +27,9 @@ const ForgotPage = () => {
             setEmailSent(false);
             
             try {
-                console.log("Sending request to:", `${forgotPass_URL}/sendReSetLink`);
+                console.log("Sending request to:", `${forgotPass_URL}/send-reset-link`);
                 
-                const response = await fetch(`${forgotPass_URL}/sendReSetLink`, {
+                const response = await fetch(`${forgotPass_URL}/send-reset-link`, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',

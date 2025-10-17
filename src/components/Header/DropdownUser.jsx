@@ -33,7 +33,7 @@ const DropdownUser = () => {
           console.log('User data:', data); // Log user data
           setfirst_name(data.name);
           setEmail(data.email);
-          setPhone(data.phone_number)
+          setPhone(data.phoneNumber)
           // setImageUrl(data.profile_url);
           //setImage(data.filepath)
           // setUin(data.uin_no)

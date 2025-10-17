@@ -13,7 +13,7 @@ const USER_URL = `${apiUrl}/api/v1/user`;
 const PRODUCT_URL = `${apiUrl}/api/v1/product`;
 
 export async function verifyUser(values) {
-    const response = await fetch(`${USER_URL}/verifyUser`, {
+    const response = await fetch(`${USER_URL}/verify-user`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
