@@ -489,6 +489,7 @@ function App() {
       <Route path="/create" element={<DefaultLayout><CreateCard /></DefaultLayout>} />
       <Route path="/preview" element={ <DefaultLayout> <PreviewCard /> </DefaultLayout> } />
       <Route path="/card/public" element={<PublicCard />} />
+      <Route path="/preview/:urlSlug" element={<PreviewCard />} />
        <Route path="/signin" element={<SignIn/>} />
 
           <Route
