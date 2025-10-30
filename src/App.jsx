@@ -56,6 +56,9 @@ import Home from './pages/Home/Home';
 import CreateCard from './pages/Card/CreateCard';
 import PreviewCard from './pages/Card/PreviewCard';
 import PublicCard from './pages/Card/PublicCard';
+import RegistrationPage from './pages/Authentication/RegistrationPage';
+import FranchiseSignIn from './pages/Authentication/FranchiseSignIn';
+import FranchiseDashboard from './pages/Dashboard/FranchisedashBoard';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -490,6 +493,7 @@ function App() {
       <Route path="/preview" element={ <DefaultLayout> <PreviewCard /> </DefaultLayout> } />
       <Route path="/card/public" element={<PublicCard />} />
        <Route path="/signin" element={<SignIn/>} />
+         <Route path="/signin/franchise" element={<FranchiseSignIn/>} />
 
           <Route
         path="forgot"
@@ -513,7 +517,44 @@ function App() {
         }
       />
 
+        <Route
+        path="/register"
+        element={
+          <>
+            <PageTitle title="Registration Page" />
+            <RegistrationPage/>
+
+          </>
+        }
+      />
+
+       <Route
+        path="/signup"
+        element={
+          <>
+            <PageTitle title="SignUp page" />
+            <SignUp/>
+
+          </>
+        }
+      />
+
+      <Route
+        path="/franchise/dashboard"
+        element={
+          <>
+            <PageTitle title="Dashboard" />
+            
+             <DefaultLayout><FranchiseDashboard/></DefaultLayout>
+
+          </>
+        }
+      />
+
     </Routes>
+
+    
+
 
 
   );
