@@ -56,6 +56,8 @@ import Home from './pages/Home/Home';
 import CreateCard from './pages/Card/CreateCard';
 import PreviewCard from './pages/Card/PreviewCard';
 import PublicCard from './pages/Card/PublicCard';
+import PlanSelection from './pages/Card/PlanSelection';
+import CardDashbord from './pages/Card/Card_Dashbord';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -491,7 +493,8 @@ function App() {
       <Route path="/card/public" element={<PublicCard />} />
       <Route path="/preview/:urlSlug" element={<PreviewCard />} />
        <Route path="/signin" element={<SignIn/>} />
-
+      <Route path="/choose-plan" element={<PlanSelection />} />
+      <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} />
           <Route
         path="forgot"
         element={

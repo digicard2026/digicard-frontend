@@ -61,12 +61,20 @@ const SignIn = () => {
       console.log('cookie', getCookie('user_id'));
 
       // Navigate to Create Card page after successful login
-   setTimeout(() => {
+//    setTimeout(() => {
+//   if (data.role === 'admin') {
+//     navigate('/create');
+//   }
+// }, 1000);
+setTimeout(() => {
   if (data.role === 'admin') {
-    navigate('/create');
+    navigate('/card-dashbord', { 
+      state: { 
+        userEmail: values.email  // Make sure this line is correct
+      } 
+    });
   }
 }, 1000);
-
     } else {
       setMessage({ text: data.message, type: 'error' });
     }
