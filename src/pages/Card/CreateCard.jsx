@@ -30,10 +30,118 @@ import {
   FaBuilding,
   FaIdCard,
   FaEnvelope,
-  FaPhone
+  FaPhone,
+  FaClock,
+  FaStore,
+  FaHeadset,
+  FaCreditCard as FaCard,
+  FaFileAlt,
+  FaShieldAlt,
+  FaCrown,
+  FaGem
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { CARD_URL } from "../../../src/utility/constants";
+
+// Card plans configuration
+const cardPlans = {
+  'business': {
+    name: 'Business',
+    description: 'Basic digital card with essential features',
+    icon: <FaBuilding className="w-5 h-5" />,
+    color: 'blue',
+    features: [
+      'Profile Page',
+      'Basic Contact Info',
+      'Social Links',
+      'Custom Design'
+    ],
+    price: 'Free'
+  },
+  'business-premium': {
+    name: 'Business Premium',
+    description: 'Enhanced features for professional presence',
+    icon: <FaGem className="w-5 h-5" />,
+    color: 'purple',
+    features: [
+      'Profile Page with Video',
+      'Professional/Business Details',
+      'Product Showcase/Gallery',
+      'Dynamic QR Code',
+      'Downloads Section',
+      'Testimonials'
+    ],
+    price: '$9.99/month'
+  },
+  'business-pro': {
+    name: 'Business Professional',
+    description: 'Advanced features for business professionals',
+    icon: <FaCrown className="w-5 h-5" />,
+    color: 'gold',
+    features: [
+      'All Premium Features +',
+      'Brand Label Products/Services',
+      'Interactive Elements',
+      'NFC Card Support',
+      'Services & Products Catalog',
+      'Client List Display'
+    ],
+    price: '$19.99/month'
+  }
+};
+
+// Field visibility configuration based on plans
+const fieldPlanMap = {
+  // Personal Info Fields
+  'prefix': ['business', 'business-premium', 'business-pro'],
+  'firstName': ['business', 'business-premium', 'business-pro'],
+  'lastName': ['business', 'business-premium', 'business-pro'],
+  'suffix': ['business', 'business-premium', 'business-pro'],
+  'profilePhoto': ['business', 'business-premium', 'business-pro'],
+  
+  // Profile Page Fields
+  'profileVideo': ['business-premium', 'business-pro'],
+  'titleLine': ['business-premium', 'business-pro'],
+  'aboutText': ['business-premium', 'business-pro'],
+  
+  // Professional/Business Details
+  'companyName': ['business', 'business-premium', 'business-pro'],
+  'department': ['business', 'business-premium', 'business-pro'],
+  'jobTitle': ['business', 'business-premium', 'business-pro'],
+  'bio': ['business', 'business-premium', 'business-pro'],
+  'companyLogo': ['business', 'business-premium', 'business-pro'],
+  'foundedName': ['business-pro'],
+  'organization': ['business-pro'],
+  'servicesProducts': ['business-premium', 'business-pro'],
+  'brandLabel': ['business-pro'],
+  'catalog': ['business-pro'],
+  
+  // Contact Details
+  'phones': ['business', 'business-premium', 'business-pro'],
+  'websites': ['business', 'business-premium', 'business-pro'],
+  'addresses': ['business-premium', 'business-pro'],
+  
+  // Services & Products
+  'services': ['business-pro'],
+  'products': ['business-pro'],
+  
+  // Interactive Elements
+  'interactiveElements': ['business-pro'],
+  
+  // Premium Features
+  'testimonials': ['business-premium', 'business-pro'],
+  'clientList': ['business-pro'],
+  'gallery': ['business-premium', 'business-pro'],
+  'dynamicQRCode': ['business-premium', 'business-pro'],
+  'nfcSettings': ['business-pro'],
+  'downloads': ['business-premium', 'business-pro'],
+  
+  // New Contact Management Fields
+  'enableOneTapCall': ['business', 'business-premium', 'business-pro'],
+  'enableWhatsApp': ['business', 'business-premium', 'business-pro'],
+  'enableEmail': ['business', 'business-premium', 'business-pro'],
+  'businessHours': ['business', 'business-premium', 'business-pro']
+};
 
 // Function to optimize form data by removing empty fields
 const optimizeFormData = (data) => {
@@ -48,7 +156,7 @@ const optimizeFormData = (data) => {
     // Email
     email: data.email,
     
-    // Card Type - DEFAULT TO BUSINESS
+    // Card Type
     cardType: data.cardType || 'business',
     
     // URL Customization
@@ -56,24 +164,20 @@ const optimizeFormData = (data) => {
     urlSlug: data.urlSlug,
     isPublic: data.isPublic !== undefined ? data.isPublic : true,
     
-    // Company Details
+    // Profile Page Fields
+    ...(data.profileVideo?.url && { profileVideo: data.profileVideo }),
+    ...(data.titleLine && { titleLine: data.titleLine }),
+    ...(data.aboutText && { aboutText: data.aboutText }),
+    
+    // Professional/Business Details
     ...(data.companyName && { companyName: data.companyName }),
     ...(data.department && { department: data.department }),
     ...(data.jobTitle && { jobTitle: data.jobTitle }),
     ...(data.bio && { bio: data.bio }),
     ...(data.companyLogo && { companyLogo: data.companyLogo }),
     logoSize: data.logoSize,
-    
-    // NEW: Profile Video
-    ...(data.profileVideo?.url && { profileVideo: data.profileVideo }),
-    
-    // NEW: Title Line & Recognition
-    ...(data.titleLine && { titleLine: data.titleLine }),
     ...(data.foundedName && { foundedName: data.foundedName }),
     ...(data.organization && { organization: data.organization }),
-    ...(data.aboutText && { aboutText: data.aboutText }),
-    
-    // NEW: Business Details
     ...(data.servicesProducts && { servicesProducts: data.servicesProducts }),
     ...(data.brandLabel && { brandLabel: data.brandLabel }),
     ...(data.productRangeDisplay && { productRangeDisplay: data.productRangeDisplay }),
@@ -126,7 +230,17 @@ const optimizeFormData = (data) => {
         ...(product.image && { image: product.image })
       })),
     
-    // NEW: Testimonials
+    // Interactive Elements
+    interactiveElements: data.interactiveElements
+      .filter(element => element.type)
+      .map(element => ({
+        type: element.type,
+        ...(element.config && { config: element.config }),
+        isActive: element.isActive !== undefined ? element.isActive : true,
+        position: element.position || 0
+      })),
+    
+    // Premium Features
     ...(data.testimonials && data.testimonials.length > 0 && {
       testimonials: data.testimonials
         .filter(testimonial => testimonial.clientName && testimonial.testimonial)
@@ -138,12 +252,10 @@ const optimizeFormData = (data) => {
         }))
     }),
     
-    // NEW: Client List
     ...(data.clientList && data.clientList.length > 0 && {
       clientList: data.clientList.filter(client => client.trim() !== "")
     }),
     
-    // NEW: Gallery
     ...(data.gallery && data.gallery.length > 0 && {
       gallery: data.gallery
         .filter(item => item.url && item.url.trim() !== "")
@@ -157,25 +269,10 @@ const optimizeFormData = (data) => {
         }))
     }),
     
-    // NEW: Interactive Elements
-    ...(data.interactiveElements && data.interactiveElements.length > 0 && {
-      interactiveElements: data.interactiveElements
-        .filter(element => element.type)
-        .map(element => ({
-          type: element.type,
-          ...(element.config && { config: element.config }),
-          isActive: element.isActive !== undefined ? element.isActive : true,
-          position: element.position || 0
-        }))
-    }),
-    
-    // NEW: Dynamic QR Code
     ...(data.dynamicQRCode?.targetUrl && { dynamicQRCode: data.dynamicQRCode }),
     
-    // NEW: NFC Settings
     ...(data.nfcSettings && { nfcSettings: data.nfcSettings }),
     
-    // NEW: Downloads
     ...(data.downloads && data.downloads.length > 0 && {
       downloads: data.downloads
         .filter(download => download.name && download.fileUrl)
@@ -187,6 +284,14 @@ const optimizeFormData = (data) => {
           downloadCount: download.downloadCount || 0
         }))
     }),
+
+    // Contact Management
+    enableOneTapCall: data.enableOneTapCall !== undefined ? data.enableOneTapCall : true,
+    enableWhatsApp: data.enableWhatsApp !== undefined ? data.enableWhatsApp : true,
+    enableEmail: data.enableEmail !== undefined ? data.enableEmail : true,
+    
+    // Business Hours
+    ...(data.businessHours && { businessHours: data.businessHours }),
     
     // Design
     design: data.design,
@@ -219,28 +324,24 @@ const populateFormWithExistingData = (cardData, setFormData, setSaveStatus, navi
     urlSlug: cardData.urlSlug || "",
     isPublic: cardData.isPublic !== undefined ? cardData.isPublic : true,
     
-    // Company Details
+    // Profile Page Fields
+    profileVideo: cardData.profileVideo || {
+      url: "",
+      thumbnail: "",
+      title: ""
+    },
+    titleLine: cardData.titleLine || "",
+    aboutText: cardData.aboutText || "",
+    
+    // Professional/Business Details
     companyName: cardData.companyName || "",
     department: cardData.department || "",
     jobTitle: cardData.jobTitle || "",
     bio: cardData.bio || "",
     companyLogo: cardData.companyLogo || null,
     logoSize: cardData.logoSize || "medium",
-    
-    // NEW: Profile Video
-    profileVideo: cardData.profileVideo || {
-      url: "",
-      thumbnail: "",
-      title: ""
-    },
-    
-    // NEW: Title Line & Recognition
-    titleLine: cardData.titleLine || "",
     foundedName: cardData.foundedName || "",
     organization: cardData.organization || "",
-    aboutText: cardData.aboutText || "",
-    
-    // NEW: Business Details
     servicesProducts: cardData.servicesProducts || "",
     brandLabel: cardData.brandLabel || "",
     productRangeDisplay: cardData.productRangeDisplay || "grid",
@@ -261,7 +362,6 @@ const populateFormWithExistingData = (cardData, setFormData, setSaveStatus, navi
         }))
       : [{ label: "personal", url: "" }],
     
-    // Address & Location Fields
     addresses: Array.isArray(cardData.addresses) && cardData.addresses.length > 0 
       ? cardData.addresses.map(address => ({
           label: address.label || "office",
@@ -340,7 +440,17 @@ const populateFormWithExistingData = (cardData, setFormData, setSaveStatus, navi
           inStock: true
         }],
     
-    // NEW: Testimonials
+    // Interactive Elements
+    interactiveElements: Array.isArray(cardData.interactiveElements) && cardData.interactiveElements.length > 0 
+      ? cardData.interactiveElements.map(element => ({
+          type: element.type || 'call-to-action',
+          config: element.config || {},
+          isActive: element.isActive !== undefined ? element.isActive : true,
+          position: element.position || 0
+        }))
+      : [],
+    
+    // Premium Features
     testimonials: Array.isArray(cardData.testimonials) && cardData.testimonials.length > 0 
       ? cardData.testimonials.map(testimonial => ({
           clientName: testimonial.clientName || "",
@@ -350,12 +460,10 @@ const populateFormWithExistingData = (cardData, setFormData, setSaveStatus, navi
         }))
       : [],
     
-    // NEW: Client List
     clientList: Array.isArray(cardData.clientList) && cardData.clientList.length > 0 
       ? cardData.clientList 
       : [],
     
-    // NEW: Gallery
     gallery: Array.isArray(cardData.gallery) && cardData.gallery.length > 0 
       ? cardData.gallery.map(item => ({
           type: item.type || 'image',
@@ -367,17 +475,6 @@ const populateFormWithExistingData = (cardData, setFormData, setSaveStatus, navi
         }))
       : [],
     
-    // NEW: Interactive Elements
-    interactiveElements: Array.isArray(cardData.interactiveElements) && cardData.interactiveElements.length > 0 
-      ? cardData.interactiveElements.map(element => ({
-          type: element.type || 'call-to-action',
-          config: element.config || {},
-          isActive: element.isActive !== undefined ? element.isActive : true,
-          position: element.position || 0
-        }))
-      : [],
-    
-    // NEW: Dynamic QR Code
     dynamicQRCode: cardData.dynamicQRCode || {
       type: "dynamic",
       targetUrl: "",
@@ -385,14 +482,12 @@ const populateFormWithExistingData = (cardData, setFormData, setSaveStatus, navi
       scans: 0
     },
     
-    // NEW: NFC Settings
     nfcSettings: cardData.nfcSettings || {
       isEnabled: false,
       nfcId: "",
       lastUsed: null
     },
     
-    // NEW: Downloads
     downloads: Array.isArray(cardData.downloads) && cardData.downloads.length > 0 
       ? cardData.downloads.map(download => ({
           name: download.name || "",
@@ -402,6 +497,22 @@ const populateFormWithExistingData = (cardData, setFormData, setSaveStatus, navi
           downloadCount: download.downloadCount || 0
         }))
       : [],
+
+    // Contact Management
+    enableOneTapCall: cardData.enableOneTapCall !== undefined ? cardData.enableOneTapCall : true,
+    enableWhatsApp: cardData.enableWhatsApp !== undefined ? cardData.enableWhatsApp : true,
+    enableEmail: cardData.enableEmail !== undefined ? cardData.enableEmail : true,
+    
+    // Business Hours
+    businessHours: cardData.businessHours || {
+      monday: { open: '09:00', close: '17:00' },
+      tuesday: { open: '09:00', close: '17:00' },
+      wednesday: { open: '09:00', close: '17:00' },
+      thursday: { open: '09:00', close: '17:00' },
+      friday: { open: '09:00', close: '17:00' },
+      saturday: { open: '', close: '' },
+      sunday: { open: '', close: '' }
+    },
     
     // Design
     design: cardData.design || "",
@@ -510,6 +621,50 @@ const socialMediaConfig = {
   }
 };
 
+// Interactive Elements Configuration
+const interactiveElementsConfig = {
+  'call-to-action': {
+    name: 'Call to Action',
+    icon: <FaComments className="w-5 h-5" />,
+    description: 'Schedule meetings and calls'
+  },
+  'shop-flow': {
+    name: 'Shop Now',
+    icon: <FaShoppingCart className="w-5 h-5" />,
+    description: 'E-commerce integration'
+  },
+  'live-chat': {
+    name: 'Live Chat',
+    icon: <FaHeadset className="w-5 h-5" />,
+    description: 'WhatsApp/Messages integration'
+  },
+  'appointment-scheduler': {
+    name: 'Appointment Scheduler',
+    icon: <FaCalendarAlt className="w-5 h-5" />,
+    description: 'Book appointments directly'
+  },
+  'digital-payments': {
+    name: 'Digital Payments',
+    icon: <FaCreditCard className="w-5 h-5" />,
+    description: 'Accept payments online'
+  },
+  'lead-form': {
+    name: 'Lead Form',
+    icon: <FaFileAlt className="w-5 h-5" />,
+    description: 'Capture lead information'
+  },
+  'contact-form': {
+    name: 'Contact Form',
+    icon: <FaEnvelope className="w-5 h-5" />,
+    description: 'Direct contact form'
+  },
+  'language-switcher': {
+    name: 'Language Switcher',
+    icon: <FaLanguage className="w-5 h-5" />,
+    description: 'Multi-language support'
+  }
+};
+
 const CreateCard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -526,9 +681,6 @@ const CreateCard = () => {
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [showDesignSelection, setShowDesignSelection] = useState(false);
-  const [sizeWarning, setSizeWarning] = useState("");
-  const [showSizeWarning, setShowSizeWarning] = useState(false);
-  const [pendingImageUpload, setPendingImageUpload] = useState(null);
   
   // URL Slug States
   const [checkingUrl, setCheckingUrl] = useState(false);
@@ -539,7 +691,7 @@ const CreateCard = () => {
   // Track if user is coming from login (auto-filled email)
   const [isFromLogin, setIsFromLogin] = useState(false);
 
-  // INITIALIZE FORM DATA WITH ALL NEW FIELDS
+  // INITIALIZE FORM DATA
   const [formData, setFormData] = useState({
     // Personal Info
     prefix: "",
@@ -559,28 +711,24 @@ const CreateCard = () => {
     urlSlug: "",
     isPublic: true,
     
-    // Company Details
+    // Profile Page Fields
+    profileVideo: {
+      url: "",
+      thumbnail: "",
+      title: ""
+    },
+    titleLine: "",
+    aboutText: "",
+    
+    // Professional/Business Details
     companyName: "",
     department: "",
     jobTitle: "",
     bio: "",
     companyLogo: null,
     logoSize: "medium",
-    
-    // NEW: Profile Video
-    profileVideo: {
-      url: "",
-      thumbnail: "",
-      title: ""
-    },
-    
-    // NEW: Title Line & Recognition
-    titleLine: "",
     foundedName: "",
     organization: "",
-    aboutText: "",
-    
-    // NEW: Business Details
     servicesProducts: "",
     brandLabel: "",
     productRangeDisplay: "grid",
@@ -589,8 +737,6 @@ const CreateCard = () => {
     // Contact Details
     phones: [{ label: "work", number: "" }],
     websites: [{ label: "personal", url: "" }],
-    
-    // Address & Location Fields
     addresses: [{
       label: "office",
       street: "",
@@ -636,79 +782,49 @@ const CreateCard = () => {
       inStock: true
     }],
     
-    // NEW: Testimonials
-    testimonials: [],
-    
-    // NEW: Client List
-    clientList: [],
-    
-    // NEW: Gallery
-    gallery: [],
-    
-    // NEW: Interactive Elements
+    // Interactive Elements
     interactiveElements: [],
     
-    // NEW: Dynamic QR Code
+    // Premium Features
+    testimonials: [],
+    clientList: [],
+    gallery: [],
     dynamicQRCode: {
       type: "dynamic",
       targetUrl: "",
       qrImage: "",
       scans: 0
     },
-    
-    // NEW: NFC Settings
     nfcSettings: {
       isEnabled: false,
       nfcId: "",
       lastUsed: null
     },
-    
-    // NEW: Downloads
     downloads: [],
+
+    // Contact Management
+    enableOneTapCall: true,
+    enableWhatsApp: true,
+    enableEmail: true,
+    
+    // Business Hours
+    businessHours: {
+      monday: { open: '09:00', close: '17:00' },
+      tuesday: { open: '09:00', close: '17:00' },
+      wednesday: { open: '09:00', close: '17:00' },
+      thursday: { open: '09:00', close: '17:00' },
+      friday: { open: '09:00', close: '17:00' },
+      saturday: { open: '', close: '' },
+      sunday: { open: '', close: '' }
+    },
     
     // Design
     design: "",
     cardLayout: "standard"
   });
 
-  // Field visibility check based on card type
+  // Field visibility based on selected plan
   const isFieldVisible = (fieldName) => {
-    const fieldPlanMap = {
-      // Business plan fields (Free)
-      'profilePhoto': ['business', 'business-premium', 'business-pro'],
-      'firstName': ['business', 'business-premium', 'business-pro'],
-      'lastName': ['business', 'business-premium', 'business-pro'],
-      'email': ['business', 'business-premium', 'business-pro'],
-      'socialLinks': ['business', 'business-premium', 'business-pro'],
-      
-      // Business Premium plan fields
-      'companyName': ['business-premium', 'business-pro'],
-      'jobTitle': ['business-premium', 'business-pro'],
-      'companyLogo': ['business-premium', 'business-pro'],
-      'services': ['business-premium', 'business-pro'],
-      'products': ['business-premium', 'business-pro'],
-      'addresses': ['business-premium', 'business-pro'],
-      'phones': ['business-premium', 'business-pro'],
-      'websites': ['business-premium', 'business-pro'],
-      'foundedName': ['business-premium', 'business-pro'],
-      'organization': ['business-premium', 'business-pro'],
-      'servicesProducts': ['business-premium', 'business-pro'],
-      'brandLabel': ['business-premium', 'business-pro'],
-      'catalog': ['business-premium', 'business-pro'],
-      
-      // Business Pro plan fields
-      'profileVideo': ['business-pro'],
-      'titleLine': ['business-pro'],
-      'aboutText': ['business-pro'],
-      'testimonials': ['business-pro'],
-      'clientList': ['business-pro'],
-      'gallery': ['business-pro'],
-      'interactiveElements': ['business-pro'],
-      'dynamicQRCode': ['business-pro'],
-      'downloads': ['business-pro'],
-      'nfcSettings': ['business-pro']
-    };
-
     const allowedPlans = fieldPlanMap[fieldName] || [];
     return allowedPlans.includes(formData.cardType);
   };
@@ -1068,13 +1184,13 @@ const CreateCard = () => {
     });
   };
 
-  const addInteractiveElement = () => {
+  const addInteractiveElement = (type) => {
     setFormData({
       ...formData,
       interactiveElements: [
         ...formData.interactiveElements,
         {
-          type: "call-to-action",
+          type: type,
           config: {},
           isActive: true,
           position: formData.interactiveElements.length
@@ -1148,11 +1264,11 @@ const CreateCard = () => {
       return;
     }
     
-    if (currentStep === 5) {
+    if (currentStep === 4) {
       setShowDesignSelection(true);
     } else {
       setCurrentStep(prev => {
-        const nextStep = Math.min(prev + 1, 5);
+        const nextStep = Math.min(prev + 1, 4);
         console.log('Moving to step:', nextStep);
         return nextStep;
       });
@@ -1288,11 +1404,82 @@ const CreateCard = () => {
     }
   }, [formData.customUrl, formData.urlSlug]);
 
-  // Render Functions
-  const renderStep1 = () => (
-    <div className="space-y-6">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4">Personal Information</h3>
+  // RENDER FUNCTIONS
+
+  // Plan Selection Component
+  const renderPlanSelection = () => (
+    <div className="mb-6">
+      <label className="block text-slate-700 mb-2 font-semibold">
+        Choose Your Plan
+      </label>
+      <select 
+        name="cardType"
+        value={formData.cardType}
+        onChange={handleChange}
+        className="w-full p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+      >
+        {Object.entries(cardPlans).map(([key, plan]) => (
+          <option key={key} value={key}>
+            {plan.name} - {plan.price}
+          </option>
+        ))}
+      </select>
       
+      {/* Plan Info Display */}
+      <div className={`mt-3 p-4 rounded-lg border-2 ${
+        formData.cardType === 'business' ? 'border-blue-200 bg-blue-50' :
+        formData.cardType === 'business-premium' ? 'border-purple-200 bg-purple-50' :
+        'border-yellow-200 bg-yellow-50'
+      }`}>
+        <div className="flex items-center mb-2">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${
+            formData.cardType === 'business' ? 'bg-blue-100 text-blue-600' :
+            formData.cardType === 'business-premium' ? 'bg-purple-100 text-purple-600' :
+            'bg-yellow-100 text-yellow-600'
+          }`}>
+            {cardPlans[formData.cardType]?.icon}
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-800">
+              {cardPlans[formData.cardType]?.name}
+            </h3>
+            <p className="text-sm text-slate-600">
+              {cardPlans[formData.cardType]?.description}
+            </p>
+          </div>
+        </div>
+        
+        <div className="mt-2">
+          <h4 className="text-sm font-medium text-slate-700 mb-1">Features:</h4>
+          <ul className="text-xs text-slate-600 space-y-1">
+            {cardPlans[formData.cardType]?.features.map((feature, index) => (
+              <li key={index} className="flex items-center">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></span>
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 1: Profile Page
+  const renderProfilePage = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+        <div className="flex items-center">
+          <FaIdCard className="w-6 h-6 text-blue-500 mr-3" />
+          <div>
+            <h3 className="text-lg font-semibold text-blue-800">Profile Page</h3>
+            <p className="text-blue-600 text-sm">Basic profile information for your digital card</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Plan Selection */}
+      {renderPlanSelection()}
+
       {editingCard && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
           <div className="flex items-center">
@@ -1307,6 +1494,7 @@ const CreateCard = () => {
         </div>
       )}
       
+      {/* Profile Photo - Visible for all plans */}
       <div className="mb-6">
         <label className="block font-semibold text-slate-700 mb-2">Profile Photo</label>
         <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
@@ -1342,6 +1530,7 @@ const CreateCard = () => {
         </div>
       </div>
 
+      {/* Personal Info - Visible for all plans */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-slate-700 mb-1">Prefix</label>
@@ -1374,7 +1563,7 @@ const CreateCard = () => {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-slate-700 mb-1">First Name</label>
+          <label className="block text-slate-700 mb-1">First Name *</label>
           <input 
             type="text" 
             name="firstName"
@@ -1382,6 +1571,7 @@ const CreateCard = () => {
             value={formData.firstName || ""}
             onChange={handleChange}
             className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            required
           />
         </div>
         
@@ -1398,7 +1588,7 @@ const CreateCard = () => {
         </div>
       </div>
 
-      {/* Email Field */}
+      {/* Email Field - Visible for all plans */}
       <div>
         <label className="block text-slate-700 mb-1">Email Address *</label>
         <div className="relative">
@@ -1445,7 +1635,92 @@ const CreateCard = () => {
         )}
       </div>
 
-      {/* URL Customization Section */}
+      {/* Profile Video - Only for premium and pro plans */}
+      {isFieldVisible('profileVideo') && (
+        <div className="border border-slate-200 rounded-lg p-4">
+          <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
+            <FaVideo className="w-5 h-5 text-blue-500 mr-2" />
+            Profile Video
+          </h4>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-slate-700 mb-1">Video URL</label>
+              <input 
+                type="url"
+                placeholder="https://youtube.com/your-video or direct video link"
+                value={formData.profileVideo?.url || ""}
+                onChange={(e) => setFormData({
+                  ...formData, 
+                  profileVideo: { ...formData.profileVideo, url: e.target.value }
+                })}
+                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-slate-700 mb-1">Video Title</label>
+                <input 
+                  type="text"
+                  placeholder="Introduction Video"
+                  value={formData.profileVideo?.title || ""}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    profileVideo: { ...formData.profileVideo, title: e.target.value }
+                  })}
+                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-slate-700 mb-1">Thumbnail URL</label>
+                <input 
+                  type="url"
+                  placeholder="https://example.com/thumbnail.jpg"
+                  value={formData.profileVideo?.thumbnail || ""}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    profileVideo: { ...formData.profileVideo, thumbnail: e.target.value }
+                  })}
+                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Title Line - Only for premium and pro plans */}
+      {isFieldVisible('titleLine') && (
+        <div>
+          <label className="block text-slate-700 mb-1">Tag Line / Recognition</label>
+          <input 
+            type="text" 
+            name="titleLine"
+            placeholder="e.g., Award-Winning Digital Marketer"
+            value={formData.titleLine || ""}
+            onChange={handleChange}
+            className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+      )}
+
+      {/* About Text - Only for premium and pro plans */}
+      {isFieldVisible('aboutText') && (
+        <div>
+          <label className="block text-slate-700 mb-1">About Myself / Company / Organisation</label>
+          <textarea 
+            name="aboutText"
+            placeholder="Tell us about yourself, your company, or organization..."
+            value={formData.aboutText || ""}
+            onChange={handleChange}
+            rows="4"
+            className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+      )}
+
+      {/* URL Customization Section - Visible for all plans */}
       <div className="border-t pt-6 mt-6">
         <h4 className="text-lg font-semibold text-slate-800 mb-4">Your Shareable Card URL</h4>
         
@@ -1522,671 +1797,689 @@ const CreateCard = () => {
     </div>
   );
 
-  const renderStep2 = () => (
+  // Step 2: Professional/Business Details
+  const renderProfessionalDetails = () => (
     <div className="space-y-6">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4">Company & Organization Details</h3>
+      <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
+        <div className="flex items-center">
+          <FaBriefcase className="w-6 h-6 text-green-500 mr-3" />
+          <div>
+            <h3 className="text-lg font-semibold text-green-800">Professional & Business Details</h3>
+            <p className="text-green-600 text-sm">Company information and professional background</p>
+          </div>
+        </div>
+      </div>
       
-      <div>
-        <label className="block text-slate-700 mb-1">Company Name</label>
-        <input 
-          type="text" 
-          name="companyName"
-          placeholder="Company name"
-          value={formData.companyName || ""}
-          onChange={handleChange}
-          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+      {/* Plan Selection */}
+      {renderPlanSelection()}
+      
+      {/* Company Details - Visible for all plans */}
+      {isFieldVisible('companyName') && (
+        <>
+          <div>
+            <label className="block text-slate-700 mb-1">Company Name / Organisation</label>
+            <input 
+              type="text" 
+              name="companyName"
+              placeholder="Company name"
+              value={formData.companyName || ""}
+              onChange={handleChange}
+              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-slate-700 mb-1">Department</label>
-          <input 
-            type="text" 
-            name="department"
-            placeholder="Department"
-            value={formData.department || ""}
-            onChange={handleChange}
-            className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-slate-700 mb-1">Job Title</label>
-          <input 
-            type="text" 
-            name="jobTitle"
-            placeholder="Job title"
-            value={formData.jobTitle || ""}
-            onChange={handleChange}
-            className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-      </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-slate-700 mb-1">Department</label>
+              <input 
+                type="text" 
+                name="department"
+                placeholder="Department"
+                value={formData.department || ""}
+                onChange={handleChange}
+                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-slate-700 mb-1">Job Title</label>
+              <input 
+                type="text" 
+                name="jobTitle"
+                placeholder="Job title"
+                value={formData.jobTitle || ""}
+                onChange={handleChange}
+                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          </div>
 
-      {/* NEW: Organization Fields */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-slate-700 mb-1">Founded Name</label>
-          <input 
-            type="text" 
-            name="foundedName"
-            placeholder="Name / found name"
-            value={formData.foundedName || ""}
-            onChange={handleChange}
-            className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-slate-700 mb-1">Organization</label>
-          <input 
-            type="text" 
-            name="organization"
-            placeholder="Contact/voice/Organization"
-            value={formData.organization || ""}
-            onChange={handleChange}
-            className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-      </div>
+          {/* Organization Fields - Only for pro plan */}
+          {isFieldVisible('foundedName') && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-slate-700 mb-1">Founded Name</label>
+                <input 
+                  type="text" 
+                  name="foundedName"
+                  placeholder="Name / found name"
+                  value={formData.foundedName || ""}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-slate-700 mb-1">Organization</label>
+                <input 
+                  type="text" 
+                  name="organization"
+                  placeholder="Contact/voice/Organization"
+                  value={formData.organization || ""}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          )}
 
-      {/* NEW: Title Line */}
-      <div>
-        <label className="block text-slate-700 mb-1">Professional Title Line</label>
-        <input 
-          type="text" 
-          name="titleLine"
-          placeholder="e.g., Award-Winning Digital Marketer"
-          value={formData.titleLine || ""}
-          onChange={handleChange}
-          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+          <div>
+            <label className="block text-slate-700 mb-1">Bio</label>
+            <textarea 
+              name="bio"
+              placeholder="Professional biography..."
+              value={formData.bio || ""}
+              onChange={handleChange}
+              rows="4"
+              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
 
-      <div>
-        <label className="block text-slate-700 mb-1">Bio</label>
-        <textarea 
-          name="bio"
-          placeholder="Tell us about yourself..."
-          value={formData.bio || ""}
-          onChange={handleChange}
-          rows="4"
-          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+          {/* Services & Products Overview - Only for premium and pro plans */}
+          {isFieldVisible('servicesProducts') && (
+            <div>
+              <label className="block text-slate-700 mb-1">Brief about Products/Services</label>
+              <textarea 
+                name="servicesProducts"
+                placeholder="Brief description of your services and products"
+                value={formData.servicesProducts || ""}
+                onChange={handleChange}
+                rows="3"
+                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          )}
 
-      {/* NEW: About Text */}
-      <div>
-        <label className="block text-slate-700 mb-1">About Text</label>
-        <textarea 
-          name="aboutText"
-          placeholder="Detailed information about you/your company"
-          value={formData.aboutText || ""}
-          onChange={handleChange}
-          rows="4"
-          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+          {/* Brand Label - Only for pro plan */}
+          {isFieldVisible('brandLabel') && (
+            <div>
+              <label className="block text-slate-700 mb-1">Brand Label</label>
+              <input 
+                type="text" 
+                name="brandLabel"
+                placeholder="Bird Label Product/Services"
+                value={formData.brandLabel || ""}
+                onChange={handleChange}
+                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          )}
 
-      {/* NEW: Services & Products Overview */}
-      <div>
-        <label className="block text-slate-700 mb-1">Services & Products Overview</label>
-        <textarea 
-          name="servicesProducts"
-          placeholder="Brief description of your services and products"
-          value={formData.servicesProducts || ""}
-          onChange={handleChange}
-          rows="3"
-          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+          {/* Catalog - Only for pro plan */}
+          {isFieldVisible('catalog') && (
+            <div>
+              <label className="block text-slate-700 mb-1">Catalog</label>
+              <input 
+                type="text" 
+                name="catalog"
+                placeholder="Resolving/Catalog information"
+                value={formData.catalog || ""}
+                onChange={handleChange}
+                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          )}
 
-      {/* NEW: Brand Label */}
-      <div>
-        <label className="block text-slate-700 mb-1">Brand Label</label>
-        <input 
-          type="text" 
-          name="brandLabel"
-          placeholder="Bird Label Product/Services"
-          value={formData.brandLabel || ""}
-          onChange={handleChange}
-          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+          {/* Company Logo - Visible for all plans */}
+          {isFieldVisible('companyLogo') && (
+            <div>
+              <label className="block font-semibold text-slate-700 mb-2">Company Logo</label>
+              <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                {formData.companyLogo ? (
+                  <div className="flex flex-col items-center">
+                    <img src={formData.companyLogo} alt="Company Logo" className="max-w-32 max-h-32 object-contain mb-2" />
+                    <button 
+                      type="button"
+                      onClick={() => setFormData({...formData, companyLogo: null})}
+                      className="text-red-500 text-sm hover:text-red-700"
+                    >
+                      Remove Logo
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-slate-500 mb-2">Drag file here or upload file</p>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={(e) => handleMainImageUpload("companyLogo", e)}
+                      className="hidden" 
+                      id="companyLogo"
+                    />
+                    <label 
+                      htmlFor="companyLogo"
+                      className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                    >
+                      Upload Logo
+                    </label>
+                  </>
+                )}
+              </div>
+              
+              <div className="mt-4">
+                <label className="block text-slate-700 mb-1">Logo Size</label>
+                <select 
+                  name="logoSize"
+                  value={formData.logoSize || "medium"}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                  <option value="large">Large</option>
+                </select>
+              </div>
+            </div>
+          )}
 
-      {/* NEW: Catalog */}
-      <div>
-        <label className="block text-slate-700 mb-1">Catalog</label>
-        <input 
-          type="text" 
-          name="catalog"
-          placeholder="Resolving/Catalog information"
-          value={formData.catalog || ""}
-          onChange={handleChange}
-          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+          {/* Business Hours - Visible for all plans */}
+          {isFieldVisible('businessHours') && (
+            <div className="border border-slate-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                <FaClock className="w-5 h-5 text-blue-500 mr-2" />
+                Business Hours
+              </h4>
+              
+              <div className="space-y-4">
+                {[
+                  { day: 'Monday', key: 'monday' },
+                  { day: 'Tuesday', key: 'tuesday' },
+                  { day: 'Wednesday', key: 'wednesday' },
+                  { day: 'Thursday', key: 'thursday' },
+                  { day: 'Friday', key: 'friday' },
+                  { day: 'Saturday', key: 'saturday' },
+                  { day: 'Sunday', key: 'sunday' }
+                ].map(({ day, key }) => (
+                  <div key={key} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                    <span className="font-medium text-slate-700 w-24">{day}</span>
+                    <div className="flex items-center space-x-4 flex-1 max-w-md">
+                      <select 
+                        value={formData.businessHours?.[key]?.open || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          businessHours: {
+                            ...formData.businessHours,
+                            [key]: {
+                              ...formData.businessHours?.[key],
+                              open: e.target.value
+                            }
+                          }
+                        })}
+                        className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value="">Closed</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                      </select>
+                      <span className="text-slate-500">to</span>
+                      <select 
+                        value={formData.businessHours?.[key]?.close || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          businessHours: {
+                            ...formData.businessHours,
+                            [key]: {
+                              ...formData.businessHours?.[key],
+                              close: e.target.value
+                            }
+                          }
+                        })}
+                        className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value="">Closed</option>
+                        <option value="17:00">5:00 PM</option>
+                        <option value="18:00">6:00 PM</option>
+                        <option value="19:00">7:00 PM</option>
+                        <option value="20:00">8:00 PM</option>
+                      </select>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-      {/* Company Logo */}
-      <div>
-        <label className="block font-semibold text-slate-700 mb-2">Company Logo</label>
-        <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-          {formData.companyLogo ? (
-            <div className="flex flex-col items-center">
-              <img src={formData.companyLogo} alt="Company Logo" className="max-w-32 max-h-32 object-contain mb-2" />
+          {/* Services Section - Only for pro plan */}
+          {isFieldVisible('services') && (
+            <div className="border border-slate-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4">Services</h4>
+              
+              {(formData.services || []).map((service, index) => (
+                <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h5 className="font-medium text-slate-700">Service {index + 1}</h5>
+                    {formData.services.length > 1 && (
+                      <button 
+                        type="button"
+                        onClick={() => removeArrayField("services", index)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Remove Service
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label className="block text-slate-700 mb-2">Service Image</label>
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
+                      {service.image ? (
+                        <div className="flex flex-col items-center">
+                          <img src={service.image} alt="Service" className="max-w-32 max-h-32 object-contain mb-2" />
+                          <button 
+                            type="button"
+                            onClick={() => handleArrayFieldChange("services", index, "image", null)}
+                            className="text-red-500 text-sm hover:text-red-700"
+                          >
+                            Remove Image
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-slate-500 mb-2">Upload service image</p>
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={(e) => handleServiceProductImageUpload("services", index, e)}
+                            className="hidden" 
+                            id={`service-image-${index}`}
+                          />
+                          <label 
+                            htmlFor={`service-image-${index}`}
+                            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                          >
+                            Upload Image
+                          </label>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-slate-700 mb-1">Service Name</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g., Web Development"
+                        value={service.name || ""}
+                        onChange={(e) => handleArrayFieldChange("services", index, "name", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">Category</label>
+                      <select 
+                        value={service.category || ""}
+                        onChange={(e) => handleArrayFieldChange("services", index, "category", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value="">Select Category</option>
+                        <option value="design">Design</option>
+                        <option value="development">Development</option>
+                        <option value="consulting">Consulting</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="training">Training</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label className="block text-slate-700 mb-1">Description</label>
+                    <textarea 
+                      placeholder="Describe your service..."
+                      value={service.description || ""}
+                      onChange={(e) => handleArrayFieldChange("services", index, "description", e.target.value)}
+                      rows="3"
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <label className="block text-slate-700 mb-1">Price</label>
+                      <input 
+                        type="number"
+                        placeholder="0.00"
+                        value={service.price || ""}
+                        onChange={(e) => handleArrayFieldChange("services", index, "price", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">Currency</label>
+                      <select 
+                        value={service.currency || "USD"}
+                        onChange={(e) => handleArrayFieldChange("services", index, "currency", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="INR">INR (₹)</option>
+                        <option value="CAD">CAD (C$)</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">Duration</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g., 2 weeks, 1 hour"
+                        value={service.duration || ""}
+                        onChange={(e) => handleArrayFieldChange("services", index, "duration", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
               <button 
                 type="button"
-                onClick={() => setFormData({...formData, companyLogo: null})}
-                className="text-red-500 text-sm hover:text-red-700"
+                onClick={() => addArrayField("services", {
+                  name: "",
+                  description: "",
+                  price: "",
+                  currency: "USD",
+                  duration: "",
+                  category: "",
+                  image: null
+                })}
+                className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
               >
-                Remove Logo
+                + Add Another Service
               </button>
             </div>
-          ) : (
-            <>
-              <p className="text-slate-500 mb-2">Drag file here or upload file</p>
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={(e) => handleMainImageUpload("companyLogo", e)}
-                className="hidden" 
-                id="companyLogo"
-              />
-              <label 
-                htmlFor="companyLogo"
-                className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
-              >
-                Upload Logo
-              </label>
-            </>
           )}
-        </div>
-        
-        <div className="mt-4">
-          <label className="block text-slate-700 mb-1">Logo Size</label>
-          <select 
-            name="logoSize"
-            value={formData.logoSize || "medium"}
-            onChange={handleChange}
-            className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          >
-            <option value="small">Small</option>
-            <option value="medium">Medium</option>
-            <option value="large">Large</option>
-          </select>
-        </div>
-      </div>
+
+          {/* Products Section - Only for pro plan */}
+          {isFieldVisible('products') && (
+            <div className="border border-slate-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4">Products</h4>
+              
+              {(formData.products || []).map((product, index) => (
+                <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h5 className="font-medium text-slate-700">Product {index + 1}</h5>
+                    {formData.products.length > 1 && (
+                      <button 
+                        type="button"
+                        onClick={() => removeArrayField("products", index)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Remove Product
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label className="block text-slate-700 mb-2">Product Image</label>
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
+                      {product.image ? (
+                        <div className="flex flex-col items-center">
+                          <img src={product.image} alt="Product" className="max-w-32 max-h-32 object-contain mb-2" />
+                          <button 
+                            type="button"
+                            onClick={() => handleArrayFieldChange("products", index, "image", null)}
+                            className="text-red-500 text-sm hover:text-red-700"
+                          >
+                            Remove Image
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-slate-500 mb-2">Upload product image</p>
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={(e) => handleServiceProductImageUpload("products", index, e)}
+                            className="hidden" 
+                            id={`product-image-${index}`}
+                          />
+                          <label 
+                            htmlFor={`product-image-${index}`}
+                            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                          >
+                            Upload Image
+                          </label>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-slate-700 mb-1">Product Name</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g., E-book, Software License"
+                        value={product.name || ""}
+                        onChange={(e) => handleArrayFieldChange("products", index, "name", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">Category</label>
+                      <select 
+                        value={product.category || ""}
+                        onChange={(e) => handleArrayFieldChange("products", index, "category", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value="">Select Category</option>
+                        <option value="digital">Digital Product</option>
+                        <option value="physical">Physical Product</option>
+                        <option value="software">Software</option>
+                        <option value="book">Book/E-book</option>
+                        <option value="course">Online Course</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label className="block text-slate-700 mb-1">Description</label>
+                    <textarea 
+                      placeholder="Describe your product..."
+                      value={product.description || ""}
+                      onChange={(e) => handleArrayFieldChange("products", index, "description", e.target.value)}
+                      rows="3"
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <label className="block text-slate-700 mb-1">Price</label>
+                      <input 
+                        type="number"
+                        placeholder="0.00"
+                        value={product.price || ""}
+                        onChange={(e) => handleArrayFieldChange("products", index, "price", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">Currency</label>
+                      <select 
+                        value={product.currency || "USD"}
+                        onChange={(e) => handleArrayFieldChange("products", index, "currency", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="INR">INR (₹)</option>
+                        <option value="CAD">CAD (C$)</option>
+                      </select>
+                    </div>
+                    
+                    <div className="flex items-center">
+                      <label className="flex items-center text-slate-700">
+                        <input 
+                          type="checkbox"
+                          checked={product.inStock !== undefined ? product.inStock : true}
+                          onChange={(e) => handleArrayFieldChange("products", index, "inStock", e.target.checked)}
+                          className="mr-2"
+                        />
+                        In Stock
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              <button 
+                type="button"
+                onClick={() => addArrayField("products", {
+                  name: "",
+                  description: "",
+                  price: "",
+                  currency: "USD",
+                  category: "",
+                  image: null,
+                  inStock: true
+                })}
+                className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
+              >
+                + Add Another Product
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 
-  const renderStep3 = () => (
+  // Step 3: Contact Management & Social Hub
+  const renderContactAndSocial = () => (
     <div className="space-y-6">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4">Services & Products</h3>
-      
-      {/* Services Section */}
-      <div className="border border-slate-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-slate-800 mb-4">Services</h4>
-        
-        {(formData.services || []).map((service, index) => (
-          <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
-            <div className="flex justify-between items-center mb-4">
-              <h5 className="font-medium text-slate-700">Service {index + 1}</h5>
-              {formData.services.length > 1 && (
-                <button 
-                  type="button"
-                  onClick={() => removeArrayField("services", index)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Remove Service
-                </button>
-              )}
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-slate-700 mb-2">Service Image</label>
-              <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
-                {service.image ? (
-                  <div className="flex flex-col items-center">
-                    <img src={service.image} alt="Service" className="max-w-32 max-h-32 object-contain mb-2" />
-                    <button 
-                      type="button"
-                      onClick={() => handleArrayFieldChange("services", index, "image", null)}
-                      className="text-red-500 text-sm hover:text-red-700"
-                    >
-                      Remove Image
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-slate-500 mb-2">Upload service image</p>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={(e) => handleServiceProductImageUpload("services", index, e)}
-                      className="hidden" 
-                      id={`service-image-${index}`}
-                    />
-                    <label 
-                      htmlFor={`service-image-${index}`}
-                      className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
-                    >
-                      Upload Image
-                    </label>
-                  </>
-                )}
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-slate-700 mb-1">Service Name</label>
-                <input 
-                  type="text"
-                  placeholder="e.g., Web Development"
-                  value={service.name || ""}
-                  onChange={(e) => handleArrayFieldChange("services", index, "name", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-slate-700 mb-1">Category</label>
-                <select 
-                  value={service.category || ""}
-                  onChange={(e) => handleArrayFieldChange("services", index, "category", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="">Select Category</option>
-                  <option value="design">Design</option>
-                  <option value="development">Development</option>
-                  <option value="consulting">Consulting</option>
-                  <option value="marketing">Marketing</option>
-                  <option value="training">Training</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-slate-700 mb-1">Description</label>
-              <textarea 
-                placeholder="Describe your service..."
-                value={service.description || ""}
-                onChange={(e) => handleArrayFieldChange("services", index, "description", e.target.value)}
-                rows="3"
-                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="block text-slate-700 mb-1">Price</label>
-                <input 
-                  type="number"
-                  placeholder="0.00"
-                  value={service.price || ""}
-                  onChange={(e) => handleArrayFieldChange("services", index, "price", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-slate-700 mb-1">Currency</label>
-                <select 
-                  value={service.currency || "USD"}
-                  onChange={(e) => handleArrayFieldChange("services", index, "currency", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="GBP">GBP (£)</option>
-                  <option value="INR">INR (₹)</option>
-                  <option value="CAD">CAD (C$)</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-slate-700 mb-1">Duration</label>
-                <input 
-                  type="text"
-                  placeholder="e.g., 2 weeks, 1 hour"
-                  value={service.duration || ""}
-                  onChange={(e) => handleArrayFieldChange("services", index, "duration", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-            </div>
+      {/* Plan Selection */}
+      {renderPlanSelection()}
+
+      {/* Contact Management Section */}
+      <div className="bg-purple-50 border-l-4 border-purple-500 p-4 mb-6">
+        <div className="flex items-center">
+          <FaEnvelope className="w-6 h-6 text-purple-500 mr-3" />
+          <div>
+            <h3 className="text-lg font-semibold text-purple-800">Contact Management</h3>
+            <p className="text-purple-600 text-sm">Contact information and communication channels</p>
           </div>
-        ))}
-        
-        <button 
-          type="button"
-          onClick={() => addArrayField("services", {
-            name: "",
-            description: "",
-            price: "",
-            currency: "USD",
-            duration: "",
-            category: "",
-            image: null
-          })}
-          className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
-        >
-          + Add Another Service
-        </button>
+        </div>
       </div>
 
-      {/* Products Section */}
-      <div className="border border-slate-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-slate-800 mb-4">Products</h4>
-        
-        {(formData.products || []).map((product, index) => (
-          <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
-            <div className="flex justify-between items-center mb-4">
-              <h5 className="font-medium text-slate-700">Product {index + 1}</h5>
-              {formData.products.length > 1 && (
-                <button 
-                  type="button"
-                  onClick={() => removeArrayField("products", index)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Remove Product
-                </button>
-              )}
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-slate-700 mb-2">Product Image</label>
-              <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
-                {product.image ? (
-                  <div className="flex flex-col items-center">
-                    <img src={product.image} alt="Product" className="max-w-32 max-h-32 object-contain mb-2" />
-                    <button 
-                      type="button"
-                      onClick={() => handleArrayFieldChange("products", index, "image", null)}
-                      className="text-red-500 text-sm hover:text-red-700"
-                    >
-                      Remove Image
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-slate-500 mb-2">Upload product image</p>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={(e) => handleServiceProductImageUpload("products", index, e)}
-                      className="hidden" 
-                      id={`product-image-${index}`}
-                    />
-                    <label 
-                      htmlFor={`product-image-${index}`}
-                      className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
-                    >
-                      Upload Image
-                    </label>
-                  </>
-                )}
+      {/* One-tap Contact Buttons - Visible for all plans */}
+      {isFieldVisible('enableOneTapCall') && (
+        <div className="border border-slate-200 rounded-lg p-6">
+          <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+            <FaComments className="w-5 h-5 text-green-500 mr-2" />
+            One-Tap Contact
+          </h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Call */}
+            <div className="border border-slate-200 rounded-lg p-4">
+              <div className="flex items-center mb-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 mr-3">
+                  <FaPhone className="w-5 h-5" />
+                </div>
+                <h5 className="font-semibold text-slate-800">Call</h5>
               </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-slate-700 mb-1">Product Name</label>
-                <input 
-                  type="text"
-                  placeholder="e.g., E-book, Software License"
-                  value={product.name || ""}
-                  onChange={(e) => handleArrayFieldChange("products", index, "name", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-slate-700 mb-1">Category</label>
-                <select 
-                  value={product.category || ""}
-                  onChange={(e) => handleArrayFieldChange("products", index, "category", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="">Select Category</option>
-                  <option value="digital">Digital Product</option>
-                  <option value="physical">Physical Product</option>
-                  <option value="software">Software</option>
-                  <option value="book">Book/E-book</option>
-                  <option value="course">Online Course</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-slate-700 mb-1">Description</label>
-              <textarea 
-                placeholder="Describe your product..."
-                value={product.description || ""}
-                onChange={(e) => handleArrayFieldChange("products", index, "description", e.target.value)}
-                rows="3"
-                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="block text-slate-700 mb-1">Price</label>
-                <input 
-                  type="number"
-                  placeholder="0.00"
-                  value={product.price || ""}
-                  onChange={(e) => handleArrayFieldChange("products", index, "price", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-slate-700 mb-1">Currency</label>
-                <select 
-                  value={product.currency || "USD"}
-                  onChange={(e) => handleArrayFieldChange("products", index, "currency", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="GBP">GBP (£)</option>
-                  <option value="INR">INR (₹)</option>
-                  <option value="CAD">CAD (C$)</option>
-                </select>
-              </div>
-              
-              <div className="flex items-center">
-                <label className="flex items-center text-slate-700">
+              <p className="text-sm text-slate-600 mb-3">Enable one-tap calling</p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-500">Status:</span>
+                <label className="relative inline-flex items-center cursor-pointer">
                   <input 
-                    type="checkbox"
-                    checked={product.inStock !== undefined ? product.inStock : true}
-                    onChange={(e) => handleArrayFieldChange("products", index, "inStock", e.target.checked)}
-                    className="mr-2"
+                    type="checkbox" 
+                    className="sr-only peer"
+                    checked={formData.enableOneTapCall || false}
+                    onChange={(e) => setFormData({...formData, enableOneTapCall: e.target.checked})}
                   />
-                  In Stock
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                </label>
+              </div>
+            </div>
+
+            {/* WhatsApp */}
+            <div className="border border-slate-200 rounded-lg p-4">
+              <div className="flex items-center mb-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 mr-3">
+                  <FaWhatsapp className="w-5 h-5" />
+                </div>
+                <h5 className="font-semibold text-slate-800">WhatsApp</h5>
+              </div>
+              <p className="text-sm text-slate-600 mb-3">Enable WhatsApp chat</p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-500">Status:</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer"
+                    checked={formData.enableWhatsApp || false}
+                    onChange={(e) => setFormData({...formData, enableWhatsApp: e.target.checked})}
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                </label>
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="border border-slate-200 rounded-lg p-4">
+              <div className="flex items-center mb-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mr-3">
+                  <FaEnvelope className="w-5 h-5" />
+                </div>
+                <h5 className="font-semibold text-slate-800">Email</h5>
+              </div>
+              <p className="text-sm text-slate-600 mb-3">Enable email contact</p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-500">Status:</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer"
+                    checked={formData.enableEmail !== undefined ? formData.enableEmail : true}
+                    onChange={(e) => setFormData({...formData, enableEmail: e.target.checked})}
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
                 </label>
               </div>
             </div>
           </div>
-        ))}
-        
-        <button 
-          type="button"
-          onClick={() => addArrayField("products", {
-            name: "",
-            description: "",
-            price: "",
-            currency: "USD",
-            category: "",
-            image: null,
-            inStock: true
-          })}
-          className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
-        >
-          + Add Another Product
-        </button>
-      </div>
-    </div>
-  );
+        </div>
+      )}
 
-  const renderStep4 = () => (
-    <div className="space-y-6">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4">Contact Details</h3>
-      
-      {/* Address Section */}
+      {/* Phones - Visible for all plans */}
       <div className="border border-slate-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-slate-800 mb-4">Addresses</h4>
-        
-        {(formData.addresses || []).map((address, index) => (
-          <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
-            <div className="flex justify-between items-center mb-4">
-              <h5 className="font-medium text-slate-700">
-                {address.isPrimary ? "📍 Primary Address" : `Address ${index + 1}`}
-              </h5>
-              <div className="flex gap-2">
-                {!address.isPrimary && (
-                  <button 
-                    type="button"
-                    onClick={() => setPrimaryAddress(index)}
-                    className="text-blue-500 hover:text-blue-700 text-sm"
-                  >
-                    Set Primary
-                  </button>
-                )}
-                {(formData.addresses || []).length > 1 && (
-                  <button 
-                    type="button"
-                    onClick={() => removeAddress(index)}
-                    className="text-red-500 hover:text-red-700 text-sm"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-slate-700 mb-1">Label</label>
-                <select 
-                  value={address.label || "office"}
-                  onChange={(e) => handleAddressChange(index, "label", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="office">Office</option>
-                  <option value="home">Home</option>
-                  <option value="headquarters">Headquarters</option>
-                  <option value="branch">Branch</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-slate-700 mb-1">Street Address</label>
-                <input 
-                  type="text"
-                  placeholder="123 Main Street"
-                  value={address.street || ""}
-                  onChange={(e) => handleAddressChange(index, "street", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-              <div>
-                <label className="block text-slate-700 mb-1">City</label>
-                <input 
-                  type="text"
-                  placeholder="City"
-                  value={address.city || ""}
-                  onChange={(e) => handleAddressChange(index, "city", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-slate-700 mb-1">State</label>
-                <input 
-                  type="text"
-                  placeholder="State"
-                  value={address.state || ""}
-                  onChange={(e) => handleAddressChange(index, "state", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-slate-700 mb-1">Postal Code</label>
-                <input 
-                  type="text"
-                  placeholder="ZIP/Postal Code"
-                  value={address.postalCode || ""}
-                  onChange={(e) => handleAddressChange(index, "postalCode", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-slate-700 mb-1">Country</label>
-                <input 
-                  type="text"
-                  placeholder="Country"
-                  value={address.country || ""}
-                  onChange={(e) => handleAddressChange(index, "country", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-slate-700 mb-1">Full Address (Auto-generated)</label>
-              <textarea 
-                placeholder="Full address will be generated automatically"
-                value={address.fullAddress || ""}
-                onChange={(e) => handleAddressChange(index, 'fullAddress', e.target.value)}
-                rows="2"
-                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              />
-              <button 
-                type="button"
-                onClick={() => generateFullAddress(index)}
-                className="mt-2 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
-              >
-                Generate Full Address
-              </button>
-            </div>
-            
-            <div>
-              <label className="block text-slate-700 mb-1">Google Maps Link</label>
-              <input 
-                type="url"
-                placeholder="https://maps.google.com/?q=..."
-                value={address.googleMapsLink || ""}
-                onChange={(e) => handleAddressChange(index, "googleMapsLink", e.target.value)}
-                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        ))}
-        
-        <button 
-          type="button"
-          onClick={addAddress}
-          className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 flex items-center justify-center gap-2"
-        >
-          <FaMapMarkerAlt className="w-4 h-4" />
-          + Add Another Address
-        </button>
-      </div>
-
-      {/* Phones */}
-      <div>
-        <label className="block font-semibold text-slate-700 mb-2">Phone Numbers</label>
+        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+          <FaPhone className="w-5 h-5 text-blue-500 mr-2" />
+          Phone Numbers
+        </h4>
         {(formData.phones || []).map((phone, index) => (
           <div key={index} className="flex gap-2 mb-2">
             <select 
@@ -2226,9 +2519,12 @@ const CreateCard = () => {
         </button>
       </div>
 
-      {/* Websites */}
-      <div>
-        <label className="block font-semibold text-slate-700 mb-2">Websites</label>
+      {/* Websites - Visible for all plans */}
+      <div className="border border-slate-200 rounded-lg p-6">
+        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+          <FaGlobe className="w-5 h-5 text-blue-500 mr-2" />
+          Websites & Portfolio Links
+        </h4>
         {(formData.websites || []).map((website, index) => (
           <div key={index} className="flex gap-2 mb-2">
             <select 
@@ -2268,9 +2564,171 @@ const CreateCard = () => {
         </button>
       </div>
 
-      {/* Social Media Links */}
-      <div>
-        <label className="block font-semibold text-slate-700 mb-4">Social Media Links</label>
+      {/* Address Section - Only for premium and pro plans */}
+      {isFieldVisible('addresses') && (
+        <div className="border border-slate-200 rounded-lg p-6">
+          <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+            <FaMapMarkerAlt className="w-5 h-5 text-blue-500 mr-2" />
+            Location & Addresses
+          </h4>
+          
+          {(formData.addresses || []).map((address, index) => (
+            <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
+              <div className="flex justify-between items-center mb-4">
+                <h5 className="font-medium text-slate-700">
+                  {address.isPrimary ? "📍 Primary Address" : `Address ${index + 1}`}
+                </h5>
+                <div className="flex gap-2">
+                  {!address.isPrimary && (
+                    <button 
+                      type="button"
+                      onClick={() => setPrimaryAddress(index)}
+                      className="text-blue-500 hover:text-blue-700 text-sm"
+                    >
+                      Set Primary
+                    </button>
+                  )}
+                  {(formData.addresses || []).length > 1 && (
+                    <button 
+                      type="button"
+                      onClick={() => removeAddress(index)}
+                      className="text-red-500 hover:text-red-700 text-sm"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-slate-700 mb-1">Label</label>
+                  <select 
+                    value={address.label || "office"}
+                    onChange={(e) => handleAddressChange(index, "label", e.target.value)}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="office">Office</option>
+                    <option value="home">Home</option>
+                    <option value="headquarters">Headquarters</option>
+                    <option value="branch">Branch</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-slate-700 mb-1">Street Address</label>
+                  <input 
+                    type="text"
+                    placeholder="123 Main Street"
+                    value={address.street || ""}
+                    onChange={(e) => handleAddressChange(index, "street", e.target.value)}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div>
+                  <label className="block text-slate-700 mb-1">City</label>
+                  <input 
+                    type="text"
+                    placeholder="City"
+                    value={address.city || ""}
+                    onChange={(e) => handleAddressChange(index, "city", e.target.value)}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-slate-700 mb-1">State</label>
+                  <input 
+                    type="text"
+                    placeholder="State"
+                    value={address.state || ""}
+                    onChange={(e) => handleAddressChange(index, "state", e.target.value)}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-slate-700 mb-1">Postal Code</label>
+                  <input 
+                    type="text"
+                    placeholder="ZIP/Postal Code"
+                    value={address.postalCode || ""}
+                    onChange={(e) => handleAddressChange(index, "postalCode", e.target.value)}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-slate-700 mb-1">Country</label>
+                  <input 
+                    type="text"
+                    placeholder="Country"
+                    value={address.country || ""}
+                    onChange={(e) => handleAddressChange(index, "country", e.target.value)}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <label className="block text-slate-700 mb-1">Full Address (Auto-generated)</label>
+                <textarea 
+                  placeholder="Full address will be generated automatically"
+                  value={address.fullAddress || ""}
+                  onChange={(e) => handleAddressChange(index, 'fullAddress', e.target.value)}
+                  rows="2"
+                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+                <button 
+                  type="button"
+                  onClick={() => generateFullAddress(index)}
+                  className="mt-2 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
+                >
+                  Generate Full Address
+                </button>
+              </div>
+              
+              <div>
+                <label className="block text-slate-700 mb-1">Google Maps Link</label>
+                <input 
+                  type="url"
+                  placeholder="https://maps.google.com/?q=..."
+                  value={address.googleMapsLink || ""}
+                  onChange={(e) => handleAddressChange(index, "googleMapsLink", e.target.value)}
+                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          ))}
+          
+          <button 
+            type="button"
+            onClick={addAddress}
+            className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 flex items-center justify-center gap-2"
+          >
+            <FaMapMarkerAlt className="w-4 h-4" />
+            + Add Another Address
+          </button>
+        </div>
+      )}
+
+      {/* Social & Digital Hub Section - Visible for all plans */}
+      <div className="bg-orange-50 border-l-4 border-orange-500 p-4 mb-6">
+        <div className="flex items-center">
+          <FaGlobe className="w-6 h-6 text-orange-500 mr-3" />
+          <div>
+            <h3 className="text-lg font-semibold text-orange-800">Social & Digital Hub</h3>
+            <p className="text-orange-600 text-sm">Connect your social media profiles and digital presence</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="border border-slate-200 rounded-lg p-6">
+        <h4 className="text-lg font-semibold text-slate-800 mb-4">Social Media Links</h4>
         <p className="text-slate-600 text-sm mb-4">Click on any social media icon to add your profile link</p>
         
         <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
@@ -2392,337 +2850,565 @@ const CreateCard = () => {
     </div>
   );
 
-  const renderStep5 = () => (
+  // Step 4: Interactive Elements & Premium Features
+  const renderInteractiveAndPremium = () => (
     <div className="space-y-6">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4">Premium Features</h3>
-      
-      {/* Profile Video */}
-      <div className="border border-slate-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-slate-800 mb-4">Profile Video</h4>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-slate-700 mb-1">Video URL</label>
-            <input 
-              type="url"
-              placeholder="https://youtube.com/your-video or direct video link"
-              value={formData.profileVideo?.url || ""}
-              onChange={(e) => setFormData({
-                ...formData, 
-                profileVideo: { ...formData.profileVideo, url: e.target.value }
-              })}
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-slate-700 mb-1">Video Title</label>
-              <input 
-                type="text"
-                placeholder="Introduction Video"
-                value={formData.profileVideo?.title || ""}
-                onChange={(e) => setFormData({
-                  ...formData, 
-                  profileVideo: { ...formData.profileVideo, title: e.target.value }
-                })}
-                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-slate-700 mb-1">Thumbnail URL</label>
-              <input 
-                type="url"
-                placeholder="https://example.com/thumbnail.jpg"
-                value={formData.profileVideo?.thumbnail || ""}
-                onChange={(e) => setFormData({
-                  ...formData, 
-                  profileVideo: { ...formData.profileVideo, thumbnail: e.target.value }
-                })}
-                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Plan Selection */}
+      {renderPlanSelection()}
 
-      {/* Testimonials */}
-      <div className="border border-slate-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-slate-800 mb-4">Testimonials</h4>
-        
-        {formData.testimonials.map((testimonial, index) => (
-          <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
-            <div className="flex justify-between items-center mb-4">
-              <h5 className="font-medium text-slate-700">Testimonial {index + 1}</h5>
-              {formData.testimonials.length > 1 && (
-                <button 
-                  type="button"
-                  onClick={() => removeTestimonial(index)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Remove
-                </button>
-              )}
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      {/* Interactive Elements Section - Only for pro plan */}
+      {isFieldVisible('interactiveElements') && (
+        <>
+          <div className="bg-indigo-50 border-l-4 border-indigo-500 p-4 mb-6">
+            <div className="flex items-center">
+              <FaComments className="w-6 h-6 text-indigo-500 mr-3" />
               <div>
-                <label className="block text-slate-700 mb-1">Client Name</label>
-                <input 
-                  type="text"
-                  placeholder="Client Name"
-                  value={testimonial.clientName || ""}
-                  onChange={(e) => handleTestimonialChange(index, "clientName", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
+                <h3 className="text-lg font-semibold text-indigo-800">Interactive Elements</h3>
+                <p className="text-indigo-600 text-sm">Engage visitors with interactive features</p>
               </div>
+            </div>
+          </div>
+
+          <div className="border border-slate-200 rounded-lg p-6">
+            <h4 className="text-lg font-semibold text-slate-800 mb-4">Available Interactive Elements</h4>
+            <p className="text-slate-600 text-sm mb-6">Click on any element to add it to your card</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              {Object.entries(interactiveElementsConfig).map(([type, config]) => (
+                <div
+                  key={type}
+                  className="border border-slate-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 hover:shadow-md transition-all duration-200"
+                  onClick={() => addInteractiveElement(type)}
+                >
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                      {config.icon}
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-slate-800">{config.name}</h5>
+                      <p className="text-xs text-slate-500">{config.description}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-blue-500 text-sm font-medium">+ Add</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Configured Interactive Elements */}
+            {formData.interactiveElements.length > 0 && (
+              <div className="mt-8">
+                <h4 className="text-lg font-semibold text-slate-800 mb-4">Configured Elements</h4>
+                {formData.interactiveElements.map((element, index) => (
+                  <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                          {interactiveElementsConfig[element.type]?.icon}
+                        </div>
+                        <h5 className="font-medium text-slate-700">
+                          {interactiveElementsConfig[element.type]?.name || element.type}
+                        </h5>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <label className="flex items-center text-slate-700 text-sm">
+                          <input 
+                            type="checkbox"
+                            checked={element.isActive !== undefined ? element.isActive : true}
+                            onChange={(e) => handleInteractiveElementChange(index, "isActive", e.target.checked)}
+                            className="mr-2"
+                          />
+                          Active
+                        </label>
+                        <button 
+                          type="button"
+                          onClick={() => removeInteractiveElement(index)}
+                          className="text-red-500 hover:text-red-700 text-sm"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">Configuration (JSON)</label>
+                      <textarea 
+                        placeholder='{"buttonText": "Book Now", "redirectUrl": "https://..."}'
+                        value={JSON.stringify(element.config || {}, null, 2)}
+                        onChange={(e) => {
+                          try {
+                            const config = JSON.parse(e.target.value);
+                            handleInteractiveElementChange(index, "config", config);
+                          } catch (error) {
+                            // Invalid JSON, don't update
+                          }
+                        }}
+                        rows="4"
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono text-sm"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Premium Features Section */}
+      {(isFieldVisible('testimonials') || isFieldVisible('gallery') || isFieldVisible('downloads') || isFieldVisible('dynamicQRCode') || isFieldVisible('nfcSettings')) && (
+        <>
+          <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
+            <div className="flex items-center">
+              <FaStar className="w-6 h-6 text-yellow-500 mr-3" />
+              <div>
+                <h3 className="text-lg font-semibold text-yellow-800">Premium Features</h3>
+                <p className="text-yellow-600 text-sm">Advanced features for Business Premium plans</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Testimonials - Only for premium and pro plans */}
+          {isFieldVisible('testimonials') && (
+            <div className="border border-slate-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4">Testimonials & Client List</h4>
               
-              <div>
-                <label className="block text-slate-700 mb-1">Rating</label>
-                <select 
-                  value={testimonial.rating || 5}
-                  onChange={(e) => handleTestimonialChange(index, "rating", parseInt(e.target.value))}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value={5}>5 Stars</option>
-                  <option value={4}>4 Stars</option>
-                  <option value={3}>3 Stars</option>
-                  <option value={2}>2 Stars</option>
-                  <option value={1}>1 Star</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-slate-700 mb-1">Testimonial</label>
-              <textarea 
-                placeholder="What did the client say?"
-                value={testimonial.testimonial || ""}
-                onChange={(e) => handleTestimonialChange(index, "testimonial", e.target.value)}
-                rows="3"
-                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-slate-700 mb-1">Date</label>
-              <input 
-                type="date"
-                value={testimonial.date || ""}
-                onChange={(e) => handleTestimonialChange(index, "date", e.target.value)}
-                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        ))}
-        
-        <button 
-          type="button"
-          onClick={addTestimonial}
-          className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
-        >
-          + Add Testimonial
-        </button>
-      </div>
-
-      {/* Client List */}
-      <div className="border border-slate-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-slate-800 mb-4">Client List</h4>
-        
-        <div className="space-y-3">
-          {formData.clientList.map((client, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <input 
-                type="text"
-                placeholder="Client company name"
-                value={client || ""}
-                onChange={(e) => {
-                  const updatedList = [...formData.clientList];
-                  updatedList[index] = e.target.value;
-                  setFormData({ ...formData, clientList: updatedList });
-                }}
-                className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              />
+              {formData.testimonials.map((testimonial, index) => (
+                <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h5 className="font-medium text-slate-700">Testimonial {index + 1}</h5>
+                    {formData.testimonials.length > 1 && (
+                      <button 
+                        type="button"
+                        onClick={() => removeTestimonial(index)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-slate-700 mb-1">Client Name</label>
+                      <input 
+                        type="text"
+                        placeholder="Client Name"
+                        value={testimonial.clientName || ""}
+                        onChange={(e) => handleTestimonialChange(index, "clientName", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">Rating</label>
+                      <select 
+                        value={testimonial.rating || 5}
+                        onChange={(e) => handleTestimonialChange(index, "rating", parseInt(e.target.value))}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value={5}>5 Stars</option>
+                        <option value={4}>4 Stars</option>
+                        <option value={3}>3 Stars</option>
+                        <option value={2}>2 Stars</option>
+                        <option value={1}>1 Star</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label className="block text-slate-700 mb-1">Testimonial</label>
+                    <textarea 
+                      placeholder="What did the client say?"
+                      value={testimonial.testimonial || ""}
+                      onChange={(e) => handleTestimonialChange(index, "testimonial", e.target.value)}
+                      rows="3"
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-slate-700 mb-1">Date</label>
+                    <input 
+                      type="date"
+                      value={testimonial.date || ""}
+                      onChange={(e) => handleTestimonialChange(index, "date", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              ))}
+              
               <button 
                 type="button"
-                onClick={() => {
-                  const updatedList = formData.clientList.filter((_, i) => i !== index);
-                  setFormData({ ...formData, clientList: updatedList });
-                }}
-                className="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors"
+                onClick={addTestimonial}
+                className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
               >
-                <FaTrash className="w-4 h-4" />
+                + Add Testimonial
               </button>
             </div>
-          ))}
-        </div>
-        
-        <button 
-          type="button"
-          onClick={() => setFormData({
-            ...formData,
-            clientList: [...formData.clientList, ""]
-          })}
-          className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 mt-4"
-        >
-          + Add Client
-        </button>
-      </div>
+          )}
 
-      {/* Downloads */}
-      <div className="border border-slate-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-slate-800 mb-4">Downloads</h4>
-        
-        {formData.downloads.map((download, index) => (
-          <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
-            <div className="flex justify-between items-center mb-4">
-              <h5 className="font-medium text-slate-700">Download {index + 1}</h5>
-              {formData.downloads.length > 1 && (
-                <button 
-                  type="button"
-                  onClick={() => removeDownload(index)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Remove
-                </button>
-              )}
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-slate-700 mb-1">File Name</label>
-                <input 
-                  type="text"
-                  placeholder="e.g., Company Brochure"
-                  value={download.name || ""}
-                  onChange={(e) => handleDownloadChange(index, "name", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
+          {/* Client List - Only for pro plan */}
+          {isFieldVisible('clientList') && (
+            <div className="border border-slate-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4">Client List</h4>
+              
+              <div className="space-y-3">
+                {formData.clientList.map((client, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <input 
+                      type="text"
+                      placeholder="Client company name"
+                      value={client || ""}
+                      onChange={(e) => {
+                        const updatedList = [...formData.clientList];
+                        updatedList[index] = e.target.value;
+                        setFormData({ ...formData, clientList: updatedList });
+                      }}
+                      className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        const updatedList = formData.clientList.filter((_, i) => i !== index);
+                        setFormData({ ...formData, clientList: updatedList });
+                      }}
+                      className="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors"
+                    >
+                      <FaTrash className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
               
-              <div>
-                <label className="block text-slate-700 mb-1">File URL</label>
-                <input 
-                  type="url"
-                  placeholder="https://example.com/file.pdf"
-                  value={download.fileUrl || ""}
-                  onChange={(e) => handleDownloadChange(index, "fileUrl", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
+              <button 
+                type="button"
+                onClick={() => setFormData({
+                  ...formData,
+                  clientList: [...formData.clientList, ""]
+                })}
+                className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 mt-4"
+              >
+                + Add Client
+              </button>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-slate-700 mb-1">File Type</label>
-                <input 
-                  type="text"
-                  placeholder="e.g., PDF, DOCX, ZIP"
-                  value={download.fileType || ""}
-                  onChange={(e) => handleDownloadChange(index, "fileType", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-slate-700 mb-1">File Size</label>
-                <input 
-                  type="text"
-                  placeholder="e.g., 2.5 MB"
-                  value={download.fileSize || ""}
-                  onChange={(e) => handleDownloadChange(index, "fileSize", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-        
-        <button 
-          type="button"
-          onClick={addDownload}
-          className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
-        >
-          + Add Download
-        </button>
-      </div>
+          )}
 
-      {/* Interactive Elements */}
-      <div className="border border-slate-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-slate-800 mb-4">Interactive Elements</h4>
-        
-        {formData.interactiveElements.map((element, index) => (
-          <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
-            <div className="flex justify-between items-center mb-4">
-              <h5 className="font-medium text-slate-700">Element {index + 1}</h5>
-              {formData.interactiveElements.length > 1 && (
-                <button 
-                  type="button"
-                  onClick={() => removeInteractiveElement(index)}
-                  className="text-red-500 hover:text-red-700 text-sm"
+          {/* Gallery - Only for premium and pro plans */}
+          {isFieldVisible('gallery') && (
+            <div className="border border-slate-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4">Product Gallery & Portfolio</h4>
+              
+              {formData.gallery.map((item, index) => (
+                <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h5 className="font-medium text-slate-700">Gallery Item {index + 1}</h5>
+                    {formData.gallery.length > 1 && (
+                      <button 
+                        type="button"
+                        onClick={() => removeGalleryItem(index)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  
+                  {/* Enhanced Image Upload Section */}
+                  <div className="mb-4">
+                    <label className="block text-slate-700 mb-2">Gallery Image</label>
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                      {item.url ? (
+                        <div className="flex flex-col items-center">
+                          <img src={item.url} alt="Gallery" className="max-w-48 max-h-48 object-contain mb-2 rounded-lg" />
+                          <div className="flex space-x-2">
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                const input = document.createElement('input');
+                                input.type = 'file';
+                                input.accept = 'image/*';
+                                input.onchange = (e) => {
+                                  const file = e.target.files[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (e) => {
+                                      handleGalleryChange(index, "url", e.target.result);
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
+                                };
+                                input.click();
+                              }}
+                              className="text-blue-500 text-sm hover:text-blue-700"
+                            >
+                              Change Image
+                            </button>
+                            <button 
+                              type="button"
+                              onClick={() => handleGalleryChange(index, "url", "")}
+                              className="text-red-500 text-sm hover:text-red-700"
+                            >
+                              Remove Image
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-slate-500 mb-2">Drag and drop image or click to upload</p>
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                  handleGalleryChange(index, "url", e.target.result);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                            className="hidden" 
+                            id={`gallery-image-${index}`}
+                          />
+                          <label 
+                            htmlFor={`gallery-image-${index}`}
+                            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                          >
+                            Upload Image
+                          </label>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-slate-700 mb-1">Type</label>
+                      <select 
+                        value={item.type || "image"}
+                        onChange={(e) => handleGalleryChange(index, "type", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value="image">Image</option>
+                        <option value="video">Video</option>
+                        <option value="document">Document</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">Category</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g., Portfolio, Products, Team"
+                        value={item.category || ""}
+                        onChange={(e) => handleGalleryChange(index, "category", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label className="block text-slate-700 mb-1">Title</label>
+                    <input 
+                      type="text"
+                      placeholder="Item title"
+                      value={item.title || ""}
+                      onChange={(e) => handleGalleryChange(index, "title", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-slate-700 mb-1">Description</label>
+                    <textarea 
+                      placeholder="Item description"
+                      value={item.description || ""}
+                      onChange={(e) => handleGalleryChange(index, "description", e.target.value)}
+                      rows="2"
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              ))}
+              
+              <button 
+                type="button"
+                onClick={addGalleryItem}
+                className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 flex items-center justify-center gap-2"
+              >
+                <FaPlus className="w-4 h-4" />
+                Add Gallery Item
+              </button>
+            </div>
+          )}
+
+          {/* Downloads - Only for premium and pro plans */}
+          {isFieldVisible('downloads') && (
+            <div className="border border-slate-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4">Downloads</h4>
+              
+              {formData.downloads.map((download, index) => (
+                <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h5 className="font-medium text-slate-700">Download {index + 1}</h5>
+                    {formData.downloads.length > 1 && (
+                      <button 
+                        type="button"
+                        onClick={() => removeDownload(index)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-slate-700 mb-1">File Name</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g., Company Brochure"
+                        value={download.name || ""}
+                        onChange={(e) => handleDownloadChange(index, "name", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">File URL</label>
+                      <input 
+                        type="url"
+                        placeholder="https://example.com/file.pdf"
+                        value={download.fileUrl || ""}
+                        onChange={(e) => handleDownloadChange(index, "fileUrl", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-slate-700 mb-1">File Type</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g., PDF, DOCX, ZIP"
+                        value={download.fileType || ""}
+                        onChange={(e) => handleDownloadChange(index, "fileType", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">File Size</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g., 2.5 MB"
+                        value={download.fileSize || ""}
+                        onChange={(e) => handleDownloadChange(index, "fileSize", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              <button 
+                type="button"
+                onClick={addDownload}
+                className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
+              >
+                + Add Download
+              </button>
+            </div>
+          )}
+
+          {/* QR Code Settings - Only for premium and pro plans */}
+          {isFieldVisible('dynamicQRCode') && (
+            <div className="border border-slate-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                <FaQrcode className="w-5 h-5 text-blue-500 mr-2" />
+                Dynamic QR Code
+              </h4>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-slate-700 mb-1">QR Code Type</label>
+                  <select 
+                    value={formData.dynamicQRCode?.type || "dynamic"}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      dynamicQRCode: { ...formData.dynamicQRCode, type: e.target.value }
+                    })}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   >
-                  Remove
-                </button>
-              )}
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-slate-700 mb-1">Type</label>
-                <select 
-                  value={element.type || "call-to-action"}
-                  onChange={(e) => handleInteractiveElementChange(index, "type", e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="call-to-action">Call to Action</option>
-                  <option value="live-chat">Live Chat</option>
-                  <option value="appointment-scheduler">Appointment Scheduler</option>
-                  <option value="digital-payments">Digital Payments</option>
-                  <option value="shop-flow">Shop Flow</option>
-                </select>
-              </div>
-              
-              <div className="flex items-center">
-                <label className="flex items-center text-slate-700">
+                    <option value="dynamic">Dynamic</option>
+                    <option value="static">Static</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-slate-700 mb-1">Target URL</label>
                   <input 
-                    type="checkbox"
-                    checked={element.isActive !== undefined ? element.isActive : true}
-                    onChange={(e) => handleInteractiveElementChange(index, "isActive", e.target.checked)}
-                    className="mr-2"
+                    type="url"
+                    placeholder="https://your-card-url.com"
+                    value={formData.dynamicQRCode?.targetUrl || ""}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      dynamicQRCode: { ...formData.dynamicQRCode, targetUrl: e.target.value }
+                    })}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
-                  Active
-                </label>
+                </div>
               </div>
             </div>
-            
-            <div>
-              <label className="block text-slate-700 mb-1">Configuration (JSON)</label>
-              <textarea 
-                placeholder='{"buttonText": "Book Now", "redirectUrl": "https://..."}'
-                value={JSON.stringify(element.config || {}, null, 2)}
-                onChange={(e) => {
-                  try {
-                    const config = JSON.parse(e.target.value);
-                    handleInteractiveElementChange(index, "config", config);
-                  } catch (error) {
-                    // Invalid JSON, don't update
-                  }
-                }}
-                rows="4"
-                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono text-sm"
-              />
+          )}
+
+          {/* NFC Settings - Only for pro plan */}
+          {isFieldVisible('nfcSettings') && (
+            <div className="border border-slate-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                <FaShieldAlt className="w-5 h-5 text-blue-500 mr-2" />
+                NFC Settings
+              </h4>
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <label className="flex items-center text-slate-700">
+                    <input 
+                      type="checkbox"
+                      checked={formData.nfcSettings?.isEnabled || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        nfcSettings: { ...formData.nfcSettings, isEnabled: e.target.checked }
+                      })}
+                      className="mr-2"
+                    />
+                    Enable NFC
+                  </label>
+                </div>
+                
+                {formData.nfcSettings?.isEnabled && (
+                  <div>
+                    <label className="block text-slate-700 mb-1">NFC ID</label>
+                    <input 
+                      type="text"
+                      placeholder="NFC identifier"
+                      value={formData.nfcSettings?.nfcId || ""}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        nfcSettings: { ...formData.nfcSettings, nfcId: e.target.value }
+                      })}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-        
-        <button 
-          type="button"
-          onClick={addInteractiveElement}
-          className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
-        >
-          + Add Interactive Element
-        </button>
-      </div>
+          )}
+        </>
+      )}
     </div>
   );
 
@@ -2785,10 +3471,10 @@ const CreateCard = () => {
         <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -z-10"></div>
         <div 
           className="absolute top-1/2 left-0 h-1 bg-blue-500 -z-10 transition-all duration-300"
-          style={{ width: `${((currentStep - 1) / 5) * 100}%` }}
+          style={{ width: `${((currentStep - 1) / 4) * 100}%` }}
         ></div>
         
-        {[1, 2, 3, 4, 5].map((step) => (
+        {[1, 2, 3, 4].map((step) => (
           <div key={step} className="flex flex-col items-center">
             <div 
               className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
@@ -2800,11 +3486,10 @@ const CreateCard = () => {
               {step}
             </div>
             <span className="mt-2 text-sm font-medium text-slate-700">
-              {step === 1 ? 'PERSONAL' : 
-               step === 2 ? 'COMPANY' : 
-               step === 3 ? 'SERVICES' : 
-               step === 4 ? 'CONTACT' : 
-               'PREMIUM'}
+              {step === 1 ? 'PROFILE' : 
+               step === 2 ? 'BUSINESS' : 
+               step === 3 ? 'CONTACT' : 
+               'FEATURES'}
             </span>
           </div>
         ))}
@@ -2816,11 +3501,10 @@ const CreateCard = () => {
             renderDesignSelection()
           ) : (
             <>
-              {currentStep === 1 && renderStep1()}
-              {currentStep === 2 && renderStep2()}
-              {currentStep === 3 && renderStep3()}
-              {currentStep === 4 && renderStep4()}
-              {currentStep === 5 && renderStep5()}
+              {currentStep === 1 && renderProfilePage()}
+              {currentStep === 2 && renderProfessionalDetails()}
+              {currentStep === 3 && renderContactAndSocial()}
+              {currentStep === 4 && renderInteractiveAndPremium()}
             </>
           )}
         </div>
@@ -2865,7 +3549,7 @@ const CreateCard = () => {
               disabled={loading}
               className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300 transition-colors"
             >
-              {currentStep === 5 ? "CHOOSE DESIGN" : "NEXT"}
+              {currentStep === 4 ? "CHOOSE DESIGN" : "NEXT"}
             </button>
           )}
         </div>
