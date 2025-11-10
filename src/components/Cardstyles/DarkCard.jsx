@@ -711,4 +711,4 @@ const DarkCard = ({ cardData = {} }) => {
   );
 };
 
-export default DarkCard;
+export default DarkCard

@@ -58,6 +58,7 @@ import PreviewCard from './pages/Card/PreviewCard';
 import PublicCard from './pages/Card/PublicCard';
 import PlanSelection from './pages/Card/PlanSelection';
 import CardDashbord from './pages/Card/Card_Dashbord';
+import HHome from './components/ui/index';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -495,6 +496,8 @@ function App() {
        <Route path="/signin" element={<SignIn/>} />
       <Route path="/choose-plan" element={<PlanSelection />} />
       <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} />
+      <Route path="/ui" element={<HHome/>} />
+     
           <Route
         path="forgot"
         element={
