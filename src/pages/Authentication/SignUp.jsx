@@ -290,35 +290,211 @@
 
 // export default SignUp;
 // +++++++++++++++++++++++++++
-import React, { useState } from "react";
+// import React, { useState } from "react";
+// import { Formik, Form, Field, ErrorMessage } from "formik";
+// import * as Yup from "yup";
+// import { useNavigate } from "react-router-dom";
+
+// const Signup = () => {
+//   const navigate = useNavigate();
+//   const [isRegistered, setIsRegistered] = useState(false); // <-- new state
+
+
+//   const validationSchema = Yup.object({
+//     email: Yup.string()
+//       .email("Invalid email format")
+//       .required("Email is required"),
+//     password: Yup.string()
+//       .min(8, "Password must be at least 8 characters")
+//       .matches(/[A-Z]/, "Must include at least one uppercase letter")
+//       .matches(/[a-z]/, "Must include at least one lowercase letter")
+//       .matches(/\d/, "Must include at least one number")
+//       .matches(
+//         /[!@#$%^&*(),.?\":{}|<>]/,
+//         "Must include at least one special character"
+//       )
+//       .required("Password is required"),
+//     confirmPassword: Yup.string()
+//       .oneOf([Yup.ref("password"), null], "Passwords must match")
+//       .required("Confirm Password is required"),
+//   });
+
+
+//   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+//     try {
+//       const res = await fetch("http://localhost:3000/api/v1/user/sign-up", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           email: values.email,
+//           password: values.password,
+//           confirmPassword: values.confirmPassword,
+//         }),
+//       });
+
+//       const data = await res.json();
+
+//       if (res.ok) {
+     
+//         setIsRegistered(true);
+//         resetForm();
+//       } else {
+//         alert(data.error || "Signup failed. Please try again.");
+//       }
+//     } catch (error) {
+//       console.error("Signup error:", error);
+//       alert("Something went wrong. Please try again later.");
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
+
+
+//   if (isRegistered) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-gray-50">
+//         <div className="bg-white p-10 rounded-2xl shadow-lg text-center w-full max-w-md">
+//           <h2 className="text-3xl font-bold text-green-600 mb-4">
+//             🎉 Account Created Successfully!
+//           </h2>
+//           <p className="text-gray-700 mb-8">
+//             Your account has been created successfully. You can now sign in to continue.
+//           </p>
+//           <button
+//             onClick={() => navigate("/signin/franchise")}
+//             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
+//           >
+//             Sign In
+//           </button>
+//         </div>
+//       </div>
+//     );
+//   }
+
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-gray-50">
+//       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+//         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+//           Create Your Account
+//         </h2>
+
+//         <Formik
+//           initialValues={{ email: "", password: "", confirmPassword: "" }}
+//           validationSchema={validationSchema}
+//           onSubmit={handleSubmit}
+//         >
+//           {({ isSubmitting }) => (
+//             <Form>
+//               <div className="mb-4">
+//                 <label className="block text-gray-700 font-medium mb-1">
+//                   Email ID
+//                 </label>
+//                 <Field
+//                   type="email"
+//                   name="email"
+//                   placeholder="Enter your email"
+//                   className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+//                 />
+//                 <ErrorMessage
+//                   name="email"
+//                   component="div"
+//                   className="text-red-500 text-sm mt-1"
+//                 />
+//               </div>
+
+//               <div className="mb-4">
+//                 <label className="block text-gray-700 font-medium mb-1">
+//                   Password
+//                 </label>
+//                 <Field
+//                   type="password"
+//                   name="password"
+//                   placeholder="Enter your password"
+//                   className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+//                 />
+//                 <ErrorMessage
+//                   name="password"
+//                   component="div"
+//                   className="text-red-500 text-sm mt-1"
+//                 />
+//               </div>
+
+//               <div className="mb-6">
+//                 <label className="block text-gray-700 font-medium mb-1">
+//                   Confirm Password
+//                 </label>
+//                 <Field
+//                   type="password"
+//                   name="confirmPassword"
+//                   placeholder="Re-enter your password"
+//                   className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+//                 />
+//                 <ErrorMessage
+//                   name="confirmPassword"
+//                   component="div"
+//                   className="text-red-500 text-sm mt-1"
+//                 />
+//               </div>
+
+//               <button
+//                 type="submit"
+//                 disabled={isSubmitting}
+//                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
+//               >
+//                 {isSubmitting ? "Registering..." : "Sign Up"}
+//               </button>
+
+//               <p className="text-center text-gray-600 mt-4">
+//                 Already have an account?{" "}
+//                 <span
+//                   onClick={() => navigate("/signin/franchise")}
+//                   className="text-blue-600 font-semibold cursor-pointer hover:underline"
+//                 >
+//                   Sign in
+//                 </span>
+//               </p>
+//             </Form>
+//           )}
+//         </Formik>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Signup;
+
+
+
+
+
+// Signup.jsx - UPDATED
+import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [isRegistered, setIsRegistered] = useState(false); // <-- new state
+  const location = useLocation();
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [franchiseContext, setFranchiseContext] = useState(null);
 
+  // ✅ Check if franchise is creating a partner
+  useEffect(() => {
+    if (location.state?.franchiseContext) {
+      setFranchiseContext({
+        createdBy: location.state.createdBy,
+        franchiseName: location.state.franchiseName
+      });
+    }
+  }, [location.state]);
 
   const validationSchema = Yup.object({
-    email: Yup.string()
-      .email("Invalid email format")
-      .required("Email is required"),
-    password: Yup.string()
-      .min(8, "Password must be at least 8 characters")
-      .matches(/[A-Z]/, "Must include at least one uppercase letter")
-      .matches(/[a-z]/, "Must include at least one lowercase letter")
-      .matches(/\d/, "Must include at least one number")
-      .matches(
-        /[!@#$%^&*(),.?\":{}|<>]/,
-        "Must include at least one special character"
-      )
-      .required("Password is required"),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password"), null], "Passwords must match")
-      .required("Confirm Password is required"),
+    email: Yup.string().email("Invalid email format").required("Email is required"),
+    password: Yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
+    confirmPassword: Yup.string().oneOf([Yup.ref("password"), null], "Passwords must match").required("Confirm Password is required"),
   });
-
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
@@ -329,13 +505,26 @@ const Signup = () => {
           email: values.email,
           password: values.password,
           confirmPassword: values.confirmPassword,
+          // ✅ Include franchise context if available
+          createdBy: franchiseContext?.createdBy,
+          role: franchiseContext ? 'partner' : '' // Auto-set role for franchise-created partners
         }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-     
+        // ✅ Store user ID and franchise context
+        if (data.data && data.data._id) {
+          localStorage.setItem('user_id', data.data._id);
+          localStorage.setItem('user_email', values.email);
+          
+          // ✅ If franchise created this partner, store franchise info too
+          if (franchiseContext) {
+            localStorage.setItem('franchise_created_by', franchiseContext.createdBy);
+          }
+        }
+        
         setIsRegistered(true);
         resetForm();
       } else {
@@ -349,34 +538,74 @@ const Signup = () => {
     }
   };
 
-
+  // ✅ Different success message for franchise-created partners
   if (isRegistered) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="bg-white p-10 rounded-2xl shadow-lg text-center w-full max-w-md">
-          <h2 className="text-3xl font-bold text-green-600 mb-4">
-            🎉 Account Created Successfully!
-          </h2>
-          <p className="text-gray-700 mb-8">
-            Your account has been created successfully. You can now sign in to continue.
-          </p>
-          <button
-            onClick={() => navigate("/signin/franchise")}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
-          >
-            Sign In
-          </button>
+          {franchiseContext ? (
+            // Franchise-created partner success
+            <>
+              <h2 className="text-3xl font-bold text-green-600 mb-4">
+                ✅ Partner Account Created!
+              </h2>
+              <p className="text-gray-700 mb-4">
+                Partner account has been created successfully.
+              </p>
+              <p className="text-gray-600 mb-6 text-sm">
+                Now complete the partner business profile.
+              </p>
+              <button
+                onClick={() => navigate("/signin/franchise")}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
+              >
+                Complete Partner Profile
+              </button>
+            </>
+          ) : (
+            // Regular user success
+            <>
+              <h2 className="text-3xl font-bold text-green-600 mb-4">
+                🎉 Account Created Successfully!
+              </h2>
+              <p className="text-gray-700 mb-8">
+                Your account has been created successfully.
+              </p>
+              <button
+                onClick={() => navigate("/register/franchise")}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
+              >
+                Continue to Registration
+              </button>
+            </>
+          )}
         </div>
       </div>
     );
   }
 
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        {/* ✅ Show franchise context banner */}
+        {franchiseContext && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center">
+              <div className="bg-blue-100 p-2 rounded-lg mr-3">
+                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-blue-800 font-semibold">Creating Partner Account</p>
+                <p className="text-blue-600 text-sm">This account will be linked to your franchise</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Create Your Account
+          {franchiseContext ? "Create Partner Account" : "Create Your Account"}
         </h2>
 
         <Formik
@@ -393,7 +622,7 @@ const Signup = () => {
                 <Field
                   type="email"
                   name="email"
-                  placeholder="Enter your email"
+                  placeholder="Enter partner's email"
                   className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
                 <ErrorMessage
@@ -410,7 +639,7 @@ const Signup = () => {
                 <Field
                   type="password"
                   name="password"
-                  placeholder="Enter your password"
+                  placeholder="Create password"
                   className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
                 <ErrorMessage
@@ -427,7 +656,7 @@ const Signup = () => {
                 <Field
                   type="password"
                   name="confirmPassword"
-                  placeholder="Re-enter your password"
+                  placeholder="Re-enter password"
                   className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
                 <ErrorMessage
@@ -442,18 +671,20 @@ const Signup = () => {
                 disabled={isSubmitting}
                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
               >
-                {isSubmitting ? "Registering..." : "Sign Up"}
+                {isSubmitting ? "Creating Account..." : "Create Account"}
               </button>
 
-              <p className="text-center text-gray-600 mt-4">
-                Already have an account?{" "}
-                <span
-                  onClick={() => navigate("/signin/franchise")}
-                  className="text-blue-600 font-semibold cursor-pointer hover:underline"
-                >
-                  Sign in
-                </span>
-              </p>
+              {!franchiseContext && (
+                <p className="text-center text-gray-600 mt-4">
+                  Already have an account?{" "}
+                  <span
+                    onClick={() => navigate("/signin/franchise")}
+                    className="text-blue-600 font-semibold cursor-pointer hover:underline"
+                  >
+                    Sign in
+                  </span>
+                </p>
+              )}
             </Form>
           )}
         </Formik>
