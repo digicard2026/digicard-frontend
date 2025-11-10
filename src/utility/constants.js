@@ -9,7 +9,7 @@ export const TRANSACTION_URL = `${API_URL}/api/v1/transaction`;
 export const WALLET_URL = `${API_URL}/api/v1/wallet`;
 export const LISTUPLOAD_URL = `${API_URL}/api/v1/vb-list-leads`;
 export const CALL_URL = `${API_URL}/api/v1/call`;
-
+export const CARD_URL = `${API_URL}/api/v1/card-routes`;
 export const TOAST_TYPES = {
   SUCCESS: 'success',
   ERROR: 'error',
