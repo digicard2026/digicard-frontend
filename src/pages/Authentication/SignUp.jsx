@@ -572,7 +572,7 @@ const Signup = () => {
                 Your account has been created successfully.
               </p>
               <button
-                onClick={() => navigate("/register/franchise")}
+                onClick={() => navigate("/signin/franchise")}
                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
               >
                 Continue to Registration
