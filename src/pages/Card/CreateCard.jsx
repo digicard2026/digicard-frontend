@@ -3559,7 +3559,8 @@
 // };
 
 // export default CreateCard;
-import React, { useState, useEffect } from "react";
+// CreateCard.jsx - COMPLETE UPDATED VERSION
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
   FaGlobe, 
@@ -3862,236 +3863,6 @@ const optimizeFormData = (data) => {
   return optimized;
 };
 
-// Function to populate form with existing card data
-const populateFormWithExistingData = (cardData, setFormData, setSaveStatus, navigate) => {
-  console.log('Populating form with existing data:', cardData);
-  
-  const populatedFormData = {
-    // Personal Info
-    prefix: cardData.prefix || "",
-    firstName: cardData.firstName || "",
-    lastName: cardData.lastName || "",
-    suffix: cardData.suffix || "",
-    profilePhoto: cardData.profilePhoto || null,
-    
-    // Email
-    email: cardData.email || "",
-    
-    // Card Type
-    cardType: cardData.cardType || 'business',
-    
-    // URL Customization
-    customUrl: cardData.customUrl || "",
-    urlSlug: cardData.urlSlug || "",
-    isPublic: cardData.isPublic !== undefined ? cardData.isPublic : true,
-    
-    // Profile Page Fields
-    profileVideo: cardData.profileVideo || {
-      url: "",
-      thumbnail: "",
-      title: ""
-    },
-    titleLine: cardData.titleLine || "",
-    aboutText: cardData.aboutText || "",
-    
-    // Professional/Business Details
-    companyName: cardData.companyName || "",
-    department: cardData.department || "",
-    jobTitle: cardData.jobTitle || "",
-    bio: cardData.bio || "",
-    companyLogo: cardData.companyLogo || null,
-    logoSize: cardData.logoSize || "medium",
-    foundedName: cardData.foundedName || "",
-    organization: cardData.organization || "",
-    servicesProducts: cardData.servicesProducts || "",
-    brandLabel: cardData.brandLabel || "",
-    productRangeDisplay: cardData.productRangeDisplay || "grid",
-    catalog: cardData.catalog || "",
-    
-    // Contact Details
-    phones: Array.isArray(cardData.phones) && cardData.phones.length > 0 
-      ? cardData.phones.map(phone => ({
-          label: phone.label || "work",
-          number: phone.number || ""
-        }))
-      : [{ label: "work", number: "" }],
-    
-    websites: Array.isArray(cardData.websites) && cardData.websites.length > 0 
-      ? cardData.websites.map(website => ({
-          label: website.label || "personal",
-          url: website.url || ""
-        }))
-      : [{ label: "personal", url: "" }],
-    
-    addresses: Array.isArray(cardData.addresses) && cardData.addresses.length > 0 
-      ? cardData.addresses.map(address => ({
-          label: address.label || "office",
-          street: address.street || "",
-          city: address.city || "",
-          state: address.state || "",
-          country: address.country || "",
-          postalCode: address.postalCode || "",
-          fullAddress: address.fullAddress || "",
-          googleMapsLink: address.googleMapsLink || "",
-          isPrimary: address.isPrimary !== undefined ? address.isPrimary : true
-        }))
-      : [{
-          label: "office",
-          street: "",
-          city: "",
-          state: "",
-          country: "",
-          postalCode: "",
-          fullAddress: "",
-          googleMapsLink: "",
-          isPrimary: true
-        }],
-    
-    // Social Media Links
-    socialLinks: [
-      { platform: "linkedin", url: cardData.socialLinks?.find(link => link.platform === "linkedin")?.url || "" },
-      { platform: "twitter", url: cardData.socialLinks?.find(link => link.platform === "twitter")?.url || "" },
-      { platform: "facebook", url: cardData.socialLinks?.find(link => link.platform === "facebook")?.url || "" },
-      { platform: "instagram", url: cardData.socialLinks?.find(link => link.platform === "instagram")?.url || "" },
-      { platform: "youtube", url: cardData.socialLinks?.find(link => link.platform === "youtube")?.url || "" },
-      { platform: "github", url: cardData.socialLinks?.find(link => link.platform === "github")?.url || "" },
-      { platform: "whatsapp", url: cardData.socialLinks?.find(link => link.platform === "whatsapp")?.url || "" },
-      { platform: "telegram", url: cardData.socialLinks?.find(link => link.platform === "telegram")?.url || "" },
-      { platform: "website", url: cardData.socialLinks?.find(link => link.platform === "website")?.url || "" }
-    ],
-    
-    // Services & Products
-    services: Array.isArray(cardData.services) && cardData.services.length > 0 
-      ? cardData.services.map(service => ({
-          name: service.name || "",
-          description: service.description || "",
-          price: service.price || "",
-          currency: service.currency || "USD",
-          duration: service.duration || "",
-          category: service.category || "",
-          image: service.image || null
-        }))
-      : [{
-          name: "",
-          description: "",
-          price: "",
-          currency: "USD",
-          duration: "",
-          category: "",
-          image: null
-        }],
-    
-    products: Array.isArray(cardData.products) && cardData.products.length > 0 
-      ? cardData.products.map(product => ({
-          name: product.name || "",
-          description: product.description || "",
-          price: product.price || "",
-          currency: product.currency || "USD",
-          category: product.category || "",
-          image: product.image || null,
-          inStock: product.inStock !== undefined ? product.inStock : true
-        }))
-      : [{
-          name: "",
-          description: "",
-          price: "",
-          currency: "USD",
-          category: "",
-          image: null,
-          inStock: true
-        }],
-    
-    // Interactive Elements
-    interactiveElements: Array.isArray(cardData.interactiveElements) && cardData.interactiveElements.length > 0 
-      ? cardData.interactiveElements.map(element => ({
-          type: element.type || 'call-to-action',
-          config: element.config || {},
-          isActive: element.isActive !== undefined ? element.isActive : true,
-          position: element.position || 0
-        }))
-      : [],
-    
-    // Premium Features
-    testimonials: Array.isArray(cardData.testimonials) && cardData.testimonials.length > 0 
-      ? cardData.testimonials.map(testimonial => ({
-          clientName: testimonial.clientName || "",
-          testimonial: testimonial.testimonial || "",
-          rating: testimonial.rating || 5,
-          date: testimonial.date || new Date().toISOString().split('T')[0]
-        }))
-      : [],
-    
-    clientList: Array.isArray(cardData.clientList) && cardData.clientList.length > 0 
-      ? cardData.clientList 
-      : [],
-    
-    gallery: Array.isArray(cardData.gallery) && cardData.gallery.length > 0 
-      ? cardData.gallery.map(item => ({
-          type: item.type || 'image',
-          url: item.url || "",
-          thumbnail: item.thumbnail || "",
-          title: item.title || "",
-          description: item.description || "",
-          category: item.category || ""
-        }))
-      : [],
-    
-    dynamicQRCode: cardData.dynamicQRCode || {
-      type: "dynamic",
-      targetUrl: "",
-      qrImage: "",
-      scans: 0
-    },
-    
-    nfcSettings: cardData.nfcSettings || {
-      isEnabled: false,
-      nfcId: "",
-      lastUsed: null
-    },
-    
-    downloads: Array.isArray(cardData.downloads) && cardData.downloads.length > 0 
-      ? cardData.downloads.map(download => ({
-          name: download.name || "",
-          fileUrl: download.fileUrl || "",
-          fileType: download.fileType || "",
-          fileSize: download.fileSize || "",
-          downloadCount: download.downloadCount || 0
-        }))
-      : [],
-
-    // Contact Management
-    enableOneTapCall: cardData.enableOneTapCall !== undefined ? cardData.enableOneTapCall : true,
-    enableWhatsApp: cardData.enableWhatsApp !== undefined ? cardData.enableWhatsApp : true,
-    enableEmail: cardData.enableEmail !== undefined ? cardData.enableEmail : true,
-    
-    // Business Hours
-    businessHours: cardData.businessHours || {
-      monday: { open: '09:00', close: '17:00' },
-      tuesday: { open: '09:00', close: '17:00' },
-      wednesday: { open: '09:00', close: '17:00' },
-      thursday: { open: '09:00', close: '17:00' },
-      friday: { open: '09:00', close: '17:00' },
-      saturday: { open: '', close: '' },
-      sunday: { open: '', close: '' }
-    },
-    
-    // Design
-    design: cardData.design || "",
-    cardLayout: cardData.cardLayout || "standard"
-  };
-  
-  console.log('Populated form data:', populatedFormData);
-  setFormData(populatedFormData);
-  
-  navigate('.', { 
-    state: { card: { ...populatedFormData, _id: cardData._id } },
-    replace: true 
-  });
-  
-  setSaveStatus("Existing card data loaded successfully!");
-  setTimeout(() => setSaveStatus(""), 3000);
-};
-
 // Design templates configuration
 const designTemplates = [
   {
@@ -4232,8 +4003,8 @@ const CreateCard = () => {
   
   // Get plan from navigation state (coming from PlanSelection -> Signup -> CreateCard)
   const selectedPlanFromState = location.state?.selectedPlan || 'business';
-  const editingCard = location.state?.card || null;
   const userEmailFromSignIn = location.state?.userEmail || '';
+  const editingCard = location.state?.card || null;
 
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -4255,6 +4026,23 @@ const CreateCard = () => {
   // Track if user is coming from login (auto-filled email)
   const [isFromLogin, setIsFromLogin] = useState(false);
 
+  // AUTO-SAVE STATES
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const autoSaveTimeoutRef = useRef(null);
+  const lastSavedDataRef = useRef(null);
+
+  // AUTO-SAVE CONFIGURATION
+  const AUTO_SAVE_DELAY = 1000; // 3 seconds after user stops typing
+  const AUTO_SAVE_MIN_CHANGES = 1; // Minimum changes to trigger auto-save
+
+  // Field visibility based on selected plan
+  const isFieldVisible = (fieldName) => {
+    const allowedPlans = fieldPlanMap[fieldName] || [];
+    return allowedPlans.includes(formData.cardType);
+  };
+
   // INITIALIZE FORM DATA
   const [formData, setFormData] = useState({
     // Personal Info
@@ -4264,7 +4052,7 @@ const CreateCard = () => {
     suffix: "",
     profilePhoto: null,
     
-    // Email
+    // Email - AUTO-FILLED FROM SIGNUP
     email: userEmailFromSignIn || "",
     
     // Card Type - SET FROM NAVIGATION STATE
@@ -4387,28 +4175,150 @@ const CreateCard = () => {
     cardLayout: "standard"
   });
 
-  // Field visibility based on selected plan
-  const isFieldVisible = (fieldName) => {
-    const allowedPlans = fieldPlanMap[fieldName] || [];
-    return allowedPlans.includes(formData.cardType);
+  // Function to check if form data has significant changes
+  const hasSignificantChanges = (currentData, previousData) => {
+    if (!previousData) return true;
+    
+    // Compare key fields that should trigger auto-save
+    const keyFields = [
+      'firstName', 'lastName', 'email', 'companyName', 'jobTitle', 
+      'phones', 'websites', 'socialLinks', 'aboutText', 'bio'
+    ];
+    
+    return keyFields.some(field => {
+      if (Array.isArray(currentData[field])) {
+        return JSON.stringify(currentData[field]) !== JSON.stringify(previousData[field]);
+      }
+      return currentData[field] !== previousData[field];
+    });
   };
 
-  // Fetch card data by email
-  const fetchCardByEmail = async (email) => {
-    if (!email || !validateEmail(email)) return null;
+  // Auto-save function
+  const performAutoSave = async () => {
+    if (!autoSaveEnabled || isAutoSaving || loading) return;
     
+    // Check if there are significant changes
+    if (!hasSignificantChanges(formData, lastSavedDataRef.current)) {
+      return;
+    }
+
     try {
-      const response = await fetch(`${CARD_URL}/email/${encodeURIComponent(email)}`);
-      if (response.ok) {
-        const data = await response.json();
-        return data.card || data;
+      setIsAutoSaving(true);
+      
+      // Use your existing save function but for auto-save purposes
+      const cleanedData = cleanFormData(formData);
+      
+      let url, method;
+      
+      if (editingCard && editingCard._id) {
+        if (formData.email) {
+          url = `${CARD_URL}/update-by-email/${encodeURIComponent(formData.email)}`;
+        } else {
+          url = `${CARD_URL}/update-card/${editingCard._id}`;
+        }
+        method = "PUT";
+      } else {
+        // For new cards, we need to create them first
+        if (!lastSavedDataRef.current) {
+          url = `${CARD_URL}/create-card`;
+          method = "POST";
+        } else {
+          // Card already exists, update it
+          url = `${CARD_URL}/update-by-email/${encodeURIComponent(formData.email)}`;
+          method = "PUT";
+        }
       }
-      return null;
+      
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cleanedData)
+      });
+      
+      if (response.ok) {
+        const responseData = await response.json();
+        setLastSaved(new Date());
+        lastSavedDataRef.current = { ...formData };
+        
+        // If this was the first save for a new card, store the card ID
+        if (!editingCard && responseData.card) {
+          // Update the editingCard reference for future auto-saves
+          if (location.state) {
+            location.state.card = responseData.card;
+          }
+        }
+        
+        console.log('✅ Auto-save successful');
+      }
     } catch (error) {
-      console.error('Error fetching card by email:', error);
-      return null;
+      console.error('❌ Auto-save failed:', error);
+      // Don't show error to user for auto-save failures
+    } finally {
+      setIsAutoSaving(false);
     }
   };
+
+  // Debounced auto-save effect
+  useEffect(() => {
+    if (!autoSaveEnabled) return;
+    
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    // Set new timeout
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      performAutoSave();
+    }, AUTO_SAVE_DELAY);
+    
+    // Cleanup
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [formData, autoSaveEnabled]);
+
+  // Initialize last saved data
+  useEffect(() => {
+    if (editingCard) {
+      lastSavedDataRef.current = { ...editingCard };
+      setLastSaved(new Date());
+    }
+  }, [editingCard]);
+
+  // Load auto-save preference from localStorage
+  useEffect(() => {
+    const savedPreference = localStorage.getItem('autoSaveEnabled');
+    if (savedPreference !== null) {
+      setAutoSaveEnabled(JSON.parse(savedPreference));
+    }
+  }, []);
+
+  // Save auto-save preference to localStorage
+  useEffect(() => {
+    localStorage.setItem('autoSaveEnabled', JSON.stringify(autoSaveEnabled));
+  }, [autoSaveEnabled]);
+
+  // Manual save function (optional - can be called from UI)
+  const handleManualSave = async () => {
+    await performAutoSave();
+    setSaveStatus("Manually saved!");
+    setTimeout(() => setSaveStatus(""), 2000);
+  };
+
+  // Ensure cardType is set from navigation state
+  useEffect(() => {
+    if (selectedPlanFromState && !editingCard) {
+      setFormData(prev => ({
+        ...prev,
+        cardType: selectedPlanFromState
+      }));
+    }
+  }, [selectedPlanFromState, editingCard]);
 
   // Email validation function
   const validateEmail = (email) => {
@@ -4416,72 +4326,15 @@ const CreateCard = () => {
     return emailRegex.test(email);
   };
 
-  // Check email existence
-  const checkEmailExistence = async (email) => {
-    try {
-      setCheckingEmail(true);
-      
-      const checkResponse = await fetch(`${CARD_URL}/check-email?email=${encodeURIComponent(email)}`);
-      const checkData = await checkResponse.json();
-      setEmailExists(checkData.exists);
-      
-      if (checkData.exists && (!editingCard || editingCard.email !== email)) {
-        const existingCard = await fetchCardByEmail(email);
-        if (existingCard) {
-          setTimeout(() => {
-            if (window.confirm(
-              `We found an existing business card for ${email}. Would you like to load the existing data to edit it?`
-            )) {
-              populateFormWithExistingData(existingCard, setFormData, setSaveStatus, navigate);
-            }
-          }, 500);
-        }
-      }
-    } catch (error) {
-      console.error('Error checking email:', error);
-      setEmailExists(false);
-    } finally {
-      setCheckingEmail(false);
-    }
-  };
-
   // Handle email change
   const handleEmailChange = async (e) => {
     const email = e.target.value;
-    
-    if (!email || email.trim() === "") {
-      setFormData({
-        ...formData,
-        email: "",
-        prefix: "",
-        firstName: "",
-        lastName: "",
-        suffix: "",
-        profilePhoto: null,
-        customUrl: "",
-        urlSlug: "",
-        companyName: "",
-        department: "",
-        jobTitle: "",
-        bio: "",
-        companyLogo: null
-      });
-      setGeneratedSlug("");
-      setIsFromLogin(false);
-      return;
-    }
-    
     setFormData({ ...formData, email });
     setEmailError("");
-    setEmailExists(false);
     
     if (email && !validateEmail(email)) {
       setEmailError("Please enter a valid email address");
       return;
-    }
-    
-    if (email && validateEmail(email)) {
-      await checkEmailExistence(email);
     }
   };
 
@@ -4820,9 +4673,6 @@ const CreateCard = () => {
   };
 
   const nextStep = () => {
-    console.log('Current step:', currentStep);
-    console.log('Form data for current step:', formData);
-    
     if (!validateCurrentStep()) {
       setShowWarning(true);
       return;
@@ -4831,11 +4681,7 @@ const CreateCard = () => {
     if (currentStep === 4) {
       setShowDesignSelection(true);
     } else {
-      setCurrentStep(prev => {
-        const nextStep = Math.min(prev + 1, 4);
-        console.log('Moving to step:', nextStep);
-        return nextStep;
-      });
+      setCurrentStep(prev => Math.min(prev + 1, 4));
     }
   };
 
@@ -4932,15 +4778,12 @@ const CreateCard = () => {
   // UseEffects
   useEffect(() => {
     if (userEmailFromSignIn && validateEmail(userEmailFromSignIn) && !editingCard) {
-      console.log('Auto-filled email detected, triggering verification:', userEmailFromSignIn);
       setIsFromLogin(true);
-      checkEmailExistence(userEmailFromSignIn);
     }
   }, [userEmailFromSignIn, editingCard]);
 
   useEffect(() => {
     if (editingCard) {
-      console.log('Editing card data:', editingCard);
       setFormData(editingCard);
       if (editingCard.urlSlug) {
         setGeneratedSlug(editingCard.urlSlug);
@@ -4967,6 +4810,52 @@ const CreateCard = () => {
       setUrlAvailable(null);
     }
   }, [formData.customUrl, formData.urlSlug]);
+
+  // Add auto-save status indicator to your JSX
+  const renderAutoSaveStatus = () => (
+    <div className="flex items-center justify-between mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2">
+          <label className="flex items-center text-sm text-slate-700">
+            <input 
+              type="checkbox"
+              checked={autoSaveEnabled}
+              onChange={(e) => setAutoSaveEnabled(e.target.checked)}
+              className="mr-2"
+            />
+            Auto-save
+          </label>
+        </div>
+        
+        <div className="flex items-center space-x-2 text-sm">
+          {isAutoSaving ? (
+            <>
+              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-500"></div>
+              <span className="text-blue-600">Saving...</span>
+            </>
+          ) : lastSaved ? (
+            <>
+              <FaCheck className="w-3 h-3 text-green-500" />
+              <span className="text-green-600">
+                Saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            </>
+          ) : (
+            <span className="text-slate-500">Changes will be auto-saved</span>
+          )}
+        </div>
+      </div>
+      
+      <button
+        type="button"
+        onClick={handleManualSave}
+        disabled={isAutoSaving}
+        className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 disabled:bg-blue-300 transition-colors"
+      >
+        Save Now
+      </button>
+    </div>
+  );
 
   // RENDER FUNCTIONS
 
@@ -5116,50 +5005,20 @@ const CreateCard = () => {
         </div>
       </div>
 
-      {/* Email Field - Visible for all plans */}
+      {/* Email Field - Visible for all plans - AUTO-FILLED */}
       <div>
         <label className="block text-slate-700 mb-1">Email Address *</label>
-        <div className="relative">
-          <input 
-            type="email" 
-            name="email"
-            placeholder="your.email@example.com"
-            required
-            value={formData.email || ""}
-            onChange={handleEmailChange}
-            className={`w-full p-2 border rounded pr-10 focus:ring-1 focus:ring-blue-500 ${
-              emailError 
-                ? 'border-red-500 bg-red-50' 
-                : emailExists 
-                ? 'border-orange-500 bg-orange-50' 
-                : formData.email && !checkingEmail && validateEmail(formData.email)
-                ? 'border-green-500 bg-green-50'
-                : 'border-slate-300'
-            }`}
-          />
-          {checkingEmail && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-            </div>
-          )}
-          {emailExists && !checkingEmail && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-500">
-              ⚠️
-            </div>
-          )}
-          {formData.email && !emailExists && !checkingEmail && validateEmail(formData.email) && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500">
-              ✓
-            </div>
-          )}
-        </div>
-        {emailError && (
-          <p className="text-red-600 text-sm mt-1">{emailError}</p>
-        )}
-        {emailExists && (
-          <p className="text-orange-600 text-sm mt-1">
-            This email is already registered. You can still proceed, but please use a different email if this isn't you.
-          </p>
+        <input 
+          type="email" 
+          name="email"
+          placeholder="your.email@example.com"
+          required
+          value={formData.email || ""}
+          onChange={handleEmailChange}
+          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-gray-50"
+        />
+        {userEmailFromSignIn && (
+          <p className="text-green-600 text-sm mt-1">✓ Email auto-filled from your account</p>
         )}
       </div>
 
@@ -5608,317 +5467,6 @@ const CreateCard = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-
-          {/* Services Section - Only for pro plan */}
-          {isFieldVisible('services') && (
-            <div className="border border-slate-200 rounded-lg p-6">
-              <h4 className="text-lg font-semibold text-slate-800 mb-4">Services</h4>
-              
-              {(formData.services || []).map((service, index) => (
-                <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h5 className="font-medium text-slate-700">Service {index + 1}</h5>
-                    {formData.services.length > 1 && (
-                      <button 
-                        type="button"
-                        onClick={() => removeArrayField("services", index)}
-                        className="text-red-500 hover:text-red-700 text-sm"
-                      >
-                        Remove Service
-                      </button>
-                    )}
-                  </div>
-                  
-                  <div className="mb-4">
-                    <label className="block text-slate-700 mb-2">Service Image</label>
-                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
-                      {service.image ? (
-                        <div className="flex flex-col items-center">
-                          <img src={service.image} alt="Service" className="max-w-32 max-h-32 object-contain mb-2" />
-                          <button 
-                            type="button"
-                            onClick={() => handleArrayFieldChange("services", index, "image", null)}
-                            className="text-red-500 text-sm hover:text-red-700"
-                          >
-                            Remove Image
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <p className="text-slate-500 mb-2">Upload service image</p>
-                          <input 
-                            type="file" 
-                            accept="image/*" 
-                            onChange={(e) => handleServiceProductImageUpload("services", index, e)}
-                            className="hidden" 
-                            id={`service-image-${index}`}
-                          />
-                          <label 
-                            htmlFor={`service-image-${index}`}
-                            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
-                          >
-                            Upload Image
-                          </label>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label className="block text-slate-700 mb-1">Service Name</label>
-                      <input 
-                        type="text"
-                        placeholder="e.g., Web Development"
-                        value={service.name || ""}
-                        onChange={(e) => handleArrayFieldChange("services", index, "name", e.target.value)}
-                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-slate-700 mb-1">Category</label>
-                      <select 
-                        value={service.category || ""}
-                        onChange={(e) => handleArrayFieldChange("services", index, "category", e.target.value)}
-                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      >
-                        <option value="">Select Category</option>
-                        <option value="design">Design</option>
-                        <option value="development">Development</option>
-                        <option value="consulting">Consulting</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="training">Training</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <label className="block text-slate-700 mb-1">Description</label>
-                    <textarea 
-                      placeholder="Describe your service..."
-                      value={service.description || ""}
-                      onChange={(e) => handleArrayFieldChange("services", index, "description", e.target.value)}
-                      rows="3"
-                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <label className="block text-slate-700 mb-1">Price</label>
-                      <input 
-                        type="number"
-                        placeholder="0.00"
-                        value={service.price || ""}
-                        onChange={(e) => handleArrayFieldChange("services", index, "price", e.target.value)}
-                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-slate-700 mb-1">Currency</label>
-                      <select 
-                        value={service.currency || "USD"}
-                        onChange={(e) => handleArrayFieldChange("services", index, "currency", e.target.value)}
-                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      >
-                        <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (€)</option>
-                        <option value="GBP">GBP (£)</option>
-                        <option value="INR">INR (₹)</option>
-                        <option value="CAD">CAD (C$)</option>
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-slate-700 mb-1">Duration</label>
-                      <input 
-                        type="text"
-                        placeholder="e.g., 2 weeks, 1 hour"
-                        value={service.duration || ""}
-                        onChange={(e) => handleArrayFieldChange("services", index, "duration", e.target.value)}
-                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              <button 
-                type="button"
-                onClick={() => addArrayField("services", {
-                  name: "",
-                  description: "",
-                  price: "",
-                  currency: "USD",
-                  duration: "",
-                  category: "",
-                  image: null
-                })}
-                className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
-              >
-                + Add Another Service
-              </button>
-            </div>
-          )}
-
-          {/* Products Section - Only for pro plan */}
-          {isFieldVisible('products') && (
-            <div className="border border-slate-200 rounded-lg p-6">
-              <h4 className="text-lg font-semibold text-slate-800 mb-4">Products</h4>
-              
-              {(formData.products || []).map((product, index) => (
-                <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h5 className="font-medium text-slate-700">Product {index + 1}</h5>
-                    {formData.products.length > 1 && (
-                      <button 
-                        type="button"
-                        onClick={() => removeArrayField("products", index)}
-                        className="text-red-500 hover:text-red-700 text-sm"
-                      >
-                        Remove Product
-                      </button>
-                    )}
-                  </div>
-                  
-                  <div className="mb-4">
-                    <label className="block text-slate-700 mb-2">Product Image</label>
-                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
-                      {product.image ? (
-                        <div className="flex flex-col items-center">
-                          <img src={product.image} alt="Product" className="max-w-32 max-h-32 object-contain mb-2" />
-                          <button 
-                            type="button"
-                            onClick={() => handleArrayFieldChange("products", index, "image", null)}
-                            className="text-red-500 text-sm hover:text-red-700"
-                          >
-                            Remove Image
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <p className="text-slate-500 mb-2">Upload product image</p>
-                          <input 
-                            type="file" 
-                            accept="image/*" 
-                            onChange={(e) => handleServiceProductImageUpload("products", index, e)}
-                            className="hidden" 
-                            id={`product-image-${index}`}
-                          />
-                          <label 
-                            htmlFor={`product-image-${index}`}
-                            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
-                          >
-                            Upload Image
-                          </label>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label className="block text-slate-700 mb-1">Product Name</label>
-                      <input 
-                        type="text"
-                        placeholder="e.g., E-book, Software License"
-                        value={product.name || ""}
-                        onChange={(e) => handleArrayFieldChange("products", index, "name", e.target.value)}
-                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-slate-700 mb-1">Category</label>
-                      <select 
-                        value={product.category || ""}
-                        onChange={(e) => handleArrayFieldChange("products", index, "category", e.target.value)}
-                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      >
-                        <option value="">Select Category</option>
-                        <option value="digital">Digital Product</option>
-                        <option value="physical">Physical Product</option>
-                        <option value="software">Software</option>
-                        <option value="book">Book/E-book</option>
-                        <option value="course">Online Course</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <label className="block text-slate-700 mb-1">Description</label>
-                    <textarea 
-                      placeholder="Describe your product..."
-                      value={product.description || ""}
-                      onChange={(e) => handleArrayFieldChange("products", index, "description", e.target.value)}
-                      rows="3"
-                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <label className="block text-slate-700 mb-1">Price</label>
-                      <input 
-                        type="number"
-                        placeholder="0.00"
-                        value={product.price || ""}
-                        onChange={(e) => handleArrayFieldChange("products", index, "price", e.target.value)}
-                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-slate-700 mb-1">Currency</label>
-                      <select 
-                        value={product.currency || "USD"}
-                        onChange={(e) => handleArrayFieldChange("products", index, "currency", e.target.value)}
-                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      >
-                        <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (€)</option>
-                        <option value="GBP">GBP (£)</option>
-                        <option value="INR">INR (₹)</option>
-                        <option value="CAD">CAD (C$)</option>
-                      </select>
-                    </div>
-                    
-                    <div className="flex items-center">
-                      <label className="flex items-center text-slate-700">
-                        <input 
-                          type="checkbox"
-                          checked={product.inStock !== undefined ? product.inStock : true}
-                          onChange={(e) => handleArrayFieldChange("products", index, "inStock", e.target.checked)}
-                          className="mr-2"
-                        />
-                        In Stock
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              <button 
-                type="button"
-                onClick={() => addArrayField("products", {
-                  name: "",
-                  description: "",
-                  price: "",
-                  currency: "USD",
-                  category: "",
-                  image: null,
-                  inStock: true
-                })}
-                className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
-              >
-                + Add Another Product
-              </button>
             </div>
           )}
         </>
@@ -6644,52 +6192,6 @@ const CreateCard = () => {
             </div>
           )}
 
-          {/* Client List - Only for pro plan */}
-          {isFieldVisible('clientList') && (
-            <div className="border border-slate-200 rounded-lg p-6">
-              <h4 className="text-lg font-semibold text-slate-800 mb-4">Client List</h4>
-              
-              <div className="space-y-3">
-                {formData.clientList.map((client, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <input 
-                      type="text"
-                      placeholder="Client company name"
-                      value={client || ""}
-                      onChange={(e) => {
-                        const updatedList = [...formData.clientList];
-                        updatedList[index] = e.target.value;
-                        setFormData({ ...formData, clientList: updatedList });
-                      }}
-                      className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    />
-                    <button 
-                      type="button"
-                      onClick={() => {
-                        const updatedList = formData.clientList.filter((_, i) => i !== index);
-                        setFormData({ ...formData, clientList: updatedList });
-                      }}
-                      className="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors"
-                    >
-                      <FaTrash className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              
-              <button 
-                type="button"
-                onClick={() => setFormData({
-                  ...formData,
-                  clientList: [...formData.clientList, ""]
-                })}
-                className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 mt-4"
-              >
-                + Add Client
-              </button>
-            </div>
-          )}
-
           {/* Gallery - Only for premium and pro plans */}
           {isFieldVisible('gallery') && (
             <div className="border border-slate-200 rounded-lg p-6">
@@ -7059,6 +6561,9 @@ const CreateCard = () => {
       <h2 className="text-2xl font-bold mb-6 text-slate-800">
         {editingCard ? "Edit Business Card" : "Create Business Card"}
       </h2>
+
+      {/* Auto-save status indicator */}
+      {renderAutoSaveStatus()}
 
       {/* Progress Steps */}
       <div className="flex justify-between mb-8 relative">
