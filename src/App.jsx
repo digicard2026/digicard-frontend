@@ -58,6 +58,9 @@ import PreviewCard from './pages/Card/PreviewCard';
 import PublicCard from './pages/Card/PublicCard';
 import PlanSelection from './pages/Card/PlanSelection';
 import CardDashbord from './pages/Card/Card_Dashbord';
+import RegistrationPage from './pages/Authentication/RegistrationPage';
+import FranchiseSignIn from './pages/Authentication/FranchiseSignIn';
+import FranchiseDashboard from './pages/Dashboard/FranchisedashBoard';
 import HHome from './components/ui/index';
 function App() {
   const [loading, setLoading] = useState(true);
@@ -496,6 +499,8 @@ function App() {
        <Route path="/signin" element={<SignIn/>} />
       <Route path="/choose-plan" element={<PlanSelection />} />
       <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} />
+         <Route path="/signin/franchise" element={<FranchiseSignIn/>} />
+
       <Route path="/ui" element={<HHome/>} />
      
           <Route
@@ -520,7 +525,44 @@ function App() {
         }
       />
 
+        <Route
+        path="/register"
+        element={
+          <>
+            <PageTitle title="Registration Page" />
+            <RegistrationPage/>
+
+          </>
+        }
+      />
+
+       <Route
+        path="/signup"
+        element={
+          <>
+            <PageTitle title="SignUp page" />
+            <SignUp/>
+
+          </>
+        }
+      />
+
+      <Route
+        path="/franchise/dashboard"
+        element={
+          <>
+            <PageTitle title="Dashboard" />
+            
+             <DefaultLayout><FranchiseDashboard/></DefaultLayout>
+
+          </>
+        }
+      />
+
     </Routes>
+
+    
+
 
 
   );
