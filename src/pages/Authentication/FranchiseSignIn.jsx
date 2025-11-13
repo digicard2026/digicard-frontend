@@ -406,7 +406,7 @@ const FranchiseSignIn = () => {
                           <div className="mt-6 text-center">
                             <p>
                               Don’t have any account?{' '}
-                              <Link to="/auth/signup" className="text-primary">
+                              <Link to="/signup" className="text-primary">
                                 Sign Up
                               </Link>
                             </p>
