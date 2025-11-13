@@ -6,18 +6,37 @@ import { CARD_URL } from "../../../src/utility/constants";
 const Card_Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { userEmail, userData } = location.state || {};
+  const { userEmail: locationEmail, userData } = location.state || {};
   
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
 
-  // Fetch user's cards by email
+  // ✅ GET EMAIL FROM MULTIPLE SOURCES
+  const getUserEmail = () => {
+    // 1. From location state (when navigating from signup)
+    if (locationEmail) return locationEmail;
+    
+    // 2. From localStorage (when user logs in)
+    const storedEmail = localStorage.getItem('user_email');
+    if (storedEmail) return storedEmail;
+    
+    // 3. From user data in location
+    if (userData?.email) return userData.email;
+    
+    return null;
+  };
+
+  const userEmail = getUserEmail();
+
+  // ✅ UPDATED: Fetch ALL user's cards by email
   useEffect(() => {
     const fetchUserCards = async () => {
-      if (!userEmail) {
-        setError("No user email provided");
+      const emailToFetch = getUserEmail();
+      
+      if (!emailToFetch) {
+        setError("No user email found. Please login again.");
         setLoading(false);
         return;
       }
@@ -26,35 +45,57 @@ const Card_Dashboard = () => {
         setLoading(true);
         setError("");
         
-        console.log(`Fetching cards for email: ${userEmail}`);
+        console.log(`📧 Fetching ALL cards for email: ${emailToFetch}`);
+        console.log(`🔗 API URL: ${CARD_URL}/email/${encodeURIComponent(emailToFetch)}`);
         
-        // Fetch cards by user email - using the same endpoint as CreateCard
-        const response = await fetch(`${CARD_URL}/email/${encodeURIComponent(userEmail)}`);
+        const response = await fetch(`${CARD_URL}/email/${encodeURIComponent(emailToFetch)}`);
+        
+        console.log('🔍 Response status:', response.status);
         
         if (response.ok) {
           const data = await response.json();
-          console.log('Cards fetched successfully:', data);
+          console.log('✅ API Response:', data);
           
-          // Handle both array and single card response
-          if (Array.isArray(data)) {
-            setCards(data);
+          // ✅ UPDATED: Handle the new response format with cards array
+          let cardsArray = [];
+          
+          if (data.cards && Array.isArray(data.cards)) {
+            // Case: { success: true, cards: [...] }
+            cardsArray = data.cards;
+            console.log('📦 Case 1: cards array in response');
+          } else if (Array.isArray(data)) {
+            // Case: Direct array response
+            cardsArray = data;
+            console.log('📦 Case 2: direct array response');
+          } else if (data.data && Array.isArray(data.data)) {
+            // Case: { data: [...] }
+            cardsArray = data.data;
+            console.log('📦 Case 3: data array in response');
           } else if (data.card) {
-            setCards([data.card]);
-          } else if (data._id) {
-            setCards([data]);
+            // Case: Single card (backward compatibility)
+            cardsArray = [data.card];
+            console.log('📦 Case 4: single card object');
           } else {
-            setCards([]);
+            // No cards found
+            cardsArray = [];
+            console.log('📦 Case 5: no cards found');
           }
+          
+          console.log('🃏 Final cards array:', cardsArray);
+          setCards(cardsArray);
+          
         } else if (response.status === 404) {
           // No cards found for this email - this is normal for new users
-          console.log('No cards found for this email');
+          console.log('ℹ️ No cards found for this email');
           setCards([]);
         } else {
+          const errorText = await response.text();
+          console.error('❌ API Error:', errorText);
           throw new Error(`Failed to fetch cards: ${response.status}`);
         }
       } catch (error) {
-        console.error('Error fetching cards:', error);
-        setError("Failed to load your cards. Please try again.");
+        console.error('🔥 Error fetching cards:', error);
+        setError("Failed to load your cards. Please try refreshing the page.");
         setCards([]);
       } finally {
         setLoading(false);
@@ -64,7 +105,7 @@ const Card_Dashboard = () => {
     fetchUserCards();
   }, [userEmail]);
 
-  // Handle edit card - Navigate to create page with email and card data
+  // Handle edit card
   const handleEditClick = (card) => {
     console.log('Editing card:', card);
     navigate('/create', { 
@@ -97,9 +138,17 @@ const Card_Dashboard = () => {
 
   // Handle create new card
   const handleCreateNew = () => {
-    navigate('/create-card', { 
+    const selectedPlan = localStorage.getItem('selected_plan');
+    
+    console.log('Creating new card with:', {
+      userEmail: userEmail,
+      selectedPlan: selectedPlan
+    });
+
+    navigate('/create', { 
       state: { 
-        userEmail: userEmail 
+        userEmail: userEmail,
+        selectedPlan: selectedPlan
       }
     });
   };
@@ -113,12 +162,34 @@ const Card_Dashboard = () => {
     card.jobTitle?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // ✅ SHOW EMAIL NOT FOUND ERROR
+  if (!userEmail && !loading) {
+    return (
+      <div className="min-h-screen bg-[#eef3f9] flex items-center justify-center">
+        <div className="text-center bg-white p-8 rounded-2xl shadow-lg max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FaUser className="w-8 h-8 text-red-500" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">User Not Found</h2>
+          <p className="text-gray-600 mb-4">Unable to identify user. Please login again.</p>
+          <button
+            onClick={() => navigate('/signin/franchise')}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#eef3f9] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
           <div className="text-xl text-gray-600">Loading your cards...</div>
+          <p className="text-sm text-gray-500 mt-2">for {userEmail}</p>
         </div>
       </div>
     );
@@ -139,23 +210,25 @@ const Card_Dashboard = () => {
             </p>
             {cards.length > 0 && (
               <p className="text-sm text-gray-500 mt-1">
-                {cards.length} card{cards.length !== 1 ? 's' : ''} found • Click "Edit" to modify any card
+                {cards.length} card{cards.length !== 1 ? 's' : ''} found
               </p>
             )}
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 mt-4 md:mt-0">
-            {/* Search Bar */}
-            <div className="relative">
-              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search cards..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64"
-              />
-            </div>
+            {/* Search Bar - Only show if there are cards */}
+            {cards.length > 0 && (
+              <div className="relative">
+                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search cards..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64"
+                />
+              </div>
+            )}
             
             {/* Create New Card Button */}
             <button
@@ -174,6 +247,11 @@ const Card_Dashboard = () => {
             <p className="text-red-700">{error}</p>
           </div>
         )}
+
+        {/* Debug Info - Remove in production */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6 text-sm">
+          <p><strong>Debug Info:</strong> Email: {userEmail} | Cards Found: {cards.length}</p>
+        </div>
 
         {/* Cards Grid */}
         {filteredCards.length === 0 ? (
@@ -219,7 +297,7 @@ const Card_Dashboard = () => {
   );
 };
 
-// Individual Card Component
+// Individual Card Component (Keep this same as before)
 const CardItem = ({ card, onEdit, onView, onShare, userEmail }) => {
   const displayName = `${card.firstName || ''} ${card.lastName || ''}`.trim() || 'Unnamed Card';
   const displayEmail = card.email || userEmail || 'No email';
