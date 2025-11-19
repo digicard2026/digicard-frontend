@@ -492,12 +492,12 @@ function App() {
       </> 
       }
       />
-      <Route path="/create" element={<DefaultLayout><CreateCard /></DefaultLayout>} />
+      <Route path="/create" element={<CreateCard />} />
       <Route path="/preview" element={ <DefaultLayout> <PreviewCard /> </DefaultLayout> } />
       <Route path="/card/public" element={<PublicCard />} />
       <Route path="/preview/:urlSlug" element={<PreviewCard />} />
        <Route path="/signin" element={<SignIn/>} />
-      <Route path="/choose-plan" element={<PlanSelection />} />
+      {/* <Route path="/choose-plan" element={<PlanSelection />} /> */}
       <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} />
          <Route path="/signin/franchise" element={<FranchiseSignIn/>} />
 

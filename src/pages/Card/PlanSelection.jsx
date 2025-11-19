@@ -9,7 +9,7 @@ const PlanSelection = () => {
 
   const cardPlans = {
     'business': {
-      name: 'Business',
+      name: 'Personal',
       description: 'Basic digital card with essential features',
       icon: <FaBuilding className="w-8 h-8" />,
       color: 'blue',
@@ -21,10 +21,10 @@ const PlanSelection = () => {
         'Business Hours',
         'One-Tap Contact'
       ],
-      price: 'Free'
+      price: '$4.99/month'
     },
     'business-premium': {
-      name: 'Business Premium',
+      name: 'Business',
       description: 'Enhanced features for professional presence',
       icon: <FaGem className="w-8 h-8" />,
       color: 'purple',
@@ -40,7 +40,7 @@ const PlanSelection = () => {
       price: '$9.99/month'
     },
     'business-pro': {
-      name: 'Business Professional',
+      name: 'Business Premium',
       description: 'Advanced features for business professionals',
       icon: <FaCrown className="w-8 h-8" />,
       color: 'gold',
