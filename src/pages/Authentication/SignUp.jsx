@@ -553,7 +553,7 @@
 //                 Partner account has been created successfully.
 //               </p>
 //               <p className="text-gray-600 mb-6 text-sm">
-//                 Now complete the partner business profile.
+//                 Now complete the partner Personal profile.
 //               </p>
 //               <button
 //                 onClick={() => navigate("/signin/franchise")}
@@ -846,7 +846,7 @@ const handleSubmit = async (values, { setSubmitting, resetForm }) => {
                 Partner account has been created successfully.
               </p>
               <p className="text-gray-600 mb-6 text-sm">
-                Now complete the partner business profile.
+                Now complete the partner Personal profile.
               </p>
               <button
                 onClick={handleContinue}
@@ -859,13 +859,13 @@ const handleSubmit = async (values, { setSubmitting, resetForm }) => {
             // ✅ NEW: Plan selection customer success
             <>
               <h2 className="text-3xl font-bold text-green-600 mb-4">
-                🎉 Welcome to Business Card!
+                🎉 Welcome to Personal Card!
               </h2>
               <p className="text-gray-700 mb-4">
                 Your {location.state.selectedPlan.replace('-', ' ')} account is ready!
               </p>
               <p className="text-gray-600 mb-6 text-sm">
-                Let's create your digital business card.
+                Let's create your digital Personal card.
               </p>
               <button
                 onClick={handleContinue}

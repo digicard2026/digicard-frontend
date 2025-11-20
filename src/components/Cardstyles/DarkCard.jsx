@@ -89,7 +89,7 @@ const DarkCard = ({ cardData = {} }) => {
     profileVideo: cardData?.profileVideo,
     titleLine: cardData?.titleLine || "",
     aboutText: cardData?.aboutText || "",
-    bio: cardData?.bio || "",
+    bio: cardData?.bio || "SDFGHJKERTYUICVBNMDFGHJKWERTYUIOSDFGHJKZXOV",
     servicesProducts: cardData?.servicesProducts || "",
     brandLabel: cardData?.brandLabel || "",
     catalog: cardData?.catalog || "",
@@ -142,7 +142,7 @@ const DarkCard = ({ cardData = {} }) => {
     dynamicQRCode: cardData?.dynamicQRCode || null,
     nfcSettings: cardData?.nfcSettings || { isEnabled: false },
     productRangeDisplay: cardData?.productRangeDisplay || 'grid',
-    cardType: cardData?.cardType || 'business',
+    cardType: cardData?.cardType || 'Personal',
     design: cardData?.design || 'default',
     cardLayout: cardData?.cardLayout || 'standard',
     logoSize: cardData?.logoSize || 'medium',
@@ -231,7 +231,7 @@ const DarkCard = ({ cardData = {} }) => {
     }
   };
 
-  const formatBusinessHours = (hours) => {
+  const formatPersonalHours = (hours) => {
     if (!hours) return "Mon - Sat. 10:00 - 20:00";
    
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -284,13 +284,12 @@ const DarkCard = ({ cardData = {} }) => {
 
   return (
     <div className="bg-gray-100 min-h-screen w-full flex justify-center py-6 overflow-y-auto font-['Poppins']">
-     <div
-  className="w-[420px] rounded-3xl shadow-xl overflow-hidden bg-cover bg-center bg-no-repeat font-['Poppins']"
-  style={{
-    backgroundImage: `url("https://wallpapers-max.b-cdn.net/wallpapers/17jul2023/hd/dark-purple-abstract-shapes-wallpaper.jpg")`
-  }}
->
- 
+      <div
+        className="w-[420px] rounded-3xl shadow-xl overflow-hidden bg-cover bg-center bg-no-repeat font-['Poppins']"
+        style={{
+          backgroundImage: `url("https://wallpapers-max.b-cdn.net/wallpapers/17jul2023/hd/dark-purple-abstract-shapes-wallpaper.jpg")`
+        }}
+      >
         {/* Header gradient */}
         <div className="bg-gradient-to-r from-pink-500 to-blue-500 h-45 rounded-b-3xl relative flex justify-center font-['Poppins']">
           <div className="absolute bottom-[-60px] w-[85%] bg-white/40 backdrop-blur-lg rounded-2xl shadow-2xl flex flex-col items-center pt-16 pb-5 font-['Poppins'] transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
@@ -314,10 +313,14 @@ const DarkCard = ({ cardData = {} }) => {
               )}
             </div>
  
-            <h2 className="text-lg font-semibold text-black mt-1 font-['Poppins']">{profileData.name}</h2>
-            <p className="text-sm text-gray-800  text-black font-['Poppins']">{profileData.jobTitle}</p>
-            <p className="text-xs text-gray-700  text-black mt-1 font-['Poppins']">
-              Working time: {formatBusinessHours(profileData.workingHours)}
+            <h2 className="text-lg font-semibold text-black mt-1 font-['Poppins'] text-center px-2 break-words w-full">
+              {profileData.name}
+            </h2>
+            <p className="text-sm text-gray-800 text-black font-['Poppins'] text-center px-2 break-words w-full">
+              {profileData.jobTitle}
+            </p>
+            <p className="text-xs text-gray-700 text-black mt-1 font-['Poppins'] text-center px-2 break-words w-full">
+              Working time: {formatPersonalHours(profileData.workingHours)}
             </p>
           </div>
         </div>
@@ -342,7 +345,9 @@ const DarkCard = ({ cardData = {} }) => {
                 )}
                 {profileData.companyName && (
                   <div className="flex-1 text-right pl-3 font-['Poppins']">
-                    <h3 className="text-md font-semibold text-black font-['Poppins']">{profileData.companyName}</h3>
+                    <h3 className="text-md font-semibold text-black font-['Poppins'] break-words">
+                      {profileData.companyName}
+                    </h3>
                   </div>
                 )}
               </div>
@@ -421,7 +426,9 @@ const DarkCard = ({ cardData = {} }) => {
           <div className="px-6 pb-4 font-['Poppins']">
             <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
               <FaCrown className="w-5 h-5 text-yellow-400 mx-auto mb-1 font-['Poppins']" />
-              <p className="text-black font-semibold text-sm text-center font-['Poppins']">{profileData.titleLine}</p>
+              <p className="text-black font-semibold text-sm text-center font-['Poppins'] break-words px-2">
+                {profileData.titleLine}
+              </p>
             </div>
           </div>
         )}
@@ -443,7 +450,9 @@ const DarkCard = ({ cardData = {} }) => {
                 />
                 {profileData.profileVideo.title && (
                   <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 font-['Poppins']">
-                    <p className="text-sm font-medium font-['Poppins']">{profileData.profileVideo.title}</p>
+                    <p className="text-sm font-medium font-['Poppins'] break-words">
+                      {profileData.profileVideo.title}
+                    </p>
                   </div>
                 )}
               </div>
@@ -459,7 +468,9 @@ const DarkCard = ({ cardData = {} }) => {
                 <FaUserFriends className="w-4 h-4 text-black mr-2" />
                 About
               </h3>
-              <p className="text-black text-sm leading-relaxed font-['Poppins']">{profileData.aboutText}</p>
+              <p className="text-black text-sm leading-relaxed font-['Poppins'] break-words">
+                {profileData.aboutText}
+              </p>
             </div>
           </div>
         )}
@@ -473,12 +484,12 @@ const DarkCard = ({ cardData = {} }) => {
                 Organization Details
               </h3>
               {profileData.foundedName && (
-                <p className="text-black text-sm mb-2 font-['Poppins']">
+                <p className="text-black text-sm mb-2 font-['Poppins'] break-words">
                   <span className="font-medium font-['Poppins']">Founded Name:</span> {profileData.foundedName}
                 </p>
               )}
               {profileData.organization && (
-                <p className="text-black text-sm font-['Poppins']">
+                <p className="text-black text-sm font-['Poppins'] break-words">
                   <span className="font-medium font-['Poppins']">Organization:</span> {profileData.organization}
                 </p>
               )}
@@ -511,7 +522,9 @@ const DarkCard = ({ cardData = {} }) => {
                     />
                     {getCurrentSlideImages()[0].title && (
                       <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 font-['Poppins']">
-                        <p className="text-sm font-medium font-['Poppins']">{getCurrentSlideImages()[0].title}</p>
+                        <p className="text-sm font-medium font-['Poppins'] break-words">
+                          {getCurrentSlideImages()[0].title}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -532,7 +545,9 @@ const DarkCard = ({ cardData = {} }) => {
                       />
                       {item.title && (
                         <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 font-['Poppins']">
-                          <p className="text-xs font-medium font-['Poppins']">{item.title}</p>
+                          <p className="text-xs font-medium font-['Poppins'] break-words">
+                            {item.title}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -584,7 +599,7 @@ const DarkCard = ({ cardData = {} }) => {
           </div>
         )}
  
-        {/* Bio Section */}
+        {/* Bio Section - FIXED WITH PROPER TEXT CONTAINMENT */}
         {profileData.bio && (
           <div className="px-6 pb-4 font-['Poppins']">
             <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/50 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
@@ -592,7 +607,11 @@ const DarkCard = ({ cardData = {} }) => {
                 <FaBriefcase className="w-4 h-4 text-black mr-2" />
                 Professional Bio
               </h3>
-              <p className="text-black text-sm leading-relaxed font-['Poppins']">{profileData.bio}</p>
+              <div className="max-w-full overflow-hidden">
+                <p className="text-black text-sm leading-relaxed font-['Poppins'] break-words whitespace-normal word-wrap overflow-wrap break-words">
+                  {profileData.bio}
+                </p>
+              </div>
             </div>
           </div>
         )}
@@ -605,7 +624,9 @@ const DarkCard = ({ cardData = {} }) => {
                 <FaStore className="w-4 h-4 text-black mr-2" />
                 Services & Products
               </h3>
-              <p className="text-black text-sm leading-relaxed font-['Poppins']">{profileData.servicesProducts}</p>
+              <p className="text-black text-sm leading-relaxed font-['Poppins'] break-words">
+                {profileData.servicesProducts}
+              </p>
             </div>
           </div>
         )}
@@ -618,7 +639,9 @@ const DarkCard = ({ cardData = {} }) => {
                 <FaGem className="w-4 h-4 text-black mr-2" />
                 Brand Label
               </h3>
-              <p className="text-black text-sm leading-relaxed font-['Poppins']">{profileData.brandLabel}</p>
+              <p className="text-black text-sm leading-relaxed font-['Poppins'] break-words">
+                {profileData.brandLabel}
+              </p>
             </div>
           </div>
         )}
@@ -631,7 +654,9 @@ const DarkCard = ({ cardData = {} }) => {
                 <FaBook className="w-4 h-4 text-black mr-2" />
                 Catalog
               </h3>
-              <p className="text-black text-sm leading-relaxed font-['Poppins']">{profileData.catalog}</p>
+              <p className="text-black text-sm leading-relaxed font-['Poppins'] break-words">
+                {profileData.catalog}
+              </p>
             </div>
           </div>
         )}
@@ -647,30 +672,36 @@ const DarkCard = ({ cardData = {} }) => {
               <div className="space-y-3 font-['Poppins']">
                 {profileData.services.slice(0, 5).map((service, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-white/20 rounded-lg shadow-lg border border-white/30 font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-                    <div className="flex items-center space-x-3 font-['Poppins']">
+                    <div className="flex items-center space-x-3 font-['Poppins'] min-w-0 flex-1">
                       {service.image && (
                         <img
                           src={service.image}
                           alt={service.name}
-                          className="w-8 h-8 rounded-lg object-cover"
+                          className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
                           onError={(e) => {
                             console.log('Service image failed to load:', service.image);
                             e.target.style.display = 'none';
                           }}
                         />
                       )}
-                      <div>
-                        <span className="text-black text-sm font-medium block font-['Poppins']">{service.name}</span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-black text-sm font-medium block font-['Poppins'] break-words">
+                          {service.name}
+                        </span>
                         {service.description && (
-                          <span className="text-black/80 text-xs block font-['Poppins']">{service.description}</span>
+                          <span className="text-black/80 text-xs block font-['Poppins'] break-words">
+                            {service.description}
+                          </span>
                         )}
                         {service.duration && (
-                          <span className="text-black/60 text-xs block font-['Poppins']">{service.duration}</span>
+                          <span className="text-black/60 text-xs block font-['Poppins'] break-words">
+                            {service.duration}
+                          </span>
                         )}
                       </div>
                     </div>
                     {service.price && (
-                      <span className="text-black text-sm font-bold whitespace-nowrap font-['Poppins']">
+                      <span className="text-black text-sm font-bold whitespace-nowrap font-['Poppins'] flex-shrink-0 ml-2">
                         {service.price} {service.currency}
                       </span>
                     )}
@@ -692,22 +723,26 @@ const DarkCard = ({ cardData = {} }) => {
               <div className="space-y-3 font-['Poppins']">
                 {profileData.products.slice(0, 5).map((product, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-white/20 rounded-lg shadow-lg border border-white/30 font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-                    <div className="flex items-center space-x-3 font-['Poppins']">
+                    <div className="flex items-center space-x-3 font-['Poppins'] min-w-0 flex-1">
                       {product.image && (
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="w-8 h-8 rounded-lg object-cover"
+                          className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
                           onError={(e) => {
                             console.log('Product image failed to load:', product.image);
                             e.target.style.display = 'none';
                           }}
                         />
                       )}
-                      <div>
-                        <span className="text-black text-sm font-medium block font-['Poppins']">{product.name}</span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-black text-sm font-medium block font-['Poppins'] break-words">
+                          {product.name}
+                        </span>
                         {product.description && (
-                          <span className="text-black/80 text-xs block font-['Poppins']">{product.description}</span>
+                          <span className="text-black/80 text-xs block font-['Poppins'] break-words">
+                            {product.description}
+                          </span>
                         )}
                         {!product.inStock && (
                           <span className="text-red-600 text-xs font-medium font-['Poppins']">Out of Stock</span>
@@ -715,7 +750,7 @@ const DarkCard = ({ cardData = {} }) => {
                       </div>
                     </div>
                     {product.price && (
-                      <span className="text-black text-sm font-bold whitespace-nowrap font-['Poppins']">
+                      <span className="text-black text-sm font-bold whitespace-nowrap font-['Poppins'] flex-shrink-0 ml-2">
                         {product.price} {product.currency}
                       </span>
                     )}
@@ -738,16 +773,22 @@ const DarkCard = ({ cardData = {} }) => {
                 {profileData.testimonials.slice(0, 3).map((testimonial, index) => (
                   <div key={index} className="bg-white/20 rounded-lg p-4 shadow-lg border border-white/30 font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
                     <div className="flex items-center justify-between mb-2 font-['Poppins']">
-                      <span className="font-semibold text-black text-sm font-['Poppins']">{testimonial.clientName}</span>
+                      <span className="font-semibold text-black text-sm font-['Poppins'] break-words">
+                        {testimonial.clientName}
+                      </span>
                       {testimonial.rating && (
                         <div className="flex space-x-1 font-['Poppins']">
                           {renderStars(testimonial.rating)}
                         </div>
                       )}
                     </div>
-                    <p className="text-black/90 text-sm italic font-['Poppins']">"{testimonial.testimonial}"</p>
+                    <p className="text-black/90 text-sm italic font-['Poppins'] break-words">
+                      "{testimonial.testimonial}"
+                    </p>
                     {testimonial.company && (
-                      <p className="text-black/70 text-xs mt-2 font-['Poppins']">{testimonial.company}</p>
+                      <p className="text-black/70 text-xs mt-2 font-['Poppins'] break-words">
+                        {testimonial.company}
+                      </p>
                     )}
                   </div>
                 ))}
@@ -766,7 +807,7 @@ const DarkCard = ({ cardData = {} }) => {
               </h3>
               <div className="flex flex-wrap gap-2 font-['Poppins']">
                 {profileData.clientList.slice(0, 8).map((client, index) => (
-                  <span key={index} className="bg-white/30 text-black px-3 py-1 rounded-full text-xs border border-white/40 font-['Poppins'] transform transition-transform duration-300 hover:scale-110">
+                  <span key={index} className="bg-white/30 text-black px-3 py-1 rounded-full text-xs border border-white/40 font-['Poppins'] transform transition-transform duration-300 hover:scale-110 break-words max-w-full">
                     {client}
                   </span>
                 ))}
@@ -790,16 +831,18 @@ const DarkCard = ({ cardData = {} }) => {
                     onClick={() => handleContact("default", download.fileUrl)}
                     className="flex items-center justify-between p-3 bg-white/20 rounded-lg shadow-lg border border-white/30 hover:bg-white/30 cursor-pointer transition-colors font-['Poppins'] transform transition-transform duration-300 hover:scale-105"
                   >
-                    <div className="flex items-center space-x-3 font-['Poppins']">
-                      <FaFilePdf className="w-4 h-4 text-black" />
-                      <div>
-                        <span className="text-black text-sm font-medium block font-['Poppins']">{download.name}</span>
+                    <div className="flex items-center space-x-3 font-['Poppins'] min-w-0 flex-1">
+                      <FaFilePdf className="w-4 h-4 text-black flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <span className="text-black text-sm font-medium block font-['Poppins'] break-words">
+                          {download.name}
+                        </span>
                         {download.fileSize && (
                           <span className="text-black/80 text-xs font-['Poppins']">{download.fileSize}</span>
                         )}
                       </div>
                     </div>
-                    <FaDownload className="w-4 h-4 text-black/70" />
+                    <FaDownload className="w-4 h-4 text-black/70 flex-shrink-0" />
                   </div>
                 ))}
               </div>
@@ -843,7 +886,7 @@ const DarkCard = ({ cardData = {} }) => {
                       <div className="text-black mb-1 font-['Poppins']">
                         {getInteractiveElementIcon(element.type)}
                       </div>
-                      <span className="text-xs text-black font-medium text-center font-['Poppins']">
+                      <span className="text-xs text-black font-medium text-center font-['Poppins'] break-words">
                         {element.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </span>
                     </button>
@@ -909,8 +952,12 @@ const DarkCard = ({ cardData = {} }) => {
               <div className="space-y-2 font-['Poppins']">
                 {profileData.customFields.map((field, index) => (
                   <div key={index} className="flex justify-between p-2 bg-white/20 rounded-lg font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-                    <span className="text-black text-sm font-medium font-['Poppins']">{field.label}:</span>
-                    <span className="text-black text-sm font-['Poppins']">{field.value}</span>
+                    <span className="text-black text-sm font-medium font-['Poppins'] break-words">
+                      {field.label}:
+                    </span>
+                    <span className="text-black text-sm font-['Poppins'] break-words text-right">
+                      {field.value}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -935,7 +982,9 @@ const DarkCard = ({ cardData = {} }) => {
                     </div>
                     <span className="text-black text-sm font-['Poppins']">Email</span>
                   </div>
-                  <span className="text-black text-sm font-medium truncate ml-2 font-['Poppins']">{profileData.email}</span>
+                  <span className="text-black text-sm font-medium truncate ml-2 font-['Poppins'] break-words max-w-32">
+                    {profileData.email}
+                  </span>
                 </div>
               )}
  
@@ -949,11 +998,13 @@ const DarkCard = ({ cardData = {} }) => {
                     <div className="w-7 h-7 bg-white/30 rounded-full flex items-center justify-center mr-3 font-['Poppins']">
                       <FaPhoneAlt className="w-3 h-3 text-black" />
                     </div>
-                    <span className="text-black text-sm font-['Poppins']">
+                    <span className="text-black text-sm font-['Poppins'] break-words">
                       {phone.label || 'Phone'} {phone.isPrimary && '(Primary)'}
                     </span>
                   </div>
-                  <span className="text-black text-sm font-medium font-['Poppins']">{phone.number}</span>
+                  <span className="text-black text-sm font-medium font-['Poppins'] break-words">
+                    {phone.number}
+                  </span>
                 </div>
               ))}
  
@@ -967,11 +1018,11 @@ const DarkCard = ({ cardData = {} }) => {
                     <div className="w-7 h-7 bg-white/30 rounded-full flex items-center justify-center mr-3 font-['Poppins']">
                       <FaGlobe className="w-3 h-3 text-black" />
                     </div>
-                    <span className="text-black text-sm font-['Poppins']">
+                    <span className="text-black text-sm font-['Poppins'] break-words">
                       {website.label || 'Website'}
                     </span>
                   </div>
-                  <span className="text-black text-sm font-medium truncate ml-2 max-w-32 font-['Poppins']">
+                  <span className="text-black text-sm font-medium truncate ml-2 max-w-32 font-['Poppins'] break-words">
                     {website.url.replace(/^https?:\/\//, '')}
                   </span>
                 </div>
@@ -994,15 +1045,15 @@ const DarkCard = ({ cardData = {} }) => {
                   onClick={() => handleContact("map", address.googleMapsLink)}
                   className="flex items-start justify-between p-2 rounded-lg hover:bg-white/20 cursor-pointer transition-colors mb-2 font-['Poppins'] transform transition-transform duration-300 hover:scale-105"
                 >
-                  <div className="flex items-start font-['Poppins']">
-                    <div className="w-7 h-7 bg-white/30 rounded-full flex items-center justify-center mr-3 mt-1 font-['Poppins']">
+                  <div className="flex items-start font-['Poppins'] min-w-0 flex-1">
+                    <div className="w-7 h-7 bg-white/30 rounded-full flex items-center justify-center mr-3 mt-1 font-['Poppins'] flex-shrink-0">
                       <FaMapMarkerAlt className="w-3 h-3 text-black" />
                     </div>
-                    <div>
-                      <span className="text-black text-sm font-medium block font-['Poppins']">
+                    <div className="min-w-0 flex-1">
+                      <span className="text-black text-sm font-medium block font-['Poppins'] break-words">
                         {address.label || 'Address'} {address.isPrimary && '(Primary)'}
                       </span>
-                      <span className="text-black/80 text-xs block mt-1 font-['Poppins']">
+                      <span className="text-black/80 text-xs block mt-1 font-['Poppins'] break-words">
                         {address.fullAddress || `${address.street}, ${address.city}, ${address.state} ${address.postalCode}`}
                       </span>
                     </div>

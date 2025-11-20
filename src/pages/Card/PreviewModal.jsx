@@ -26,7 +26,7 @@ const PreviewModal = ({ card, onClose }) => {
               : "bg-white"
           }`}
         >
-          <p className="text-center pt-10 text-white font-semibold">Business Card Preview</p>
+          <p className="text-center pt-10 text-white font-semibold">Personal Card Preview</p>
         </div>
       </div>
     </div>

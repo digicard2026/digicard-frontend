@@ -7,7 +7,7 @@
 //   const [loading, setLoading] = useState(true);
 //   const [franchiseInfo, setFranchiseInfo] = useState({
 //     franchiseId: '', // This will now store the USER ID
-//     businessName: '',
+//     PersonalName: '',
 //     joinDate: ''
 //   });
 
@@ -45,7 +45,7 @@
         
 //         setFranchiseInfo({
 //           franchiseId: franchiseUserId, // ✅ Now using USER ID
-//           businessName: franchise.franchiseDetails?.businessName || 'Your Business',
+//           PersonalName: franchise.franchiseDetails?.PersonalName || 'Your Personal',
 //           joinDate: franchise.createdAt ? new Date(franchise.createdAt).toLocaleDateString() : 'N/A'
 //         });
 
@@ -94,7 +94,7 @@
 //       state: { 
 //         franchiseContext: true,
 //         createdBy: franchiseId,
-//         franchiseName: franchiseInfo.businessName
+//         franchiseName: franchiseInfo.PersonalName
 //       }
 //     });
 //   };
@@ -115,8 +115,8 @@
 //     if (partner.firstName && partner.firstName.trim()) {
 //       return partner.firstName.charAt(0).toUpperCase();
 //     }
-//     if (partner.businessName && partner.businessName.trim()) {
-//       return partner.businessName.charAt(0).toUpperCase();
+//     if (partner.PersonalName && partner.PersonalName.trim()) {
+//       return partner.PersonalName.charAt(0).toUpperCase();
 //     }
 //     if (partner.email && partner.email.trim()) {
 //       return partner.email.split('@')[0].charAt(0).toUpperCase();
@@ -132,7 +132,7 @@
 //       'bg-orange-500', 'bg-cyan-500'
 //     ];
     
-//     const str = partner._id || partner.email || partner.businessName || 'default';
+//     const str = partner._id || partner.email || partner.PersonalName || 'default';
 //     let hash = 0;
 //     for (let i = 0; i < str.length; i++) {
 //       hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -190,7 +190,7 @@
 //             Franchise Dashboard
 //           </h1>
 //           <p className="text-gray-600 mt-2">
-//             Welcome back, {franchiseInfo.businessName}!
+//             Welcome back, {franchiseInfo.PersonalName}!
 //           </p>
 //           <div className="flex items-center gap-4 mt-4">
 //             <div className="bg-white/80 backdrop-blur-sm border border-blue-200 rounded-xl px-4 py-3 shadow-sm">
@@ -301,7 +301,7 @@
 //                   Partner
 //                 </th>
 //                 <th className="text-left py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">
-//                   Business
+//                   Personal
 //                 </th>
 //                 <th className="text-left py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wider">
 //                   Contact
@@ -350,7 +350,7 @@
 //                           <div className="text-sm font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
 //                             {partner.firstName && partner.firstName.trim() 
 //                               ? `${partner.salutation || ''} ${partner.firstName} ${partner.lastName || ''}`.trim()
-//                               : partner.businessName || 'Unnamed Partner'
+//                               : partner.PersonalName || 'Unnamed Partner'
 //                             }
 //                           </div>
 //                           <div className="text-sm text-gray-500">
@@ -362,10 +362,10 @@
 //                     <td className="py-4 px-6">
 //                       <div>
 //                         <div className="text-sm font-medium text-gray-900">
-//                           {partner.businessName || 'No Business Name'}
+//                           {partner.PersonalName || 'No Personal Name'}
 //                         </div>
 //                         <div className="text-sm text-gray-500">
-//                           {partner.businessType || 'Not specified'}
+//                           {partner.PersonalType || 'Not specified'}
 //                         </div>
 //                       </div>
 //                     </td>
@@ -447,7 +447,7 @@ const FranchiseDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [franchiseInfo, setFranchiseInfo] = useState({
     franchiseId: '',
-    businessName: '',
+    PersonalName: '',
     joinDate: ''
   });
   const [totalItems, setTotalItems] = useState(0);
@@ -487,7 +487,7 @@ const FranchiseDashboard = () => {
         
         setFranchiseInfo({
           franchiseId: franchiseUserId,
-          businessName: franchise.franchiseDetails?.businessName || 'Your Business',
+          PersonalName: franchise.franchiseDetails?.PersonalName || 'Your Personal',
           joinDate: franchise.createdAt ? new Date(franchise.createdAt).toLocaleDateString() : 'N/A'
         });
 
@@ -541,7 +541,7 @@ const FranchiseDashboard = () => {
       state: { 
         franchiseContext: true,
         createdBy: franchiseUserId,
-        franchiseName: franchiseInfo.businessName
+        franchiseName: franchiseInfo.PersonalName
       }
     });
   };
@@ -579,8 +579,8 @@ const FranchiseDashboard = () => {
     if (partner.firstName && partner.firstName.trim()) {
       return partner.firstName.charAt(0).toUpperCase();
     }
-    if (partner.businessName && partner.businessName.trim()) {
-      return partner.businessName.charAt(0).toUpperCase();
+    if (partner.PersonalName && partner.PersonalName.trim()) {
+      return partner.PersonalName.charAt(0).toUpperCase();
     }
     if (partner.email && partner.email.trim()) {
       return partner.email.split('@')[0].charAt(0).toUpperCase();
@@ -596,7 +596,7 @@ const FranchiseDashboard = () => {
       'bg-orange-500', 'bg-cyan-500'
     ];
     
-    const str = partner._id || partner.email || partner.businessName || 'default';
+    const str = partner._id || partner.email || partner.PersonalName || 'default';
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -634,7 +634,7 @@ const FranchiseDashboard = () => {
 
         const fullName = partner.firstName && partner.firstName.trim() 
           ? `${partner.salutation || ''} ${partner.firstName} ${partner.lastName || ''}`.trim()
-          : partner.businessName || 'Unnamed Partner';
+          : partner.PersonalName || 'Unnamed Partner';
 
         return (
           <div className="flex items-center">
@@ -655,17 +655,17 @@ const FranchiseDashboard = () => {
       }
     },
     {
-      header: 'Business',
+      header: 'Personal',
       cell: ({ row }) => {
         const partner = row.original;
         return (
           <div>
             <div className="text-sm font-medium text-gray-900 flex items-center gap-1">
               <Building className="w-3 h-3" />
-              {partner.businessName || 'No Business Name'}
+              {partner.PersonalName || 'No Personal Name'}
             </div>
             <div className="text-sm text-gray-500">
-              {partner.businessType || 'Not specified'}
+              {partner.PersonalType || 'Not specified'}
             </div>
           </div>
         );
@@ -774,7 +774,7 @@ const FranchiseDashboard = () => {
             Franchise Dashboard
           </h1>
           <p className="text-gray-600 mt-2">
-            Welcome back, {franchiseInfo.businessName}!
+            Welcome back, {franchiseInfo.PersonalName}!
           </p>
           <div className="flex items-center gap-4 mt-4">
             <div className="bg-white/80 backdrop-blur-sm border border-blue-200 rounded-xl px-4 py-3 shadow-sm">

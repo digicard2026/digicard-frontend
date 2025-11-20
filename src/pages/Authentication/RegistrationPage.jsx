@@ -5,8 +5,8 @@
 
 // // // -------------------- FIXED validation schemas --------------------
 // // const step1Validation = Yup.object({
-// //   businessName: Yup.string().required('Business name is required'),
-// //   businessType: Yup.string().required('Business type is required'),
+// //   PersonalName: Yup.string().required('Personal name is required'),
+// //   PersonalType: Yup.string().required('Personal type is required'),
 // //   email: Yup.string().email('Invalid email address').required('Email is required'),
 // //   phone: Yup.string()
 // //     .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits')
@@ -44,7 +44,7 @@
 // //   aadharFront: Yup.mixed().required('Aadhar front is required'),
 // //   aadharBack: Yup.mixed().required('Aadhar back is required'),
 // //   panCard: Yup.mixed().required('PAN card is required'),
-// //   businessProof: Yup.mixed(),
+// //   PersonalProof: Yup.mixed(),
 // // });
 
 // // const step6Validation = Yup.object({
@@ -264,7 +264,7 @@
 // // );
 
 // // // Icons
-// // const BusinessIcon = () => (
+// // const PersonalIcon = () => (
 // //   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 // //     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
 // //   </svg>
@@ -324,7 +324,7 @@
 // //   const location = useLocation();
 
 // //   const steps = [
-// //     { number: 1, title: 'Business Info' },
+// //     { number: 1, title: 'Personal Info' },
 // //     { number: 2, title: 'Personal Details' },
 // //     { number: 3, title: 'Terms & Conditions' },
 // //     { number: 4, title: 'KYC Documents' },
@@ -334,11 +334,11 @@
 // //   ];
 
 // //   const initialValues = {
-// //     businessName: '', businessType: '', email: '', phone: '',
+// //     PersonalName: '', PersonalType: '', email: '', phone: '',
 // //     salutation: '', firstName: '', middleName: '', lastName: '', dateOfBirth: '', gender: '', personalContact: '', personalEmail: '',
 // //     aadharNumber: '', panNumber: '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', country: 'India',
 // //     acceptTerms: false, acceptPrivacyPolicy: false, acceptCommunication: false,
-// //     aadharFront: null, aadharBack: null, panCard: null, businessProof: null,
+// //     aadharFront: null, aadharBack: null, panCard: null, PersonalProof: null,
 // //     signedAgreement: null,
 // //     role: '',
 // //     franchiseId: '',
@@ -440,8 +440,8 @@
 // //             console.log('✅ Existing record found:', record);
             
 // //             const restored = {
-// //               businessName: record.businessName || '',
-// //               businessType: record.businessType || '',
+// //               PersonalName: record.PersonalName || '',
+// //               PersonalType: record.PersonalType || '',
 // //               email: record.email || (userEmail || ''),
 // //               phone: record.phone || '',
 // //               role: record.role || '',
@@ -533,8 +533,8 @@
 // //         let requestData = {
 // //           userId: userId,
 // //           userEmail: userEmail,
-// //           businessName: merged.businessName,
-// //           businessType: merged.businessType,
+// //           PersonalName: merged.PersonalName,
+// //           PersonalType: merged.PersonalType,
 // //           email: merged.email,
 // //           phone: merged.phone,
 // //           role: merged.role,
@@ -649,7 +649,7 @@
 // //     switch (step) {
 // //       case 1:
 // //         return (
-// //           <SectionWrapper title="Business Information" icon={<BusinessIcon />}>
+// //           <SectionWrapper title="Personal Information" icon={<PersonalIcon />}>
 // //             {/* User Info Banner */}
 // //             {userContext.userId && (
 // //               <div className="lg:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
@@ -734,16 +734,16 @@
 // //               )}
 // //             </Field>
 
-// //             {/* Regular Business Fields */}
+// //             {/* Regular Personal Fields */}
 // //             <InputField 
-// //               label="Business Name" 
-// //               name="businessName" 
+// //               label="Personal Name" 
+// //               name="PersonalName" 
 // //               required 
 // //               disabled={disabled} 
 // //             />
 // //             <SelectField 
-// //               label="Business Type" 
-// //               name="businessType" 
+// //               label="Personal Type" 
+// //               name="PersonalType" 
 // //               options={['Retail', 'Service', 'Manufacturing', 'Technology', 'Consulting']} 
 // //               required 
 // //               disabled={disabled} 
@@ -783,7 +783,7 @@
 // //               <InputField label="PAN Number" name="panNumber" required disabled={disabled} />
 // //             </SectionWrapper>
 
-// //             <SectionWrapper title="Address Information" icon={<BusinessIcon />}>
+// //             <SectionWrapper title="Address Information" icon={<PersonalIcon />}>
 // //               <InputField label="Address Line 1" name="addressLine1" required disabled={disabled} />
 // //               <InputField label="Address Line 2" name="addressLine2" disabled={disabled} />
 // //               <InputField label="City" name="city" required disabled={disabled} />
@@ -847,7 +847,7 @@
 // //             <FileUploadField label="Aadhar Card Front" name="aadharFront" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
 // //             <FileUploadField label="Aadhar Card Back" name="aadharBack" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
 // //             <FileUploadField label="PAN Card" name="panCard" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
-// //             <FileUploadField label="Business Proof (Optional)" name="businessProof" accept=".jpg,.jpeg,.png,.pdf" disabled={disabled} />
+// //             <FileUploadField label="Personal Proof (Optional)" name="PersonalProof" accept=".jpg,.jpeg,.png,.pdf" disabled={disabled} />
 // //             <div className="lg:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-4">
 // //               <p className="text-sm text-blue-700 font-medium">
 // //                 <strong>📝 Note:</strong> Upload clear images/PDFs of your documents. 
@@ -988,7 +988,7 @@
 // //             <p className="text-xl text-gray-600 mb-6">
 // //               {franchiseCreatedBy 
 // //                 ? 'Complete your partner profile to join the franchise network' 
-// //                 : 'Join our network of successful partners and grow your business with us'
+// //                 : 'Join our network of successful partners and grow your Personal with us'
 // //               }
 // //             </p>
 // //           </div>
@@ -1148,8 +1148,8 @@
 
 // // -------------------- FIXED validation schemas --------------------
 // const step1Validation = Yup.object({
-//   businessName: Yup.string().required('Business name is required'),
-//   businessType: Yup.string().required('Business type is required'),
+//   PersonalName: Yup.string().required('Personal name is required'),
+//   PersonalType: Yup.string().required('Personal type is required'),
 //   email: Yup.string().email('Invalid email address').required('Email is required'),
 //   phone: Yup.string()
 //     .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits')
@@ -1187,7 +1187,7 @@
 //   aadharFront: Yup.mixed().required('Aadhar front is required'),
 //   aadharBack: Yup.mixed().required('Aadhar back is required'),
 //   panCard: Yup.mixed().required('PAN card is required'),
-//   businessProof: Yup.mixed(),
+//   PersonalProof: Yup.mixed(),
 // });
 
 // const step6Validation = Yup.object({
@@ -1407,7 +1407,7 @@
 // );
 
 // // Icons
-// const BusinessIcon = () => (
+// const PersonalIcon = () => (
 //   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 //     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
 //   </svg>
@@ -1467,7 +1467,7 @@
 //   const location = useLocation();
 
 //   const steps = [
-//     { number: 1, title: 'Business Info' },
+//     { number: 1, title: 'Personal Info' },
 //     { number: 2, title: 'Personal Details' },
 //     { number: 3, title: 'Terms & Conditions' },
 //     { number: 4, title: 'KYC Documents' },
@@ -1477,11 +1477,11 @@
 //   ];
 
 //   const initialValues = {
-//     businessName: '', businessType: '', email: '', phone: '',
+//     PersonalName: '', PersonalType: '', email: '', phone: '',
 //     salutation: '', firstName: '', middleName: '', lastName: '', dateOfBirth: '', gender: '', personalContact: '', personalEmail: '',
 //     aadharNumber: '', panNumber: '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', country: 'India',
 //     acceptTerms: false, acceptPrivacyPolicy: false, acceptCommunication: false,
-//     aadharFront: null, aadharBack: null, panCard: null, businessProof: null,
+//     aadharFront: null, aadharBack: null, panCard: null, PersonalProof: null,
 //     signedAgreement: null,
 //     role: '',
 //     franchiseId: '',
@@ -1587,8 +1587,8 @@
 //               // User is a franchise - load franchiseDetails
 //               const franchiseDetails = record.franchiseDetails || {};
 //               const restored = {
-//                 businessName: franchiseDetails.businessName || '',
-//                 businessType: franchiseDetails.businessType || '',
+//                 PersonalName: franchiseDetails.PersonalName || '',
+//                 PersonalType: franchiseDetails.PersonalType || '',
 //                 email: franchiseDetails.email || (userEmail || ''),
 //                 phone: franchiseDetails.phone || '',
 //                 role: record.role || '',
@@ -1622,8 +1622,8 @@
 //                 partner.partnerId === userId || partner.partnerId?._id === userId
 //               ) || {};
 //               const restored = {
-//                 businessName: partnerData.businessName || '',
-//                 businessType: partnerData.businessType || '',
+//                 PersonalName: partnerData.PersonalName || '',
+//                 PersonalType: partnerData.PersonalType || '',
 //                 email: partnerData.email || (userEmail || ''),
 //                 phone: partnerData.phone || '',
 //                 role: record.role || '',
@@ -1722,8 +1722,8 @@
 //         let requestData = {
 //           userId: userId,
 //           userEmail: userEmail,
-//           businessName: merged.businessName,
-//           businessType: merged.businessType,
+//           PersonalName: merged.PersonalName,
+//           PersonalType: merged.PersonalType,
 //           email: merged.email,
 //           phone: merged.phone,
 //           role: merged.role,
@@ -1838,7 +1838,7 @@
 //     switch (step) {
 //       case 1:
 //         return (
-//           <SectionWrapper title="Business Information" icon={<BusinessIcon />}>
+//           <SectionWrapper title="Personal Information" icon={<PersonalIcon />}>
 //             {/* User Info Banner */}
 //             {userContext.userId && (
 //               <div className="lg:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
@@ -1923,16 +1923,16 @@
 //               )}
 //             </Field>
 
-//             {/* Regular Business Fields */}
+//             {/* Regular Personal Fields */}
 //             <InputField 
-//               label="Business Name" 
-//               name="businessName" 
+//               label="Personal Name" 
+//               name="PersonalName" 
 //               required 
 //               disabled={disabled} 
 //             />
 //             <SelectField 
-//               label="Business Type" 
-//               name="businessType" 
+//               label="Personal Type" 
+//               name="PersonalType" 
 //               options={['Retail', 'Service', 'Manufacturing', 'Technology', 'Consulting']} 
 //               required 
 //               disabled={disabled} 
@@ -1972,7 +1972,7 @@
 //               <InputField label="PAN Number" name="panNumber" required disabled={disabled} />
 //             </SectionWrapper>
 
-//             <SectionWrapper title="Address Information" icon={<BusinessIcon />}>
+//             <SectionWrapper title="Address Information" icon={<PersonalIcon />}>
 //               <InputField label="Address Line 1" name="addressLine1" required disabled={disabled} />
 //               <InputField label="Address Line 2" name="addressLine2" disabled={disabled} />
 //               <InputField label="City" name="city" required disabled={disabled} />
@@ -2036,7 +2036,7 @@
 //             <FileUploadField label="Aadhar Card Front" name="aadharFront" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
 //             <FileUploadField label="Aadhar Card Back" name="aadharBack" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
 //             <FileUploadField label="PAN Card" name="panCard" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
-//             <FileUploadField label="Business Proof (Optional)" name="businessProof" accept=".jpg,.jpeg,.png,.pdf" disabled={disabled} />
+//             <FileUploadField label="Personal Proof (Optional)" name="PersonalProof" accept=".jpg,.jpeg,.png,.pdf" disabled={disabled} />
 //             <div className="lg:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-4">
 //               <p className="text-sm text-blue-700 font-medium">
 //                 <strong>📝 Note:</strong> Upload clear images/PDFs of your documents. 
@@ -2177,7 +2177,7 @@
 //             <p className="text-xl text-gray-600 mb-6">
 //               {franchiseCreatedBy 
 //                 ? 'Complete your partner profile to join the franchise network' 
-//                 : 'Join our network of successful partners and grow your business with us'
+//                 : 'Join our network of successful partners and grow your Personal with us'
 //               }
 //             </p>
 //           </div>
@@ -2341,8 +2341,8 @@
 
 // // -------------------- FIXED validation schemas --------------------
 // const step1Validation = Yup.object({
-//   businessName: Yup.string().required('Business name is required'),
-//   businessType: Yup.string().required('Business type is required'),
+//   PersonalName: Yup.string().required('Personal name is required'),
+//   PersonalType: Yup.string().required('Personal type is required'),
 //   email: Yup.string().email('Invalid email address').required('Email is required'),
 //   phone: Yup.string()
 //     .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits')
@@ -2381,7 +2381,7 @@
 //   aadharFront: Yup.string().required('Aadhar front is required'),
 //   aadharBack: Yup.string().required('Aadhar back is required'),
 //   panCard: Yup.string().required('PAN card is required'),
-//   businessProof: Yup.mixed(),
+//   PersonalProof: Yup.mixed(),
 // });
 
 // const step6Validation = Yup.object({
@@ -2601,7 +2601,7 @@
 // );
 
 // // Icons
-// const BusinessIcon = () => (
+// const PersonalIcon = () => (
 //   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 //     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
 //   </svg>
@@ -2661,7 +2661,7 @@
 //   const location = useLocation();
 
 //   const steps = [
-//     { number: 1, title: 'Business Info' },
+//     { number: 1, title: 'Personal Info' },
 //     { number: 2, title: 'Personal Details' },
 //     { number: 3, title: 'Terms & Conditions' },
 //     { number: 4, title: 'KYC Documents' },
@@ -2671,11 +2671,11 @@
 //   ];
 
 //   const initialValues = {
-//     businessName: '', businessType: '', email: '', phone: '',
+//     PersonalName: '', PersonalType: '', email: '', phone: '',
 //     salutation: '', firstName: '', middleName: '', lastName: '', dateOfBirth: '', gender: '', personalContact: '', personalEmail: '',
 //     aadharNumber: '', panNumber: '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', country: 'India',
 //     acceptTerms: false, acceptPrivacyPolicy: false, acceptCommunication: false,
-//     aadharFront: null, aadharBack: null, panCard: null, businessProof: null,
+//     aadharFront: null, aadharBack: null, panCard: null, PersonalProof: null,
 //     signedAgreement: null,
 //     role: '',
 //     franchiseId: '',
@@ -2777,8 +2777,8 @@
 //             console.log('✅ Existing record found:', record);
             
 //             const restored = {
-//               businessName: record.businessName || '',
-//               businessType: record.businessType || '',
+//               PersonalName: record.PersonalName || '',
+//               PersonalType: record.PersonalType || '',
 //               email: record.email || (userEmail || ''),
 //               phone: record.phone || '',
 //               role: record.role || '',
@@ -2870,8 +2870,8 @@
 //         let requestData = {
 //           userId: userId,
 //           userEmail: userEmail,
-//           businessName: merged.businessName,
-//           businessType: merged.businessType,
+//           PersonalName: merged.PersonalName,
+//           PersonalType: merged.PersonalType,
 //           email: merged.email,
 //           phone: merged.phone,
 //           role: merged.role,
@@ -2993,7 +2993,7 @@
 //     switch (step) {
 //       case 1:
 //         return (
-//           <SectionWrapper title="Business Information" icon={<BusinessIcon />}>
+//           <SectionWrapper title="Personal Information" icon={<PersonalIcon />}>
 //             {/* User Info Banner */}
 //             {userContext.userId && (
 //               <div className="lg:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
@@ -3078,16 +3078,16 @@
 //               )}
 //             </Field>
 
-//             {/* Regular Business Fields */}
+//             {/* Regular Personal Fields */}
 //             <InputField 
-//               label="Business Name" 
-//               name="businessName" 
+//               label="Personal Name" 
+//               name="PersonalName" 
 //               required 
 //               disabled={disabled} 
 //             />
 //             <SelectField 
-//               label="Business Type" 
-//               name="businessType" 
+//               label="Personal Type" 
+//               name="PersonalType" 
 //               options={['Retail', 'Service', 'Manufacturing', 'Technology', 'Consulting']} 
 //               required 
 //               disabled={disabled} 
@@ -3127,7 +3127,7 @@
 //               <InputField label="PAN Number" name="panNumber" required disabled={disabled} />
 //             </SectionWrapper>
 
-//             <SectionWrapper title="Address Information" icon={<BusinessIcon />}>
+//             <SectionWrapper title="Address Information" icon={<PersonalIcon />}>
 //               <InputField label="Address Line 1" name="addressLine1" required disabled={disabled} />
 //               <InputField label="Address Line 2" name="addressLine2" disabled={disabled} />
 //               <InputField label="City" name="city" required disabled={disabled} />
@@ -3191,7 +3191,7 @@
 //             <FileUploadField label="Aadhar Card Front" name="aadharFront" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
 //             <FileUploadField label="Aadhar Card Back" name="aadharBack" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
 //             <FileUploadField label="PAN Card" name="panCard" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
-//             <FileUploadField label="Business Proof (Optional)" name="businessProof" accept=".jpg,.jpeg,.png,.pdf" disabled={disabled} />
+//             <FileUploadField label="Personal Proof (Optional)" name="PersonalProof" accept=".jpg,.jpeg,.png,.pdf" disabled={disabled} />
 //             <div className="lg:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-4">
 //               <p className="text-sm text-blue-700 font-medium">
 //                 <strong>📝 Note:</strong> Upload clear images/PDFs of your documents. 
@@ -3332,7 +3332,7 @@
 //             <p className="text-xl text-gray-600 mb-6">
 //               {franchiseCreatedBy 
 //                 ? 'Complete your partner profile to join the franchise network' 
-//                 : 'Join our network of successful partners and grow your business with us'
+//                 : 'Join our network of successful partners and grow your Personal with us'
 //               }
 //             </p>
 //           </div>
@@ -3500,8 +3500,8 @@
 
 // // -------------------- FIXED validation schemas --------------------
 // const step1Validation = Yup.object({
-//   businessName: Yup.string().required('Business name is required'),
-//   businessType: Yup.string().required('Business type is required'),
+//   PersonalName: Yup.string().required('Personal name is required'),
+//   PersonalType: Yup.string().required('Personal type is required'),
 //   email: Yup.string().email('Invalid email address').required('Email is required'),
 //   phone: Yup.string()
 //     .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits')
@@ -3540,7 +3540,7 @@
 //   aadharFront: Yup.mixed().required('Aadhar front is required'),
 //   aadharBack: Yup.mixed().required('Aadhar back is required'),
 //   panCard: Yup.mixed().required('PAN card is required'),
-//   businessProof: Yup.mixed(),
+//   PersonalProof: Yup.mixed(),
 // });
 
 // const step6Validation = Yup.object({
@@ -3780,7 +3780,7 @@
 // );
 
 // // Icons
-// const BusinessIcon = () => (
+// const PersonalIcon = () => (
 //   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 //     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
 //   </svg>
@@ -3840,7 +3840,7 @@
 //   const location = useLocation();
 
 //   const steps = [
-//     { number: 1, title: 'Business Info' },
+//     { number: 1, title: 'Personal Info' },
 //     { number: 2, title: 'Personal Details' },
 //     { number: 3, title: 'Terms & Conditions' },
 //     { number: 4, title: 'KYC Documents' },
@@ -3850,12 +3850,12 @@
 //   ];
 
 //   const initialValues = {
-//     businessName: '', businessType: '', email: '', phone: '',
+//     PersonalName: '', PersonalType: '', email: '', phone: '',
 //     salutation: '', firstName: '', middleName: '', lastName: '', dateOfBirth: '', gender: '', personalContact: '', personalEmail: '',
 //     aadharNumber: '', panNumber: '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', country: 'India',
 //     acceptTerms: false, acceptPrivacyPolicy: false, acceptCommunication: false,
 //     // ✅ Initialize file fields as null
-//     aadharFront: null, aadharBack: null, panCard: null, businessProof: null,
+//     aadharFront: null, aadharBack: null, panCard: null, PersonalProof: null,
 //     signedAgreement: null,
 //     role: '',
 //     franchiseId: '',
@@ -3969,7 +3969,7 @@
 //       });
 
 //       // ✅ Add file fields separately
-//       const fileFields = ['aadharFront', 'aadharBack', 'panCard', 'businessProof', 'signedAgreement'];
+//       const fileFields = ['aadharFront', 'aadharBack', 'panCard', 'PersonalProof', 'signedAgreement'];
 //       fileFields.forEach(fieldName => {
 //         if (merged[fieldName] instanceof File) {
 //           formDataToSend.append(fieldName, merged[fieldName]);
@@ -4086,8 +4086,8 @@
 //             const franchiseDetails = record.franchiseDetails || {};
             
 //             const restored = {
-//               businessName: franchiseDetails.businessName || record.businessName || '',
-//               businessType: franchiseDetails.businessType || record.businessType || '',
+//               PersonalName: franchiseDetails.PersonalName || record.PersonalName || '',
+//               PersonalType: franchiseDetails.PersonalType || record.PersonalType || '',
 //               email: franchiseDetails.email || record.email || (userEmail || ''),
 //               phone: franchiseDetails.phone || record.phone || '',
 //               role: record.role || '',
@@ -4116,7 +4116,7 @@
 //               aadharFront: franchiseDetails.aadharFront || null,
 //               aadharBack: franchiseDetails.aadharBack || null,
 //               panCard: franchiseDetails.panCard || null,
-//               businessProof: franchiseDetails.businessProof || null,
+//               PersonalProof: franchiseDetails.PersonalProof || null,
 //               signedAgreement: franchiseDetails.signedAgreement || null,
 //             };
 
@@ -4160,7 +4160,7 @@
 
 //       // Update local state (but exclude File objects from formData state)
 //       const valuesWithoutFiles = { ...values };
-//       const fileFields = ['aadharFront', 'aadharBack', 'panCard', 'businessProof', 'signedAgreement'];
+//       const fileFields = ['aadharFront', 'aadharBack', 'panCard', 'PersonalProof', 'signedAgreement'];
 //       fileFields.forEach(field => {
 //         if (valuesWithoutFiles[field] instanceof File) {
 //           // Keep filename for display, but don't store File object in state
@@ -4217,7 +4217,7 @@
 //     switch (step) {
 //       case 1:
 //         return (
-//           <SectionWrapper title="Business Information" icon={<BusinessIcon />}>
+//           <SectionWrapper title="Personal Information" icon={<PersonalIcon />}>
 //             {/* User Info Banner */}
 //             {userContext.userId && (
 //               <div className="lg:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
@@ -4302,16 +4302,16 @@
 //               )}
 //             </Field>
 
-//             {/* Regular Business Fields */}
+//             {/* Regular Personal Fields */}
 //             <InputField 
-//               label="Business Name" 
-//               name="businessName" 
+//               label="Personal Name" 
+//               name="PersonalName" 
 //               required 
 //               disabled={disabled} 
 //             />
 //             <SelectField 
-//               label="Business Type" 
-//               name="businessType" 
+//               label="Personal Type" 
+//               name="PersonalType" 
 //               options={['Retail', 'Service', 'Manufacturing', 'Technology', 'Consulting']} 
 //               required 
 //               disabled={disabled} 
@@ -4351,7 +4351,7 @@
 //               <InputField label="PAN Number" name="panNumber" required disabled={disabled} />
 //             </SectionWrapper>
 
-//             <SectionWrapper title="Address Information" icon={<BusinessIcon />}>
+//             <SectionWrapper title="Address Information" icon={<PersonalIcon />}>
 //               <InputField label="Address Line 1" name="addressLine1" required disabled={disabled} />
 //               <InputField label="Address Line 2" name="addressLine2" disabled={disabled} />
 //               <InputField label="City" name="city" required disabled={disabled} />
@@ -4415,7 +4415,7 @@
 //             <FileUploadField label="Aadhar Card Front" name="aadharFront" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
 //             <FileUploadField label="Aadhar Card Back" name="aadharBack" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
 //             <FileUploadField label="PAN Card" name="panCard" accept=".jpg,.jpeg,.png,.pdf" required disabled={disabled} />
-//             <FileUploadField label="Business Proof (Optional)" name="businessProof" accept=".jpg,.jpeg,.png,.pdf" disabled={disabled} />
+//             <FileUploadField label="Personal Proof (Optional)" name="PersonalProof" accept=".jpg,.jpeg,.png,.pdf" disabled={disabled} />
 //             <div className="lg:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-4">
 //               <p className="text-sm text-blue-700 font-medium">
 //                 <strong>📝 Note:</strong> Upload clear images/PDFs of your documents. 
@@ -4556,7 +4556,7 @@
 //             <p className="text-xl text-gray-600 mb-6">
 //               {franchiseCreatedBy 
 //                 ? 'Complete your partner profile to join the franchise network' 
-//                 : 'Join our network of successful partners and grow your business with us'
+//                 : 'Join our network of successful partners and grow your Personal with us'
 //               }
 //             </p>
 //           </div>
@@ -4718,8 +4718,8 @@ import { useLocation } from "react-router-dom";
 
 // -------------------- FIXED validation schemas --------------------
 const step1Validation = Yup.object({
-  businessName: Yup.string().required('Business name is required'),
-  businessType: Yup.string().required('Business type is required'),
+  PersonalName: Yup.string().required('Personal name is required'),
+  PersonalType: Yup.string().required('Personal type is required'),
   email: Yup.string().email('Invalid email address').required('Email is required'),
   phone: Yup.string()
     .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits')
@@ -4758,7 +4758,7 @@ const step4Validation = Yup.object({
   aadharFront: Yup.mixed().required('Aadhar front is required'),
   aadharBack: Yup.mixed().required('Aadhar back is required'),
   panCard: Yup.mixed().required('PAN card is required'),
-  businessProof: Yup.mixed(),
+  PersonalProof: Yup.mixed(),
 });
 
 const step6Validation = Yup.object({
@@ -5021,7 +5021,7 @@ const StepIndicator = ({ currentStep, steps }) => (
 );
 
 // Icons
-const BusinessIcon = () => (
+const PersonalIcon = () => (
   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
   </svg>
@@ -5086,7 +5086,7 @@ const RegistrationPage = () => {
   const location = useLocation();
 
   const steps = [
-    { number: 1, title: 'Business Info' },
+    { number: 1, title: 'Personal Info' },
     { number: 2, title: 'Personal Details' },
     { number: 3, title: 'Terms & Conditions' },
     { number: 4, title: 'KYC Documents' },
@@ -5096,12 +5096,12 @@ const RegistrationPage = () => {
   ];
 
   const initialValues = {
-    businessName: '', businessType: '', email: '', phone: '',
+    PersonalName: '', PersonalType: '', email: '', phone: '',
     salutation: '', firstName: '', middleName: '', lastName: '', dateOfBirth: '', gender: '', personalContact: '', personalEmail: '',
     aadharNumber: '', panNumber: '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', country: 'India',
     acceptTerms: false, acceptPrivacyPolicy: false, acceptCommunication: false,
     // ✅ Initialize file fields as null
-    aadharFront: null, aadharBack: null, panCard: null, businessProof: null,
+    aadharFront: null, aadharBack: null, panCard: null, PersonalProof: null,
     signedAgreement: null,
     role: '',
     franchiseId: '',
@@ -5327,7 +5327,7 @@ const RegistrationPage = () => {
       });
 
       // ✅ Add file fields separately
-      const fileFields = ['aadharFront', 'aadharBack', 'panCard', 'businessProof', 'signedAgreement'];
+      const fileFields = ['aadharFront', 'aadharBack', 'panCard', 'PersonalProof', 'signedAgreement'];
       fileFields.forEach(fieldName => {
         if (merged[fieldName] instanceof File) {
           formDataToSend.append(fieldName, merged[fieldName]);
@@ -5444,8 +5444,8 @@ const RegistrationPage = () => {
             const franchiseDetails = record.franchiseDetails || {};
             
             const restored = {
-              businessName: franchiseDetails.businessName || record.businessName || '',
-              businessType: franchiseDetails.businessType || record.businessType || '',
+              PersonalName: franchiseDetails.PersonalName || record.PersonalName || '',
+              PersonalType: franchiseDetails.PersonalType || record.PersonalType || '',
               email: franchiseDetails.email || record.email || (userEmail || ''),
               phone: franchiseDetails.phone || record.phone || '',
               role: record.role || '',
@@ -5474,7 +5474,7 @@ const RegistrationPage = () => {
               aadharFront: franchiseDetails.aadharFront || null,
               aadharBack: franchiseDetails.aadharBack || null,
               panCard: franchiseDetails.panCard || null,
-              businessProof: franchiseDetails.businessProof || null,
+              PersonalProof: franchiseDetails.PersonalProof || null,
               signedAgreement: franchiseDetails.signedAgreement || null,
             };
 
@@ -5518,7 +5518,7 @@ const RegistrationPage = () => {
 
       // Update local state (but exclude File objects from formData state)
       const valuesWithoutFiles = { ...values };
-      const fileFields = ['aadharFront', 'aadharBack', 'panCard', 'businessProof', 'signedAgreement'];
+      const fileFields = ['aadharFront', 'aadharBack', 'panCard', 'PersonalProof', 'signedAgreement'];
       fileFields.forEach(field => {
         if (valuesWithoutFiles[field] instanceof File) {
           // Keep filename for display, but don't store File object in state
@@ -5586,7 +5586,7 @@ const RegistrationPage = () => {
     switch (step) {
       case 1:
         return (
-          <SectionWrapper title="Business Information" icon={<BusinessIcon />}>
+          <SectionWrapper title="Personal Information" icon={<PersonalIcon />}>
             {/* User Info Banner */}
             {userContext.userId && (
               <div className="lg:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
@@ -5678,16 +5678,16 @@ const RegistrationPage = () => {
               )}
             </Field>
 
-            {/* Regular Business Fields */}
+            {/* Regular Personal Fields */}
             <InputField 
-              label="Business Name" 
-              name="businessName" 
+              label="Personal Name" 
+              name="PersonalName" 
               required 
               {...commonProps}
             />
             <SelectField 
-              label="Business Type" 
-              name="businessType" 
+              label="Personal Type" 
+              name="PersonalType" 
               options={['Retail', 'Service', 'Manufacturing', 'Technology', 'Consulting']} 
               required 
               {...commonProps}
@@ -5727,7 +5727,7 @@ const RegistrationPage = () => {
               <InputField label="PAN Number" name="panNumber" required {...commonProps} />
             </SectionWrapper>
 
-            <SectionWrapper title="Address Information" icon={<BusinessIcon />}>
+            <SectionWrapper title="Address Information" icon={<PersonalIcon />}>
               <InputField label="Address Line 1" name="addressLine1" required {...commonProps} />
               <InputField label="Address Line 2" name="addressLine2" {...commonProps} />
               <InputField label="City" name="city" required {...commonProps} />
@@ -5791,7 +5791,7 @@ const RegistrationPage = () => {
             <FileUploadField label="Aadhar Card Front" name="aadharFront" accept=".jpg,.jpeg,.png,.pdf" required {...commonProps} />
             <FileUploadField label="Aadhar Card Back" name="aadharBack" accept=".jpg,.jpeg,.png,.pdf" required {...commonProps} />
             <FileUploadField label="PAN Card" name="panCard" accept=".jpg,.jpeg,.png,.pdf" required {...commonProps} />
-            <FileUploadField label="Business Proof (Optional)" name="businessProof" accept=".jpg,.jpeg,.png,.pdf" {...commonProps} />
+            <FileUploadField label="Personal Proof (Optional)" name="PersonalProof" accept=".jpg,.jpeg,.png,.pdf" {...commonProps} />
             <div className="lg:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-4">
               <p className="text-sm text-blue-700 font-medium">
                 <strong>📝 Note:</strong> Upload clear images/PDFs of your documents. 
@@ -5932,7 +5932,7 @@ const RegistrationPage = () => {
             <p className="text-xl text-gray-600 mb-6">
               {franchiseCreatedBy 
                 ? 'Complete your partner profile to join the franchise network' 
-                : 'Join our network of successful partners and grow your business with us'
+                : 'Join our network of successful partners and grow your Personal with us'
               }
             </p>
           </div>

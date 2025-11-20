@@ -6,7 +6,7 @@ const Home = () => {
   const [savedCards, setSavedCards] = useState([]);
 
   useEffect(() => {
-    const cards = JSON.parse(localStorage.getItem("businessCards")) || [];
+    const cards = JSON.parse(localStorage.getItem("PersonalCards")) || [];
     setSavedCards(cards);
   }, []);
 
@@ -21,7 +21,7 @@ const Home = () => {
   const handleDelete = (index) => {
     const updatedCards = savedCards.filter((_, i) => i !== index);
     setSavedCards(updatedCards);
-    localStorage.setItem("businessCards", JSON.stringify(updatedCards));
+    localStorage.setItem("PersonalCards", JSON.stringify(updatedCards));
   };
 
   const handleSetPublic = (card) => {
@@ -40,7 +40,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-zinc-100 p-6">
-      <h1 className="text-3xl text-zinc-600 font-bold text-center mb-6">Business Card Generator</h1>
+      <h1 className="text-3xl text-zinc-600 font-bold text-center mb-6">Personal Card Generator</h1>
 
       <div className="flex justify-center mb-6">
         <Link to="/create" className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-md shadow-md">

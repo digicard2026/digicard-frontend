@@ -103,14 +103,14 @@ const AboutUs = () => {
               data-aos="fade-left"
               data-aos-delay="500"
             >
-              Make your digital business card stand out.
+              Make your digital Personal card stand out.
             </p>
             <p
               className="text-lg text-slate-600 dark:text-zinc-400 mb-5"
               data-aos="fade-left"
               data-aos-delay="550"
             >
-              Stand out by customizing your digital business card to reflect your brand’s identity. From adding your logo to using personalized colors, fonts, and designs, Wave Connect digital business cards offer endless possibilities. Whether you’re a freelancer, entrepreneur, or part of a corporate team, you can showcase your personal brand and create a professional impression.
+              Stand out by customizing your digital Personal card to reflect your brand’s identity. From adding your logo to using personalized colors, fonts, and designs, Wave Connect digital Personal cards offer endless possibilities. Whether you’re a freelancer, entrepreneur, or part of a corporate team, you can showcase your personal brand and create a professional impression.
             </p>
             <button
               type="button"

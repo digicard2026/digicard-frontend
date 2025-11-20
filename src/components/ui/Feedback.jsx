@@ -24,7 +24,7 @@ const Feedback = () => {
           <h1 className="text-4xl font-semibold text-gray-800 capitalize mt-20">
            Loved by 100,000 Customers in 170 Countries.
           </h1>
-          <h4>Discover why we've been ranked as the easiest to use digital business card globally. Customers across the world can't stop sharing their positive experiences. Read their reviews and discover the difference for yourself. ⭐⭐⭐⭐⭐</h4>
+          <h4>Discover why we've been ranked as the easiest to use digital Personal card globally. Customers across the world can't stop sharing their positive experiences. Read their reviews and discover the difference for yourself. ⭐⭐⭐⭐⭐</h4>
         </div>
 
         <Swiper

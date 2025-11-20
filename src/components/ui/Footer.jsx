@@ -42,7 +42,7 @@ const Footer = () => {
         <div className="min-w-[200px] max-w-[300px]" data-aos="fade-up">
           <img src={logoDark} alt="Tailwick Logo" className="h-30 w-75 mb-4" />
           <p className="text-gray-500 text-sm mb-4">
-         Digital Card.com has digital business card designs for every industry, and we’re ready to help you find the perfect one! Just pick your industry or enter a keyword below, and watch as we bring you designs that’ll make your brand shine. Ready to create something amazing? Let’s go!.
+         Digital Card.com has digital Personal card designs for every industry, and we’re ready to help you find the perfect one! Just pick your industry or enter a keyword below, and watch as we bring you designs that’ll make your brand shine. Ready to create something amazing? Let’s go!.
           </p>
           <div className="flex gap-2">
             <a href="#" className="w-9 h-9 border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-purple-600 hover:border-purple-600 transition-colors">
@@ -65,11 +65,11 @@ const Footer = () => {
         <div className="min-w-[200px]" data-aos="fade-up">
           <h4 className="font-semibold mb-3">Degicard.com</h4>
           <ul className="space-y-2">
-            <li className="text-gray-500 text-sm cursor-pointer">Digital Business Cards</li>
+            <li className="text-gray-500 text-sm cursor-pointer">Digital Personal Cards</li>
             <li className="text-gray-500 text-sm cursor-pointer">Link in Bio</li>
             <li className="text-gray-500 text-sm cursor-pointer">Website Design</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Free Business Cards</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Business Cards</li>
+            <li className="text-gray-500 text-sm cursor-pointer">Free Personal Cards</li>
+            <li className="text-gray-500 text-sm cursor-pointer">Personal Cards</li>
              <li className="text-gray-500 text-sm cursor-pointer">Design Ideas</li>
               <li className="text-gray-500 text-sm cursor-pointer">Social Templates</li>
                <li className="text-gray-500 text-sm cursor-pointer">Design Templates</li>

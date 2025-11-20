@@ -5,10 +5,10 @@ import { FaBuilding, FaGem, FaCrown, FaCheck } from "react-icons/fa";
 
 const PlanSelection = () => {
   const navigate = useNavigate();
-  const [selectedPlan, setSelectedPlan] = useState('business');
+  const [selectedPlan, setSelectedPlan] = useState('Personal');
 
   const cardPlans = {
-    'business': {
+    'Personal': {
       name: 'Personal',
       description: 'Basic digital card with essential features',
       icon: <FaBuilding className="w-8 h-8" />,
@@ -18,18 +18,18 @@ const PlanSelection = () => {
         'Basic Contact Info',
         'Social Links',
         'Custom Design',
-        'Business Hours',
+        'Personal Hours',
         'One-Tap Contact'
       ],
-      price: '$4.99/month'
+      price: '₹500/month'
     },
-    'business-premium': {
+    'Business': {
       name: 'Business',
       description: 'Enhanced features for professional presence',
       icon: <FaGem className="w-8 h-8" />,
       color: 'purple',
       features: [
-        'All Business Features +',
+        'All Personal Features +',
         'Profile Video',
         'Professional Details',
         'Product Gallery',
@@ -37,11 +37,11 @@ const PlanSelection = () => {
         'Testimonials',
         'Downloads Section'
       ],
-      price: '$9.99/month'
+      price: '₹800/month'
     },
-    'business-pro': {
-      name: 'Business Premium',
-      description: 'Advanced features for business professionals',
+    'Business-premium': {
+      name: 'Business-premium',
+      description: 'Advanced features for Business-premiums',
       icon: <FaCrown className="w-8 h-8" />,
       color: 'gold',
       features: [
@@ -50,10 +50,10 @@ const PlanSelection = () => {
         'Interactive Elements',
         'NFC Card Support',
         'Client List Display',
-        'Advanced Business Details',
+        'Advanced Personal Details',
         'Brand Label Products'
       ],
-      price: '$19.99/month'
+      price: '₹1200/month'
     }
   };
 
@@ -75,7 +75,7 @@ const PlanSelection = () => {
             Choose Your Plan
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Select the perfect plan for your digital business card needs. 
+            Select the perfect plan for your digital Personal card needs. 
             Start free and upgrade anytime.
           </p>
         </div>
@@ -93,7 +93,7 @@ const PlanSelection = () => {
               onClick={() => handlePlanSelect(key)}
             >
               {/* Popular Badge for Premium */}
-              {key === 'business-premium' && (
+              {key === 'Business' && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <span className="bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
                     Most Popular
@@ -203,7 +203,7 @@ const PlanSelection = () => {
                   <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
                 </tr>
                 
-                {/* Business Features */}
+                {/* Personal Features */}
                 <tr className="border-b border-slate-100">
                   <td className="py-4 font-medium text-slate-700">Company Details</td>
                   <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>

@@ -36,7 +36,7 @@ const PublicCard = () => {
     </svg>
   </div>
 
-  {/* Business Card Container */}
+  {/* Personal Card Container */}
   <div className="relative transform transition hover:scale-105 hover:shadow-2xl hover:rounded-xl">
     {renderCard()}
   </div>
