@@ -25,64 +25,80 @@ const Signup = () => {
     confirmPassword: Yup.string().oneOf([Yup.ref("password"), null], "Passwords must match").required("Confirm Password is required"),
   });
  
-  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
-    try {
-      // ✅ AUTO-ROLE LOGIC: If coming from plan selection, set as customer
-      // Otherwise keep existing franchise/partner logic
-      let userRole = '';
-     
-      if (location.state?.selectedPlan) {
-        userRole = 'customer'; // Auto-set for plan selection
-      } else if (franchiseContext) {
-        userRole = 'partner'; // Existing franchise logic
-      }
-      // If neither, role will be empty and use backend default
- 
-      const res = await fetch("http://localhost:3000/api/v1/user/sign-up", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-          confirmPassword: values.confirmPassword,
-          createdBy: franchiseContext?.createdBy,
-          role: userRole, // ✅ Send determined role
-          selectedPlan: location.state?.selectedPlan // ✅ Include plan if available
-        }),
-      });
- 
-      const data = await res.json();
- 
-      if (res.ok) {
-        // ✅ Store user ID and context
-        if (data.data && data.data._id) {
-          localStorage.setItem('user_id', data.data._id);
-          localStorage.setItem('user_email', values.email);
-         
-          // Store plan if coming from plan selection
-          if (location.state?.selectedPlan) {
+const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+  try {
+    const res = await fetch("http://localhost:3000/api/v1/user/sign-up", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: values.email,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+        createdBy: franchiseContext?.createdBy,
+        selectedPlan: location.state?.selectedPlan
+      }),
+    });
+
+    const data = await res.json();
+    console.log("📨 Signup response:", data);
+
+    if (res.ok) {
+      if (data.data && data.data._id) {
+        const userId = data.data._id;
+        localStorage.setItem('user_id', userId);
+        localStorage.setItem('user_email', values.email);
+        
+        // ✅ ONLY for plan selection customers - update role to 'customer'
+        if (location.state?.selectedPlan) {
+          try {
+            console.log("🔄 Making role update API call for customer...");
+            
+            const updateRes = await fetch(`http://localhost:3000/api/v1/user/update-role-complete/${userId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                role: 'customer',
+                registrationComplete: false
+              }),
+            });
+
+            const updateData = await updateRes.json();
+            console.log("📡 Role update response:", updateData);
+            console.log("📡 Role update status:", updateRes.status);
+
+            if (updateRes.ok) {
+              console.log("✅ Customer role set successfully");
+              localStorage.setItem('selected_plan', location.state.selectedPlan);
+              localStorage.setItem('user_role', 'customer');
+            } else {
+              console.log("❌ Role update failed:", updateData);
+              localStorage.setItem('selected_plan', location.state.selectedPlan);
+            }
+          } catch (updateError) {
+            console.error("🔥 Role update error:", updateError);
             localStorage.setItem('selected_plan', location.state.selectedPlan);
-            localStorage.setItem('user_role', 'customer');
-          }
-         
-          // ✅ Existing franchise logic
-          if (franchiseContext) {
-            localStorage.setItem('franchise_created_by', franchiseContext.createdBy);
           }
         }
-       
-        setIsRegistered(true);
-        resetForm();
-      } else {
-        alert(data.error || "Signup failed. Please try again.");
+        
+        // ✅ Existing franchise logic - NO CHANGES
+        if (franchiseContext) {
+          localStorage.setItem('franchise_created_by', franchiseContext.createdBy);
+          localStorage.setItem('user_role', 'partner');
+        }
       }
-    } catch (error) {
-      console.error("Signup error:", error);
-      alert("Something went wrong. Please try again later.");
-    } finally {
-      setSubmitting(false);
+      
+      setIsRegistered(true);
+      resetForm();
+    } else {
+      alert(data.error || "Signup failed. Please try again.");
     }
-  };
+  } catch (error) {
+    console.error("Signup error:", error);
+    alert("Something went wrong. Please try again later.");
+  } finally {
+    setSubmitting(false);
+  }
+};
  
   // ✅ Handle navigation after successful registration
   const handleContinue = () => {

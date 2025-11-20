@@ -61,6 +61,7 @@ import CardDashbord from './pages/Card/Card_Dashbord';
 import RegistrationPage from './pages/Authentication/RegistrationPage';
 import FranchiseSignIn from './pages/Authentication/FranchiseSignIn';
 import FranchiseDashboard from './pages/Dashboard/FranchisedashBoard';
+import HHome from './components/ui/index';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -500,6 +501,8 @@ function App() {
       <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} />
          <Route path="/signin/franchise" element={<FranchiseSignIn/>} />
 
+      <Route path="/ui" element={<HHome/>} />
+     
           <Route
         path="forgot"
         element={

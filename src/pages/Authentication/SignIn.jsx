@@ -67,7 +67,7 @@ const SignIn = () => {
 //   }
 // }, 1000);
 setTimeout(() => {
-  if (data.role === 'admin') {
+  if (data.role === 'customer') {
     navigate('/card-dashbord', { 
       state: { 
         userEmail: values.email  // Make sure this line is correct
