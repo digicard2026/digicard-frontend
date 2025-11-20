@@ -67,7 +67,7 @@ const FranchiseSignIn = () => {
       if (data.role === 'franchise') {
         navigate('/franchise/dashboard');
       } else if (data.role === 'partner') {
-        navigate('/Partner/dashboard');
+        navigate('/partner/dashboard');
       } else {
         navigate('/dashboard');
       }
