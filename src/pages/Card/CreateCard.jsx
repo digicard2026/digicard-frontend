@@ -58,7 +58,7 @@
 //     ],
 //     price: 'Free'
 //   },
-//   'business-premium': {
+//   'Business Premium': {
 //     name: 'Business Premium',
 //     description: 'Enhanced features for professional presence',
 //     icon: <FaGem className="w-5 h-5" />,
@@ -3171,7 +3171,7 @@ const cardPlans = {
     ],
     price: '$9.99/month'
   },
-  'Business-premium': {
+  'Business Premium': {
     name: 'Personal Professional',
     description: 'Advanced features for Personal professionals',
     icon: <FaCrown className="w-5 h-5" />,
@@ -3191,56 +3191,56 @@ const cardPlans = {
 // Field visibility configuration based on plans
 const fieldPlanMap = {
   // Personal Info Fields
-  'prefix': ['Personal', 'Business', 'Business-premium'],
-  'firstName': ['Personal', 'Business', 'Business-premium'],
-  'lastName': ['Personal', 'Business', 'Business-premium'],
-  'suffix': ['Personal', 'Business', 'Business-premium'],
-  'profilePhoto': ['Personal', 'Business', 'Business-premium'],
+  'prefix': ['Personal', 'Business', 'Business Premium'],
+  'firstName': ['Personal', 'Business', 'Business Premium'],
+  'lastName': ['Personal', 'Business', 'Business Premium'],
+  'suffix': ['Personal', 'Business', 'Business Premium'],
+  'profilePhoto': ['Personal', 'Business', 'Business Premium'],
   
   // Profile Page Fields
-  'profileVideo': ['Business', 'Business-premium'],
-  'titleLine': ['Business', 'Business-premium'],
-  'aboutText': ['Business', 'Business-premium'],
+  'profileVideo': ['Business', 'Business Premium'],
+  'titleLine': ['Business', 'Business Premium'],
+  'aboutText': ['Business', 'Business Premium'],
   
   // Professional/Personal Details
-  'companyName': ['Personal', 'Business', 'Business-premium'],
-  'department': ['Personal', 'Business', 'Business-premium'],
-  'jobTitle': ['Personal', 'Business', 'Business-premium'],
-  'bio': ['Personal', 'Business', 'Business-premium'],
-  'companyLogo': ['Personal', 'Business', 'Business-premium'],
-  'logoSize': ['Personal', 'Business', 'Business-premium'],
-  'foundedName': ['Business-premium'],
-  'organization': ['Business-premium'],
-  'servicesProducts': ['Business', 'Business-premium'],
-  'brandLabel': ['Business-premium'],
-  'productRangeDisplay': ['Business-premium'],
-  'catalog': ['Business-premium'],
+  'companyName': ['Personal', 'Business', 'Business Premium'],
+  'department': ['Personal', 'Business', 'Business Premium'],
+  'jobTitle': ['Personal', 'Business', 'Business Premium'],
+  'bio': ['Personal', 'Business', 'Business Premium'],
+  'companyLogo': ['Personal', 'Business', 'Business Premium'],
+  'logoSize': ['Personal', 'Business', 'Business Premium'],
+  'foundedName': ['Business Premium'],
+  'organization': ['Business Premium'],
+  'servicesProducts': ['Business', 'Business Premium'],
+  'brandLabel': ['Business Premium'],
+  'productRangeDisplay': ['Business Premium'],
+  'catalog': ['Business Premium'],
   
   // Contact Details
-  'phones': ['Personal', 'Business', 'Business-premium'],
-  'websites': ['Personal', 'Business', 'Business-premium'],
-  'addresses': ['Business', 'Business-premium'],
+  'phones': ['Personal', 'Business', 'Business Premium'],
+  'websites': ['Personal', 'Business', 'Business Premium'],
+  'addresses': ['Business', 'Business Premium'],
   
   // Services & Products
-  'services': ['Business-premium'],
-  'products': ['Business-premium'],
+  'services': ['Business Premium'],
+  'products': ['Business Premium'],
   
   // Interactive Elements
-  'interactiveElements': ['Business-premium'],
+  'interactiveElements': ['Business Premium'],
   
   // Premium Features
-  'testimonials': ['Business', 'Business-premium'],
-  'clientList': ['Business-premium'],
-  'gallery': ['Business', 'Business-premium'],
-  'dynamicQRCode': ['Business', 'Business-premium'],
-  'nfcSettings': ['Business-premium'],
-  'downloads': ['Business', 'Business-premium'],
+  'testimonials': ['Business', 'Business Premium'],
+  'clientList': ['Business Premium'],
+  'gallery': ['Business', 'Business Premium'],
+  'dynamicQRCode': ['Business', 'Business Premium'],
+  'nfcSettings': ['Business Premium'],
+  'downloads': ['Business', 'Business Premium'],
   
   // New Contact Management Fields
-  'enableOneTapCall': ['Personal', 'Business', 'Business-premium'],
-  'enableWhatsApp': ['Personal', 'Business', 'Business-premium'],
-  'enableEmail': ['Personal', 'Business', 'Business-premium'],
-  'businessHours': ['Personal', 'Business', 'Business-premium']
+  'enableOneTapCall': ['Personal', 'Business', 'Business Premium'],
+  'enableWhatsApp': ['Personal', 'Business', 'Business Premium'],
+  'enableEmail': ['Personal', 'Business', 'Business Premium'],
+  'businessHours': ['Personal', 'Business', 'Business Premium']
 };
 
 // Function to optimize form data by removing empty fields
@@ -4706,7 +4706,7 @@ const CreateCard = () => {
             No professional details available for your current plan ({formData.cardType}).
           </p>
           <p className="text-slate-400 text-sm mt-2">
-            Upgrade to Business or Business-premium plan for professional features.
+            Upgrade to Business or Business Premium plan for professional features.
           </p>
         </div>
       );
