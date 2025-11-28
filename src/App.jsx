@@ -62,6 +62,7 @@ import RegistrationPage from './pages/Authentication/RegistrationPage';
 import FranchiseSignIn from './pages/Authentication/FranchiseSignIn';
 import FranchiseDashboard from './pages/Dashboard/FranchisedashBoard';
 import HHome from './components/ui/index';
+import PartnerDashboard from './pages/Dashboard/PartnerDashboard';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -483,25 +484,27 @@ function App() {
       <Route path='/leads/:campaignId' element={<ProtectedRoute allowedRoles={['agent']}> <PageTitle title="Leads | UConnect Admin Dashboard" /> <DefaultLayout><Leads /></DefaultLayout> </ ProtectedRoute>} />
       <Route path='/leads/details/:_id' element={<ProtectedRoute allowedRoles={['agent']}> <PageTitle title="Details | UConnect Admin Dashboard" /> <DefaultLayout><LeadTabs /></DefaultLayout> </ ProtectedRoute>} /> */}
      
-      <Route path="/" 
-      element={ <>
-       <PageTitle title="Home"/>
-       <DefaultLayout>
-        <Home />
-        </DefaultLayout>
-      </> 
-      }
-      />
-      <Route path="/create" element={<DefaultLayout><CreateCard /></DefaultLayout>} />
+      <Route 
+  path="/" 
+  element={
+    <>
+      <PageTitle title="Home" />
+      <HHome />
+    </>
+  } 
+/>
+
+      
+      <Route path="/create" element={<CreateCard />} />
       <Route path="/preview" element={ <DefaultLayout> <PreviewCard /> </DefaultLayout> } />
       <Route path="/card/public" element={<PublicCard />} />
       <Route path="/preview/:urlSlug" element={<PreviewCard />} />
        <Route path="/signin" element={<SignIn/>} />
-      <Route path="/choose-plan" element={<PlanSelection />} />
+      {/* <Route path="/choose-plan" element={<PlanSelection />} /> */}
       <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} />
          <Route path="/signin/franchise" element={<FranchiseSignIn/>} />
 
-      <Route path="/ui" element={<HHome/>} />
+      {/* <Route path="/ui" element={<HHome/>} /> */}
      
           <Route
         path="forgot"
@@ -554,6 +557,18 @@ function App() {
             <PageTitle title="Dashboard" />
             
              <DefaultLayout><FranchiseDashboard/></DefaultLayout>
+
+          </>
+        }
+      />
+
+        <Route
+        path="/partner/dashboard"
+        element={
+          <>
+            <PageTitle title="Dashboard" />
+            
+             <DefaultLayout><PartnerDashboard/></DefaultLayout>
 
           </>
         }

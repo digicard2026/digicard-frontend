@@ -5,11 +5,11 @@ import { FaBuilding, FaGem, FaCrown, FaCheck } from "react-icons/fa";
 
 const PlanSelection = () => {
   const navigate = useNavigate();
-  const [selectedPlan, setSelectedPlan] = useState('business');
+  const [selectedPlan, setSelectedPlan] = useState('Personal');
 
   const cardPlans = {
-    'business': {
-      name: 'Business',
+    'Personal': {
+      name: 'Personal',
       description: 'Basic digital card with essential features',
       icon: <FaBuilding className="w-8 h-8" />,
       color: 'blue',
@@ -18,18 +18,18 @@ const PlanSelection = () => {
         'Basic Contact Info',
         'Social Links',
         'Custom Design',
-        'Business Hours',
+        'Personal Hours',
         'One-Tap Contact'
       ],
-      price: 'Free'
+      price: '₹500/month'
     },
-    'business-premium': {
-      name: 'Business Premium',
+    'Business': {
+      name: 'Business',
       description: 'Enhanced features for professional presence',
       icon: <FaGem className="w-8 h-8" />,
       color: 'purple',
       features: [
-        'All Business Features +',
+        'All Personal Features +',
         'Profile Video',
         'Professional Details',
         'Product Gallery',
@@ -37,11 +37,11 @@ const PlanSelection = () => {
         'Testimonials',
         'Downloads Section'
       ],
-      price: '$9.99/month'
+      price: '₹800/month'
     },
-    'business-pro': {
-      name: 'Business Professional',
-      description: 'Advanced features for business professionals',
+    'Business Premium': { 
+      name: 'Business Premium', 
+      description: 'Advanced features for Business Premium', 
       icon: <FaCrown className="w-8 h-8" />,
       color: 'gold',
       features: [
@@ -50,10 +50,10 @@ const PlanSelection = () => {
         'Interactive Elements',
         'NFC Card Support',
         'Client List Display',
-        'Advanced Business Details',
+        'Advanced Personal Details',
         'Brand Label Products'
       ],
-      price: '$19.99/month'
+      price: '₹1200/month'
     }
   };
 
@@ -75,7 +75,7 @@ const PlanSelection = () => {
             Choose Your Plan
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Select the perfect plan for your digital business card needs. 
+            Select the perfect plan for your digital Personal card needs. 
             Start free and upgrade anytime.
           </p>
         </div>
@@ -87,13 +87,17 @@ const PlanSelection = () => {
               key={key}
               className={`relative rounded-2xl p-8 transition-all duration-300 cursor-pointer ${
                 selectedPlan === key
-                  ? `bg-white shadow-2xl border-2 border-${plan.color}-500 transform scale-105`
+                  ? `bg-white shadow-2xl border-2 ${
+                      plan.color === 'blue' ? 'border-blue-500' :
+                      plan.color === 'purple' ? 'border-purple-500' :
+                      'border-yellow-500'
+                    } transform scale-105`
                   : 'bg-white shadow-lg border border-slate-200 hover:shadow-xl'
               }`}
               onClick={() => handlePlanSelect(key)}
             >
-              {/* Popular Badge for Premium */}
-              {key === 'business-premium' && (
+              {/* Popular Badge for Business */}
+              {key === 'Business' && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <span className="bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
                     Most Popular
@@ -104,14 +108,22 @@ const PlanSelection = () => {
               {/* Selected Indicator */}
               {selectedPlan === key && (
                 <div className="absolute -top-2 -right-2">
-                  <div className={`bg-${plan.color}-500 text-white rounded-full p-1`}>
+                  <div className={`${
+                    plan.color === 'blue' ? 'bg-blue-500' :
+                    plan.color === 'purple' ? 'bg-purple-500' :
+                    'bg-yellow-500'
+                  } text-white rounded-full p-1`}>
                     <FaCheck className="w-4 h-4" />
                   </div>
                 </div>
               )}
 
               {/* Plan Icon */}
-              <div className={`w-16 h-16 rounded-2xl bg-${plan.color}-100 text-${plan.color}-600 flex items-center justify-center mb-6 mx-auto`}>
+              <div className={`w-16 h-16 rounded-2xl ${
+                plan.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                plan.color === 'purple' ? 'bg-purple-100 text-purple-600' :
+                'bg-yellow-100 text-yellow-600'
+              } flex items-center justify-center mb-6 mx-auto`}>
                 {plan.icon}
               </div>
 
@@ -137,7 +149,11 @@ const PlanSelection = () => {
               <ul className="space-y-3 mb-8">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-center">
-                    <FaCheck className={`w-4 h-4 text-${plan.color}-500 mr-3 flex-shrink-0`} />
+                    <FaCheck className={`w-4 h-4 ${
+                      plan.color === 'blue' ? 'text-blue-500' :
+                      plan.color === 'purple' ? 'text-purple-500' :
+                      'text-yellow-500'
+                    } mr-3 flex-shrink-0`} />
                     <span className="text-slate-700">{feature}</span>
                   </li>
                 ))}
@@ -147,7 +163,11 @@ const PlanSelection = () => {
               <button
                 className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
                   selectedPlan === key
-                    ? `bg-${plan.color}-500 text-white hover:bg-${plan.color}-600`
+                    ? `${
+                        plan.color === 'blue' ? 'bg-blue-500 hover:bg-blue-600' :
+                        plan.color === 'purple' ? 'bg-purple-500 hover:bg-purple-600' :
+                        'bg-yellow-500 hover:bg-yellow-600'
+                      } text-white`
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
               >
@@ -203,7 +223,7 @@ const PlanSelection = () => {
                   <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
                 </tr>
                 
-                {/* Business Features */}
+                {/* Personal Features */}
                 <tr className="border-b border-slate-100">
                   <td className="py-4 font-medium text-slate-700">Company Details</td>
                   <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>

@@ -26,15 +26,15 @@
 //       toPng(cardRef.current).then((dataUrl) => {
 //         const link = document.createElement("a");
 //         link.href = dataUrl;
-//         link.download = "business-card.png";
+//         link.download = "Personal-card.png";
 //         link.click();
 //       });
 //     }
 //   };
 
 //   const handleSave = () => {
-//     const existingCards = JSON.parse(localStorage.getItem("businessCards")) || [];
-//     localStorage.setItem("businessCards", JSON.stringify([...existingCards, cardData]));
+//     const existingCards = JSON.parse(localStorage.getItem("PersonalCards")) || [];
+//     localStorage.setItem("PersonalCards", JSON.stringify([...existingCards, cardData]));
 //     navigate("/");
 //   };
 
@@ -69,7 +69,7 @@
 
 //   return (
 //     <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-100 p-6">
-//       <h2 className="text-3xl font-bold mb-6 text-zinc-800">Preview Your Business Card</h2>
+//       <h2 className="text-3xl font-bold mb-6 text-zinc-800">Preview Your Personal Card</h2>
 
 //       <div ref={cardRef}>{renderCard()}</div>
 
@@ -178,15 +178,15 @@ const PreviewCard = () => {
       toPng(cardRef.current).then((dataUrl) => {
         const link = document.createElement("a");
         link.href = dataUrl;
-        link.download = "business-card.png";
+        link.download = "Personal-card.png";
         link.click();
       });
     }
   };
 
   const handleSave = () => {
-    const existingCards = JSON.parse(localStorage.getItem("businessCards")) || [];
-    localStorage.setItem("businessCards", JSON.stringify([...existingCards, cardData]));
+    const existingCards = JSON.parse(localStorage.getItem("PersonalCards")) || [];
+    localStorage.setItem("PersonalCards", JSON.stringify([...existingCards, cardData]));
     alert("Card saved to local storage!");
   };
 
@@ -254,7 +254,7 @@ const PreviewCard = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-100 p-6">
       <h2 className="text-3xl font-bold mb-6 text-zinc-800">
-        {urlSlug ? `${cardData?.firstName || ''}'s Business Card` : "Preview Your Business Card"}
+        {urlSlug ? `${cardData?.firstName || ''}'s Personal Card` : "Preview Your Personal Card"}
       </h2>
 
       <div ref={cardRef}>{renderCard()}</div>

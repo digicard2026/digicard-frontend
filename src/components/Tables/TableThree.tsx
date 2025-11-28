@@ -15,7 +15,7 @@ const packageData: Package[] = [
     status: 'Paid',
   },
   {
-    name: 'Business Package',
+    name: 'Personal Package',
     price: 99.0,
     invoiceDate: `Jan 13,2023`,
     status: 'Unpaid',

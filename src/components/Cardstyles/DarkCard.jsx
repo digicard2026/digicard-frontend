@@ -29,37 +29,76 @@ import {
   FaQrcode,
   FaShieldAlt,
   FaBook,
-  FaIdCard
+  FaIdCard,
+  FaImages, 
+  FaImage
 } from "react-icons/fa";
 import { FaXTwitter, FaYoutube } from "react-icons/fa6";
 
 const DarkCard = ({ cardData = {} }) => {
   console.log('🎯 DarkCard received data:', cardData);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentServiceSlide, setCurrentServiceSlide] = useState(0);
+  const [currentProductSlide, setCurrentProductSlide] = useState(0);
+  const [currentTestimonialSlide, setCurrentTestimonialSlide] = useState(0);
 
-  // 🔹 Inject global scroll CSS with Poppins font
+  // 🔹 Inject global scroll CSS with custom fonts
   useEffect(() => {
     const style = document.createElement("style");
     style.innerHTML = `
-      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+      @import url('https://fonts.cdnfonts.com/css/orgon');
+      @import url('https://fonts.cdnfonts.com/css/ggx89');
+      
       html, body {
         height: 100%;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
-        background-color: #f3f4f6;
-        font-family: 'Poppins', sans-serif;
+        font-family: 'GGX89', 'Outfit', sans-serif;
       }
       #root {
         min-height: 100%;
-        font-family: 'Poppins', sans-serif;
+        font-family: 'GGX89', 'Outfit', sans-serif;
       }
       * {
-        font-family: 'Poppins', sans-serif;
+        font-family: 'GGX89', 'Outfit', sans-serif;
+      }
+      .font-labrador {
+        font-family: 'Labrador', serif;
+      }
+      .font-ggx89 {
+        font-family: 'GGX89', sans-serif;
+      }
+      .font-BankGothicGT {
+        font-family: 'BankGothicGT', sans-serif;
+      }
+      .font-BankGothicGT {
+        font-family: 'Zona', sans-serif;
+      }
+      .font-BankGothicGT {
+        font-family: 'ZonaPro', sans-serif;
       }
     `;
     document.head.appendChild(style);
+
+    // Auto slide intervals
+    const serviceInterval = setInterval(() => {
+      setCurrentServiceSlide(prev => (prev + 1) % Math.max(1, profileData.services.length));
+    }, 4000);
+
+    const productInterval = setInterval(() => {
+      setCurrentProductSlide(prev => (prev + 1) % Math.max(1, profileData.products.length));
+    }, 4000);
+
+    const testimonialInterval = setInterval(() => {
+      setCurrentTestimonialSlide(prev => (prev + 1) % Math.max(1, profileData.testimonials.length));
+    }, 5000);
+
     return () => {
       document.head.removeChild(style);
+      clearInterval(serviceInterval);
+      clearInterval(productInterval);
+      clearInterval(testimonialInterval);
     };
   }, []);
 
@@ -67,10 +106,10 @@ const DarkCard = ({ cardData = {} }) => {
   const profileData = {
     // Personal Info
     prefix: cardData?.prefix || "",
-    firstName: cardData?.firstName || "Gungun",
+    firstName: cardData?.firstName ||"",
     lastName: cardData?.lastName || "",
     suffix: cardData?.suffix || "",
-    name: `${cardData?.prefix || ""} ${cardData?.firstName || "Gungun"} ${cardData?.lastName || ""}`.trim(),
+    name: `${cardData?.prefix || ""} ${cardData?.firstName || "Gungn"} ${cardData?.lastName || ""}`.trim(),
    
     // Professional Info
     jobTitle: cardData?.jobTitle || "Service Provider",
@@ -89,7 +128,7 @@ const DarkCard = ({ cardData = {} }) => {
     profileVideo: cardData?.profileVideo,
     titleLine: cardData?.titleLine || "",
     aboutText: cardData?.aboutText || "",
-    bio: cardData?.bio || "",
+    bio: cardData?.bio || "SDFGHJKERTYUICVBNMDFGHJKWERTYUIOSDFGHJKZXOV",
     servicesProducts: cardData?.servicesProducts || "",
     brandLabel: cardData?.brandLabel || "",
     catalog: cardData?.catalog || "",
@@ -117,23 +156,7 @@ const DarkCard = ({ cardData = {} }) => {
     // Premium Features
     testimonials: cardData?.testimonials || [],
     clientList: cardData?.clientList || [],
-    gallery: cardData?.gallery || [
-      {
-        url: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-        title: "Work Environment",
-        type: "image"
-      },
-      {
-        url: "https://images.unsplash.com/photo-1551836022-d5d88e9218df",
-        title: "Team Collaboration",
-        type: "image"
-      },
-      {
-        url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-        title: "Project Showcase",
-        type: "image"
-      }
-    ],
+    gallery: cardData?.gallery || [],
     downloads: cardData?.downloads || [],
     interactiveElements: cardData?.interactiveElements || [],
 
@@ -142,7 +165,7 @@ const DarkCard = ({ cardData = {} }) => {
     dynamicQRCode: cardData?.dynamicQRCode || null,
     nfcSettings: cardData?.nfcSettings || { isEnabled: false },
     productRangeDisplay: cardData?.productRangeDisplay || 'grid',
-    cardType: cardData?.cardType || 'business',
+    cardType: cardData?.cardType || 'Personal',
     design: cardData?.design || 'default',
     cardLayout: cardData?.cardLayout || 'standard',
     logoSize: cardData?.logoSize || 'medium',
@@ -220,18 +243,18 @@ const DarkCard = ({ cardData = {} }) => {
     switch (platform) {
       case 'facebook': return "text-blue-400";
       case 'instagram': return "text-pink-400";
-      case 'twitter': return "text-white";
+      case 'twitter': return "text-blue-300";
       case 'youtube': return "text-red-400";
       case 'linkedin': return "text-blue-400";
       case 'whatsapp': return "text-green-400";
-      case 'github': return "text-white";
+      case 'github': return "text-gray-300";
       case 'telegram': return "text-blue-400";
       case 'tiktok': return "text-white";
-      default: return "text-white";
+      default: return "text-gray-300";
     }
   };
 
-  const formatBusinessHours = (hours) => {
+  const formatPersonalHours = (hours) => {
     if (!hours) return "Mon - Sat. 10:00 - 20:00";
    
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -252,7 +275,7 @@ const DarkCard = ({ cardData = {} }) => {
     return Array.from({ length: 5 }, (_, i) => (
       <FaStar
         key={i}
-        className={`w-4 h-4 ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-500'}`}
+        className={`w-4 h-4 ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-400'}`}
       />
     ));
   };
@@ -280,738 +303,1003 @@ const DarkCard = ({ cardData = {} }) => {
     return profileData.gallery.slice(startIndex, startIndex + 3);
   };
 
+  // Get current service item (1 item per slide)
+  const getCurrentServiceItem = () => {
+    return profileData.services[currentServiceSlide];
+  };
+
+  // Get current product item (1 item per slide)
+  const getCurrentProductItem = () => {
+    return profileData.products[currentProductSlide];
+  };
+
+  // Get current testimonial item (1 item per slide)
+  const getCurrentTestimonialItem = () => {
+    return profileData.testimonials[currentTestimonialSlide];
+  };
+
   const totalSlides = Math.ceil(profileData.gallery.length / 3);
 
   return (
-    <div className="bg-gray-100 min-h-screen w-full flex justify-center py-6 overflow-y-auto font-['Poppins']">
-     <div
-  className="w-[420px] rounded-3xl shadow-xl overflow-hidden bg-cover bg-center bg-no-repeat font-['Poppins']"
-  style={{
-    backgroundImage: `url("https://wallpapers-max.b-cdn.net/wallpapers/17jul2023/hd/dark-purple-abstract-shapes-wallpaper.jpg")`
-  }}
->
- 
-        {/* Header gradient */}
-        <div className="bg-gradient-to-r from-pink-500 to-blue-500 h-45 rounded-b-3xl relative flex justify-center font-['Poppins']">
-          <div className="absolute bottom-[-60px] w-[85%] bg-white/40 backdrop-blur-lg rounded-2xl shadow-2xl flex flex-col items-center pt-16 pb-5 font-['Poppins'] transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 font-['Poppins']">
-              {profileData.profilePhoto ? (
-                <img
-                  src={profileData.profilePhoto}
-                  alt={profileData.name}
-                  className="w-20 h-20 rounded-full border-4 border-white object-cover shadow-lg transform transition-transform duration-300 hover:scale-110"
-                  onError={(e) => {
-                    console.log('Profile photo failed to load:', profileData.profilePhoto);
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-              ) : null}
-              {!profileData.profilePhoto && (
-                <div className="w-20 h-20 rounded-full border-4 border-white bg-gradient-to-r from-pink-500 to-blue-500 flex justify-center items-center text-white text-3xl font-bold shadow-lg transform transition-transform duration-300 hover:scale-110 font-['Poppins']">
-                  {profileData.name?.charAt(0) || "G"}
-                </div>
-              )}
-            </div>
- 
-            <h2 className="text-lg font-semibold text-black mt-1 font-['Poppins']">{profileData.name}</h2>
-            <p className="text-sm text-gray-800  text-black font-['Poppins']">{profileData.jobTitle}</p>
-            <p className="text-xs text-gray-700  text-black mt-1 font-['Poppins']">
-              Working time: {formatBusinessHours(profileData.workingHours)}
-            </p>
-          </div>
+    <div className="min-h-screen w-full flex justify-center items-center py-6 overflow-y-auto 
+      bg-gradient-to-b from-[#000000] via-[#0A0A2A] to-[#1E3A8A] rounded-[40px] relative">
+      
+      {/* Top Wave Pattern */}
+      <div className="absolute top-0 left-0 right-0 h-40 opacity-15">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full">
+          <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" 
+                fill="currentColor" className="text-blue-400"></path>
+        </svg>
+      </div>
+
+      {/* Bottom Wave Pattern */}
+      <div className="absolute bottom-0 left-0 right-0 h-40 opacity-15">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full">
+          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" 
+                fill="currentColor" className="text-blue-500"></path>
+        </svg>
+      </div>
+
+      {/* Subtle Pattern Overlay */}
+      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_20%,_rgba(59,130,246,0.3)_0%,_transparent_50%),_radial-gradient(circle_at_80%_80%,_rgba(37,99,235,0.2)_0%,_transparent_50%)] rounded-[40px]"></div>
+      
+      <div className="w-[450px] rounded-3xl overflow-hidden relative z-10">
+        {/* Company Logo & Name Section - Reduced */}
+{(profileData.companyLogo || profileData.companyName) && (
+  <div className="mx-4 transform transition-transform duration-300 hover:scale-[1.02] min-h-[60px] flex items-center mt-4">
+    <div className="flex flex-col items-center justify-center w-full space-y-2 ">
+      {profileData.companyLogo && (
+        <div className="flex items-center">
+          <img
+            src={profileData.companyLogo}
+            alt="Company Logo"
+            className="w-14 h-10 object-contain"
+            onError={(e) => {
+              console.log('Company logo failed to load:', profileData.companyLogo);
+              e.target.style.display = 'none';
+            }}
+          />
         </div>
- 
-        {/* Company Logo & Name Section - Box style */}
-        {(profileData.companyLogo || profileData.companyName) && (
-          <div className="mt-20 mb-2 px-10 w-87 h-20 font-['Poppins']">
-            <div className="bg-white/40 backdrop-blur-lg rounded-2xl p-2 shadow-2xl border border-white/30 font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-              <div className="flex justify-between items-center font-['Poppins']">
-                {profileData.companyLogo && (
-                  <div className="flex items-center font-['Poppins']">
-                    <img
-                      src={profileData.companyLogo}
-                      alt="Company Logo"
-                      className="w-8 h-8 object-contain"
-                      onError={(e) => {
-                        console.log('Company logo failed to load:', profileData.companyLogo);
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
-                {profileData.companyName && (
-                  <div className="flex-1 text-right pl-3 font-['Poppins']">
-                    <h3 className="text-md font-semibold text-black font-['Poppins']">{profileData.companyName}</h3>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
- 
-        {/* Buttons - Smaller and closer together */}
-        <div className="flex justify-center space-x-2 px-6 mb-4 font-['Poppins']">
-          {primaryPhone && profileData.enableOneTapCall && (
-            <button
-              onClick={() => handleContact("phone", primaryPhone.number)}
-              className="flex items-center bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-2 rounded-full shadow-lg hover:scale-105 transition flex-1 justify-center max-w-24 border-0 transform transition-transform duration-300 hover:shadow-xl font-['Poppins']"
-            >
-              <div className="bg-white/20 p-1.5 rounded-full text-white shadow mr-1 font-['Poppins']">
-                <FaPhoneAlt className="w-3 h-3" />
-              </div>
-              <span className="text-xs font-medium font-['Poppins']">Call</span>
-            </button>
-          )}
- 
-          {primaryPhone && profileData.enableWhatsApp && (
-            <button
-              onClick={() => handleContact("whatsapp", primaryPhone.number)}
-              className="flex items-center bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-2 rounded-full shadow-lg hover:scale-105 transition flex-1 justify-center max-w-24 border-0 transform transition-transform duration-300 hover:shadow-xl font-['Poppins']"
-            >
-              <div className="bg-white/20 p-1.5 rounded-full text-white shadow mr-1 font-['Poppins']">
-                <FaWhatsapp className="w-3 h-3" />
-              </div>
-              <span className="text-xs font-medium font-['Poppins']">WhatsApp</span>
-            </button>
-          )}
- 
-          {profileData.email && profileData.enableEmail && (
-            <button
-              onClick={() => handleContact("email", profileData.email)}
-              className="flex items-center bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-2 rounded-full shadow-lg hover:scale-105 transition flex-1 justify-center max-w-24 border-0 transform transition-transform duration-300 hover:shadow-xl font-['Poppins']"
-            >
-              <div className="bg-white/20 p-1.5 rounded-full text-white shadow mr-1 font-['Poppins']">
-                <FaEnvelope className="w-3 h-3" />
-              </div>
-              <span className="text-xs font-medium font-['Poppins']">Email</span>
-            </button>
-          )}
+      )}
+      {profileData.companyName && (
+        <div className="text-center ">
+          <h3 className="text-sm text-white/70 text-center break-words w-full">
+            {profileData.companyName}
+          </h3>
         </div>
+      )}
+    </div>
+  </div>
+)}
+        {/* Profile Section - No Box, White Text */}
+        <div className="relative h-48 rounded-b-3xl flex flex-col items-center justify-center pt-16 pb-8 mt-26 ">
+          {/* Profile Photo */}
+          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+            {profileData.profilePhoto ? (
+              <img
+                src={profileData.profilePhoto}
+                alt={profileData.name}
+                className="w-29 h-29 rounded-full border-2 border-white/90 object-cover shadow-lg"
+                onError={(e) => {
+                  console.log('Profile photo failed to load:', profileData.profilePhoto);
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            {!profileData.profilePhoto && (
+              <div className="w-20 h-20 rounded-full border-4 border-white/20 bg-gradient-to-r from-blue-500 to-purple-500 flex justify-center items-center text-white text-2xl font-bold shadow-lg font-labrador">
+                {profileData.name?.charAt(0) || "G"}
+              </div>
+            )}
+          </div>
+
+          {/* Name and Designation - White Text, Labrador Font */}
+          <h2 className="text-4xl font-medium text-white mt-12 text-center font-orgon break-words w-full mx-auto px-3" style={{maxWidth: '380px'}}>
+  {profileData.name}
+</h2>
+          <p className="text-lg text-white/90 font-[300] text-center font-orgon break-words w-full px-4 mt-0 mb-2">
+  {profileData.jobTitle}
+</p>
+        </div>
+
+        {/* Main Content Area */}
+      <div className="pt-4 pb-6 px-5 space-y-3">
+
+
+
+{/* Title Line / Recognition - Neon Style */}
+{profileData.titleLine && (
+  <div
+    className="relative rounded-full w-80 h-13 px-6 py-3 flex items-center justify-center mt-0 ml-12"
+    style={{
+      fontFamily: "Zona Pro, sans-serif",
+    }}
+  >
+    {/* Neon Glow Border */}
+    <div className="absolute inset-0 rounded-full w-80 h-13 border-2 border-[white] "></div>
+
+    {/* Inner Content */}
+    <div className="relative text-center z-10">
+      <FaCrown className="w-5 h-5 text-yellow-300 mx-auto mb-1 drop-shadow-[0_0_6px_#ffd700]" />
+      <p className="text-white font-semibold text-sm tracking-wide px-3 ">
+        {profileData.titleLine}
+      </p>
+    </div>
+  </div>
+)}
+
+
+{/* About Section - Cleaned & Centered */}
+{profileData.aboutText && (
+  <div className="text-center mt-1">
+    <h3 className="text-base font-semibold text-white flex justify-center items-center mb-2"
+        style={{ fontFamily: "Zona, sans-serif" }}>
+      <FaUserFriends className="w-4 h-4 text-blue-400 mr-2" />
+      About
+    </h3>
+
+    <p className="text-white/90 text-sm leading-relaxed mb-4"
+       style={{ fontFamily: "Zona Pro, sans-serif" }}>
+      {profileData.aboutText}
+    </p>
+  </div>
+)}
+
+
+{/* Buttons - Redesigned */}
+<div className="flex flex-col items-center space-y-4">
+
+  {primaryPhone && profileData.enableOneTapCall && (
+    <button
+      onClick={() => handleContact("phone", primaryPhone.number)}
+      className="
+        flex items-center justify-center
+        bg-white text-[#0A1A4B]
+        px-6 py-3
+        rounded-full w-90 h-11
+        shadow-sm hover:shadow-md
+        border border-gray-200
+        transition-all duration-300
+        font-[BankGothicGT] tracking-wide
+      "
+    >
+      <FaPhoneAlt className="w-5 h-5 mr-3 text-[#0A1A4B]" />
+      <span className="text-base font-medium">Phone</span>
+    </button>
+  )}
+
+  {profileData.email && profileData.enableEmail && (
+    <button
+      onClick={() => handleContact("email", profileData.email)}
+      className="
+        flex items-center justify-center
+        bg-white text-[#0A1A4B]
+        px-6 py-3
+        rounded-full w-90 h-11
+        shadow-sm hover:shadow-md
+        border border-gray-200
+        transition-all duration-300
+        font-[BankGothicGT] tracking-wide
+      "
+    >
+      <FaEnvelope className="w-5 h-5 mr-3 text-[#0A1A4B]" />
+      <span className="text-base font-medium">Email</span>
+    </button>
+  )}
+
+  {primaryPhone && profileData.enableWhatsApp && (
+    <button
+      onClick={() => handleContact("whatsapp", primaryPhone.number)}
+      className="
+        flex items-center justify-center
+        bg-white text-[#0A1A4B]
+        px-6 py-3
+        rounded-full w-90 h-11
+        shadow-sm hover:shadow-md
+        border border-gray-200
+        transition-all duration-300
+        font-[BankGothicGT] tracking-wide 
+      "
+    >
+      <FaWhatsapp className="w-5 h-5 mr-2 text-[#0A1A4B] ml-7 " />
+      <span className="text-base font-medium">Whatsaap</span>
+    </button>
+  )}
+
+{/* Websites as Buttons */}
+{profileData.websites.map((website, index) => (
+  <button
+    key={index}
+    onClick={() => handleContact("website", website.url)}
+    className="
+      flex items-center justify-center
+      bg-white text-[#0A1A4B]
+      px-6 py-3
+      rounded-full w-90 h-11
+      shadow-sm hover:shadow-md
+      border border-gray-200
+      transition-all duration-300
+      font-[BankGothicGT] tracking-wide 
+      mb-3
+    "
+  >
+    <FaGlobe className="w-5 h-5 mr-2 text-[#0A1A4B] ml-3" />
+    <span className="text-base font-medium">Website</span>
+  </button>
+))}
+</div>
+{/* Social Icons */}
+{profileData.socialLinks.filter(link => link.url).length > 0 && (
+  <div className="flex justify-center space-x-4 mb-4">
+    {profileData.socialLinks
+      .filter(link => link.url)
+      .map((social, index) => (
+        <div
+          key={index}
+          onClick={() => handleContact("default", social.url)}
+          className="bg-white hover:bg-blue-100 text-[#0A1A4B] shadow-md rounded-full p-1 border border-blue-900 hover:shadow-lg transition-all duration-300 cursor-pointer w-9 h-9 flex items-center justify-center"
+        >
+          {getSocialIcon(social.platform)}
+        </div>
+      ))}
+  </div>
+)}
+
  
-        {/* Social Icons */}
-        {profileData.socialLinks.filter(link => link.url).length > 0 ? (
-          <div className="flex justify-center space-x-4 mt-2 pb-4 font-['Poppins']">
-            {profileData.socialLinks.filter(link => link.url).map((social, index) => (
-              <div
-                key={index}
-                onClick={() => handleContact("default", social.url)}
-                className={`bg-white/20 backdrop-blur-lg shadow-lg rounded-full p-2 ${getSocialColor(social.platform)} hover:scale-110 transition cursor-pointer border border-white/30 transform transition-transform duration-300 hover:shadow-xl font-['Poppins']`}
+        
+
+        {/* Profile Video Section - Reduced */}
+       {profileData.profileVideo?.url && (
+  <div className="text-center mt-8">
+
+    {/* Heading exactly like About */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-2 mt-10"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaVideo className="w-4 h-4 text-blue-400 mr-2" />
+      Introduction Video
+    </h3>
+
+    {/* Video container */}
+    <div className="relative rounded-lg overflow-hidden h-40 bg-white/5 flex items-center justify-center">
+      <video
+        src={profileData.profileVideo.url}
+        className="w-full h-full object-contain"
+        controls
+        poster={profileData.profileVideo.thumbnail}
+      />
+
+      {/* Title with Zona Pro font */}
+      {profileData.profileVideo.title && (
+        <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2">
+          <p
+            className="text-white/90 text-sm leading-relaxed"
+            style={{ fontFamily: "Zona Pro, sans-serif" }}
+          >
+            {profileData.profileVideo.title}
+          </p>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
+ 
+     
+
+   {/* Organization Heading */}
+{(profileData.foundedName || profileData.organization) && (
+  <div className="text-center mb-5 mt-4">
+     <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-1 mt-10"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaBuilding className="w-4 h-4 text-blue-400 mr-2" />
+     Organization Details
+    </h3>
+  </div>
+)}
+
+{/* Organization Box with popup effect */}
+{(profileData.foundedName || profileData.organization) && (
+  <div
+    className="rounded-xl p-3 border border-white shadow-lg text-center transform transition duration-300 ease-out hover:scale-105 hover:shadow-2xl hover:opacity-100 opacity-95 "
+  >
+    {/* Founded Name */}
+    {profileData.foundedName && (
+    <p
+            className="text-white text-sm leading-relaxed"
+            style={{ fontFamily: "Zona Pro, sans-serif" }}
+          >
+        <span >Founded Name:</span> {profileData.foundedName}
+      </p>
+    )}
+
+    {/* Organization */}
+    {profileData.organization && (
+     <p
+            className="text-white text-sm leading-relaxed"
+            style={{ fontFamily: "Zona Pro, sans-serif" }}
+          >
+        <span >Organization:</span> {profileData.organization}
+      </p>
+    )}
+  </div>
+)}
+{/* Brand Label - Neon / Highlight Style */}
+{profileData.brandLabel && (
+  <div className="text-center mt-19 mb-2"> {/* Added larger top margin */}
+    {/* Brand Label Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-1"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaGem className="w-4 h-4 text-blue-400 mr-2" />
+      Brand Label
+    </h3>
+
+    {/* Neon / Highlight Style with popup effect */}
+    <div
+      className="relative rounded-xl w-80 h-14 flex items-center justify-center mt-2 mx-auto transform transition-transform duration-300 hover:scale-105"
+      style={{ fontFamily: "Zona Pro, sans-serif" }}
+    >
+      {/* Glow Border */}
+      <div className="absolute inset-0 rounded-full border-2 border-white"></div>
+
+      {/* Inner Content */}
+      <div className="relative text-center z-10 flex items-center space-x-2">
+        <p className="text-white font-semibold text-sm tracking-wide">
+          {profileData.brandLabel}
+        </p>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+
+
+ 
+{/* Gallery - Clean Version */}
+{profileData.gallery.length > 0 && (
+  <div className="p-3 text-center space-y-3">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-2 mt-10"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaImage className="w-4 h-4 text-blue-400 mr-2" />
+      Gallery
+    </h3>
+
+    <div className="space-y-2">
+      {/* Top Image */}
+      {getCurrentSlideImages()[0] && (
+        <div className="relative rounded-lg overflow-hidden h-40 sm:h-48 transform transition-transform duration-300 hover:scale-105">
+          <img
+            src={getCurrentSlideImages()[0].url}
+            alt={getCurrentSlideImages()[0].title}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              console.log('Gallery image failed to load:', getCurrentSlideImages()[0].url);
+              e.target.style.display = 'none';
+            }}
+          />
+          {getCurrentSlideImages()[0].title && (
+            <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-1">
+              <p
+                className="text-xs font-medium break-words"
+                style={{ fontFamily: "Zona Pro, sans-serif" }}
               >
-                {getSocialIcon(social.platform)}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex justify-center space-x-4 mt-2 pb-4 font-['Poppins']">
-            <div className="bg-white/20 backdrop-blur-lg shadow-lg rounded-full p-2 text-white hover:scale-110 transition border border-white/30 transform transition-transform duration-300 hover:shadow-xl font-['Poppins']">
-              <FaFacebookF />
-            </div>
-            <div className="bg-white/20 backdrop-blur-lg shadow-lg rounded-full p-2 text-white hover:scale-110 transition border border-white/30 transform transition-transform duration-300 hover:shadow-xl font-['Poppins']">
-              <FaMapMarkerAlt />
-            </div>
-            <div className="bg-white/20 backdrop-blur-lg shadow-lg rounded-full p-2 text-white hover:scale-110 transition border border-white/30 transform transition-transform duration-300 hover:shadow-xl font-['Poppins']">
-              <FaInstagram />
-            </div>
-          </div>
-        )}
- 
-        {/* Title Line / Recognition */}
-        {profileData.titleLine && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <FaCrown className="w-5 h-5 text-yellow-400 mx-auto mb-1 font-['Poppins']" />
-              <p className="text-black font-semibold text-sm text-center font-['Poppins']">{profileData.titleLine}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Profile Video Section */}
-        {profileData.profileVideo?.url && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-2 flex items-center font-['Poppins']">
-                <FaVideo className="w-4 h-4 text-black mr-2" />
-                Introduction Video
-              </h3>
-              <div className="relative rounded-xl overflow-hidden h-48 bg-black/50 font-['Poppins']">
-                <video
-                  src={profileData.profileVideo.url}
-                  className="w-full h-full object-cover"
-                  controls
-                  poster={profileData.profileVideo.thumbnail}
-                />
-                {profileData.profileVideo.title && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 font-['Poppins']">
-                    <p className="text-sm font-medium font-['Poppins']">{profileData.profileVideo.title}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
- 
-        {/* About Section */}
-        {profileData.aboutText && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/50 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-2 flex items-center font-['Poppins']">
-                <FaUserFriends className="w-4 h-4 text-black mr-2" />
-                About
-              </h3>
-              <p className="text-black text-sm leading-relaxed font-['Poppins']">{profileData.aboutText}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Founded Name & Organization */}
-        {(profileData.foundedName || profileData.organization) && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-2 flex items-center font-['Poppins']">
-                <FaBuilding className="w-4 h-4 text-black mr-2" />
-                Organization Details
-              </h3>
-              {profileData.foundedName && (
-                <p className="text-black text-sm mb-2 font-['Poppins']">
-                  <span className="font-medium font-['Poppins']">Founded Name:</span> {profileData.foundedName}
-                </p>
-              )}
-              {profileData.organization && (
-                <p className="text-black text-sm font-['Poppins']">
-                  <span className="font-medium font-['Poppins']">Organization:</span> {profileData.organization}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
- 
-        {/* Gallery with original format (1 top + 2 bottom) */}
-        {profileData.gallery.length > 0 && (
-          <div className="px-4 pb-4 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              {/* Gallery Heading */}
-              <h3 className="text-lg font-semibold text-black mb-3 text-center font-['Poppins']">
-                Gallery
-              </h3>
-             
-              {/* Original Gallery Format: 1 image top + 2 images bottom */}
-              <div className="space-y-2 font-['Poppins']">
-                {/* Top Image */}
-                {getCurrentSlideImages()[0] && (
-                  <div className="relative rounded-xl overflow-hidden h-40 font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-                    <img
-                      src={getCurrentSlideImages()[0].url}
-                      alt={getCurrentSlideImages()[0].title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        console.log('Gallery image failed to load:', getCurrentSlideImages()[0].url);
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                    {getCurrentSlideImages()[0].title && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 font-['Poppins']">
-                        <p className="text-sm font-medium font-['Poppins']">{getCurrentSlideImages()[0].title}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-               
-                {/* Bottom 2 Images */}
-                <div className="grid grid-cols-2 gap-2 font-['Poppins']">
-                  {getCurrentSlideImages().slice(1, 3).map((item, index) => (
-                    <div key={index} className="relative rounded-xl overflow-hidden h-32 font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-                      <img
-                        src={item.url}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.log('Gallery image failed to load:', item.url);
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                      {item.title && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 font-['Poppins']">
-                          <p className="text-xs font-medium font-['Poppins']">{item.title}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
- 
-              {/* Navigation Arrows - Only show if more than 3 images */}
-              {profileData.gallery.length > 3 && (
-                <div className="flex justify-center items-center space-x-4 mt-3 font-['Poppins']">
-                  <button
-                    onClick={prevSlide}
-                    className="bg-white/30 backdrop-blur-lg hover:bg-white/40 text-black rounded-full p-2 shadow-lg transition-all border border-white/40 transform transition-transform duration-300 hover:scale-110 font-['Poppins']"
-                  >
-                    <FaChevronLeft className="w-3 h-3" />
-                  </button>
-                 
-                  {/* Slide Indicators */}
-                  <div className="flex space-x-1 font-['Poppins']">
-                    {Array.from({ length: totalSlides }, (_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentSlide(index)}
-                        className={`w-1.5 h-1.5 rounded-full transition-all transform transition-transform duration-300 hover:scale-110 ${
-                          index === currentSlide ? 'bg-black' : 'bg-black/50'
-                        }`}
-                      />
-                    ))}
-                  </div>
- 
-                  <button
-                    onClick={nextSlide}
-                    className="bg-white/30 backdrop-blur-lg hover:bg-white/40 text-black rounded-full p-2 shadow-lg transition-all border border-white/40 transform transition-transform duration-300 hover:scale-110 font-['Poppins']"
-                  >
-                    <FaChevronRight className="w-3 h-3" />
-                  </button>
-                </div>
-              )}
- 
-              {/* Image Counter */}
-              {profileData.gallery.length > 3 && (
-                <div className="text-center mt-2 font-['Poppins']">
-                  <span className="text-xs text-black/80 font-['Poppins']">
-                    {currentSlide + 1} / {totalSlides}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
- 
-        {/* Bio Section */}
-        {profileData.bio && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/50 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-2 flex items-center font-['Poppins']">
-                <FaBriefcase className="w-4 h-4 text-black mr-2" />
-                Professional Bio
-              </h3>
-              <p className="text-black text-sm leading-relaxed font-['Poppins']">{profileData.bio}</p>
-            </div>
-          </div>
-        )}
- 
-        {/* Services & Products Overview */}
-        {profileData.servicesProducts && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/50 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-2 flex items-center font-['Poppins']">
-                <FaStore className="w-4 h-4 text-black mr-2" />
-                Services & Products
-              </h3>
-              <p className="text-black text-sm leading-relaxed font-['Poppins']">{profileData.servicesProducts}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Brand Label */}
-        {profileData.brandLabel && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-2 flex items-center font-['Poppins']">
-                <FaGem className="w-4 h-4 text-black mr-2" />
-                Brand Label
-              </h3>
-              <p className="text-black text-sm leading-relaxed font-['Poppins']">{profileData.brandLabel}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Catalog */}
-        {profileData.catalog && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-2 flex items-center font-['Poppins']">
-                <FaBook className="w-4 h-4 text-black mr-2" />
-                Catalog
-              </h3>
-              <p className="text-black text-sm leading-relaxed font-['Poppins']">{profileData.catalog}</p>
-            </div>
-          </div>
-        )}
- 
-        {/* Services */}
-        {profileData.services.length > 0 && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 flex items-center font-['Poppins']">
-                <FaShoppingCart className="w-4 h-4 text-black mr-2" />
-                Services
-              </h3>
-              <div className="space-y-3 font-['Poppins']">
-                {profileData.services.slice(0, 5).map((service, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-white/20 rounded-lg shadow-lg border border-white/30 font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-                    <div className="flex items-center space-x-3 font-['Poppins']">
-                      {service.image && (
-                        <img
-                          src={service.image}
-                          alt={service.name}
-                          className="w-8 h-8 rounded-lg object-cover"
-                          onError={(e) => {
-                            console.log('Service image failed to load:', service.image);
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                      )}
-                      <div>
-                        <span className="text-black text-sm font-medium block font-['Poppins']">{service.name}</span>
-                        {service.description && (
-                          <span className="text-black/80 text-xs block font-['Poppins']">{service.description}</span>
-                        )}
-                        {service.duration && (
-                          <span className="text-black/60 text-xs block font-['Poppins']">{service.duration}</span>
-                        )}
-                      </div>
-                    </div>
-                    {service.price && (
-                      <span className="text-black text-sm font-bold whitespace-nowrap font-['Poppins']">
-                        {service.price} {service.currency}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
- 
-        {/* Products */}
-        {profileData.products.length > 0 && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 flex items-center font-['Poppins']">
-                <FaGem className="w-4 h-4 text-black mr-2" />
-                Products
-              </h3>
-              <div className="space-y-3 font-['Poppins']">
-                {profileData.products.slice(0, 5).map((product, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-white/20 rounded-lg shadow-lg border border-white/30 font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-                    <div className="flex items-center space-x-3 font-['Poppins']">
-                      {product.image && (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-8 h-8 rounded-lg object-cover"
-                          onError={(e) => {
-                            console.log('Product image failed to load:', product.image);
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                      )}
-                      <div>
-                        <span className="text-black text-sm font-medium block font-['Poppins']">{product.name}</span>
-                        {product.description && (
-                          <span className="text-black/80 text-xs block font-['Poppins']">{product.description}</span>
-                        )}
-                        {!product.inStock && (
-                          <span className="text-red-600 text-xs font-medium font-['Poppins']">Out of Stock</span>
-                        )}
-                      </div>
-                    </div>
-                    {product.price && (
-                      <span className="text-black text-sm font-bold whitespace-nowrap font-['Poppins']">
-                        {product.price} {product.currency}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Testimonials */}
-        {profileData.testimonials.length > 0 && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 flex items-center font-['Poppins']">
-                <FaStar className="w-4 h-4 text-black mr-2" />
-                Testimonials
-              </h3>
-              <div className="space-y-4 font-['Poppins']">
-                {profileData.testimonials.slice(0, 3).map((testimonial, index) => (
-                  <div key={index} className="bg-white/20 rounded-lg p-4 shadow-lg border border-white/30 font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-                    <div className="flex items-center justify-between mb-2 font-['Poppins']">
-                      <span className="font-semibold text-black text-sm font-['Poppins']">{testimonial.clientName}</span>
-                      {testimonial.rating && (
-                        <div className="flex space-x-1 font-['Poppins']">
-                          {renderStars(testimonial.rating)}
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-black/90 text-sm italic font-['Poppins']">"{testimonial.testimonial}"</p>
-                    {testimonial.company && (
-                      <p className="text-black/70 text-xs mt-2 font-['Poppins']">{testimonial.company}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Client List */}
-        {profileData.clientList.length > 0 && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/60 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 flex items-center font-['Poppins']">
-                <FaUserFriends className="w-4 h-4 text-black mr-2" />
-                Our Clients
-              </h3>
-              <div className="flex flex-wrap gap-2 font-['Poppins']">
-                {profileData.clientList.slice(0, 8).map((client, index) => (
-                  <span key={index} className="bg-white/30 text-black px-3 py-1 rounded-full text-xs border border-white/40 font-['Poppins'] transform transition-transform duration-300 hover:scale-110">
-                    {client}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Downloads */}
-        {profileData.downloads.length > 0 && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 flex items-center font-['Poppins']">
-                <FaDownload className="w-4 h-4 text-black mr-2" />
-                Downloads
-              </h3>
-              <div className="space-y-2 font-['Poppins']">
-                {profileData.downloads.map((download, index) => (
-                  <div 
-                    key={index}
-                    onClick={() => handleContact("default", download.fileUrl)}
-                    className="flex items-center justify-between p-3 bg-white/20 rounded-lg shadow-lg border border-white/30 hover:bg-white/30 cursor-pointer transition-colors font-['Poppins'] transform transition-transform duration-300 hover:scale-105"
-                  >
-                    <div className="flex items-center space-x-3 font-['Poppins']">
-                      <FaFilePdf className="w-4 h-4 text-black" />
-                      <div>
-                        <span className="text-black text-sm font-medium block font-['Poppins']">{download.name}</span>
-                        {download.fileSize && (
-                          <span className="text-black/80 text-xs font-['Poppins']">{download.fileSize}</span>
-                        )}
-                      </div>
-                    </div>
-                    <FaDownload className="w-4 h-4 text-black/70" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Interactive Elements */}
-        {profileData.interactiveElements.length > 0 && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/60 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 flex items-center font-['Poppins']">
-                <FaHeadset className="w-4 h-4 text-black mr-2" />
-                Quick Actions
-              </h3>
-              <div className="grid grid-cols-2 gap-3 font-['Poppins']">
-                {profileData.interactiveElements
-                  .filter(element => element.isActive)
-                  .map((element, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        // Handle interactive element action based on type
-                        switch (element.type) {
-                          case 'call-to-action':
-                            if (primaryPhone) handleContact("phone", primaryPhone.number);
-                            break;
-                          case 'live-chat':
-                            if (primaryPhone) handleContact("whatsapp", primaryPhone.number);
-                            break;
-                          case 'contact-form':
-                            if (profileData.email) handleContact("email", profileData.email);
-                            break;
-                          default:
-                            // Handle other interactive elements
-                            break;
-                        }
-                      }}
-                      className="flex flex-col items-center justify-center p-3 bg-white/20 rounded-xl shadow-lg border border-white/30 hover:bg-white/30 transition-colors font-['Poppins'] transform transition-transform duration-300 hover:scale-105"
-                    >
-                      <div className="text-black mb-1 font-['Poppins']">
-                        {getInteractiveElementIcon(element.type)}
-                      </div>
-                      <span className="text-xs text-black font-medium text-center font-['Poppins']">
-                        {element.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </span>
-                    </button>
-                  ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* QR Code */}
-        {profileData.dynamicQRCode?.targetUrl && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 flex items-center font-['Poppins']">
-                <FaQrcode className="w-4 h-4 text-black mr-2" />
-                QR Code
-              </h3>
-              <div className="flex justify-center font-['Poppins']">
-                <div className="bg-white p-4 rounded-lg shadow-lg font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-                  {profileData.dynamicQRCode.qrImage ? (
-                    <img 
-                      src={profileData.dynamicQRCode.qrImage} 
-                      alt="QR Code" 
-                      className="w-32 h-32"
-                    />
-                  ) : (
-                    <div className="w-32 h-32 bg-gray-200 flex items-center justify-center text-gray-400 font-['Poppins']">
-                      QR Code
-                    </div>
-                  )}
-                </div>
-              </div>
-              <p className="text-center text-xs text-black/80 mt-2 font-['Poppins']">
-                Scan to save contact
+                {getCurrentSlideImages()[0].title}
               </p>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      )}
 
-        {/* NFC Badge */}
-        {profileData.nfcSettings?.isEnabled && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 flex items-center font-['Poppins']">
-                <FaShieldAlt className="w-4 h-4 text-black mr-2" />
-                NFC Enabled
-              </h3>
-              <div className="flex items-center justify-center space-x-2 text-black font-['Poppins']">
-                <FaIdCard className="w-5 h-5" />
-                <span className="text-sm font-medium font-['Poppins']">Tap to Connect</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Custom Fields */}
-        {profileData.customFields.length > 0 && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/60 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 text-center font-['Poppins']">
-                Additional Information
-              </h3>
-              <div className="space-y-2 font-['Poppins']">
-                {profileData.customFields.map((field, index) => (
-                  <div key={index} className="flex justify-between p-2 bg-white/20 rounded-lg font-['Poppins'] transform transition-transform duration-300 hover:scale-105">
-                    <span className="text-black text-sm font-medium font-['Poppins']">{field.label}:</span>
-                    <span className="text-black text-sm font-['Poppins']">{field.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
- 
-        {/* Contact Information - MOVED TO LAST */}
-        {(profileData.email || profileData.phones.length > 0 || profileData.websites.length > 0) && (
-          <div className="px-6 pb-4 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 text-center font-['Poppins']">Contact Info</h3>
- 
-              {profileData.email && profileData.enableEmail && (
-                <div
-                  onClick={() => handleContact("email", profileData.email)}
-                  className="flex items-center justify-between p-2 rounded-lg hover:bg-white/20 cursor-pointer transition-colors mb-2 font-['Poppins'] transform transition-transform duration-300 hover:scale-105"
+      {/* Bottom 2 Images */}
+      <div className="grid grid-cols-2 gap-2">
+        {getCurrentSlideImages().slice(1, 3).map((item, index) => (
+          <div
+            key={index}
+            className="relative rounded-lg overflow-hidden h-28 sm:h-32 transform transition-transform duration-300 hover:scale-105"
+          >
+            <img
+              src={item.url}
+              alt={item.title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.log('Gallery image failed to load:', item.url);
+                e.target.style.display = 'none';
+              }}
+            />
+            {item.title && (
+              <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-1">
+                <p
+                  className="text-xs font-medium break-words"
+                  style={{ fontFamily: "Zona Pro, sans-serif" }}
                 >
-                  <div className="flex items-center font-['Poppins']">
-                    <div className="w-7 h-7 bg-white/30 rounded-full flex items-center justify-center mr-3 font-['Poppins']">
-                      <FaEnvelope className="w-3 h-3 text-black" />
-                    </div>
-                    <span className="text-black text-sm font-['Poppins']">Email</span>
-                  </div>
-                  <span className="text-black text-sm font-medium truncate ml-2 font-['Poppins']">{profileData.email}</span>
+                  {item.title}
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Navigation Arrows */}
+    {profileData.gallery.length > 3 && (
+      <div className="flex justify-center items-center space-x-3 mt-2">
+        <button
+          onClick={prevSlide}
+          className="bg-white/10 hover:bg-white/20 text-white rounded-full p-1 shadow transform transition-transform duration-300 hover:scale-110 w-6 h-6 flex items-center justify-center"
+        >
+          <FaChevronLeft className="w-2 h-2" />
+        </button>
+
+        {/* Slide Indicators */}
+        <div className="flex space-x-1">
+          {Array.from({ length: totalSlides }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-2 h-2 rounded-full transition-all transform duration-300 hover:scale-110 ${
+                index === currentSlide ? 'bg-blue-400' : 'bg-gray-400'
+              }`}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={nextSlide}
+          className="bg-white/10 hover:bg-white/20 text-white rounded-full p-1 shadow transform transition-transform duration-300 hover:scale-110 w-6 h-6 flex items-center justify-center"
+        >
+          <FaChevronRight className="w-2 h-2" />
+        </button>
+      </div>
+    )}
+  </div>
+)}
+
+ 
+       {/* Professional Bio */}
+{profileData.bio && (
+  <div className="text-center mt-2 mb-4">
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-2"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaBriefcase className="w-4 h-4 text-blue-400 mr-2" />
+      Professional Bio
+    </h3>
+    <p
+      className="text-white/90 text-sm leading-relaxed break-words"
+      style={{ fontFamily: "Zona Pro, sans-serif" }}
+    >
+      {profileData.bio}
+    </p>
+  </div>
+)}
+
+
+{profileData.services.length > 0 && (
+  <div className="text-center mt-4">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-2 mt-12"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaShoppingCart className="w-4 h-4 text-blue-200 mr-2" />
+      Services
+    </h3>
+
+    {/* Auto-slider Container */}
+    <div className="relative overflow-hidden max-w-xl mx-auto  bg-blue border-1 ">
+      <div className="flex flex-col space-y-3">
+        {getCurrentServiceItem() && (
+          <div className="flex flex-col p-3 rounded-lg bg-black/8 min-h-[120px] w-90 ml-8">
+            {/* Description/About at top */}
+            {getCurrentServiceItem().description && (
+              <div className="text-left mb-3">
+                <span
+                  className="text-white/90 text-xs block break-words"
+                  style={{ fontFamily: "Zona Pro, sans-serif" }}
+                >
+                  {getCurrentServiceItem().description}
+                </span>
+              </div>
+            )}
+            
+            {/* Image in middle */}
+            <div className="flex justify-center mb-3">
+              {getCurrentServiceItem().image && (
+                <img
+                  src={getCurrentServiceItem().image}
+                  alt={getCurrentServiceItem().name}
+                  className="w-60 h-28 rounded object-cover"
+                  onError={(e) => {
+                    console.log('Service image failed to load:', getCurrentServiceItem().image);
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Name and Price at bottom */}
+            <div className="flex items-center justify-between">
+              <span
+                className="text-white text-sm font-medium block break-words"
+                style={{ fontFamily: "Zona Pro, sans-serif" }}
+              >
+                {getCurrentServiceItem().name}
+              </span>
+              
+              {getCurrentServiceItem().price && (
+                <span
+                  className="text-white text-sm font-bold whitespace-nowrap flex-shrink-0 ml-3"
+                  style={{ fontFamily: "Zona Pro, sans-serif" }}
+                >
+                  {getCurrentServiceItem().price} {getCurrentServiceItem().currency}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* Service Slide Indicators */}
+    {profileData.services.length > 1 && (
+      <div className="flex justify-center space-x-1 mt-3">
+        {Array.from({ length: profileData.services.length }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentServiceSlide(index)}
+            className={`w-2 h-2 rounded-full transition-all transform duration-300 ${
+              index === currentServiceSlide ? 'bg-blue-400' : 'bg-gray-400'
+            }`}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+
+{profileData.products.length > 0 && (
+  <div className="text-center mt-4">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-3 mt-12"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaGem className="w-4 h-4 text-blue-400 mr-2 " />
+      Products
+    </h3>
+
+    {/* Auto-slider Container */}
+    <div className="relative overflow-hidden max-w-xl mx-auto">
+      <div className="flex flex-col space-y-3">
+        {getCurrentProductItem() && (
+         <div className="flex flex-col p-3 rounded-lg  min-h-[120px] w-90 ml-8">
+            {/* Description/About at top */}
+            {getCurrentProductItem().description && (
+              <div className="text-left mb-3">
+                <span
+                  className="text-white text-xs block break-words"
+                  style={{ fontFamily: "Zona Pro, sans-serif" }}
+                >
+                  {getCurrentProductItem().description}
+                </span>
+              </div>
+            )}
+            
+            {/* Image in middle */}
+            <div className="flex justify-center mb-3">
+              {getCurrentProductItem().image && (
+                <img
+                  src={getCurrentProductItem().image}
+                  alt={getCurrentProductItem().name}
+                  className="w-60 h-28 rounded object-cover"
+                  onError={(e) => {
+                    console.log('Product image failed to load:', getCurrentProductItem().image);
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Name and Price at bottom */}
+            <div className="flex items-center justify-between">
+              <span
+                className="text-white text-sm font-medium block break-words"
+                style={{ fontFamily: "Zona Pro, sans-serif" }}
+              >
+                {getCurrentProductItem().name}
+              </span>
+              
+              {getCurrentProductItem().price && (
+                <span
+                  className="text-white text-sm font-bold whitespace-nowrap flex-shrink-0 ml-3"
+                  style={{ fontFamily: "Zona Pro, sans-serif" }}
+                >
+                  {getCurrentProductItem().price} {getCurrentProductItem().currency}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* Product Slide Indicators */}
+    {profileData.products.length > 1 && (
+      <div className="flex justify-center space-x-1 mt-3">
+        {Array.from({ length: profileData.products.length }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentProductSlide(index)}
+            className={`w-2 h-2 rounded-full transition-all transform duration-300 ${
+              index === currentProductSlide ? 'bg-blue-400' : 'bg-gray-400'
+            }`}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+
+        {/* Testimonials Section - Updated Layout with Auto Slider */}
+{profileData.testimonials.length > 0 && (
+  <div className="text-center mt-4">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-3 mt-10"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaStar className="w-4 h-4 text-blue-400 mr-2 " />
+      Testimonials
+    </h3>
+
+    {/* Auto-slider Container */}
+    <div className="relative overflow-hidden max-w-xl mx-auto">
+      <div className="flex flex-col space-y-3">
+        {getCurrentTestimonialItem() && (
+          <div className="rounded-lg p-4 bg-white/5 w-full">
+            {/* Name and Stars centered */}
+            <div className="text-center mb-3">
+              <span
+                className="font-semibold text-white text-sm break-words block"
+                style={{ fontFamily: "Zona Pro, sans-serif" }}
+              >
+                {getCurrentTestimonialItem().clientName}
+              </span>
+              
+              {/* Stars centered under name */}
+              {getCurrentTestimonialItem().rating && (
+                <div className="flex space-x-0.5 mt-2 justify-center">
+                  {renderStars(getCurrentTestimonialItem().rating)}
                 </div>
               )}
- 
-              {profileData.phones.map((phone, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleContact("phone", phone.number)}
-                  className="flex items-center justify-between p-2 rounded-lg hover:bg-white/20 cursor-pointer transition-colors mb-2 font-['Poppins'] transform transition-transform duration-300 hover:scale-105"
-                >
-                  <div className="flex items-center font-['Poppins']">
-                    <div className="w-7 h-7 bg-white/30 rounded-full flex items-center justify-center mr-3 font-['Poppins']">
-                      <FaPhoneAlt className="w-3 h-3 text-black" />
-                    </div>
-                    <span className="text-black text-sm font-['Poppins']">
-                      {phone.label || 'Phone'} {phone.isPrimary && '(Primary)'}
-                    </span>
-                  </div>
-                  <span className="text-black text-sm font-medium font-['Poppins']">{phone.number}</span>
-                </div>
-              ))}
- 
-              {profileData.websites.map((website, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleContact("website", website.url)}
-                  className="flex items-center justify-between p-2 rounded-lg hover:bg-white/20 cursor-pointer transition-colors mb-2 font-['Poppins'] transform transition-transform duration-300 hover:scale-105"
-                >
-                  <div className="flex items-center font-['Poppins']">
-                    <div className="w-7 h-7 bg-white/30 rounded-full flex items-center justify-center mr-3 font-['Poppins']">
-                      <FaGlobe className="w-3 h-3 text-black" />
-                    </div>
-                    <span className="text-black text-sm font-['Poppins']">
-                      {website.label || 'Website'}
-                    </span>
-                  </div>
-                  <span className="text-black text-sm font-medium truncate ml-2 max-w-32 font-['Poppins']">
-                    {website.url.replace(/^https?:\/\//, '')}
-                  </span>
-                </div>
-              ))}
             </div>
+
+            {/* Testimonial Text */}
+            <p
+              className="text-white/90 text-sm italic break-words text-center"
+              style={{ fontFamily: "Zona Pro, sans-serif" }}
+            >
+              "{getCurrentTestimonialItem().testimonial}"
+            </p>
+
+            {/* Company */}
+            {getCurrentTestimonialItem().company && (
+              <p
+                className="text-white/70 text-sm mt-2 break-words text-center"
+                style={{ fontFamily: "Zona Pro, sans-serif" }}
+              >
+                {getCurrentTestimonialItem().company}
+              </p>
+            )}
           </div>
         )}
- 
-        {/* Address Information - MOVED TO LAST */}
-        {profileData.addresses.length > 0 && (
-          <div className="px-6 pb-6 font-['Poppins']">
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-2xl transform transition-transform duration-300 hover:scale-105 font-['Poppins']">
-              <h3 className="text-lg font-semibold text-black mb-3 text-center flex items-center justify-center font-['Poppins']">
-                <FaMapMarkerAlt className="w-4 h-4 text-black mr-2" />
-                Location
-              </h3>
-              {profileData.addresses.map((address, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleContact("map", address.googleMapsLink)}
-                  className="flex items-start justify-between p-2 rounded-lg hover:bg-white/20 cursor-pointer transition-colors mb-2 font-['Poppins'] transform transition-transform duration-300 hover:scale-105"
+      </div>
+    </div>
+
+    {/* Testimonial Slide Indicators */}
+    {profileData.testimonials.length > 1 && (
+      <div className="flex justify-center space-x-1 mt-3">
+        {Array.from({ length: profileData.testimonials.length }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentTestimonialSlide(index)}
+            className={`w-2 h-2 rounded-full transition-all transform duration-300 ${
+              index === currentTestimonialSlide ? 'bg-blue-400' : 'bg-gray-400'
+            }`}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+{/* Client List Section */}
+{profileData.clientList.length > 0 && (
+  <div className="text-center mt-4">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-3"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaUserFriends className="w-4 h-4 text-blue-400 mr-2" />
+      Our Clients
+    </h3>
+
+    {/* Horizontal Slider */}
+    <div className="overflow-x-auto whitespace-nowrap py-2 px-1">
+      {profileData.clientList.map((client, index) => (
+        <span
+          key={index}
+          className="inline-block bg-transparent text-white px-3 py-2 rounded-full border border-white text-sm mr-2 transform transition-transform duration-300 hover:scale-105"
+          style={{ fontFamily: "Zona Pro, sans-serif" }}
+        >
+          {client}
+        </span>
+      ))}
+    </div>
+  </div>
+)}
+
+
+     
+{/* Downloads Section */}
+{profileData.downloads.length > 0 && (
+  <div className="text-center mt-8">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-2 mt-10"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaDownload className="w-4 h-4 text-blue-400 mr-2" />
+      Downloads
+    </h3>
+
+    <div className="space-y-3 max-w-xl mx-auto">
+      {profileData.downloads.map((download, index) => (
+        <div
+          key={index}
+          onClick={() => handleContact("default", download.fileUrl)}
+          className="relative rounded-lg border border-white p-3 cursor-pointer transform transition-transform duration-300 hover:scale-105"
+        >
+          {/* File Info */}
+          <div className="flex items-center space-x-3">
+            <FaFilePdf className="w-5 h-5 text-red-400 flex-shrink-0" />
+            <div className="flex-1 min-w-0 text-left">
+              <p
+                className="text-white text-sm font-medium break-words"
+                style={{ fontFamily: "Zona Pro, sans-serif" }}
+              >
+                {download.name}
+              </p>
+              {download.fileSize && (
+                <p
+                  className="text-white/70 text-xs break-words"
+                  style={{ fontFamily: "Zona Pro, sans-serif" }}
                 >
-                  <div className="flex items-start font-['Poppins']">
-                    <div className="w-7 h-7 bg-white/30 rounded-full flex items-center justify-center mr-3 mt-1 font-['Poppins']">
-                      <FaMapMarkerAlt className="w-3 h-3 text-black" />
-                    </div>
-                    <div>
-                      <span className="text-black text-sm font-medium block font-['Poppins']">
-                        {address.label || 'Address'} {address.isPrimary && '(Primary)'}
-                      </span>
-                      <span className="text-black/80 text-xs block mt-1 font-['Poppins']">
-                        {address.fullAddress || `${address.street}, ${address.city}, ${address.state} ${address.postalCode}`}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  {download.fileSize}
+                </p>
+              )}
             </div>
+            <FaDownload className="w-5 h-5 text-white/70 flex-shrink-0" />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+
+
+   {/* Interactive Elements - Clean / Centered */}
+{profileData.interactiveElements.length > 0 && (
+  <div className="text-center mt-8">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-4"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaHeadset className="w-4 h-4 text-blue-400 mr-2" />
+      Quick Actions
+    </h3>
+
+    {/* Buttons */}
+    <div className="flex flex-wrap justify-center gap-4 max-w-xl mx-auto">
+      {profileData.interactiveElements
+        .filter(element => element.isActive)
+        .map((element, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              switch (element.type) {
+                case 'call-to-action':
+                  if (primaryPhone) handleContact("phone", primaryPhone.number);
+                  break;
+                case 'live-chat':
+                  if (primaryPhone) handleContact("whatsapp", primaryPhone.number);
+                  break;
+                case 'contact-form':
+                  if (profileData.email) handleContact("email", profileData.email);
+                  break;
+                default:
+                  break;
+              }
+            }}
+            className="flex flex-col items-center justify-center p-3 rounded-xl border border-white text-white text-sm font-medium cursor-pointer transform transition-transform duration-300 hover:scale-105 min-w-[90px] min-h-[70px]"
+            style={{ fontFamily: "Zona Pro, sans-serif" }}
+          >
+            <div className="text-blue-400 mb-1">
+              {getInteractiveElementIcon(element.type)}
+            </div>
+            <span className="text-xs break-words text-center">
+              {element.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            </span>
+          </button>
+        ))}
+    </div>
+  </div>
+)}
+
+
+        {/* QR Code - Reduced */}
+      
+{profileData.dynamicQRCode?.targetUrl && (
+  <div className="text-center mt-12">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-4 mt-12"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaQrcode className="w-4 h-4 text-blue-400 mr-2" />
+      QR Code
+    </h3>
+
+    {/* QR Code Container */}
+    <div className="flex justify-center">
+      <div className="p-2 rounded-xl border border-white transform transition-transform duration-300 hover:scale-105">
+        {profileData.dynamicQRCode.qrImage ? (
+          <img
+            src={profileData.dynamicQRCode.qrImage}
+            alt="QR Code"
+            className="w-24 h-24 object-contain"
+          />
+        ) : (
+          <div className="w-24 h-24 bg-gray-800 flex items-center justify-center text-gray-400 rounded-xl">
+            QR Code
           </div>
         )}
+      </div>
+    </div>
+
+    {/* Subtext */}
+    <p
+      className="text-xs text-white/70 mt-2"
+      style={{ fontFamily: "Zona Pro, sans-serif" }}
+    >
+      Scan to save contact
+    </p>
+  </div>
+)}
+
+
+       {/* NFC Badge - Clean / Centered */}
+{profileData.nfcSettings?.isEnabled && (
+  <div className="text-center mt-8">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-3"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaShieldAlt className="w-4 h-4 text-blue-400 mr-2" />
+      NFC Enabled
+    </h3>
+
+    {/* Badge Content */}
+    <div className="inline-flex items-center space-x-2 px-4 py-2 border border-white rounded-xl cursor-pointer transform transition-transform duration-300 hover:scale-105">
+      <FaIdCard className="w-4 h-4 text-blue-400" />
+      <span
+        className="text-xs font-medium text-white"
+        style={{ fontFamily: "Zona Pro, sans-serif" }}
+      >
+        Tap to Connect
+      </span>
+    </div>
+  </div>
+)}
+
+{/* Custom Fields - Clean / Centered */}
+{profileData.customFields.length > 0 && (
+  <div className="text-center mt-8">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-4"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaInfoCircle className="w-4 h-4 text-blue-400 mr-2" />
+      Additional Information
+    </h3>
+
+    {/* Fields */}
+    <div className="inline-block text-left w-full max-w-md space-y-2">
+      {profileData.customFields.map((field, index) => (
+        <div
+          key={index}
+          className="flex justify-between px-3 py-2 border border-white rounded-xl transform transition-transform duration-300 hover:scale-[1.02]"
+        >
+          <span
+            className="text-xs font-medium text-white break-words"
+            style={{ fontFamily: "Zona Pro, sans-serif" }}
+          >
+            {field.label}:
+          </span>
+          <span
+            className="text-xs text-white break-words text-right"
+            style={{ fontFamily: "Zona Pro, sans-serif" }}
+          >
+            {field.value}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+ 
+       {/* Address Information - Reduced */}
+       {profileData.addresses.length > 0 && (
+  <div className="text-center mt-8">
+    {/* Heading */}
+    <h3
+      className="text-base font-semibold text-white flex justify-center items-center mb-2 mt-10"
+      style={{ fontFamily: "Zona, sans-serif" }}
+    >
+      <FaMapMarkerAlt className="w-4 h-4 text-red-400 mr-2" />
+      Location
+    </h3>
+
+    {/* Address List */}
+    <div className="space-y-2 max-w-xl mx-auto">
+      {profileData.addresses.map((address, index) => (
+        <div
+          key={index}
+          onClick={() => handleContact("map", address.googleMapsLink)}
+          className="flex items-start justify-start p-3 rounded-xl hover:scale-105 transform transition-transform duration-300 cursor-pointer bg-black/70"
+          style={{ fontFamily: "Zona Pro, sans-serif" }}
+        >
+          <div className="w-7 h-7 bg-red-500/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+            <FaMapMarkerAlt className="w-3 h-3 text-red-400" />
+          </div>
+          <div className="flex-1 min-w-0 text-left">
+            <span className="text-white text-sm font-semibold block break-words">
+              {address.label || "Address"} {address.isPrimary && "(Primary)"}
+            </span>
+            <span className="text-white/70 text-sm block mt-1 break-words">
+              {address.fullAddress ||
+                `${address.street}, ${address.city}, ${address.state} ${address.postalCode}`}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+
+        </div>
       </div>
     </div>
   );

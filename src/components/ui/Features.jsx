@@ -104,14 +104,14 @@ const Features = () => {
               data-aos="fade-right"
               data-aos-delay="400"
             >
-              The best digital business card & contact manager.
+              The best digital Personal card & contact manager.
             </h1>
             <p
               className="text-lg text-slate-500 dark:text-zinc-400 mb-5"
               data-aos="fade-right"
               data-aos-delay="500"
             >
-             A digital business card goes beyond just sharing contact information—it includes a powerful contact manager designed to help you build and grow your network. Store and organize all your contacts in one place with details like names, addresses, and phone numbers. You can personalize your contact book by adding notes, tags, and updated info.
+             A digital Personal card goes beyond just sharing contact information—it includes a powerful contact manager designed to help you build and grow your network. Store and organize all your contacts in one place with details like names, addresses, and phone numbers. You can personalize your contact book by adding notes, tags, and updated info.
             </p>
             
             <a

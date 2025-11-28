@@ -4,24 +4,24 @@ import { CheckCircle } from "lucide-react";
 const Feature = () => {
   const features = [
     {
-      title: "Thousands of business cards",
-      desc: "Browse and choose from thousands of business cards, customised with your logo colors to match your brand."
+      title: "Thousands of Personal cards",
+      desc: "Browse and choose from thousands of Personal cards, customised with your logo colors to match your brand."
     },
     {
-      title: "Professional business cards",
-      desc: "Each and every business card at Design.com is created by professional designers."
+      title: "Professional Personal cards",
+      desc: "Each and every Personal card at Design.com is created by professional designers."
     },
     {
-      title: "All the business card files you need",
+      title: "All the Personal card files you need",
       desc: "Access all the high resolution files you need for printing and sharing including vectors (SVG, EPS and PDF)."
     },
     {
       title: "Color and layout variations",
-      desc: "With unlimited colors and layouts to choose from, personalise your business card till it's perfect."
+      desc: "With unlimited colors and layouts to choose from, personalise your Personal card till it's perfect."
     },
     {
       title: "Social media designs",
-      desc: "Create branded social media designs to match your business card. Download social posts & stories customized with your brand colors."
+      desc: "Create branded social media designs to match your Personal card. Download social posts & stories customized with your brand colors."
     },
     {
       title: "Brand identity designs",
@@ -29,7 +29,7 @@ const Feature = () => {
     },
     {
       title: "Unlimited customization",
-      desc: "Edit the layout, colors and font on your business card. With unlimited edits you can create as many variations as you want."
+      desc: "Edit the layout, colors and font on your Personal card. With unlimited edits you can create as many variations as you want."
     },
     {
       title: "Support",
@@ -61,7 +61,7 @@ const Feature = () => {
           data-aos="fade-up"
           data-aos-delay="200"
         >
-          What you get with a business card from <span className="text-purple-600">Degicard.com</span>
+          What you get with a Personal card from <span className="text-purple-600">Degicard.com</span>
         </p>
 
         <div

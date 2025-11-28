@@ -23,7 +23,7 @@ const Footer = () => {
         <form className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto flex-1 min-w-[300px]" data-aos="fade-left">
           <input
             type="email"
-            placeholder="happydocx@gamil.com"
+            placeholder="digicard@gamil.com"
             className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
             required
           />
@@ -40,12 +40,9 @@ const Footer = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-between mt-10 px-0 sm:px-5">
         {/* Column 1 - Logo and Description */}
         <div className="min-w-[200px] max-w-[300px]" data-aos="fade-up">
-          <img src={logoDark} alt="Tailwick Logo" className="h-30 w-40 mb-4" />
+          <img src={logoDark} alt="Tailwick Logo" className="h-30 w-75 mb-4" />
           <p className="text-gray-500 text-sm mb-4">
-          Premium Medical Admin & Dashboard Template.
-          Perfect for building healthcare web applications like Hospital Management Systems (HMS),
-          Electronic Medical Records (EMR), Patient Portals, Telemedicine Platforms, Clinic Admin Panels, 
-          and Medical CRM Solutions.
+         Digital Card.com has digital Personal card designs for every industry, and we’re ready to help you find the perfect one! Just pick your industry or enter a keyword below, and watch as we bring you designs that’ll make your brand shine. Ready to create something amazing? Let’s go!.
           </p>
           <div className="flex gap-2">
             <a href="#" className="w-9 h-9 border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-purple-600 hover:border-purple-600 transition-colors">
@@ -68,11 +65,11 @@ const Footer = () => {
         <div className="min-w-[200px]" data-aos="fade-up">
           <h4 className="font-semibold mb-3">Degicard.com</h4>
           <ul className="space-y-2">
-            <li className="text-gray-500 text-sm cursor-pointer">Digital Business Cards</li>
+            <li className="text-gray-500 text-sm cursor-pointer">Digital Personal Cards</li>
             <li className="text-gray-500 text-sm cursor-pointer">Link in Bio</li>
             <li className="text-gray-500 text-sm cursor-pointer">Website Design</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Free Business Cards</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Business Cards</li>
+            <li className="text-gray-500 text-sm cursor-pointer">Free Personal Cards</li>
+            <li className="text-gray-500 text-sm cursor-pointer">Personal Cards</li>
              <li className="text-gray-500 text-sm cursor-pointer">Design Ideas</li>
               <li className="text-gray-500 text-sm cursor-pointer">Social Templates</li>
                <li className="text-gray-500 text-sm cursor-pointer">Design Templates</li>

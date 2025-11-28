@@ -141,17 +141,18 @@ import { ChevronUp } from "lucide-react";
 // Sections
 import Navbar from "./Navbar";
 import Home from "./Home";
-import OurProduct from "./OurProduct";
+// import OurProduct from "./OurProduct";
 import Features from "./Features";
 import AboutUs from "./AboutUs";
 import Feedback from "./Feedback";
 import Footer from "./Footer";
 import Feature from "./Feature";
-import Plan_section from "../../pages/Card/PlanSelection";
+// import PlanSection from "../../pages/Card/PlanSelection";
+ import PlanSection from "../../pages/Card/PlanSelection";
 // import DoctorList from "../../pages/Doctor/DoctorList";
 const Product = () => {
   useEffect(() => {
-    document.title = "Happydocx";
+    document.title = "DigitalCard";
 
     const windowScroll = () => {
       const backToTop = document.getElementById("back-to-top");
@@ -196,13 +197,13 @@ const Product = () => {
         <Navbar />
         <main>
           <Home /> 
-           <OurProduct />
+           {/* <OurProduct /> */}
           <Features /> 
            <AboutUs /> 
           {/* <DoctorList/> */}
           <Feature/>
            <Feedback />
-           <Plan_section/>
+           <PlanSection/>
         </main>
         <Footer />
 
