@@ -282,6 +282,7 @@ import {
   Building,
 } from "lucide-react";
 import DynamicTable from "../../components/DynamicTable";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const PartnerDashboard = () => {
   const navigate = useNavigate();
@@ -312,7 +313,7 @@ const PartnerDashboard = () => {
 
       // Fetch partner profile by userId (adjust endpoint if your backend differs)
       const partnerRes = await fetch(
-        `http://localhost:3000/api/v1/partner/profile/${userId}`
+        `${API_URL}/api/v1/partner/profile/${userId}`
       );
       if (!partnerRes.ok) {
         throw new Error(`Partner profile fetch failed: ${partnerRes.status}`);
@@ -341,7 +342,7 @@ const PartnerDashboard = () => {
       let customersList = [];
       // Preferred endpoint: returns { success, data: { customers: [...], total } }
       const customersRes = await fetch(
-        `http://localhost:3000/api/v1/partner/${partnerUserId}/customers`
+        `${API_URL}/api/v1/partner/${partnerUserId}/customers`
       );
       if (customersRes.ok) {
         const customersJson = await customersRes.json();

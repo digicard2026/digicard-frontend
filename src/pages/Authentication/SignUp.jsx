@@ -702,6 +702,7 @@ import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useLocation } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL;
  
 const Signup = () => {
   const navigate = useNavigate();
@@ -727,7 +728,7 @@ const Signup = () => {
  
 const handleSubmit = async (values, { setSubmitting, resetForm }) => {
   try {
-    const res = await fetch("http://localhost:3000/api/v1/user/sign-up", {
+    const res = await fetch(`${API_URL}/api/v1/user/sign-up`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -753,7 +754,7 @@ const handleSubmit = async (values, { setSubmitting, resetForm }) => {
           try {
             console.log("🔄 Making role update API call for customer...");
             
-            const updateRes = await fetch(`http://localhost:3000/api/v1/user/update-role-complete/${userId}`, {
+            const updateRes = await fetch(`${API_URL}/api/v1/user/update-role-complete/${userId}`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

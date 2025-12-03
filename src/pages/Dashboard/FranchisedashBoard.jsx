@@ -440,7 +440,7 @@ import {
   CalendarPlus
 } from "lucide-react";
 import DynamicTable from '../../components/DynamicTable';
-
+const API_URL = import.meta.env.VITE_API_URL;
 const FranchiseDashboard = () => {
   const navigate = useNavigate();
   const [partners, setPartners] = useState([]);
@@ -467,7 +467,7 @@ const FranchiseDashboard = () => {
       }
       
       // Fetch franchise document using the user ID
-      const franchiseResponse = await fetch(`http://localhost:3000/api/v1/franchise-partner/franchise/${userId}`);
+      const franchiseResponse = await fetch(`${API_URL}/api/v1/franchise-partner/franchise/${userId}`);
       
       if (!franchiseResponse.ok) {
         throw new Error(`HTTP error! status: ${franchiseResponse.status}`);
