@@ -101,23 +101,43 @@ const handleSubmit = async (values, { setSubmitting, resetForm }) => {
 };
  
   // ✅ Handle navigation after successful registration
+  // const handleContinue = () => {
+  //   if (franchiseContext) {
+  //     // Existing franchise flow
+  //     navigate("/signin/franchise");
+  //   } else if (location.state?.selectedPlan) {
+  //     // NEW: Plan selection customers go to create card WITH selected plan and email
+  //     navigate("/create", {
+  //       state: {
+  //         selectedPlan: location.state.selectedPlan,
+  //         userEmail: formData?.email || '' // Pass the email for auto-fill
+  //       }
+  //     });
+  //   } else {
+  //     // Existing regular signup flow
+  //     navigate("/signin/franchise");
+  //   }
+  // };
+
   const handleContinue = () => {
-    if (franchiseContext) {
-      // Existing franchise flow
-      navigate("/signin/franchise");
-    } else if (location.state?.selectedPlan) {
-      // NEW: Plan selection customers go to create card WITH selected plan and email
-      navigate("/create", {
-        state: {
-          selectedPlan: location.state.selectedPlan,
-          userEmail: formData?.email || '' // Pass the email for auto-fill
-        }
-      });
-    } else {
-      // Existing regular signup flow
-      navigate("/signin/franchise");
-    }
-  };
+  if (franchiseContext) {
+    // Existing franchise flow
+    navigate("/signin/franchise");
+  } else if (location.state?.selectedPlan) {
+    // NEW: Plan selection customers go to create card WITH selected plan, email, and partner ID
+    navigate("/create", {
+      state: {
+        selectedPlan: location.state.selectedPlan,
+        userEmail: formData?.email || '',
+        createdBy: location.state?.createdBy || '',
+         fromPartnerDashboard: location.state?.fromPartnerDashboard || false 
+      }
+    });
+  } else {
+    // Existing regular signup flow
+    navigate("/signin/franchise");
+  }
+};
  
   // Form data state for email tracking
   const [formData, setFormData] = useState({
