@@ -62,6 +62,7 @@ import RegistrationPage from './pages/Authentication/RegistrationPage';
 import FranchiseSignIn from './pages/Authentication/FranchiseSignIn';
 import FranchiseDashboard from './pages/Dashboard/FranchisedashBoard';
 import HHome from './components/ui/index';
+import PartnerDashboard from './pages/Dashboard/PartnerDashboard';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -554,6 +555,18 @@ function App() {
             <PageTitle title="Dashboard" />
             
              <DefaultLayout><FranchiseDashboard/></DefaultLayout>
+
+          </>
+        }
+      />
+
+        <Route
+        path="/partner/dashboard"
+        element={
+          <>
+            <PageTitle title="Dashboard" />
+            
+             <DefaultLayout><PartnerDashboard/></DefaultLayout>
 
           </>
         }
