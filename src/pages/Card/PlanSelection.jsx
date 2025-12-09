@@ -67,7 +67,7 @@ const PlanSelection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4" id="plan">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
