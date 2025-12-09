@@ -148,7 +148,7 @@ import Feedback from "./Feedback";
 import Footer from "./Footer";
 import Feature from "./Feature";
 // import PlanSection from "../../pages/Card/PlanSelection";
- import PlanSection from "../../pages/Card/PlanSelection";
+ import PlanSelection from "../../pages/Card/PlanSelection";
 // import DoctorList from "../../pages/Doctor/DoctorList";
 const Product = () => {
   useEffect(() => {
@@ -203,7 +203,7 @@ const Product = () => {
           {/* <DoctorList/> */}
           <Feature/>
            <Feedback />
-           <PlanSection/>
+           <PlanSelection/>
         </main>
         <Footer />
 
