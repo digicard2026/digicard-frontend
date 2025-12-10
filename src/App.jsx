@@ -56,14 +56,13 @@ import Home from './pages/Home/Home';
 import CreateCard from './pages/Card/CreateCard';
 import PreviewCard from './pages/Card/PreviewCard';
 import PublicCard from './pages/Card/PublicCard';
-// import PlanSelection from './pages/Card/PlanSelection';
+import PlanSelection from './pages/Card/PlanSelection';
 import CardDashbord from './pages/Card/Card_Dashbord';
 import RegistrationPage from './pages/Authentication/RegistrationPage';
 import FranchiseSignIn from './pages/Authentication/FranchiseSignIn';
 import FranchiseDashboard from './pages/Dashboard/FranchisedashBoard';
 import HHome from './components/ui/index';
 import PartnerDashboard from './pages/Dashboard/PartnerDashboard';
-import EmailCover from './pages/Authentication/EmailCover';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
