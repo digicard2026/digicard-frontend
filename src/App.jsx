@@ -63,6 +63,7 @@ import FranchiseSignIn from './pages/Authentication/FranchiseSignIn';
 import FranchiseDashboard from './pages/Dashboard/FranchisedashBoard';
 import HHome from './components/ui/index';
 import PartnerDashboard from './pages/Dashboard/PartnerDashboard';
+import EmailCover from './pages/Authentication/EmailCover';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -573,6 +574,16 @@ function App() {
           </>
         }
       />
+
+     <Route
+  path="/EmailVerify/:token"
+  element={
+    <>
+      <PageTitle title="EmailVerify | Digi_Card Admin Dashboard" />
+      <EmailVerify />
+    </>
+  }
+/>
 
     </Routes>
 
