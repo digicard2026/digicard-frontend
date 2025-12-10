@@ -484,15 +484,17 @@ function App() {
       <Route path='/leads/:campaignId' element={<ProtectedRoute allowedRoles={['agent']}> <PageTitle title="Leads | UConnect Admin Dashboard" /> <DefaultLayout><Leads /></DefaultLayout> </ ProtectedRoute>} />
       <Route path='/leads/details/:_id' element={<ProtectedRoute allowedRoles={['agent']}> <PageTitle title="Details | UConnect Admin Dashboard" /> <DefaultLayout><LeadTabs /></DefaultLayout> </ ProtectedRoute>} /> */}
      
-      <Route path="/" 
-      element={ <>
-       <PageTitle title="Home"/>
-       <DefaultLayout>
-        <Home />
-        </DefaultLayout>
-      </> 
-      }
-      />
+      <Route 
+  path="/" 
+  element={
+    <>
+      <PageTitle title="Home" />
+      <HHome />
+    </>
+  } 
+/>
+
+      
       <Route path="/create" element={<CreateCard />} />
       <Route path="/preview" element={ <DefaultLayout> <PreviewCard /> </DefaultLayout> } />
       <Route path="/card/public" element={<PublicCard />} />
@@ -502,7 +504,7 @@ function App() {
       <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} />
          <Route path="/signin/franchise" element={<FranchiseSignIn/>} />
 
-      <Route path="/ui" element={<HHome/>} />
+      {/* <Route path="/ui" element={<HHome/>} /> */}
      
           <Route
         path="forgot"

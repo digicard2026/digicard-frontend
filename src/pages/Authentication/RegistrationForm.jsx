@@ -3,6 +3,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useLocation } from "react-router-dom";
 import FormFields from './FormFields';
+const API_URL = import.meta.env.VITE_API_URL;
 
 // -------------------- FIXED validation schemas --------------------
 const step1Validation = Yup.object({
@@ -244,7 +245,7 @@ const RegistrationForm = () => {
 
       console.log('Updating user role:', { userId, role });
       
-      const response = await fetch(`http://localhost:3000/api/v1/user/${userId}`, {
+      const response = await fetch(`${API_URL}/api/v1/user/${userId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -344,7 +345,7 @@ const RegistrationForm = () => {
       }
 
       // ✅ Use the correct endpoint that has Multer middleware
-      const apiUrl = 'http://localhost:3000/api/v1/franchise-partner/save-step';
+      const apiUrl = `${API_URL}/api/v1/franchise-partner/save-step`;
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -422,7 +423,7 @@ const RegistrationForm = () => {
         }));
 
         // ✅ USE CORRECT ENDPOINT: Get franchise by userId
-        const res = await fetch(`http://localhost:3000/api/v1/franchise-partner/franchise/${userId}`);
+        const res = await fetch(`${API_URL}/api/v1/franchise-partner/franchise/${userId}`);
         if (res.ok) {
           const body = await res.json();
           if (body && body.success && body.data) {

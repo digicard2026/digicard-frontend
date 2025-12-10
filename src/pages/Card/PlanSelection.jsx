@@ -39,9 +39,9 @@ const PlanSelection = () => {
       ],
       price: '₹800/month'
     },
-    'Business-premium': {
-      name: 'Business-premium',
-      description: 'Advanced features for Business-premiums',
+    'Business Premium': { 
+      name: 'Business Premium', 
+      description: 'Advanced features for Business Premium', 
       icon: <FaCrown className="w-8 h-8" />,
       color: 'gold',
       features: [
@@ -97,12 +97,16 @@ const PlanSelection = () => {
               key={key}
               className={`relative rounded-2xl p-8 transition-all duration-300 cursor-pointer ${
                 selectedPlan === key
-                  ? `bg-white shadow-2xl border-2 border-${plan.color}-500 transform scale-105`
+                  ? `bg-white shadow-2xl border-2 ${
+                      plan.color === 'blue' ? 'border-blue-500' :
+                      plan.color === 'purple' ? 'border-purple-500' :
+                      'border-yellow-500'
+                    } transform scale-105`
                   : 'bg-white shadow-lg border border-slate-200 hover:shadow-xl'
               }`}
               onClick={() => handlePlanSelect(key)}
             >
-              {/* Popular Badge for Premium */}
+              {/* Popular Badge for Business */}
               {key === 'Business' && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <span className="bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
@@ -114,14 +118,22 @@ const PlanSelection = () => {
               {/* Selected Indicator */}
               {selectedPlan === key && (
                 <div className="absolute -top-2 -right-2">
-                  <div className={`bg-${plan.color}-500 text-white rounded-full p-1`}>
+                  <div className={`${
+                    plan.color === 'blue' ? 'bg-blue-500' :
+                    plan.color === 'purple' ? 'bg-purple-500' :
+                    'bg-yellow-500'
+                  } text-white rounded-full p-1`}>
                     <FaCheck className="w-4 h-4" />
                   </div>
                 </div>
               )}
 
               {/* Plan Icon */}
-              <div className={`w-16 h-16 rounded-2xl bg-${plan.color}-100 text-${plan.color}-600 flex items-center justify-center mb-6 mx-auto`}>
+              <div className={`w-16 h-16 rounded-2xl ${
+                plan.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                plan.color === 'purple' ? 'bg-purple-100 text-purple-600' :
+                'bg-yellow-100 text-yellow-600'
+              } flex items-center justify-center mb-6 mx-auto`}>
                 {plan.icon}
               </div>
 
@@ -147,7 +159,11 @@ const PlanSelection = () => {
               <ul className="space-y-3 mb-8">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-center">
-                    <FaCheck className={`w-4 h-4 text-${plan.color}-500 mr-3 flex-shrink-0`} />
+                    <FaCheck className={`w-4 h-4 ${
+                      plan.color === 'blue' ? 'text-blue-500' :
+                      plan.color === 'purple' ? 'text-purple-500' :
+                      'text-yellow-500'
+                    } mr-3 flex-shrink-0`} />
                     <span className="text-slate-700">{feature}</span>
                   </li>
                 ))}
@@ -157,7 +173,11 @@ const PlanSelection = () => {
               <button
                 className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
                   selectedPlan === key
-                    ? `bg-${plan.color}-500 text-white hover:bg-${plan.color}-600`
+                    ? `${
+                        plan.color === 'blue' ? 'bg-blue-500 hover:bg-blue-600' :
+                        plan.color === 'purple' ? 'bg-purple-500 hover:bg-purple-600' :
+                        'bg-yellow-500 hover:bg-yellow-600'
+                      } text-white`
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
               >
