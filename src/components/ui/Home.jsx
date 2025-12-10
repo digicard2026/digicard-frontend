@@ -1,11 +1,17 @@
 import React from "react";
 import { Plus, ShoppingCart } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 // Image imports
 import offer from "../../assets/images/landing/offer.png";
 import productHome from "../../assets/images/landing/product-home.png";
 
 const Home = () => {
+   const scrollToSection = (id) => {
+    const section = document.getElementById(id);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   return (
     <section className="relative pb-28 xl:pb-36 pt-44 xl:pt-52 bg-white dark:bg-zinc-900" id="home">
       {/* Blurred Backgrounds */}
@@ -22,24 +28,25 @@ const Home = () => {
               data-aos="fade-right"
               data-aos-delay="300"
             >
-            Create Your Forever Free
-Digital Visiting Card
-            </h1>
-            <p
-              className="text-lg mb-7 text-slate-600 dark:text-zinc-400"
-              data-aos="fade-right"
-              data-aos-delay="600"
-            >
-              Get your lifetime professional digital visiting card - absolutely free with QRCodeChimp!
-Choose from 15+ customizable templates and seamlessly add your card to Apple Wallet or Google Wallet.
-Boost your connections with a built-in contact exchange form, all backed by top-notch security. Start building your professional identity today, and it's free forever!
-            </p>
-            <div className="flex items-center gap-3" data-aos="fade-right" data-aos-delay="800">
-              <button
-                type="button"
-                className="px-8 py-3 text-white text-sm rounded bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-600 hover:to-indigo-500 transition flex items-center gap-2"
-              >
-                Creat Now <ShoppingCart className="size-4" />
+                          Create Your 
+              Digital Visiting Card
+                          </h1>
+                          <p
+                            className="text-lg mb-7 text-slate-600 dark:text-zinc-400"
+                            data-aos="fade-right"
+                            data-aos-delay="600"
+                          >
+                            Get your lifetime professional digital visiting card - absolutely  with QRCodeChimp!
+              Choose from 15+ customizable templates and seamlessly add your card to Apple Wallet or Google Wallet.
+              Boost your connections with a built-in contact exchange form, all backed by top-notch security. Start building your professional identity today, and it's free forever!
+                          </p>
+                          <div className="flex items-center gap-3" data-aos="fade-right" data-aos-delay="800">
+                            <button
+          type="button"
+          onClick={() => scrollToSection("plan")}
+          className="px-8 py-3 text-white text-sm rounded bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-600 hover:to-indigo-500 transition flex items-center gap-2"
+        >
+                Create Now <ShoppingCart className="size-4" />
               </button>
             </div>
           </div>

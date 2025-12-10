@@ -555,10 +555,22 @@ const Signup = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all mb-4"
               >
                 {isSubmitting ? "Creating Account..." : "Create Account"}
               </button>
+ 
+              {/* ✅ ALWAYS show "Already have an account?" link for ALL users */}
+              <p className="text-center text-gray-600 mt-4">
+                Already have an account?{" "}
+                <span
+                  onClick={() => navigate("/signin")}
+                  className="text-blue-600 font-semibold cursor-pointer hover:underline"
+                >
+                  Sign In
+                </span>
+              </p>
+
             </Form>
           )}
         </Formik>
