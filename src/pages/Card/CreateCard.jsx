@@ -38,7 +38,8 @@ import {
   FaFileAlt,
   FaShieldAlt,
   FaCrown,
-  FaGem
+  FaGem,
+  FaUserTie
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { CARD_URL } from "../../../src/utility/constants";
@@ -160,6 +161,9 @@ const optimizeFormData = (data) => {
     
     // Card Type
     cardType: data.cardType || 'Personal',
+    
+    // NEW: Include createdBy field
+    ...(data.createdBy && { createdBy: data.createdBy }),
     
     // URL Customization
     ...(data.customUrl && { customUrl: data.customUrl }),
@@ -445,6 +449,9 @@ const CreateCard = () => {
   const selectedPlanFromState = location.state?.selectedPlan || 'Personal';
   const userEmailFromSignIn = location.state?.userEmail || '';
   const editingCard = location.state?.card || null;
+  
+  // NEW: Partner ID from navigation state (when coming from partner dashboard)
+  const partnerIdFromState = location.state?.createdBy || '';
 
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -462,6 +469,11 @@ const CreateCard = () => {
   const [urlAvailable, setUrlAvailable] = useState(null);
   const [copied, setCopied] = useState(false);
   const [generatedSlug, setGeneratedSlug] = useState("");
+
+  // NEW: Partner ID state
+  const [partnerId, setPartnerId] = useState(partnerIdFromState || "");
+  const [isPartnerFlow, setIsPartnerFlow] = useState(!!partnerIdFromState);
+  const [showPartnerIdField, setShowPartnerIdField] = useState(!partnerIdFromState);
 
   // Track if user is coming from login (auto-filled email)
   const [isFromLogin, setIsFromLogin] = useState(false);
@@ -530,6 +542,9 @@ const CreateCard = () => {
     
     // Card Type - SET FROM NAVIGATION STATE
     cardType: selectedPlanFromState,
+    
+    // NEW: Partner ID field
+    createdBy: partnerIdFromState || "",
     
     // URL Customization
     customUrl: "",
@@ -772,15 +787,33 @@ const CreateCard = () => {
     setTimeout(() => setSaveStatus(""), 2000);
   };
 
+  // NEW: Handle partner ID change
+  const handlePartnerIdChange = (e) => {
+    const value = e.target.value;
+    setPartnerId(value);
+    setFormData(prev => ({ ...prev, createdBy: value }));
+  };
+
+  // NEW: Toggle partner ID field
+  const togglePartnerIdField = () => {
+    setShowPartnerIdField(!showPartnerIdField);
+    if (showPartnerIdField) {
+      // Clearing the partner ID when hiding the field
+      setPartnerId("");
+      setFormData(prev => ({ ...prev, createdBy: "" }));
+    }
+  };
+
   // Ensure cardType is set from navigation state
   useEffect(() => {
     if (selectedPlanFromState && !editingCard) {
       setFormData(prev => ({
         ...prev,
-        cardType: selectedPlanFromState
+        cardType: selectedPlanFromState,
+        createdBy: partnerIdFromState || ""
       }));
     }
-  }, [selectedPlanFromState, editingCard]);
+  }, [selectedPlanFromState, editingCard, partnerIdFromState]);
 
   // Email validation function
   const validateEmail = (email) => {
@@ -1386,6 +1419,61 @@ const saveCardToBackend = async (cardData) => {
 
     return (
       <div className="space-y-6">
+        {/* NEW: Partner ID Section */}
+        <div className="border border-slate-200 rounded-lg p-6 bg-blue-50">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-lg font-semibold text-slate-800 flex items-center">
+              <FaUserTie className="w-5 h-5 text-blue-500 mr-2" />
+              Partner Referral (Optional)
+            </h4>
+            <button
+              type="button"
+              onClick={togglePartnerIdField}
+              className="text-blue-500 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+            >
+              {showPartnerIdField ? "✕ Remove" : "+ Add Partner ID"}
+            </button>
+          </div>
+          
+          {showPartnerIdField && (
+            <div className="space-y-3">
+              <div>
+                <label className="block text-slate-700 mb-2 font-medium">
+                  Partner User ID
+                </label>
+                <input 
+                  type="text"
+                  placeholder="Enter partner's user ID (if referred by a partner)"
+                  value={partnerId}
+                  onChange={handlePartnerIdChange}
+                  className="w-full p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                />
+                <p className="text-sm text-slate-500 mt-2">
+                  If you were referred by a partner, enter their Partner User ID here. 
+                  This helps track your card to the correct partner.
+                </p>
+              </div>
+              
+              {partnerIdFromState && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-center">
+                    <FaCheck className="w-4 h-4 text-green-500 mr-2" />
+                    <span className="text-green-700 text-sm font-medium">
+                      Partner ID auto-filled from referral: <code className="bg-green-100 px-2 py-1 rounded">{partnerIdFromState}</code>
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {!showPartnerIdField && !partnerIdFromState && (
+            <p className="text-slate-600 text-sm">
+              Were you referred by a partner? Click "Add Partner ID" to enter their referral code.
+            </p>
+          )}
+        </div>
+
         {/* Profile Photo - Visible for all plans */}
         {isFieldVisible('profilePhoto') && (
           <div className="mb-6">

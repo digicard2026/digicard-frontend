@@ -1,268 +1,3 @@
-// import React, { useMemo, useState } from "react";
-// import { FiUser, FiUsers, FiSearch, FiBell } from "react-icons/fi";
-
-// const mockCustomers = Array.from({ length: 42 }).map((_, i) => ({
-//   id: `CUST-${1000 + i}`,
-//   name: [
-//     "Aarav Singh",
-//     "Maya Patel",
-//     "Rohit Sharma",
-//     "Neha Gupta",
-//     "Sana Khan",
-//     "Aditya Verma",
-//     "Priya Reddy",
-//     "Vikram Das",
-//     "Ishita Bose",
-//     "Karan Mehra",
-//   ][i % 10],
-//   email: `customer${i}@example.com`,
-//   phone: `+91-9${Math.floor(100000000 + Math.random() * 900000000)}`,
-//   joinedAt: new Date(Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 200))
-//     .toISOString()
-//     .slice(0, 10),
-//   active: Math.random() > 0.35,
-// }));
-
-// function Topbar({ onSearch, query, setQuery }) {
-//   return (
-//     <header className="flex items-center justify-between gap-4 p-4 bg-white shadow-sm rounded-md">
-//       <div className="flex items-center gap-3">
-//         <div className="relative">
-//           <input
-//             value={query}
-//             onChange={(e) => setQuery(e.target.value)}
-//             onKeyDown={(e) => e.key === "Enter" && onSearch && onSearch(query)}
-//             placeholder="Search customers by name, email or ID"
-//             className="pl-10 pr-4 py-2 border rounded-md w-96 text-sm"
-//           />
-//           <div className="absolute left-3 top-2 text-slate-400">
-//             <FiSearch />
-//           </div>
-//         </div>
-
-//         <button className="hidden md:inline-flex items-center gap-2 px-3 py-2 border rounded-md text-sm">
-//           New Customer
-//         </button>
-//       </div>
-
-//       <div className="flex items-center gap-4">
-//         <button className="p-2 rounded-md hover:bg-slate-100">
-//           <FiBell />
-//         </button>
-//         <div className="flex items-center gap-3">
-//           <div className="text-right">
-//             <div className="text-sm font-medium">Partner Admin</div>
-//             <div className="text-xs text-slate-500">partner@co.com</div>
-//           </div>
-//           <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 font-semibold">
-//             PA
-//           </div>
-//         </div>
-//       </div>
-//     </header>
-//   );
-// }
-
-// function StatCard({ title, value, icon, delta }) {
-//   return (
-//     <div className="bg-white rounded-lg shadow-sm p-4 w-full">
-//       <div className="flex items-start justify-between gap-4">
-//         <div>
-//           <div className="text-sm text-slate-500">{title}</div>
-//           <div className="mt-1 text-2xl font-semibold">{value}</div>
-//         </div>
-//         <div className="text-3xl text-sky-600">{icon}</div>
-//       </div>
-//       {delta && <div className="mt-3 text-sm text-slate-500">{delta}</div>}
-//     </div>
-//   );
-// }
-
-// function CustomerTable({ data, page, setPage, pageSize, total, onToggleActive }) {
-//   const totalPages = Math.max(1, Math.ceil(total / pageSize));
-
-//   return (
-//     <div className="bg-white shadow-sm rounded-md overflow-hidden">
-//       <table className="min-w-full text-sm">
-//         <thead className="bg-slate-50">
-//           <tr>
-//             <th className="px-4 py-3 text-left">ID</th>
-//             <th className="px-4 py-3 text-left">Name</th>
-//             <th className="px-4 py-3 text-left">Email</th>
-//             <th className="px-4 py-3 text-left">Phone</th>
-//             <th className="px-4 py-3 text-left">Joined</th>
-//             <th className="px-4 py-3 text-left">Status</th>
-//             <th className="px-4 py-3 text-right">Actions</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {data.map((c) => (
-//             <tr key={c.id} className="border-b last:border-b-0 hover:bg-slate-50">
-//               <td className="px-4 py-3 font-mono text-xs text-slate-600">{c.id}</td>
-//               <td className="px-4 py-3 font-medium">{c.name}</td>
-//               <td className="px-4 py-3">{c.email}</td>
-//               <td className="px-4 py-3">{c.phone}</td>
-//               <td className="px-4 py-3">{c.joinedAt}</td>
-//               <td className="px-4 py-3">
-//                 <span
-//                   className={`inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-medium ${
-//                     c.active
-//                       ? "bg-emerald-100 text-emerald-700"
-//                       : "bg-rose-100 text-rose-700"
-//                   }`}
-//                 >
-//                   {c.active ? "Active" : "Inactive"}
-//                 </span>
-//               </td>
-//               <td className="px-4 py-3 text-right">
-//                 <button
-//                   onClick={() => onToggleActive(c.id)}
-//                   className="px-3 py-1 text-sm rounded-md border"
-//                 >
-//                   {c.active ? "Deactivate" : "Activate"}
-//                 </button>
-//               </td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-
-//       <div className="flex items-center justify-between p-3 border-t bg-slate-50">
-//         <div className="text-sm text-slate-600">
-//           Showing page {page} of {totalPages}
-//         </div>
-//         <div className="flex items-center gap-2">
-//           <button
-//             onClick={() => setPage(1)}
-//             disabled={page === 1}
-//             className="px-3 py-1 border rounded-md text-sm"
-//           >
-//             First
-//           </button>
-//           <button
-//             onClick={() => setPage(Math.max(1, page - 1))}
-//             disabled={page === 1}
-//             className="px-3 py-1 border rounded-md text-sm"
-//           >
-//             Prev
-//           </button>
-//           <button
-//             onClick={() => setPage(Math.min(totalPages, page + 1))}
-//             disabled={page === totalPages}
-//             className="px-3 py-1 border rounded-md text-sm"
-//           >
-//             Next
-//           </button>
-//           <button
-//             onClick={() => setPage(totalPages)}
-//             disabled={page === totalPages}
-//             className="px-3 py-1 border rounded-md text-sm"
-//           >
-//             Last
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default function PartnerDashboard() {
-//   const [customers, setCustomers] = useState(mockCustomers);
-//   const [query, setQuery] = useState("");
-//   const [page, setPage] = useState(1);
-//   const pageSize = 10;
-
-//   const totalCustomers = customers.length;
-//   const activeCustomers = customers.filter((c) => c.active).length;
-
-//   const filtered = useMemo(() => {
-//     if (!query) return customers;
-//     const q = query.toLowerCase();
-//     return customers.filter(
-//       (c) =>
-//         c.name.toLowerCase().includes(q) ||
-//         c.email.toLowerCase().includes(q) ||
-//         c.id.toLowerCase().includes(q)
-//     );
-//   }, [customers, query]);
-
-//   const total = filtered.length;
-//   const paginated = useMemo(() => {
-//     const start = (page - 1) * pageSize;
-//     return filtered.slice(start, start + pageSize);
-//   }, [filtered, page]);
-
-//   function handleSearch(q) {
-//     setPage(1);
-//     setQuery(q);
-//   }
-
-//   function handleToggleActive(id) {
-//     setCustomers((prev) =>
-//       prev.map((c) => (c.id === id ? { ...c, active: !c.active } : c))
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-slate-50 text-slate-800 p-6">
-//       <div className="mb-6">
-//         <Topbar onSearch={handleSearch} query={query} setQuery={setQuery} />
-//       </div>
-
-//       <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-//         <StatCard
-//           title="Total Customers"
-//           value={totalCustomers}
-//           icon={<FiUsers />}
-//           delta={`Active: ${activeCustomers}`}
-//         />
-//         <StatCard
-//           title="Active Customers"
-//           value={activeCustomers}
-//           icon={<FiUser />}
-//           delta={`${Math.round(
-//             (activeCustomers / Math.max(1, totalCustomers)) * 100
-//           )}% of total`}
-//         />
-//         <div className="bg-white rounded-lg shadow-sm p-4">
-//           <h3 className="text-sm text-slate-500">Quick Actions</h3>
-//           <div className="mt-3 flex flex-col gap-2">
-//             <button className="w-full text-left px-3 py-2 border rounded-md">
-//               Invite Customer
-//             </button>
-//             <button className="w-full text-left px-3 py-2 border rounded-md">
-//               Export CSV
-//             </button>
-//             <button className="w-full text-left px-3 py-2 border rounded-md">
-//               Settings
-//             </button>
-//           </div>
-//         </div>
-//       </section>
-
-//       <section>
-//         <div className="flex items-center justify-between mb-4">
-//           <h2 className="text-xl font-semibold">Customers</h2>
-//           <div className="text-sm text-slate-500">{total} customers found</div>
-//         </div>
-
-//         <CustomerTable
-//           data={paginated}
-//           page={page}
-//           setPage={setPage}
-//           pageSize={pageSize}
-//           total={total}
-//           onToggleActive={handleToggleActive}
-//         />
-//       </section>
-//     </div>
-//   );
-// }
-
-
-
-
-
 // PartnerDashboard.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -280,6 +15,10 @@ import {
   FileEdit,
   User,
   Building,
+  Star,
+  Target,
+  Award,
+  Sparkles,
 } from "lucide-react";
 import DynamicTable from "../../components/DynamicTable";
 const API_URL = import.meta.env.VITE_API_URL;
@@ -312,8 +51,8 @@ const PartnerDashboard = () => {
       }
 
       // Fetch partner profile by userId (adjust endpoint if your backend differs)
-      const partnerRes = await fetch(
-        `${API_URL}/api/v1/partner/profile/${userId}`
+      const partnerRes = await fetch(`${API_URL}/api/v1/partner/profile/${userId}`
+
       );
       if (!partnerRes.ok) {
         throw new Error(`Partner profile fetch failed: ${partnerRes.status}`);
@@ -341,8 +80,7 @@ const PartnerDashboard = () => {
       // Try fetch customers list using partner user id endpoint or fallback to partner.customers
       let customersList = [];
       // Preferred endpoint: returns { success, data: { customers: [...], total } }
-      const customersRes = await fetch(
-        `${API_URL}/api/v1/partner/${partnerUserId}/customers`
+      const customersRes = await fetch(`${API_URL}/api/v1/partner/${partnerUserId}/customers`
       );
       if (customersRes.ok) {
         const customersJson = await customersRes.json();
@@ -391,12 +129,24 @@ const PartnerDashboard = () => {
     }
   };
 
-  const handleAddCustomer = () => {
-    // route to create new customer page (adjust as needed)
-    navigate("/choose-plan", {
-      state: { createdBy: partnerInfo.partnerUserId, partnerName: partnerInfo.businessName },
-    });
-  };
+ // In PartnerDashboard.jsx - ensure this is correct
+// const handleAddCustomer = () => {
+//   navigate("/choose-plan", { 
+//     state: { 
+//       createdBy: partnerInfo.partnerUserId // This should be passed correctly
+//     } 
+//   });
+// };
+
+// In PartnerDashboard.jsx - update the handleAddCustomer function
+const handleAddCustomer = () => {
+  navigate("/choose-plan", { 
+    state: { 
+      createdBy: partnerInfo.partnerUserId,
+      fromPartnerDashboard: true // Add this flag
+    } 
+  });
+};
 
   const handleViewCustomer = (customerId) => {
     navigate(`/customers/${customerId}`);
@@ -423,14 +173,14 @@ const PartnerDashboard = () => {
 
   const getProfileColor = (item) => {
     const colors = [
-      "bg-blue-500",
-      "bg-green-500",
-      "bg-purple-500",
-      "bg-pink-500",
-      "bg-indigo-500",
-      "bg-teal-500",
-      "bg-orange-500",
-      "bg-cyan-500",
+      "bg-gradient-to-br from-blue-500 to-cyan-400",
+      "bg-gradient-to-br from-emerald-500 to-teal-400",
+      "bg-gradient-to-br from-violet-500 to-purple-400",
+      "bg-gradient-to-br from-rose-500 to-pink-400",
+      "bg-gradient-to-br from-amber-500 to-orange-400",
+      "bg-gradient-to-br from-indigo-500 to-blue-400",
+      "bg-gradient-to-br from-cyan-500 to-blue-400",
+      "bg-gradient-to-br from-fuchsia-500 to-purple-400",
     ];
     const str = (item && (item._id || item.email || item.businessName)) || "default";
     let hash = 0;
@@ -442,14 +192,14 @@ const PartnerDashboard = () => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      active: { color: "text-green-800", bg: "bg-green-100", border: "border-green-200", label: "Active", icon: CheckCircle },
-      pending: { color: "text-yellow-800", bg: "bg-yellow-100", border: "border-yellow-200", label: "Pending", icon: Clock },
-      inactive: { color: "text-red-800", bg: "bg-red-100", border: "border-red-200", label: "Inactive", icon: Clock },
+      active: { color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200", label: "Active", icon: CheckCircle },
+      pending: { color: "text-amber-700", bg: "bg-amber-50", border: "border-amber-200", label: "Pending", icon: Clock },
+      inactive: { color: "text-rose-700", bg: "bg-rose-50", border: "border-rose-200", label: "Inactive", icon: Clock },
     };
     const cfg = statusConfig[status] || statusConfig.pending;
     const Icon = cfg.icon;
     return (
-      <span className={`inline-flex items-center gap-1.5 py-1 px-2 rounded-full text-xs font-medium ${cfg.bg} ${cfg.color} border ${cfg.border}`}>
+      <span className={`inline-flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold ${cfg.bg} ${cfg.color} border ${cfg.border} shadow-sm`}>
         <Icon className="w-3 h-3" />
         {cfg.label}
       </span>
@@ -465,12 +215,12 @@ const PartnerDashboard = () => {
         const fullName = c.firstName ? `${c.firstName} ${c.lastName || ""}`.trim() : c.businessName || "Unnamed Customer";
         return (
           <div className="flex items-center">
-            <div className={`flex-shrink-0 h-10 w-10 ${getProfileColor(c)} rounded-lg flex items-center justify-center text-white font-semibold text-sm`}>
+            <div className={`flex-shrink-0 h-11 w-11 ${getProfileColor(c)} rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md`}>
               {getProfileInitials(c)}
             </div>
             <div className="ml-4">
-              <div className="text-sm font-semibold text-gray-900">{fullName}</div>
-              <div className="text-sm text-gray-500 flex items-center gap-1">
+              <div className="text-sm font-bold text-gray-900">{fullName}</div>
+              <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
                 <Mail className="w-3 h-3" />
                 {c.email || "No email"}
               </div>
@@ -485,11 +235,13 @@ const PartnerDashboard = () => {
         const c = row.original;
         return (
           <div>
-            <div className="text-sm text-gray-900 flex items-center gap-1">
+            <div className="text-sm text-gray-900 flex items-center gap-1 font-medium">
               <Phone className="w-3 h-3" />
-              {c.phone || "No phone"}
+              {c.phones?.[0]?.number || "No phone"}
             </div>
-            <div className="text-sm text-gray-500">{c.city || c.state || "-"}</div>
+            <div className="text-sm text-gray-500 mt-1">
+              {c.city || c.state || "-"}
+            </div>
           </div>
         );
       },
@@ -500,11 +252,11 @@ const PartnerDashboard = () => {
         const c = row.original;
         return (
           <div>
-            <div className="text-sm text-gray-900 flex items-center gap-1">
+            <div className="text-sm text-gray-900 flex items-center gap-1 font-medium">
               <Building className="w-3 h-3" />
               {c.accountType || "Individual"}
             </div>
-            <div className="text-sm text-gray-500">{c.customerId || "-"}</div>
+            <div className="text-sm text-gray-500 mt-1">{c.customerId || "-"}</div>
           </div>
         );
       },
@@ -522,7 +274,7 @@ const PartnerDashboard = () => {
         const c = row.original;
         return (
           <div>
-            <div className="text-sm text-gray-900">
+            <div className="text-sm text-gray-900 font-medium">
               {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "N/A"}
             </div>
             {c.createdAt && <div className="text-xs text-gray-400">{new Date(c.createdAt).toLocaleTimeString()}</div>}
@@ -539,14 +291,14 @@ const PartnerDashboard = () => {
             <button
               onClick={() => handleViewCustomer(c._id)}
               title="View Customer"
-              className="bg-blue-500 hover:bg-blue-600 flex items-center justify-center rounded px-3 py-1.5 text-xs font-medium text-white transition-colors"
+              className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 flex items-center justify-center rounded-lg px-3 py-2 text-xs font-semibold text-white transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
             >
               <User className="w-4 h-4" />
             </button>
             <button
               onClick={() => handleEditCustomer(c._id)}
               title="Edit Customer"
-              className="bg-green-500 hover:bg-green-600 flex items-center justify-center rounded px-3 py-1.5 text-xs font-medium text-white transition-colors"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 flex items-center justify-center rounded-lg px-3 py-2 text-xs font-semibold text-white transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
             >
               <FileEdit className="w-4 h-4" />
             </button>
@@ -569,47 +321,63 @@ const PartnerDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30 p-8 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4">
-            <Loader2 className="w-6 h-6 mx-auto text-blue-600" />
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gradient-to-r from-blue-600 to-purple-600 mx-auto mb-4">
+            <Loader2 className="w-8 h-8 mx-auto text-gradient-to-r from-blue-600 to-purple-600" />
           </div>
-          <p className="text-gray-600 text-lg">Loading your partner dashboard...</p>
+          <p className="text-gray-700 text-lg font-medium">Loading your partner dashboard...</p>
+          <p className="text-gray-500 text-sm mt-2">Getting everything ready for you</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30 p-6 lg:p-8">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Partner Dashboard</h1>
-          <p className="text-gray-600 mt-2">Welcome back, {partnerInfo.businessName}!</p>
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-lg">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                Partner Portal
+              </h1>
+              <p className="text-gray-600 mt-2 text-lg">Welcome back, <span className="font-semibold text-gray-800">{partnerInfo.businessName}</span>! 🎉</p>
+            </div>
+          </div>
 
-          <div className="flex items-center gap-4 mt-4 flex-wrap">
-            <div className="bg-white/80 backdrop-blur-sm border border-blue-200 rounded-xl px-4 py-3 shadow-sm">
-              <p className="text-sm text-blue-600 font-medium">Partner User ID</p>
-              <div className="flex items-center gap-2">
-                <p className="font-mono text-sm font-bold text-blue-800">
+          <div className="flex items-center gap-4 mt-6 flex-wrap">
+            <div className="bg-white/90 backdrop-blur-lg border border-blue-100 rounded-2xl px-5 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
+              <p className="text-sm text-blue-600 font-semibold flex items-center gap-2">
+                <Target className="w-4 h-4" />
+                Partner User ID
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <p className="font-mono text-sm font-bold text-blue-800 bg-blue-50 px-3 py-1.5 rounded-lg">
                   {partnerInfo.partnerUserId || "Not available"}
                 </p>
                 <button
                   onClick={handleCopyPartnerId}
-                  className="text-blue-500 hover:text-blue-700 transition-colors p-1 hover:bg-blue-50 rounded"
+                  className="text-blue-500 hover:text-blue-700 transition-all duration-200 p-2 hover:bg-blue-50 rounded-xl hover:scale-110"
                   title="Copy Partner User ID"
                 >
                   <Copy className="w-4 h-4" />
                 </button>
               </div>
-              <p className="text-xs text-blue-400 mt-1">Use this User ID for customer onboarding</p>
+              <p className="text-xs text-blue-500 mt-2 font-medium">Use this ID for customer onboarding</p>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
-              <p className="text-sm text-gray-600 font-medium">Member Since</p>
-              <p className="text-gray-800 font-semibold flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
+            <div className="bg-white/90 backdrop-blur-lg border border-gray-100 rounded-2xl px-5 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
+              <p className="text-sm text-gray-600 font-semibold flex items-center gap-2">
+                <Award className="w-4 h-4" />
+                Member Since
+              </p>
+              <p className="text-gray-800 font-bold text-lg flex items-center gap-2 mt-2">
+                <Calendar className="w-5 h-5 text-purple-500" />
                 {partnerInfo.joinDate}
               </p>
             </div>
@@ -619,10 +387,10 @@ const PartnerDashboard = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={handleAddCustomer}
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+            className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
-            <UserPlus className="w-4 h-4" />
-            Add Customer
+            <UserPlus className="w-5 h-5" />
+            Add New Customer
           </button>
         </div>
       </div>
@@ -630,34 +398,45 @@ const PartnerDashboard = () => {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
-          { title: "Total Customers", value: totalCustomers, color: "blue", icon: Users, description: "Under your account" },
-          { title: "Active", value: activeCustomers, color: "green", icon: CheckCircle, description: "Currently active" },
-          { title: "Pending", value: pendingCustomers, color: "yellow", icon: Clock, description: "Awaiting activation" },
-          { title: "This Month", value: thisMonthCustomers, color: "purple", icon: TrendingUp, description: "New signups" },
+          { title: "Total Customers", value: totalCustomers, color: "blue", icon: Users, description: "Under your partnership", gradient: "from-blue-500 to-cyan-500" },
+          { title: "Active", value: activeCustomers, color: "green", icon: CheckCircle, description: "Currently active", gradient: "from-emerald-500 to-teal-500" },
+          { title: "Pending", value: pendingCustomers, color: "yellow", icon: Clock, description: "Awaiting activation", gradient: "from-amber-500 to-orange-500" },
+          { title: "This Month", value: thisMonthCustomers, color: "purple", icon: TrendingUp, description: "New signups", gradient: "from-purple-500 to-fuchsia-500" },
         ].map((stat, i) => {
           const Icon = stat.icon;
           return (
-            <div key={i} className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm hover:shadow-md transition-all duration-300">
+            <div key={i} className="group bg-white rounded-2xl p-6 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <p className={`text-3xl font-bold ${stat.color === "blue" ? "text-blue-600" : stat.color === "green" ? "text-green-600" : stat.color === "yellow" ? "text-yellow-600" : "text-purple-600"} mt-2`}>
+                  <p className="text-sm font-semibold text-gray-600 mb-1">{stat.title}</p>
+                  <p className={`text-3xl font-black bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
                     {stat.value}
                   </p>
-                  <p className="text-xs text-gray-500 mt-2">{stat.description}</p>
+                  <p className="text-xs text-gray-500 mt-3 font-medium">{stat.description}</p>
                 </div>
-                <div className={`p-3 rounded-xl ${stat.color === "blue" ? "bg-blue-50 text-blue-600" : stat.color === "green" ? "bg-green-50 text-green-600" : stat.color === "yellow" ? "bg-yellow-50 text-yellow-600" : "bg-purple-50 text-purple-600"}`}>
-                  <Icon className="w-6 h-6" />
+                <div className={`p-4 rounded-xl bg-gradient-to-r ${stat.gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  <Icon className="w-6 h-6 text-white" />
                 </div>
               </div>
+              <div className={`h-1 mt-4 bg-gradient-to-r ${stat.gradient} rounded-full transform origin-left transition-transform duration-500 group-hover:scale-x-100 scale-x-90`}></div>
             </div>
           );
         })}
       </div>
 
       {/* Customers table */}
-      <div className="mb-5 rounded-md bg-white">
-        <div className="p-5 pt-7">
+      <div className="mb-5 rounded-2xl bg-white shadow-xl border border-gray-100 overflow-hidden">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-gray-800">Customer Portfolio</h2>
+              <p className="text-gray-600 mt-1">Manage your customer relationships</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Star className="w-5 h-5 text-amber-400" />
+              <span className="text-sm font-semibold text-gray-700">{totalCustomers} Customers</span>
+            </div>
+          </div>
           <div className="grid grid-cols-12 gap-3">
             <DynamicTable
               columns={columns}
@@ -679,4 +458,3 @@ const PartnerDashboard = () => {
 };
 
 export default PartnerDashboard;
-
