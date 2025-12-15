@@ -468,7 +468,7 @@ const FranchiseDashboard = () => {
      
       // Fetch franchise document using the user ID
       const franchiseResponse = await fetch(`${API_URL}/api/v1/franchise-partner/franchise/${userId}`);
-     
+
       if (!franchiseResponse.ok) {
         throw new Error(`HTTP error! status: ${franchiseResponse.status}`);
       }
