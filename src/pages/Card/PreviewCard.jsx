@@ -253,9 +253,9 @@ const PreviewCard = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-100 p-6">
-      <h2 className="text-3xl font-bold mb-6 text-zinc-800">
+      {/* <h2 className="text-3xl font-bold mb-6 text-zinc-800">
         {urlSlug ? `${cardData?.firstName || ''}'s Personal Card` : "Preview Your Personal Card"}
-      </h2>
+      </h2> */}
 
       <div ref={cardRef}>{renderCard()}</div>
 

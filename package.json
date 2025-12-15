@@ -14,6 +14,7 @@
     "url": "https://tailadmin.com"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.9",
     "@reduxjs/toolkit": "^2.5.0",
     "@tanstack/react-table": "^8.20.5",
     "aos": "^2.3.4",

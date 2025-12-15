@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
   FaGlobe, 
@@ -38,11 +38,14 @@ import {
   FaFileAlt,
   FaShieldAlt,
   FaCrown,
-  FaGem
+  FaGem,
+  FaTimes,
+  FaUserTie
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { CARD_URL } from "../../../src/utility/constants";
-
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || "";
+const VITE_API_URL = import.meta.env.VITE_API_URL || "";
 // Card plans configuration
 const cardPlans = {
   'Personal': {
@@ -145,8 +148,8 @@ const fieldPlanMap = {
   'businessHours': ['Personal', 'Business', 'Business Premium']
 };
 
-// Function to optimize form data by removing empty fields
-const optimizeFormData = (data) => {
+// Function to clean form data by removing empty fields
+const cleanFormData = (data) => {
   const optimized = {
     // Personal Info
     ...(data.prefix && { prefix: data.prefix }),
@@ -160,6 +163,9 @@ const optimizeFormData = (data) => {
     
     // Card Type
     cardType: data.cardType || 'Personal',
+    
+    // NEW: Include createdBy field
+    ...(data.createdBy && { createdBy: data.createdBy }),
     
     // URL Customization
     ...(data.customUrl && { customUrl: data.customUrl }),
@@ -300,6 +306,9 @@ const optimizeFormData = (data) => {
     cardLayout: data.cardLayout
   };
 
+  const payloadSize = JSON.stringify(optimized).length;
+  console.log(`📤 Final payload size: ${payloadSize} bytes (${(payloadSize / 1024 / 1024).toFixed(2)} MB)`);
+  
   return optimized;
 };
 
@@ -445,6 +454,9 @@ const CreateCard = () => {
   const selectedPlanFromState = location.state?.selectedPlan || 'Personal';
   const userEmailFromSignIn = location.state?.userEmail || '';
   const editingCard = location.state?.card || null;
+  
+  // NEW: Partner ID from navigation state (when coming from partner dashboard)
+  const partnerIdFromState = location.state?.createdBy || '';
 
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -463,19 +475,21 @@ const CreateCard = () => {
   const [copied, setCopied] = useState(false);
   const [generatedSlug, setGeneratedSlug] = useState("");
 
+  // NEW: Partner ID state
+  const [partnerId, setPartnerId] = useState(partnerIdFromState || "");
+  const [isPartnerFlow, setIsPartnerFlow] = useState(!!partnerIdFromState);
+  const [showPartnerIdField, setShowPartnerIdField] = useState(!partnerIdFromState);
+
+  // ✅ AUTO-SAVE STATES (minimal)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  
+  // Auto-save refs
+  const autoSaveTimeoutRef = useRef(null);
+  const formDataRef = useRef(null);
+  const [changeCount, setChangeCount] = useState(0);
+  
   // Track if user is coming from login (auto-filled email)
   const [isFromLogin, setIsFromLogin] = useState(false);
-
-  // AUTO-SAVE STATES (keep logic but remove from UI)
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
-  const [lastSaved, setLastSaved] = useState(null);
-  const [isAutoSaving, setIsAutoSaving] = useState(false);
-  const autoSaveTimeoutRef = useRef(null);
-  const lastSavedDataRef = useRef(null);
-
-  // AUTO-SAVE CONFIGURATION
-  const AUTO_SAVE_DELAY = 1000;
-  const AUTO_SAVE_MIN_CHANGES = 1;
 
   // Field visibility based on selected plan
   const isFieldVisible = (fieldName) => {
@@ -516,8 +530,8 @@ const CreateCard = () => {
     return currentStep === availableSteps[availableSteps.length - 1];
   };
 
-  // INITIALIZE FORM DATA
-  const [formData, setFormData] = useState({
+  // INITIAL FORM STATE
+  const initialFormState = {
     // Personal Info
     prefix: "",
     firstName: "",
@@ -530,6 +544,9 @@ const CreateCard = () => {
     
     // Card Type - SET FROM NAVIGATION STATE
     cardType: selectedPlanFromState,
+    
+    // NEW: Partner ID field
+    createdBy: partnerIdFromState || "",
     
     // URL Customization
     customUrl: "",
@@ -638,7 +655,7 @@ const CreateCard = () => {
       tuesday: { open: '09:00', close: '17:00' },
       wednesday: { open: '09:00', close: '17:00' },
       thursday: { open: '09:00', close: '17:00' },
-      friday: { open: '09:00', close: '17:00' },
+      Friday: { open: '09:00', close: '17:00' },
       saturday: { open: '', close: '' },
       sunday: { open: '', close: '' }
     },
@@ -646,130 +663,46 @@ const CreateCard = () => {
     // Design
     design: "",
     cardLayout: "standard"
-  });
-
-  // Function to check if form data has significant changes
-  const hasSignificantChanges = (currentData, previousData) => {
-    if (!previousData) return true;
-    
-    const keyFields = [
-      'firstName', 'lastName', 'email', 'companyName', 'jobTitle', 
-      'phones', 'websites', 'socialLinks', 'aboutText', 'bio'
-    ];
-    
-    return keyFields.some(field => {
-      if (Array.isArray(currentData[field])) {
-        return JSON.stringify(currentData[field]) !== JSON.stringify(previousData[field]);
-      }
-      return currentData[field] !== previousData[field];
-    });
   };
 
-  // Auto-save function (keep logic but remove from UI)
-  const performAutoSave = async () => {
-    if (!autoSaveEnabled || isAutoSaving || loading) return;
-    
-    if (!hasSignificantChanges(formData, lastSavedDataRef.current)) {
-      return;
-    }
+  // INITIALIZE FORM DATA
+  const [formData, setFormData] = useState(initialFormState);
 
-    try {
-      setIsAutoSaving(true);
-      
-      const cleanedData = cleanFormData(formData);
-      
-      let url, method;
-      
-      if (editingCard && editingCard._id) {
-        if (formData.email) {
-          url = `${CARD_URL}/update-by-email/${encodeURIComponent(formData.email)}`;
-        } else {
-          url = `${CARD_URL}/update-card/${editingCard._id}`;
-        }
-        method = "PUT";
-      } else {
-        if (!lastSavedDataRef.current) {
-          url = `${CARD_URL}/create-card`;
-          method = "POST";
-        } else {
-          url = `${CARD_URL}/update-by-email/${encodeURIComponent(formData.email)}`;
-          method = "PUT";
-        }
-      }
-      
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(cleanedData)
-      });
-      
-      if (response.ok) {
-        const responseData = await response.json();
-        setLastSaved(new Date());
-        lastSavedDataRef.current = { ...formData };
-        
-        if (!editingCard && responseData.card) {
-          if (location.state) {
-            location.state.card = responseData.card;
-          }
-        }
-        
-        console.log('✅ Auto-save successful');
-      }
-    } catch (error) {
-      console.error('❌ Auto-save failed:', error);
-    } finally {
-      setIsAutoSaving(false);
-    }
-  };
-
-  // Debounced auto-save effect
+  // Initialize ref
   useEffect(() => {
-    if (!autoSaveEnabled) return;
-    
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current);
-    }
-    
-    autoSaveTimeoutRef.current = setTimeout(() => {
-      performAutoSave();
-    }, AUTO_SAVE_DELAY);
-    
-    return () => {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
-    };
-  }, [formData, autoSaveEnabled]);
-
-  // Initialize last saved data
-  useEffect(() => {
-    if (editingCard) {
-      lastSavedDataRef.current = { ...editingCard };
-      setLastSaved(new Date());
-    }
-  }, [editingCard]);
-
-  // Load auto-save preference from localStorage
-  useEffect(() => {
-    const savedPreference = localStorage.getItem('autoSaveEnabled');
-    if (savedPreference !== null) {
-      setAutoSaveEnabled(JSON.parse(savedPreference));
-    }
+    formDataRef.current = formData;
   }, []);
 
-  // Save auto-save preference to localStorage
-  useEffect(() => {
-    localStorage.setItem('autoSaveEnabled', JSON.stringify(autoSaveEnabled));
-  }, [autoSaveEnabled]);
+  // NEW: Handle partner ID change
+  const handlePartnerIdChange = (e) => {
+    const value = e.target.value;
+    setPartnerId(value);
+    const updatedData = { ...formData, createdBy: value };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
+  };
 
-  // Manual save function (keep logic but remove from UI)
-  const handleManualSave = async () => {
-    await performAutoSave();
-    setSaveStatus("Manually saved!");
-    setTimeout(() => setSaveStatus(""), 2000);
+  // NEW: Toggle partner ID field
+  const togglePartnerIdField = () => {
+    setShowPartnerIdField(!showPartnerIdField);
+    if (showPartnerIdField) {
+      // Clearing the partner ID when hiding the field
+      setPartnerId("");
+      const updatedData = { ...formData, createdBy: "" };
+      setFormData(updatedData);
+      formDataRef.current = updatedData;
+      setHasUnsavedChanges(true);
+      setChangeCount(prev => prev + 1);
+      autoSaveToLocalStorage(updatedData);
+    }
   };
 
   // Ensure cardType is set from navigation state
@@ -777,10 +710,11 @@ const CreateCard = () => {
     if (selectedPlanFromState && !editingCard) {
       setFormData(prev => ({
         ...prev,
-        cardType: selectedPlanFromState
+        cardType: selectedPlanFromState,
+        createdBy: partnerIdFromState || ""
       }));
     }
-  }, [selectedPlanFromState, editingCard]);
+  }, [selectedPlanFromState, editingCard, partnerIdFromState]);
 
   // Email validation function
   const validateEmail = (email) => {
@@ -791,14 +725,120 @@ const CreateCard = () => {
   // Handle email change
   const handleEmailChange = async (e) => {
     const email = e.target.value;
-    setFormData({ ...formData, email });
+    const updatedData = { ...formData, email };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
     setEmailError("");
     
     if (email && !validateEmail(email)) {
       setEmailError("Please enter a valid email address");
-      return;
     }
+    
+    // Trigger auto-save
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    autoSaveToLocalStorage(updatedData);
   };
+
+  // ✅ LOCAL STORAGE AUTO-SAVE FUNCTION
+  const autoSaveToLocalStorage = useCallback((data) => {
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      try {
+        // Create storage-safe version
+        const storageData = {
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          cardType: data.cardType,
+          customUrl: data.customUrl,
+          urlSlug: data.urlSlug,
+          createdBy: data.createdBy,
+          formData: {
+            ...data,
+            profilePhoto: data.profilePhoto ? 'SAVED' : null,
+            companyLogo: data.companyLogo ? 'SAVED' : null,
+            services: data.services?.map(service => ({
+              ...service,
+              image: service.image ? 'SAVED' : null
+            })),
+            products: data.products?.map(product => ({
+              ...product,
+              image: product.image ? 'SAVED' : null
+            })),
+            gallery: data.gallery?.map(item => ({
+              ...item,
+              url: item.url ? 'SAVED' : null,
+              thumbnail: item.thumbnail ? 'SAVED' : null
+            }))
+          },
+          timestamp: new Date().toISOString(),
+          step: currentStep,
+          plan: data.cardType
+        };
+        
+        // Save to localStorage
+        localStorage.setItem(`card_draft_${data.email || 'anonymous'}`, JSON.stringify(storageData));
+        localStorage.setItem(`card_draft_form_${data.email || 'anonymous'}`, JSON.stringify(data));
+        
+        setHasUnsavedChanges(false);
+        
+        console.log('💾 Auto-saved to localStorage');
+      } catch (error) {
+        console.error('LocalStorage save error:', error);
+      }
+    }, 1500);
+  }, [currentStep]);
+
+  // ✅ LOAD DRAFT FROM LOCALSTORAGE
+  const loadDraftFromLocalStorage = useCallback(() => {
+    try {
+      const email = userEmailFromSignIn || formData.email || 'anonymous';
+      const savedFormData = localStorage.getItem(`card_draft_form_${email}`);
+      
+      if (savedFormData) {
+        const parsedData = JSON.parse(savedFormData);
+        
+        // Merge with existing formData
+        setFormData(prev => {
+          const merged = {
+            ...prev,
+            ...parsedData,
+            phones: parsedData.phones || prev.phones,
+            websites: parsedData.websites || prev.websites,
+            addresses: parsedData.addresses || prev.addresses,
+            socialLinks: parsedData.socialLinks || prev.socialLinks,
+            services: parsedData.services || prev.services,
+            products: parsedData.products || prev.products,
+            testimonials: parsedData.testimonials || prev.testimonials,
+            gallery: parsedData.gallery || prev.gallery,
+            interactiveElements: parsedData.interactiveElements || prev.interactiveElements,
+            downloads: parsedData.downloads || prev.downloads
+          };
+          
+          formDataRef.current = merged;
+          return merged;
+        });
+        
+        // Load draft info
+        const draftInfo = localStorage.getItem(`card_draft_${email}`);
+        if (draftInfo) {
+          const info = JSON.parse(draftInfo);
+          if (info.step) setCurrentStep(info.step);
+          if (info.createdBy) setPartnerId(info.createdBy);
+        }
+        
+        setHasUnsavedChanges(false);
+        console.log('✅ Draft loaded from localStorage');
+      }
+    } catch (error) {
+      console.error('Error loading draft:', error);
+    }
+  }, [userEmailFromSignIn, formData.email]);
 
   // URL Availability Check Function
   const checkUrlAvailability = async (url) => {
@@ -823,7 +863,17 @@ const CreateCard = () => {
   // Handle Custom URL Change
   const handleCustomUrlChange = (e) => {
     const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
-    setFormData({ ...formData, customUrl: value, urlSlug: value });
+    const updatedData = { ...formData, customUrl: value, urlSlug: value };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   // Copy to Clipboard Function
@@ -838,7 +888,7 @@ const CreateCard = () => {
   const getShareableUrl = () => {
     const slug = formData.urlSlug || generatedSlug;
     if (!slug) return "";
-    return `http://localhost:5173/preview/${slug}`;
+    return `${FRONTEND_URL}/preview/${slug}`;
   };
 
   // Warning Popup Component
@@ -883,14 +933,36 @@ const CreateCard = () => {
   // Handle change for basic fields
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const updatedData = { ...formData, [name]: value };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   // Handle array field changes
   const handleArrayFieldChange = (field, index, subField, value) => {
     const updatedArray = [...formData[field]];
     updatedArray[index] = { ...updatedArray[index], [subField]: value };
-    setFormData({ ...formData, [field]: updatedArray });
+    const updatedData = { ...formData, [field]: updatedArray };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   // Handle social link change
@@ -900,22 +972,56 @@ const CreateCard = () => {
         ? { ...link, url }
         : link
     );
-    setFormData({ ...formData, socialLinks: updatedSocialLinks });
+    const updatedData = { ...formData, socialLinks: updatedSocialLinks };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
+    
     setActiveSocialPlatform("");
   };
 
   // Add array field
   const addArrayField = (field, defaultItem) => {
-    setFormData({
+    const updatedData = {
       ...formData,
       [field]: [...formData[field], defaultItem]
-    });
+    };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   // Remove array field
   const removeArrayField = (field, index) => {
     const updatedArray = formData[field].filter((_, i) => i !== index);
-    setFormData({ ...formData, [field]: updatedArray });
+    const updatedData = { ...formData, [field]: updatedArray };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   // Handle image upload for services and products
@@ -928,7 +1034,18 @@ const CreateCard = () => {
       const base64Image = e.target.result;
       const updatedArray = [...formData[field]];
       updatedArray[index] = { ...updatedArray[index], image: base64Image };
-      setFormData({ ...formData, [field]: updatedArray });
+      const updatedData = { ...formData, [field]: updatedArray };
+      
+      // Update state
+      setFormData(updatedData);
+      formDataRef.current = updatedData;
+      
+      // Mark as changed
+      setHasUnsavedChanges(true);
+      setChangeCount(prev => prev + 1);
+      
+      // Trigger auto-save
+      autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
   };
@@ -941,7 +1058,18 @@ const CreateCard = () => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const base64Image = e.target.result;
-      setFormData({ ...formData, [field]: base64Image });
+      const updatedData = { ...formData, [field]: base64Image };
+      
+      // Update state
+      setFormData(updatedData);
+      formDataRef.current = updatedData;
+      
+      // Mark as changed
+      setHasUnsavedChanges(true);
+      setChangeCount(prev => prev + 1);
+      
+      // Trigger auto-save
+      autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
   };
@@ -950,11 +1078,22 @@ const CreateCard = () => {
   const handleAddressChange = (index, field, value) => {
     const updatedAddresses = [...formData.addresses];
     updatedAddresses[index] = { ...updatedAddresses[index], [field]: value };
-    setFormData({ ...formData, addresses: updatedAddresses });
+    const updatedData = { ...formData, addresses: updatedAddresses };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const addAddress = () => {
-    setFormData({
+    const updatedData = {
       ...formData,
       addresses: [
         ...formData.addresses,
@@ -970,12 +1109,34 @@ const CreateCard = () => {
           isPrimary: false
         }
       ]
-    });
+    };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const removeAddress = (index) => {
     const updatedAddresses = formData.addresses.filter((_, i) => i !== index);
-    setFormData({ ...formData, addresses: updatedAddresses });
+    const updatedData = { ...formData, addresses: updatedAddresses };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const setPrimaryAddress = (index) => {
@@ -983,7 +1144,18 @@ const CreateCard = () => {
       ...address,
       isPrimary: i === index
     }));
-    setFormData({ ...formData, addresses: updatedAddresses });
+    const updatedData = { ...formData, addresses: updatedAddresses };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const generateFullAddress = (index) => {
@@ -1009,30 +1181,74 @@ const CreateCard = () => {
   const handleTestimonialChange = (index, field, value) => {
     const updatedTestimonials = [...formData.testimonials];
     updatedTestimonials[index] = { ...updatedTestimonials[index], [field]: value };
-    setFormData({ ...formData, testimonials: updatedTestimonials });
+    const updatedData = { ...formData, testimonials: updatedTestimonials };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const handleGalleryChange = (index, field, value) => {
     const updatedGallery = [...formData.gallery];
     updatedGallery[index] = { ...updatedGallery[index], [field]: value };
-    setFormData({ ...formData, gallery: updatedGallery });
+    const updatedData = { ...formData, gallery: updatedGallery };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const handleInteractiveElementChange = (index, field, value) => {
     const updatedElements = [...formData.interactiveElements];
     updatedElements[index] = { ...updatedElements[index], [field]: value };
-    setFormData({ ...formData, interactiveElements: updatedElements });
+    const updatedData = { ...formData, interactiveElements: updatedElements };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const handleDownloadChange = (index, field, value) => {
     const updatedDownloads = [...formData.downloads];
     updatedDownloads[index] = { ...updatedDownloads[index], [field]: value };
-    setFormData({ ...formData, downloads: updatedDownloads });
+    const updatedData = { ...formData, downloads: updatedDownloads };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   // Add new array items
   const addTestimonial = () => {
-    setFormData({
+    const updatedData = {
       ...formData,
       testimonials: [
         ...formData.testimonials,
@@ -1043,11 +1259,22 @@ const CreateCard = () => {
           date: new Date().toISOString().split('T')[0]
         }
       ]
-    });
+    };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const addGalleryItem = () => {
-    setFormData({
+    const updatedData = {
       ...formData,
       gallery: [
         ...formData.gallery,
@@ -1060,11 +1287,22 @@ const CreateCard = () => {
           category: ""
         }
       ]
-    });
+    };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const addInteractiveElement = (type) => {
-    setFormData({
+    const updatedData = {
       ...formData,
       interactiveElements: [
         ...formData.interactiveElements,
@@ -1075,11 +1313,22 @@ const CreateCard = () => {
           position: formData.interactiveElements.length
         }
       ]
-    });
+    };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const addDownload = () => {
-    setFormData({
+    const updatedData = {
       ...formData,
       downloads: [
         ...formData.downloads,
@@ -1091,28 +1340,83 @@ const CreateCard = () => {
           downloadCount: 0
         }
       ]
-    });
+    };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   // Remove array items
   const removeTestimonial = (index) => {
     const updatedTestimonials = formData.testimonials.filter((_, i) => i !== index);
-    setFormData({ ...formData, testimonials: updatedTestimonials });
+    const updatedData = { ...formData, testimonials: updatedTestimonials };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const removeGalleryItem = (index) => {
     const updatedGallery = formData.gallery.filter((_, i) => i !== index);
-    setFormData({ ...formData, gallery: updatedGallery });
+    const updatedData = { ...formData, gallery: updatedGallery };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const removeInteractiveElement = (index) => {
     const updatedElements = formData.interactiveElements.filter((_, i) => i !== index);
-    setFormData({ ...formData, interactiveElements: updatedElements });
+    const updatedData = { ...formData, interactiveElements: updatedElements };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const removeDownload = (index) => {
     const updatedDownloads = formData.downloads.filter((_, i) => i !== index);
-    setFormData({ ...formData, downloads: updatedDownloads });
+    const updatedData = { ...formData, downloads: updatedDownloads };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   // Validate current step
@@ -1125,6 +1429,18 @@ const CreateCard = () => {
         }
         if (!validateEmail(formData.email)) {
           setWarningMessage("Please enter a valid email address before moving to the next step!");
+          return false;
+        }
+        // ✅ FIXED: Require firstName on step 1
+        if (!formData.firstName?.trim()) {
+          setWarningMessage("Please fill in your First Name before moving to the next step!");
+          return false;
+        }
+        break;
+      case 4:
+        // Make sure a design is selected before final step
+        if (!formData.design?.trim()) {
+          setWarningMessage("Please select a design theme in the final step!");
           return false;
         }
         break;
@@ -1161,168 +1477,233 @@ const CreateCard = () => {
     }
   };
 
-  const cleanFormData = (data) => {
-    const cleanedData = optimizeFormData(data);
-    const payloadSize = JSON.stringify(cleanedData).length;
-    console.log(`📤 Final payload size: ${payloadSize} bytes (${(payloadSize / 1024 / 1024).toFixed(2)} MB)`);
-    return cleanedData;
+  // ✅ FIXED: Updated saveCardToBackend function
+  const saveCardToBackend = async (cardData) => {
+    try {
+      setLoading(true);
+      setSaveStatus("Creating account and card...");
+      
+      const cleanedData = cleanFormData(cardData);
+      
+      // 🔑 STEP 1: Auto-create user account if needed
+      if (!editingCard && cleanedData.email) {
+        try {
+          console.log("🔑 Auto-creating user account for:", cleanedData.email);
+          
+          const userResponse = await fetch(`${VITE_API_URL}/api/v1/user/auto-create-for-card`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: cleanedData.email,
+              selectedPlan: cleanedData.cardType
+            }),
+          });
+          
+          const userData = await userResponse.json();
+          
+          if (userResponse.ok && userData.success) {
+            console.log("✅ User account handled:", userData.message);
+            
+            // Store user info in localStorage
+            if (userData.data?._id) {
+              localStorage.setItem('user_id', userData.data._id);
+              localStorage.setItem('user_email', cleanedData.email);
+              localStorage.setItem('user_role', userData.data.role || 'customer');
+              console.log("📝 User stored in localStorage");
+            }
+          } else {
+            console.warn("⚠️ User account issue:", userData.error);
+            throw new Error(`User account issue: ${userData.error}`);
+          }
+        } catch (userError) {
+          console.error("⚠️ User account creation error:", userError);
+          throw new Error(`Failed to create user account: ${userError.message}`);
+        }
+      }
+      
+      // 🔗 STEP 2: Generate unique URL slug ONLY for new cards
+      if (!editingCard) {
+        let baseSlug = '';
+        
+        if (cleanedData.customUrl && cleanedData.customUrl.trim()) {
+          baseSlug = cleanedData.customUrl;
+        } else if (cleanedData.email) {
+          baseSlug = cleanedData.email.split('@')[0];
+        } else {
+          baseSlug = 'card';
+        }
+        
+        // Clean the slug
+        let cleanSlug = baseSlug.toLowerCase()
+          .replace(/[^a-z0-9]/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '');
+        
+        // Add timestamp for uniqueness
+        const timestamp = Date.now().toString().slice(-6);
+        cleanedData.urlSlug = `${cleanSlug}-${timestamp}`;
+        
+        console.log("🔗 Generated URL slug:", cleanedData.urlSlug);
+      }
+      
+      // ⚠️ CRITICAL VALIDATION: Check required fields before sending
+      if (!cleanedData.firstName || cleanedData.firstName.trim() === "") {
+        throw new Error("First Name is required. Please fill it in step 1.");
+      }
+      
+      if (!cleanedData.design || cleanedData.design.trim() === "") {
+        throw new Error("Please select a design theme in the final step.");
+      }
+      
+      if (!cleanedData.email || !validateEmail(cleanedData.email)) {
+        throw new Error("Please enter a valid email address.");
+      }
+      
+      // 📤 STEP 3: Save the card (ONLY ONCE - no auto-save)
+      let url, method;
+      
+      if (editingCard && editingCard._id) {
+        // Editing existing card
+        url = `${CARD_URL}/update-card/${editingCard._id}`;
+        method = "PUT";
+      } else {
+        // Creating new card
+        url = `${CARD_URL}/create-card`;
+        method = "POST";
+      }
+      
+      console.log("📤 Saving card to:", url);
+      console.log("📦 Card data being sent:", {
+        email: cleanedData.email,
+        firstName: cleanedData.firstName,
+        design: cleanedData.design,
+        urlSlug: cleanedData.urlSlug,
+        cardType: cleanedData.cardType,
+        createdBy: cleanedData.createdBy
+      });
+      
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cleanedData)
+      });
+      
+      const responseText = await response.text();
+      console.log("📨 Server response:", responseText);
+      
+      if (!response.ok) {
+        console.error('❌ Card creation error status:', response.status);
+        console.error('❌ Card creation error text:', responseText);
+        
+        // Handle specific errors
+        if (responseText.includes('duplicate') && responseText.includes('urlSlug')) {
+          throw new Error('This URL is already taken. Please try a different custom URL.');
+        }
+        
+        if (responseText.includes('Email already has')) {
+          throw new Error('A card already exists for this email. Please login to edit your existing card.');
+        }
+        
+        if (response.status === 400) {
+          throw new Error(`Validation error: ${responseText}`);
+        }
+        
+        throw new Error(`Server error (${response.status}): ${responseText}`);
+      }
+      
+      const responseData = JSON.parse(responseText);
+      setSaveStatus("🎉 Card created successfully!");
+      console.log("✅ Card save successful:", responseData);
+      
+      return responseData.card || responseData;
+      
+    } catch (error) {
+      console.error('❌ Error saving card:', error);
+      setSaveStatus(`Error: ${error.message}`);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-const saveCardToBackend = async (cardData) => {
-  try {
-    setLoading(true);
-    setSaveStatus("Creating account and card...");
-    
-    const cleanedData = cleanFormData(cardData);
-    
-    // 🔑 STEP 1: Auto-create user account if needed
-    if (!editingCard && cleanedData.email) {
-      try {
-        console.log("🔑 Auto-creating user account for:", cleanedData.email);
-        
-        const userResponse = await fetch("http://localhost:3000/api/v1/user/auto-create-for-card", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: cleanedData.email,
-            selectedPlan: cleanedData.cardType
-          }),
-        });
-        
-        const userData = await userResponse.json();
-        
-        if (userResponse.ok && userData.success) {
-          console.log("✅ User account handled:", userData.message);
-          
-          // Store user info in localStorage
-          if (userData.data?._id) {
-            localStorage.setItem('user_id', userData.data._id);
-            localStorage.setItem('user_email', cleanedData.email);
-            localStorage.setItem('user_role', userData.data.role || 'customer');
-            console.log("📝 User stored in localStorage");
-          }
-        } else {
-          console.warn("⚠️ User account issue:", userData.error);
-          throw new Error(`User account issue: ${userData.error}`);
-        }
-      } catch (userError) {
-        console.error("⚠️ User account creation error:", userError);
-        throw new Error(`Failed to create user account: ${userError.message}`);
-      }
-    }
-    
-    // 🔗 STEP 2: Generate unique URL slug
-    if (!editingCard) {
-      let baseSlug = '';
-      
-      if (cleanedData.customUrl && cleanedData.customUrl.trim()) {
-        baseSlug = cleanedData.customUrl;
-      } else if (cleanedData.email) {
-        baseSlug = cleanedData.email.split('@')[0];
-      } else {
-        baseSlug = 'card';
-      }
-      
-      // Clean the slug
-      let cleanSlug = baseSlug.toLowerCase()
-        .replace(/[^a-z0-9]/g, '-')  // Replace non-alphanumeric with hyphens
-        .replace(/-+/g, '-')         // Replace multiple hyphens with single
-        .replace(/^-|-$/g, '');      // Remove leading/trailing hyphens
-      
-      // Add timestamp for uniqueness
-      const timestamp = Date.now().toString().slice(-6);
-      cleanedData.urlSlug = `${cleanSlug}-${timestamp}`;
-      
-      console.log("🔗 Generated URL slug:", cleanedData.urlSlug);
-    }
-    
-    // 📤 STEP 3: Save the card
-    let url, method;
-    
-    if (editingCard && editingCard._id) {
-      if (cardData.email) {
-        url = `${CARD_URL}/update-by-email/${encodeURIComponent(cardData.email)}`;
-      } else {
-        url = `${CARD_URL}/update-card/${editingCard._id}`;
-      }
-      method = "PUT";
-    } else {
-      url = `${CARD_URL}/create-card`;
-      method = "POST";
-    }
-    
-    console.log("📤 Saving card to:", url);
-    console.log("📦 Card data:", {
-      email: cleanedData.email,
-      urlSlug: cleanedData.urlSlug,
-      cardType: cleanedData.cardType
-    });
-    
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(cleanedData)
-    });
-    
-    const responseText = await response.text();
-    console.log("📨 Server response:", responseText);
-    
-    if (!response.ok) {
-      console.error('❌ Card creation error status:', response.status);
-      console.error('❌ Card creation error text:', responseText);
-      
-      // Handle specific errors
-      if (responseText.includes('duplicate') && responseText.includes('urlSlug')) {
-        throw new Error('This URL is already taken. Please try a different custom URL.');
-      }
-      
-      if (responseText.includes('Email already has')) {
-        throw new Error('A card already exists for this email. Please login to edit your existing card.');
-      }
-      
-      if (response.status === 400) {
-        throw new Error(`Invalid request: ${responseText}`);
-      }
-      
-      throw new Error(`Server error (${response.status}): ${responseText}`);
-    }
-    
-    const responseData = JSON.parse(responseText);
-    setSaveStatus("🎉 Card created successfully!");
-    console.log("✅ Card save successful:", responseData);
-    
-    return responseData.card || responseData;
-    
-  } catch (error) {
-    console.error('❌ Error saving card:', error);
-    setSaveStatus(`Error: ${error.message}`);
-    throw error;
-  } finally {
-    setLoading(false);
-  }
-};
-
   const handleDesignSelect = (designId) => {
-    setFormData({ ...formData, design: designId });
+    const updatedData = { ...formData, design: designId };
+    
+    // Update state
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    // Mark as changed
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
   };
 
   const handleFinalSubmit = async () => {
     try {
-      const savedCard = await saveCardToBackend(formData);
+      setLoading(true);
       
-      const shareUrl = `http://localhost:5173/preview/${savedCard.urlSlug || formData.urlSlug}`;
+      // ✅ Clean the form data
+      const cleanedData = cleanFormData(formData);
       
+      // ✅ Send ALL data to backend
+      let url, method;
+      
+      if (editingCard && editingCard._id) {
+        url = `${CARD_URL}/update-card/${editingCard._id}`;
+        method = "PUT";
+      } else {
+        url = `${CARD_URL}/create-card`;
+        method = "POST";
+      }
+      
+      console.log("📤 Sending ALL data to backend...");
+      
+      const response = await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cleanedData)
+      });
+      
+      const responseText = await response.text();
+      
+      if (!response.ok) {
+        throw new Error(`Server error (${response.status}): ${responseText}`);
+      }
+      
+      const responseData = JSON.parse(responseText);
+      
+      setSaveStatus("🎉 Card created successfully!");
+      
+      // ✅ Navigate to preview
+      const shareUrl = `${FRONTEND_URL}/preview/${responseData.card?.urlSlug || cleanedData.urlSlug}`;
       alert(`🎉 Card ${editingCard ? 'updated' : 'created'} successfully!\n\n🔗 Your shareable URL:\n${shareUrl}`);
       
       navigator.clipboard.writeText(shareUrl);
-      
-      navigate(`/preview/${savedCard.urlSlug || formData.urlSlug}`);
+      navigate(`/preview/${responseData.card?.urlSlug || cleanedData.urlSlug}`);
       
     } catch (error) {
+      console.error('❌ Error saving card:', error);
+      setSaveStatus(`Error: ${error.message}`);
       alert(`Failed to ${editingCard ? 'update' : 'create'} card: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // ✅ Handle Go Back to Home
+  const handleGoBackHome = () => {
+    if (hasUnsavedChanges) {
+      const confirmLeave = window.confirm(
+        'You have unsaved changes. Are you sure you want to leave?'
+      );
+      if (!confirmLeave) return;
+    }
+    navigate('/');
   };
 
   // UseEffects
@@ -1335,6 +1716,7 @@ const saveCardToBackend = async (cardData) => {
   useEffect(() => {
     if (editingCard) {
       setFormData(editingCard);
+      formDataRef.current = editingCard;
       if (editingCard.urlSlug) {
         setGeneratedSlug(editingCard.urlSlug);
       }
@@ -1347,7 +1729,9 @@ const saveCardToBackend = async (cardData) => {
       const emailSlug = formData.email.split('@')[0].toLowerCase();
       const cleanSlug = emailSlug.replace(/[^a-z0-9]/g, '-');
       setGeneratedSlug(cleanSlug);
-      setFormData(prev => ({ ...prev, urlSlug: cleanSlug }));
+      const updatedData = { ...formData, urlSlug: cleanSlug };
+      setFormData(updatedData);
+      formDataRef.current = updatedData;
     }
   }, [formData.email, editingCard, formData.customUrl]);
 
@@ -1360,6 +1744,46 @@ const saveCardToBackend = async (cardData) => {
       setUrlAvailable(null);
     }
   }, [formData.customUrl, formData.urlSlug]);
+
+  // ✅ LOAD DRAFT ON MOUNT
+  useEffect(() => {
+    if (editingCard) return; // Don't load drafts for editing
+    
+    // Load after short delay
+    const timeoutId = setTimeout(() => {
+      loadDraftFromLocalStorage();
+    }, 300);
+    
+    return () => clearTimeout(timeoutId);
+  }, [editingCard, loadDraftFromLocalStorage]);
+
+  // ✅ BROWSER WARNING FOR UNSAVED CHANGES
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedChanges) {
+        const message = 'You have unsaved changes. Are you sure you want to leave?';
+        e.preventDefault();
+        e.returnValue = message;
+        return message;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [hasUnsavedChanges]);
+
+  // ✅ SAVE TO LOCALSTORAGE ON FORM CHANGES
+  useEffect(() => {
+    if (changeCount > 0 && !editingCard) {
+      autoSaveToLocalStorage(formData);
+    }
+  }, [changeCount, formData, editingCard, autoSaveToLocalStorage]);
 
   // RENDER FUNCTIONS
 
@@ -1386,6 +1810,61 @@ const saveCardToBackend = async (cardData) => {
 
     return (
       <div className="space-y-6">
+        {/* NEW: Partner ID Section */}
+        <div className="border border-slate-200 rounded-lg p-6 bg-blue-50">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-lg font-semibold text-slate-800 flex items-center">
+              <FaUserTie className="w-5 h-5 text-blue-500 mr-2" />
+              Partner Referral (Optional)
+            </h4>
+            <button
+              type="button"
+              onClick={togglePartnerIdField}
+              className="text-blue-500 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+            >
+              {showPartnerIdField ? "✕ Remove" : "+ Add Partner ID"}
+            </button>
+          </div>
+          
+          {showPartnerIdField && (
+            <div className="space-y-3">
+              <div>
+                <label className="block text-slate-700 mb-2 font-medium">
+                  Partner User ID
+                </label>
+                <input 
+                  type="text"
+                  placeholder="Enter partner's user ID (if referred by a partner)"
+                  value={partnerId}
+                  onChange={handlePartnerIdChange}
+                  className="w-full p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                />
+                <p className="text-sm text-slate-500 mt-2">
+                  If you were referred by a partner, enter their Partner User ID here. 
+                  This helps track your card to the correct partner.
+                </p>
+              </div>
+              
+              {partnerIdFromState && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-center">
+                    <FaCheck className="w-4 h-4 text-green-500 mr-2" />
+                    <span className="text-green-700 text-sm font-medium">
+                      Partner ID auto-filled from referral: <code className="bg-green-100 px-2 py-1 rounded">{partnerIdFromState}</code>
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {!showPartnerIdField && !partnerIdFromState && (
+            <p className="text-slate-600 text-sm">
+              Were you referred by a partner? Click "Add Partner ID" to enter their referral code.
+            </p>
+          )}
+        </div>
+
         {/* Profile Photo - Visible for all plans */}
         {isFieldVisible('profilePhoto') && (
           <div className="mb-6">
@@ -1396,7 +1875,14 @@ const saveCardToBackend = async (cardData) => {
                   <img src={formData.profilePhoto} alt="Profile" className="w-24 h-24 rounded-full object-cover mb-2" />
                   <button 
                     type="button"
-                    onClick={() => setFormData({...formData, profilePhoto: null})}
+                    onClick={() => {
+                      const updatedData = { ...formData, profilePhoto: null };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
                     className="text-red-500 text-sm hover:text-red-700"
                   >
                     Remove Photo
@@ -1523,10 +2009,17 @@ const saveCardToBackend = async (cardData) => {
                   type="url"
                   placeholder="https://youtube.com/your-video or direct video link"
                   value={formData.profileVideo?.url || ""}
-                  onChange={(e) => setFormData({
-                    ...formData, 
-                    profileVideo: { ...formData.profileVideo, url: e.target.value }
-                  })}
+                  onChange={(e) => {
+                    const updatedData = {
+                      ...formData, 
+                      profileVideo: { ...formData.profileVideo, url: e.target.value }
+                    };
+                    setFormData(updatedData);
+                    formDataRef.current = updatedData;
+                    setHasUnsavedChanges(true);
+                    setChangeCount(prev => prev + 1);
+                    autoSaveToLocalStorage(updatedData);
+                  }}
                   className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
               </div>
@@ -1538,10 +2031,17 @@ const saveCardToBackend = async (cardData) => {
                     type="text"
                     placeholder="Introduction Video"
                     value={formData.profileVideo?.title || ""}
-                    onChange={(e) => setFormData({
-                      ...formData, 
-                      profileVideo: { ...formData.profileVideo, title: e.target.value }
-                    })}
+                    onChange={(e) => {
+                      const updatedData = {
+                        ...formData, 
+                        profileVideo: { ...formData.profileVideo, title: e.target.value }
+                      };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
@@ -1552,10 +2052,17 @@ const saveCardToBackend = async (cardData) => {
                     type="url"
                     placeholder="https://example.com/thumbnail.jpg"
                     value={formData.profileVideo?.thumbnail || ""}
-                    onChange={(e) => setFormData({
-                      ...formData, 
-                      profileVideo: { ...formData.profileVideo, thumbnail: e.target.value }
-                    })}
+                    onChange={(e) => {
+                      const updatedData = {
+                        ...formData, 
+                        profileVideo: { ...formData.profileVideo, thumbnail: e.target.value }
+                      };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
@@ -1630,7 +2137,7 @@ const saveCardToBackend = async (cardData) => {
                 </p>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-slate-500">http://localhost:5173/preview/</span>
+                    <span className="text-slate-500">www.reveya.com/preview/</span>
                   </div>
                   <input 
                     type="text"
@@ -1847,7 +2354,14 @@ const saveCardToBackend = async (cardData) => {
                   <img src={formData.companyLogo} alt="Company Logo" className="max-w-32 max-h-32 object-contain mb-2" />
                   <button 
                     type="button"
-                    onClick={() => setFormData({...formData, companyLogo: null})}
+                    onClick={() => {
+                      const updatedData = { ...formData, companyLogo: null };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
                     className="text-red-500 text-sm hover:text-red-700"
                   >
                     Remove Logo
@@ -1914,16 +2428,23 @@ const saveCardToBackend = async (cardData) => {
                   <div className="flex items-center space-x-4 flex-1 max-w-md">
                     <select 
                       value={formData.businessHours?.[key]?.open || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        businessHours: {
-                          ...formData.businessHours,
-                          [key]: {
-                            ...formData.businessHours?.[key],
-                            open: e.target.value
+                      onChange={(e) => {
+                        const updatedData = {
+                          ...formData,
+                          businessHours: {
+                            ...formData.businessHours,
+                            [key]: {
+                              ...formData.businessHours?.[key],
+                              open: e.target.value
+                            }
                           }
-                        }
-                      })}
+                        };
+                        setFormData(updatedData);
+                        formDataRef.current = updatedData;
+                        setHasUnsavedChanges(true);
+                        setChangeCount(prev => prev + 1);
+                        autoSaveToLocalStorage(updatedData);
+                      }}
                       className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     >
                       <option value="">Closed</option>
@@ -1935,16 +2456,23 @@ const saveCardToBackend = async (cardData) => {
                     <span className="text-slate-500">to</span>
                     <select 
                       value={formData.businessHours?.[key]?.close || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        businessHours: {
-                          ...formData.businessHours,
-                          [key]: {
-                            ...formData.businessHours?.[key],
-                            close: e.target.value
+                      onChange={(e) => {
+                        const updatedData = {
+                          ...formData,
+                          businessHours: {
+                            ...formData.businessHours,
+                            [key]: {
+                              ...formData.businessHours?.[key],
+                              close: e.target.value
+                            }
                           }
-                        }
-                      })}
+                        };
+                        setFormData(updatedData);
+                        formDataRef.current = updatedData;
+                        setHasUnsavedChanges(true);
+                        setChangeCount(prev => prev + 1);
+                        autoSaveToLocalStorage(updatedData);
+                      }}
                       className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     >
                       <option value="">Closed</option>
@@ -1998,7 +2526,14 @@ const saveCardToBackend = async (cardData) => {
                       type="checkbox" 
                       className="sr-only peer"
                       checked={formData.enableOneTapCall || false}
-                      onChange={(e) => setFormData({...formData, enableOneTapCall: e.target.checked})}
+                      onChange={(e) => {
+                        const updatedData = { ...formData, enableOneTapCall: e.target.checked };
+                        setFormData(updatedData);
+                        formDataRef.current = updatedData;
+                        setHasUnsavedChanges(true);
+                        setChangeCount(prev => prev + 1);
+                        autoSaveToLocalStorage(updatedData);
+                      }}
                     />
                     <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                   </label>
@@ -2021,7 +2556,14 @@ const saveCardToBackend = async (cardData) => {
                       type="checkbox" 
                       className="sr-only peer"
                       checked={formData.enableWhatsApp || false}
-                      onChange={(e) => setFormData({...formData, enableWhatsApp: e.target.checked})}
+                      onChange={(e) => {
+                        const updatedData = { ...formData, enableWhatsApp: e.target.checked };
+                        setFormData(updatedData);
+                        formDataRef.current = updatedData;
+                        setHasUnsavedChanges(true);
+                        setChangeCount(prev => prev + 1);
+                        autoSaveToLocalStorage(updatedData);
+                      }}
                     />
                     <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                   </label>
@@ -2044,7 +2586,14 @@ const saveCardToBackend = async (cardData) => {
                       type="checkbox" 
                       className="sr-only peer"
                       checked={formData.enableEmail !== undefined ? formData.enableEmail : true}
-                      onChange={(e) => setFormData({...formData, enableEmail: e.target.checked})}
+                      onChange={(e) => {
+                        const updatedData = { ...formData, enableEmail: e.target.checked };
+                        setFormData(updatedData);
+                        formDataRef.current = updatedData;
+                        setHasUnsavedChanges(true);
+                        setChangeCount(prev => prev + 1);
+                        autoSaveToLocalStorage(updatedData);
+                      }}
                     />
                     <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
                   </label>
@@ -2855,10 +3404,17 @@ const saveCardToBackend = async (cardData) => {
                     <label className="block text-slate-700 mb-1">QR Code Type</label>
                     <select 
                       value={formData.dynamicQRCode?.type || "dynamic"}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        dynamicQRCode: { ...formData.dynamicQRCode, type: e.target.value }
-                      })}
+                      onChange={(e) => {
+                        const updatedData = {
+                          ...formData,
+                          dynamicQRCode: { ...formData.dynamicQRCode, type: e.target.value }
+                        };
+                        setFormData(updatedData);
+                        formDataRef.current = updatedData;
+                        setHasUnsavedChanges(true);
+                        setChangeCount(prev => prev + 1);
+                        autoSaveToLocalStorage(updatedData);
+                      }}
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     >
                       <option value="dynamic">Dynamic</option>
@@ -2872,10 +3428,17 @@ const saveCardToBackend = async (cardData) => {
                       type="url"
                       placeholder="https://your-card-url.com"
                       value={formData.dynamicQRCode?.targetUrl || ""}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        dynamicQRCode: { ...formData.dynamicQRCode, targetUrl: e.target.value }
-                      })}
+                      onChange={(e) => {
+                        const updatedData = {
+                          ...formData,
+                          dynamicQRCode: { ...formData.dynamicQRCode, targetUrl: e.target.value }
+                        };
+                        setFormData(updatedData);
+                        formDataRef.current = updatedData;
+                        setHasUnsavedChanges(true);
+                        setChangeCount(prev => prev + 1);
+                        autoSaveToLocalStorage(updatedData);
+                      }}
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
@@ -2896,10 +3459,17 @@ const saveCardToBackend = async (cardData) => {
                       <input 
                         type="checkbox"
                         checked={formData.nfcSettings?.isEnabled || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          nfcSettings: { ...formData.nfcSettings, isEnabled: e.target.checked }
-                        })}
+                        onChange={(e) => {
+                          const updatedData = {
+                            ...formData,
+                            nfcSettings: { ...formData.nfcSettings, isEnabled: e.target.checked }
+                          };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
                         className="mr-2"
                       />
                       Enable NFC
@@ -2913,10 +3483,17 @@ const saveCardToBackend = async (cardData) => {
                         type="text"
                         placeholder="NFC identifier"
                         value={formData.nfcSettings?.nfcId || ""}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          nfcSettings: { ...formData.nfcSettings, nfcId: e.target.value }
-                        })}
+                        onChange={(e) => {
+                          const updatedData = {
+                            ...formData,
+                            nfcSettings: { ...formData.nfcSettings, nfcId: e.target.value }
+                          };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
                         className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
@@ -3015,10 +3592,19 @@ const saveCardToBackend = async (cardData) => {
   };
 
   return (
-    <div className="w-[90vw] h-[85vh] bg-white p-8 rounded-lg shadow-md mx-auto my-8 overflow-y-auto">
+    <div className="w-[90vw] h-[85vh] bg-white p-8 rounded-lg shadow-md mx-auto my-8 overflow-y-auto relative">
       <WarningPopup />
       
-      <h2 className="text-2xl font-bold mb-6 text-slate-800">
+      {/* ✅ CROSS BUTTON TO GO BACK HOME */}
+      <button
+        onClick={handleGoBackHome}
+        className="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-200"
+        title="Go back to home"
+      >
+        <FaTimes className="w-5 h-5" />
+      </button>
+
+      <h2 className="text-2xl font-bold mb-6 text-slate-800 text-center">
         {editingCard ? "Edit Card" : "Create Card"}
       </h2>
 
@@ -3043,7 +3629,7 @@ const saveCardToBackend = async (cardData) => {
             type="button"
             onClick={prevStep}
             disabled={(currentStep === 1 && !showDesignSelection) || loading}
-            className={`px-6 py-2 rounded transition-colors ${
+            className={`px-4 py-2 rounded transition-colors ${
               (currentStep === 1 && !showDesignSelection) 
                 ? 'bg-slate-300 text-slate-500 cursor-not-allowed' 
                 : 'bg-slate-500 text-white hover:bg-slate-600'
@@ -3052,14 +3638,12 @@ const saveCardToBackend = async (cardData) => {
             BACK
           </button>
 
-          <div className="flex flex-col items-center">
-            <div className={`text-sm ${
-              saveStatus.includes("Saving") ? "text-blue-500" : 
-              saveStatus.includes("success") ? "text-green-500" : 
-              saveStatus.includes("Error") ? "text-red-500" : "text-gray-500"
-            }`}>
-              {saveStatus}
-            </div>
+          <div className={`text-sm ${
+            saveStatus.includes("Saving") ? "text-blue-500" : 
+            saveStatus.includes("success") ? "text-green-500" : 
+            saveStatus.includes("Error") ? "text-red-500" : "text-gray-500"
+          }`}>
+            {saveStatus}
           </div>
 
           {showDesignSelection ? (

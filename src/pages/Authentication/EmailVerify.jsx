@@ -1,123 +1,105 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useRef } from 'react';
-import { POST_METHOD, POST_METHOD_NO_AUTH } from '../../utility/constants';
-import Spinner from '../../components/Spinner';
-// Access the base API URL from the environment variable
-const apiUrl = import.meta.env.VITE_API_URL;
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import authEmail from "../../assets/images/landing/auth-email.png";
 
-// Define the full API URLs by concatenating apiUrl with the specific endpoint paths
-const USER_URL = `${apiUrl}/api/v1/user`;
+function EmailVerify() {
+  const { token } = useParams();
+  const [message, setMessage] = useState("Verifying...");
+  const [success, setSuccess] = useState(false);
 
-const EmailVerify = () => {
-    const [message, setMessage] = useState('');
-    const [isVerified, setIsVerified] = useState(false);
-    const location = useLocation();
-    const [test, setTest] = useState('');
-    const [loading, setLoading] = useState(true);
-    const hasCalledAPI = useRef(false);
+  useEffect(() => {
+    document.title = "Verify Email | Digi_Card Admin Dashboard";
 
-    useEffect(() => {
-        if (hasCalledAPI.current) {
-            return;
-        }
-        hasCalledAPI.current = true;
-        const queryParams = new URLSearchParams(location.search);
-        const token = queryParams.get('token');
-        console.log('Token from URL:', token); // Debugging line
-
-        if (token) {
-            const verifyEmail = async () => {
-                try {
-                    const response = await fetch(`${USER_URL}/verifyEmail?token=${token}`,POST_METHOD_NO_AUTH );
-                    console.log('Response from backend:', response); // Debugging line
-
-                    const data = await response.json();
-                    console.log('Response data:', data); // Debugging line
-
-                    if (response.ok) {
-                        setMessage(data.message || 'Email verified successfully!');
-                        setIsVerified(true);
-                    } else {
-                        setMessage(data.success || 'Invalid or expired token');
-                        setIsVerified(false);
-                    }
-                } catch (error) {
-                    console.log('Error during fetch:', error); // Debugging line
-                    setMessage('An error occurred. Please try again.');
-                    setIsVerified(false);
-                }finally {
-                    setLoading(false);
-                }
-            };
-
-            verifyEmail();
-        } else {
-            setMessage('Token is required');
-            setIsVerified(false);
-        }
-    }, [test]); // Use location.search as the dependency
-if (loading) {
-    return <Spinner />;
-}
-
-    return (
-        <>
-            <div className="flex items-center justify-center min-h-screen bg-slate-400">
-                <div className="bg-green-800 text-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
-                    <h1 className="text-xl font-bold mb-6">{message}</h1>
-                    {isVerified ? (
-                    <div className="flex justify-center mb-6">
-                        <div className="bg-white rounded-full p-4">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-12 w-12 text-green-800"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M5 13l4 4L19 7"
-                                />
-                            </svg>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="flex justify-center mb-6">
-                        <div className="bg-white rounded-full p-4">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-12 w-12 text-red-800"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M6 18L18 6M6 6l12 12"
-                                />
-                            </svg>
-                        </div>
-                    </div>
-                )}
-                    {isVerified ? (
-                    <p className="text-lg mb-2">You can now log in</p>
-                ) : (
-                    <p className="text-lg mb-2">Please try again</p>
-                )}
-                <p className="text-sm">@UConnect</p>
-                </div>
-            </div>
-
-        </>
-
-
+    document.body.classList.add(
+      "flex",
+      "items-center",
+      "justify-center",
+      "min-h-screen",
+      "py-10",
+      "bg-cover",
+      "bg-auth-pattern",
+      "dark:bg-auth-pattern-dark",
+      "dark:text-zink-100",
+      "font-public"
     );
-};
+
+    return () => {
+      document.body.classList.remove(
+        "flex",
+        "items-center",
+        "justify-center",
+        "min-h-screen",
+        "py-10",
+        "bg-cover",
+        "bg-auth-pattern",
+        "dark:bg-auth-pattern-dark",
+        "dark:text-zink-100",
+        "font-public"
+      );
+    };
+  }, []);
+
+  useEffect(() => {
+    const verify = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/v1/user/verify-email/${token}`
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setSuccess(true);
+          setMessage("🎉 Your email has been verified successfully! You can now log in.");
+        } else {
+          setSuccess(false);
+          setMessage(data.message || "Verification failed!");
+        }
+      } catch (err) {
+        setSuccess(false);
+        setMessage("Something went wrong");
+      }
+    };
+
+    verify();
+  }, [token]);
+
+  return (
+    <div className="mb-0 border-none lg:w-[480px] card bg-white/90 shadow-xl rounded-2xl dark:bg-zink-600/70 backdrop-blur-md">
+      <div className="px-10 py-12 card-body">
+
+        <div className="text-center">
+          <h4 className="text-2xl font-semibold text-custom-500 dark:text-custom-400 mb-3">
+            {success ? "Email Verified" : "Verification Status"}
+          </h4>
+
+          <p className="mb-6 text-slate-600 dark:text-zink-200 text-sm leading-relaxed">
+            {message}
+          </p>
+
+          {success && (
+            <Link
+              to="/signin"
+              className="w-[120px] mx-auto block text-center px-3 py-2 text-sm font-medium text-white 
+              bg-blue-600 border border-blue-600 rounded-lg
+              hover:bg-blue-700 hover:border-blue-700 
+              transition-all duration-200 shadow-md"
+            >
+              Go to Login
+            </Link>
+          )}
+        </div>
+
+        <div className="pt-10 text-center">
+          <img
+            src={authEmail}
+            alt="Email Verified"
+            className="block w-[65%] mx-auto drop-shadow-md"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default EmailVerify;

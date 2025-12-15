@@ -61,10 +61,20 @@ const PlanSelection = () => {
     setSelectedPlan(plan);
   };
 
+  // const handleContinue = () => {
+  //   // Navigate to signup page with selected plan
+  //   navigate('/signup', { state: { selectedPlan } });
+  // };
+
   const handleContinue = () => {
-    // Navigate to signup page with selected plan
-    navigate('/signup', { state: { selectedPlan } });
-  };
+  navigate('/signup', { 
+    state: { 
+      selectedPlan,
+      createdBy: location.state?.createdBy,// Pass it along
+         fromPartnerDashboard: location.state?.fromPartnerDashboard 
+    } 
+  });
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4" id="plan">
@@ -192,82 +202,83 @@ const PlanSelection = () => {
         </div>
 
         {/* Feature Comparison Table */}
-        <div className="mt-16 bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-slate-900 text-center mb-8">
-            Plan Comparison
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="text-left py-4 font-semibold text-slate-900">Features</th>
-                  {Object.entries(cardPlans).map(([key, plan]) => (
-                    <th key={key} className="text-center py-4 font-semibold text-slate-900">
-                      {plan.name}
-                    </th>
-                  ))}
+        {/* Plan Comparison Table - Added Here */}
+<div className="mt-16 bg-white rounded-xl shadow dark:bg-zink-700 dark:shadow-zink-500/30 p-6">
+    <h2 className="text-lg font-semibold text-slate-800 dark:text-zink-50 text-center mb-6">
+        Plan Comparison
+    </h2>
+    <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+            <thead>
+                <tr className="border-b border-slate-200 dark:border-zink-500">
+                    <th className="text-left py-3 font-medium text-slate-700 dark:text-zink-200">Features</th>
+                    {Object.entries(cardPlans).map(([key, plan]) => (
+                        <th key={key} className="text-center py-3 font-medium text-slate-700 dark:text-zink-200">
+                            {plan.name}
+                        </th>
+                    ))}
                 </tr>
-              </thead>
-              <tbody>
+            </thead>
+            <tbody>
                 {/* Profile Features */}
-                <tr className="border-b border-slate-100">
-                  <td className="py-4 font-medium text-slate-700">Profile Page</td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
+                <tr className="border-b border-slate-100 dark:border-zink-600">
+                    <td className="py-3 text-slate-600 dark:text-zink-300">Profile Page</td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
                 </tr>
-                <tr className="border-b border-slate-100">
-                  <td className="py-4 font-medium text-slate-700">Profile Video</td>
-                  <td className="text-center py-4"><span className="text-slate-400">—</span></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
+                <tr className="border-b border-slate-100 dark:border-zink-600">
+                    <td className="py-3 text-slate-600 dark:text-zink-300">Profile Video</td>
+                    <td className="text-center py-3"><span className="text-slate-400 dark:text-zink-400 text-sm">—</span></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
                 </tr>
                 
                 {/* Personal Features */}
-                <tr className="border-b border-slate-100">
-                  <td className="py-4 font-medium text-slate-700">Company Details</td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
+                <tr className="border-b border-slate-100 dark:border-zink-600">
+                    <td className="py-3 text-slate-600 dark:text-zink-300">Company Details</td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
                 </tr>
-                <tr className="border-b border-slate-100">
-                  <td className="py-4 font-medium text-slate-700">Services & Products</td>
-                  <td className="text-center py-4"><span className="text-slate-400">—</span></td>
-                  <td className="text-center py-4"><span className="text-slate-400">—</span></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
+                <tr className="border-b border-slate-100 dark:border-zink-600">
+                    <td className="py-3 text-slate-600 dark:text-zink-300">Services & Products</td>
+                    <td className="text-center py-3"><span className="text-slate-400 dark:text-zink-400 text-sm">—</span></td>
+                    <td className="text-center py-3"><span className="text-slate-400 dark:text-zink-400 text-sm">—</span></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
                 </tr>
                 
                 {/* Contact Features */}
-                <tr className="border-b border-slate-100">
-                  <td className="py-4 font-medium text-slate-700">Social Links</td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
+                <tr className="border-b border-slate-100 dark:border-zink-600">
+                    <td className="py-3 text-slate-600 dark:text-zink-300">Social Links</td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
                 </tr>
-                <tr className="border-b border-slate-100">
-                  <td className="py-4 font-medium text-slate-700">Multiple Addresses</td>
-                  <td className="text-center py-4"><span className="text-slate-400">—</span></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
+                <tr className="border-b border-slate-100 dark:border-zink-600">
+                    <td className="py-3 text-slate-600 dark:text-zink-300">Multiple Addresses</td>
+                    <td className="text-center py-3"><span className="text-slate-400 dark:text-zink-400 text-sm">—</span></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
                 </tr>
                 
                 {/* Premium Features */}
-                <tr className="border-b border-slate-100">
-                  <td className="py-4 font-medium text-slate-700">Interactive Elements</td>
-                  <td className="text-center py-4"><span className="text-slate-400">—</span></td>
-                  <td className="text-center py-4"><span className="text-slate-400">—</span></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
+                <tr className="border-b border-slate-100 dark:border-zink-600">
+                    <td className="py-3 text-slate-600 dark:text-zink-300">Interactive Elements</td>
+                    <td className="text-center py-3"><span className="text-slate-400 dark:text-zink-400 text-sm">—</span></td>
+                    <td className="text-center py-3"><span className="text-slate-400 dark:text-zink-400 text-sm">—</span></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
                 </tr>
-                <tr className="border-b border-slate-100">
-                  <td className="py-4 font-medium text-slate-700">NFC Support</td>
-                  <td className="text-center py-4"><span className="text-slate-400">—</span></td>
-                  <td className="text-center py-4"><span className="text-slate-400">—</span></td>
-                  <td className="text-center py-4"><FaCheck className="w-5 h-5 text-green-500 mx-auto" /></td>
+                <tr className="border-b border-slate-100 dark:border-zink-600">
+                    <td className="py-3 text-slate-600 dark:text-zink-300">NFC Support</td>
+                    <td className="text-center py-3"><span className="text-slate-400 dark:text-zink-400 text-sm">—</span></td>
+                    <td className="text-center py-3"><span className="text-slate-400 dark:text-zink-400 text-sm">—</span></td>
+                    <td className="text-center py-3"><FaCheck className="w-4 h-4 text-green-500 mx-auto" /></td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+            </tbody>
+        </table>
+    </div>
+</div>
       </div>
     </div>
   );
