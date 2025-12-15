@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { SiFacebook, SiInstagram, SiLinkedin, SiYoutube } from "react-icons/si";
+import { Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import logoLight from "../../assets/images/logo-light.png";
 import logoDark from "../../assets/images/logo-dark.png";
+import logoLight from "../../assets/images/logo-light.png";
 
 const Footer = () => {
   useEffect(() => {
@@ -11,105 +11,209 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-white text-slate-800 py-12 px-4 sm:px-5 border-t border-gray-200 mt-20 ml-0 sm:ml-20">
-      {/* Newsletter Section */}
-      <section className="flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-gray-200 pb-10 mb-10 px-0 sm:px-5">
-        <div className="flex-1 min-w-[280px] mr-0 lg:mr-5 mb-5 lg:mb-0" data-aos="fade-right">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2">Sign Up For Update & Newsletter</h2>
-          <p className="text-gray-500 text-sm sm:text-base">
-            Tell us which describes you, and we'll get in touch with next steps.
-          </p>
-        </div>
-        <form className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto flex-1 min-w-[300px]" data-aos="fade-left">
-          <input
-            type="email"
-            placeholder="digicard@gamil.com"
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
-            required
-          />
-          <button 
-            type="submit"
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2 rounded-md font-semibold whitespace-nowrap"
-          >
-            Subscribe Now
-          </button>
-        </form>
-      </section>
+    <React.Fragment>
+      <footer className="relative pt-20 pb-12 border-t border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+        <div className="absolute left-0 size-64 bg-purple-500 -top-16 opacity-10 blur-3xl"></div>
+        <div className="container 2xl:max-w-[87.5rem] px-4 mx-auto">
+          
+          {/* TOP NEWSLETTER SECTION */}
+          <div className="relative z-10 grid grid-cols-12 gap-8 mb-16 pb-16 border-b border-slate-200 dark:border-zinc-800">
+            <div className="col-span-12 lg:col-span-6" data-aos="fade-right">
+              <h2 className="text-3xl font-bold mb-4 dark:text-zinc-100">
+                Sign Up For Update & Newsletter
+              </h2>
+              <p className="text-slate-500 dark:text-zinc-400 text-sm leading-relaxed mb-6">
+                Tell us which describes you, and we'll get in touch with next steps.
+              </p>
+            </div>
+            
+            <div className="col-span-12 lg:col-span-6" data-aos="fade-left">
+              <form className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  placeholder="digicardk@themesdesign"
+                  className="flex-1 px-4 py-3 border border-slate-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-sm bg-white dark:bg-zinc-800 dark:text-zinc-100"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold text-sm hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                >
+                  Subscribe Now
+                </button>
+              </form>
+            </div>
+          </div>
 
-      {/* Footer Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-between mt-10 px-0 sm:px-5">
-        {/* Column 1 - Logo and Description */}
-        <div className="min-w-[200px] max-w-[300px]" data-aos="fade-up">
-          <img src={logoDark} alt="Tailwick Logo" className="h-30 w-75 mb-4" />
-          <p className="text-gray-500 text-sm mb-4">
-         Digital Card.com has digital Personal card designs for every industry, and we’re ready to help you find the perfect one! Just pick your industry or enter a keyword below, and watch as we bring you designs that’ll make your brand shine. Ready to create something amazing? Let’s go!.
-          </p>
-          <div className="flex gap-2">
-            <a href="#" className="w-9 h-9 border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-purple-600 hover:border-purple-600 transition-colors">
-              <SiFacebook size={18} />
-            </a>
-            <a href="#" className="w-9 h-9 border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-purple-600 hover:border-purple-600 transition-colors">
-              <SiLinkedin size={18} />
-            </a>
-            <a href="#" className="w-9 h-9 border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-purple-600 hover:border-purple-600 transition-colors">
-              <SiInstagram size={18} />
-            </a>
-            <a href="#" className="w-9 h-9 border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-purple-600 hover:border-purple-600 transition-colors">
-              <SiYoutube size={18} />
-            </a>
+          {/* MAIN FOOTER GRID */}
+          <div className="relative z-10 grid grid-cols-12 gap-8">
+            {/* Column 1 - Logo + Description + Social */}
+            <div className="col-span-12 lg:col-span-4" data-aos="fade-up">
+              <div className="mb-5">
+                <a href="#!">
+                  <img src={logoLight} alt="" className="hidden h-8 dark:block" />
+                  <img src={logoDark} alt="" className="block h-8 dark:hidden" />
+                </a>
+              </div>
+              <p className="mb-6 text-slate-500 dark:text-zinc-400 text-sm leading-relaxed">
+                Digital Card.com has digital Personal card designs for every
+                industry, and we're ready to help you find the perfect one!
+                Just pick your industry or enter a keyword below.
+              </p>
+              
+              <ul className="flex items-center gap-3">
+                <li>
+                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400">
+                    <Facebook className="size-4" />
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400">
+                    <Linkedin className="size-4" />
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400">
+                    <Instagram className="size-4" />
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400">
+                    <Twitter className="size-4" />
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400">
+                    <Youtube className="size-4" />
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 2 - Degicard.com Links */}
+            <div className="col-span-6 md:col-span-4 lg:col-span-2" data-aos="fade-up">
+              <h5 className="mb-5 font-semibold text-lg dark:text-zinc-100">Degicard.com</h5>
+              <ul className="flex flex-col gap-3 text-sm">
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Digital Personal Cards
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Link in Bio
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Website Design
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Free Personal Cards
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Personal Cards
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Design Ideas
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Social Templates
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Design Templates
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3 - Company Links */}
+            <div className="col-span-6 md:col-span-4 lg:col-span-3" data-aos="fade-up">
+              <h5 className="mb-5 font-semibold text-lg dark:text-zinc-100">Company</h5>
+              <ul className="flex flex-col gap-3 text-sm">
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    About us
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Affiliates
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Contact us
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Legals
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Privacy policy
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Help Center
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4 - Get Help Links */}
+            <div className="col-span-12 md:col-span-4 lg:col-span-3" data-aos="fade-up">
+              <h5 className="mb-5 font-semibold text-lg dark:text-zinc-100">Get Help</h5>
+              <ul className="flex flex-col gap-3 text-sm">
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Support Center
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Contact Us
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Insurance & Billing
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
+                    Refund & Cancellation
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* BOTTOM COPYRIGHT */}
+          <div className="pt-10 mt-16 text-center border-t text-slate-500 dark:text-zinc-400 dark:border-zinc-800">
+            <p>
+              {new Date().getFullYear()} © Digicard. Design & Develop by{" "}
+              <a href="#" className="underline text-slate-800 dark:text-zinc-100 hover:text-blue-600 dark:hover:text-blue-400">
+                Themesdesign
+              </a>
+            </p>
           </div>
         </div>
-
-
-        {/* Column 1 */}
-        <div className="min-w-[200px]" data-aos="fade-up">
-          <h4 className="font-semibold mb-3">Degicard.com</h4>
-          <ul className="space-y-2">
-            <li className="text-gray-500 text-sm cursor-pointer">Digital Personal Cards</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Link in Bio</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Website Design</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Free Personal Cards</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Personal Cards</li>
-             <li className="text-gray-500 text-sm cursor-pointer">Design Ideas</li>
-              <li className="text-gray-500 text-sm cursor-pointer">Social Templates</li>
-               <li className="text-gray-500 text-sm cursor-pointer">Design Templates</li>
-          </ul>
-        </div>
-
-       {/* Column 2 */}
-        <div className="min-w-[200px]" data-aos="fade-up">
-          <h4 className="font-semibold mb-3">Company</h4>
-          <ul className="space-y-2">
-            <li className="text-gray-500 text-sm cursor-pointer">About us</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Affiliates</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Contact us</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Legals</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Privacy policy</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Help Center</li>
-          </ul>
-        </div>
-        
-        {/* Column 3 */}
-        <div className="min-w-[200px]" data-aos="fade-up">
-          <h4 className="font-semibold mb-3">Get Help</h4>
-          <ul className="space-y-2">
-            <li className="text-gray-500 text-sm cursor-pointer">Support Center</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Contact Us</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Insurance & Billing</li>
-            <li className="text-gray-500 text-sm cursor-pointer">Refund & Cancellation</li>
-          </ul>
-        </div>
-
-      </div>
-
-      {/* Footer Bottom */}
-      <div className="border-t border-gray-200 pt-8 mt-10 text-center text-gray-500 text-sm px-0 sm:px-5">
-        <p>
-          {new Date().getFullYear()} ©Copywrite. Design & Develop by{" "}
-          <a href="#" className="text-gray-800 underline">Digicard</a>
-        </p>
-      </div>
-    </footer>
+      </footer>
+    </React.Fragment>
   );
 };
 

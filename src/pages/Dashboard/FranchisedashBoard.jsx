@@ -420,13 +420,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Copy, 
-  Plus, 
-  Users, 
-  CheckCircle, 
-  Clock, 
-  TrendingUp, 
+import {
+  Copy,
+  Plus,
+  Users,
+  CheckCircle,
+  Clock,
+  TrendingUp,
   UserPlus,
   Calendar,
   ChevronLeft,
@@ -453,44 +453,44 @@ const FranchiseDashboard = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-
+ 
   // Fetch franchise info and partners
   const fetchFranchiseData = async () => {
     try {
       const userId = localStorage.getItem('user_id');
       console.log('🔍 Fetching franchise data for user:', userId);
-      
+     
       if (!userId) {
         console.error('❌ No user ID found in localStorage');
         setLoading(false);
         return;
       }
-      
+     
       // Fetch franchise document using the user ID
       const franchiseResponse = await fetch(`${API_URL}/api/v1/franchise-partner/franchise/${userId}`);
-      
+
       if (!franchiseResponse.ok) {
         throw new Error(`HTTP error! status: ${franchiseResponse.status}`);
       }
-      
+     
       const franchiseData = await franchiseResponse.json();
       console.log('✅ Franchise data received:', franchiseData);
-      
+     
       if (franchiseData.success && franchiseData.data) {
         const franchise = franchiseData.data;
-        
+       
         const franchiseUserId = franchise.userId;
         const franchiseDocumentId = franchise._id;
-        
+       
         console.log('👤 Franchise User ID:', franchiseUserId);
         console.log('🏢 Franchise Document ID:', franchiseDocumentId);
-        
+       
         setFranchiseInfo({
           franchiseId: franchiseUserId,
           PersonalName: franchise.franchiseDetails?.PersonalName || 'Your Personal',
           joinDate: franchise.createdAt ? new Date(franchise.createdAt).toLocaleDateString() : 'N/A'
         });
-
+ 
         // Store both IDs for different purposes
         if (franchiseDocumentId) {
           localStorage.setItem('franchise_id', franchiseDocumentId);
@@ -498,7 +498,7 @@ const FranchiseDashboard = () => {
         if (franchiseUserId) {
           localStorage.setItem('franchise_user_id', franchiseUserId);
         }
-
+ 
         // Set partners from the franchise data
         setPartners(franchise.partners || []);
         setTotalItems(franchise.partners?.length || 0);
@@ -511,7 +511,7 @@ const FranchiseDashboard = () => {
       setLoading(false);
     }
   };
-
+ 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (loading) {
@@ -519,33 +519,33 @@ const FranchiseDashboard = () => {
         setLoading(false);
       }
     }, 5000);
-
+ 
     fetchFranchiseData();
-
+ 
     return () => clearTimeout(timeoutId);
   }, []);
-
+ 
   const addPartner = () => {
     const franchiseUserId = franchiseInfo.franchiseId || localStorage.getItem('franchise_user_id');
-    
+   
     console.log('🆕 Creating partner for franchise user:', franchiseUserId);
-    
+   
     if (!franchiseUserId) {
       alert('❌ Franchise User ID not found. Please refresh the page.');
       return;
     }
-    
+   
     localStorage.setItem('franchise_user_id', franchiseUserId);
-    
-    navigate('/signup', { 
-      state: { 
+   
+    navigate('/signup', {
+      state: {
         franchiseContext: true,
         createdBy: franchiseUserId,
         franchiseName: franchiseInfo.PersonalName
       }
     });
   };
-
+ 
   const handleCopyFranchiseId = () => {
     const franchiseUserId = franchiseInfo.franchiseId || localStorage.getItem('franchise_user_id');
     if (franchiseUserId) {
@@ -555,25 +555,25 @@ const FranchiseDashboard = () => {
       alert('❌ Franchise User ID not found!');
     }
   };
-
+ 
   // Action handlers for DynamicTable
   const handleViewPartner = (partnerId) => {
     navigate(`/partner-details/${partnerId}`);
   };
-
+ 
   const handleEditPartner = (partnerId) => {
     navigate(`/edit-partner/${partnerId}`);
   };
-
+ 
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
-
+ 
   const handlePageSizeChange = (newSize) => {
     setPageSize(newSize);
     setPage(0);
   };
-
+ 
   // Get profile initials
   const getProfileInitials = (partner) => {
     if (partner.firstName && partner.firstName.trim()) {
@@ -587,24 +587,24 @@ const FranchiseDashboard = () => {
     }
     return 'P';
   };
-
+ 
   // Get profile color based on partner data
   const getProfileColor = (partner) => {
     const colors = [
-      'bg-blue-500', 'bg-green-500', 'bg-purple-500', 
-      'bg-pink-500', 'bg-indigo-500', 'bg-teal-500', 
+      'bg-blue-500', 'bg-green-500', 'bg-purple-500',
+      'bg-pink-500', 'bg-indigo-500', 'bg-teal-500',
       'bg-orange-500', 'bg-cyan-500'
     ];
-    
+   
     const str = partner._id || partner.email || partner.PersonalName || 'default';
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    
+   
     return colors[Math.abs(hash) % colors.length];
   };
-
+ 
   const getStatusBadge = (status) => {
     const statusConfig = {
       active: { color: 'text-green-800', bg: 'bg-green-100', border: 'border-green-200', label: 'Active', icon: CheckCircle },
@@ -612,10 +612,10 @@ const FranchiseDashboard = () => {
       inactive: { color: 'text-red-800', bg: 'bg-red-100', border: 'border-red-200', label: 'Inactive', icon: Clock },
       rejected: { color: 'text-red-800', bg: 'bg-red-100', border: 'border-red-200', label: 'Rejected', icon: Clock }
     };
-    
+   
     const config = statusConfig[status] || statusConfig.pending;
     const StatusIcon = config.icon;
-    
+   
     return (
       <span className={`inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium ${config.bg} ${config.color} border ${config.border}`}>
         <StatusIcon className="w-3 h-3" />
@@ -623,7 +623,7 @@ const FranchiseDashboard = () => {
       </span>
     );
   };
-
+ 
   // DynamicTable columns configuration
   const columns = [
     {
@@ -631,11 +631,11 @@ const FranchiseDashboard = () => {
       cell: ({ row }) => {
         const partner = row.original;
         if (!partner) return <span>No partner data</span>;
-
-        const fullName = partner.firstName && partner.firstName.trim() 
+ 
+        const fullName = partner.firstName && partner.firstName.trim()
           ? `${partner.salutation || ''} ${partner.firstName} ${partner.lastName || ''}`.trim()
           : partner.PersonalName || 'Unnamed Partner';
-
+ 
         return (
           <div className="flex items-center">
             <div className={`flex-shrink-0 h-10 w-10 ${getProfileColor(partner)} rounded-lg flex items-center justify-center text-white font-semibold text-sm`}>
@@ -740,7 +740,7 @@ const FranchiseDashboard = () => {
       }
     }
   ];
-
+ 
   // Calculate stats
   const totalPartners = partners.length;
   const activePartners = partners.filter(partner => partner.status === 'active').length;
@@ -751,7 +751,7 @@ const FranchiseDashboard = () => {
     const now = new Date();
     return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
   }).length;
-
+ 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-8 flex items-center justify-center">
@@ -764,7 +764,7 @@ const FranchiseDashboard = () => {
       </div>
     );
   }
-
+ 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-8">
       {/* Header with Franchise ID */}
@@ -802,7 +802,7 @@ const FranchiseDashboard = () => {
             </div>
           </div>
         </div>
-        
+       
         {/* Add Partner Button - Keeping the original button style */}
         <button
           onClick={addPartner}
@@ -812,34 +812,34 @@ const FranchiseDashboard = () => {
           Add New Partner
         </button>
       </div>
-
+ 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         {[
-          { 
-            title: "Total Partners", 
-            value: totalPartners, 
+          {
+            title: "Total Partners",
+            value: totalPartners,
             color: "blue",
             icon: Users,
             description: "Under your franchise"
           },
-          { 
-            title: "Active Partners", 
-            value: activePartners, 
+          {
+            title: "Active Partners",
+            value: activePartners,
             color: "green",
             icon: CheckCircle,
             description: "Currently active"
           },
-          { 
-            title: "Pending Approval", 
-            value: pendingPartners, 
+          {
+            title: "Pending Approval",
+            value: pendingPartners,
             color: "yellow",
             icon: Clock,
             description: "Awaiting activation"
           },
-          { 
-            title: "This Month", 
-            value: thisMonthPartners, 
+          {
+            title: "This Month",
+            value: thisMonthPartners,
             color: "purple",
             icon: TrendingUp,
             description: "New additions"
@@ -872,7 +872,7 @@ const FranchiseDashboard = () => {
           );
         })}
       </div>
-
+ 
       {/* Partner Management with DynamicTable */}
       <div className="mb-5 rounded-md bg-white dark:bg-zinc-800">
         <div className="p-5 pt-7">
@@ -895,5 +895,6 @@ const FranchiseDashboard = () => {
     </div>
   );
 };
-
+ 
 export default FranchiseDashboard;
+ 

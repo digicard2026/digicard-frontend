@@ -19,7 +19,7 @@ const DropdownUser = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [uin, setUin] = useState('');
   const [profile, setProfile] = useState('');
-  const path="http://localhost:3000/"
+  const VITE_API_URL = import.meta.env.VITE_API_URL || "";
   const { profileImage, user } = useContext(ProfileContext);
   useEffect(() => {
     
@@ -77,11 +77,12 @@ const DropdownUser = () => {
  const handleLogout = async () => {
   try {
     // Call backend to clear httpOnly cookie
-    await fetch('path/api/v1/auth/logout', {
+    await fetch(`${VITE_API_URL}/api/v1/user/logout`, {
       method: 'POST',
       credentials: 'include',
     });
-
+// Clear localStorage
+    localStorage.clear();
     // Delete any frontend cookies you set manually
     deleteCookie('user_id');
     deleteCookie('token');

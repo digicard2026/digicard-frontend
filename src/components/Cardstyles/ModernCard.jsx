@@ -11,8 +11,48 @@ import {
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
-const ModernCard = ({ cardData = {} }) => {
+const ModernCard = ({ cardData = {}, plan = 'Business Premium' }) => {
   console.log('📱 ModernCard received data:', cardData);
+  console.log('📋 Active plan:', plan);
+  
+  // Plan configuration
+  const planConfig = {
+    'Personal': {
+      allowedSections: ['basicInfo', 'about', 'social'],
+      showCheckUsOut: false,
+      showBrandLabel: false,
+      showVideo: false,
+      showGallery: false,
+      showServices: false,
+      showTestimonials: false,
+      showTeam: false,
+      showContactIcons: false
+    },
+    'Business': {
+      allowedSections: ['basicInfo', 'about', 'social', 'checkUsOut', 'video', 'gallery', 'testimonials'],
+      showCheckUsOut: true,
+      showBrandLabel: false,
+      showVideo: true,
+      showGallery: true,
+      showServices: false,
+      showTestimonials: true,
+      showTeam: false,
+      showContactIcons: true
+    },
+    'Business Premium': {
+      allowedSections: ['basicInfo', 'about', 'social', 'checkUsOut', 'brandLabel', 'video', 'gallery', 'services', 'testimonials', 'team'],
+      showCheckUsOut: true,
+      showBrandLabel: true,
+      showVideo: true,
+      showGallery: true,
+      showServices: true,
+      showTestimonials: true,
+      showTeam: true,
+      showContactIcons: true
+    }
+  };
+  
+  const currentPlan = planConfig[plan] || planConfig['Business Premium'];
   
   // Build profileData from cardData with proper fallbacks
   const profileData = {
@@ -91,43 +131,32 @@ const ModernCard = ({ cardData = {} }) => {
     enableEmail: cardData?.enableEmail !== undefined ? cardData.enableEmail : true
   };
 
-  // State for sliders and hover
+  // State for sliders
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentServiceSlide, setCurrentServiceSlide] = useState(0);
   const [currentProductSlide, setCurrentProductSlide] = useState(0);
   const [currentTestimonialSlide, setCurrentTestimonialSlide] = useState(0);
-  const [showContactOptions, setShowContactOptions] = useState(false);
-  
-  // Refs for better hover handling
-  const contactContainerRef = useRef(null);
-  const contactOptionsRef = useRef(null);
 
   // Auto slide intervals
   useEffect(() => {
-    const serviceInterval = setInterval(() => {
-      if (profileData.services.length > 1) {
-        setCurrentServiceSlide(prev => (prev + 1) % profileData.services.length);
-      }
-    }, 4000);
+    const serviceInterval = currentPlan.showServices && profileData.services.length > 1 ? setInterval(() => {
+      setCurrentServiceSlide(prev => (prev + 1) % profileData.services.length);
+    }, 4000) : null;
 
-    const productInterval = setInterval(() => {
-      if (profileData.products.length > 1) {
-        setCurrentProductSlide(prev => (prev + 1) % profileData.products.length);
-      }
-    }, 4000);
+    const productInterval = currentPlan.showServices && profileData.products.length > 1 ? setInterval(() => {
+      setCurrentProductSlide(prev => (prev + 1) % profileData.products.length);
+    }, 4000) : null;
 
-    const testimonialInterval = setInterval(() => {
-      if (profileData.testimonials.length > 1) {
-        setCurrentTestimonialSlide(prev => (prev + 1) % profileData.testimonials.length);
-      }
-    }, 5000);
+    const testimonialInterval = currentPlan.showTestimonials && profileData.testimonials.length > 1 ? setInterval(() => {
+      setCurrentTestimonialSlide(prev => (prev + 1) % profileData.testimonials.length);
+    }, 5000) : null;
 
     return () => {
-      clearInterval(serviceInterval);
-      clearInterval(productInterval);
-      clearInterval(testimonialInterval);
+      if (serviceInterval) clearInterval(serviceInterval);
+      if (productInterval) clearInterval(productInterval);
+      if (testimonialInterval) clearInterval(testimonialInterval);
     };
-  }, [profileData.services.length, profileData.products.length, profileData.testimonials.length]);
+  }, [profileData.services.length, profileData.products.length, profileData.testimonials.length, currentPlan]);
 
   // Contact handlers
   const handleContact = (type, value) => {
@@ -151,27 +180,7 @@ const ModernCard = ({ cardData = {} }) => {
       default:
         window.open(value, "_blank");
     }
-    setShowContactOptions(false); // Close options after clicking
   };
-
-  // Close contact options when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        contactContainerRef.current && 
-        !contactContainerRef.current.contains(event.target) &&
-        contactOptionsRef.current && 
-        !contactOptionsRef.current.contains(event.target)
-      ) {
-        setShowContactOptions(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   // Gallery navigation
   const nextSlide = () => {
@@ -271,76 +280,6 @@ const ModernCard = ({ cardData = {} }) => {
         body::-webkit-scrollbar {
           display: none;
         }
-
-        /* Custom animations */
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-5px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animate-fade-in {
-          animation: fadeIn 0.15s ease-out forwards;
-        }
-
-        /* Contact options popup styling - FIXED VERSION */
-        .contact-options-popup {
-          position: absolute;
-          top: calc(100% + 1px); /* Very close to the button */
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 1000;
-          background: transparent;
-          padding: 8px;
-          display: flex;
-          gap: 8px; /* Even spacing between buttons */
-          align-items: center;
-          justify-content: center;
-          min-width: auto;
-        }
-
-        .contact-option-button {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          width: 46px; /* Smaller size */
-          height: 44px; /* Smaller size */
-          border-radius: 10px; /* Rounded corners */
-          border: none;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          color: white;
-          font-size: 9px; /* Smaller font */
-          font-weight: 500;
-          padding: 4px 2px;
-          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-        }
-
-        .contact-option-button:hover {
-          transform: scale(1.08);
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .contact-option-button svg {
-          width: 16px; /* Smaller icons */
-          height: 16px; /* Smaller icons */
-          margin-bottom: 3px;
-        }
-
-        /* Bridge for mouse movement */
-        .contact-options-bridge {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          height: 5px;
-          background: transparent;
-          pointer-events: none;
-        }
-        
-        .contact-options-bridge.active {
-          pointer-events: auto;
-        }
       `}</style>
 
       <div 
@@ -395,8 +334,8 @@ const ModernCard = ({ cardData = {} }) => {
                 height: '200px'
               }}
             >
-              {/* Company Logo */}
-              {(profileData.companyLogo || profileData.companyName) && (
+              {/* Company Logo - Only show for Business and Business Premium */}
+              {(currentPlan.showCheckUsOut && (profileData.companyLogo || profileData.companyName)) && (
                 <div className="absolute top-4 left-0 right-0 text-center">
                   <div className="flex flex-col items-center justify-center">
                     {profileData.companyLogo && (
@@ -492,128 +431,105 @@ const ModernCard = ({ cardData = {} }) => {
                   </div>
                 )}
 
-                {/* Exchange Contact Button with Hover Options - FIXED VERSION */}
-                <div className="flex justify-center mb-16">
-                  <div 
-                    className="relative inline-block"
-                    ref={contactContainerRef}
-                    style={{ position: 'relative', display: 'inline-block' }}
+                {/* Exchange Contact Button WITHOUT hover options */}
+                {/* <div className="flex justify-center mb-8">
+                  <button 
+                    className="px-14 py-4 text-white rounded-full shadow-lg transition-all duration-300 relative"
+                    style={{
+                      background: 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)',
+                      fontSize: '16px',
+                      minWidth: '260px',
+                      fontWeight: 400,
+                      letterSpacing: '0.3px',
+                      fontFamily: "'Poppins', sans-serif"
+                    }}
+                    onClick={() => {
+                      // Default action - open email or primary contact
+                      if (profileData.email) {
+                        handleContact("email", profileData.email);
+                      } else if (primaryPhone?.number) {
+                        handleContact("phone", primaryPhone.number);
+                      }
+                    }}
                   >
-                    {/* Main Button */}
-                    <button 
-                      className="px-14 py-4 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95 relative z-10"
-                      style={{
-                        background: 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)',
-                        fontSize: '16px',
-                        minWidth: '260px',
-                        fontWeight: 400,
-                        letterSpacing: '0.3px',
-                        fontFamily: "'Poppins', sans-serif"
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowContactOptions(!showContactOptions);
-                      }}
-                      onMouseEnter={() => setShowContactOptions(true)}
-                      onMouseLeave={(e) => {
-                        // Small delay to allow moving to options
-                        setTimeout(() => {
-                          if (!contactOptionsRef.current?.contains(document.activeElement)) {
-                            const relatedTarget = e.relatedTarget;
-                            if (!contactOptionsRef.current?.contains(relatedTarget)) {
-                              setShowContactOptions(false);
-                            }
-                          }
-                        }, 50);
-                      }}
-                    >
-                      Exchange Contact
-                    </button>
-                    
-                    {/* Contact Options Popup - CENTERED AND CLOSE TO BUTTON */}
-                    {showContactOptions && (
-                      <>
-                        {/* Invisible bridge for mouse movement */}
+                    Exchange Contact
+                  </button>
+                </div> */}
+
+                {/* Contact Icons - Directly below button (for Business and Business Premium) */}
+                {currentPlan.showContactIcons && (
+                  <div className="flex justify-center space-x-6 mb-16">
+                    {/* WhatsApp Icon */}
+                    {primaryPhone && primaryPhone.number && profileData.enableWhatsApp && (
+                      <button
+                        onClick={() => handleContact("whatsapp", primaryPhone.number)}
+                        className="flex flex-col items-center justify-center"
+                        title="WhatsApp"
+                      >
                         <div 
-                          className="contact-options-bridge active"
-                          onMouseEnter={() => setShowContactOptions(true)}
-                          onMouseLeave={() => setTimeout(() => setShowContactOptions(false), 100)}
-                        />
-                        
-                        <div 
-                          className="contact-options-popup animate-fade-in"
-                          ref={contactOptionsRef}
-                          onMouseEnter={() => setShowContactOptions(true)}
-                          onMouseLeave={() => setTimeout(() => setShowContactOptions(false), 100)}
+                          className="rounded-full flex items-center justify-center text-white mb-1"
                           style={{
-                            background: 'transparent'
+                            width: '46px',
+                            height: '44px',
+                            background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                            boxShadow: '0 3px 10px rgba(0, 0, 0, 0.15)'
                           }}
                         >
-                          {/* WhatsApp Option */}
-                          {primaryPhone && primaryPhone.number && profileData.enableWhatsApp && (
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleContact("whatsapp", primaryPhone.number);
-                              }}
-                              className="contact-option-button"
-                              style={{
-                                background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)'
-                              }}
-                              title="WhatsApp"
-                            >
-                              <FaWhatsapp />
-                              <span>WhatsApp</span>
-                            </button>
-                          )}
-
-                          {/* Call Option */}
-                          {primaryPhone && primaryPhone.number && profileData.enableOneTapCall && (
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleContact("phone", primaryPhone.number);
-                              }}
-                              className="contact-option-button"
-                              style={{
-                                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
-                              }}
-                              title="Call"
-                            >
-                              <FaPhoneAlt />
-                              <span>Call</span>
-                            </button>
-                          )}
-
-                          {/* Email Option */}
-                          {profileData.email && profileData.enableEmail && (
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleContact("email", profileData.email);
-                              }}
-                              className="contact-option-button"
-                              style={{
-                                background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)'
-                              }}
-                              title="Email"
-                            >
-                              <FaEnvelope />
-                              <span>Email</span>
-                            </button>
-                          )}
+                          <FaWhatsapp className="w-5 h-5" />
                         </div>
-                      </>
+                        <span className="text-xs text-gray-600">WhatsApp</span>
+                      </button>
+                    )}
+
+                    {/* Call Icon */}
+                    {primaryPhone && primaryPhone.number && profileData.enableOneTapCall && (
+                      <button
+                        onClick={() => handleContact("phone", primaryPhone.number)}
+                        className="flex flex-col items-center justify-center"
+                        title="Call"
+                      >
+                        <div 
+                          className="rounded-full flex items-center justify-center text-white mb-1"
+                          style={{
+                            width: '46px',
+                            height: '44px',
+                            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                            boxShadow: '0 3px 10px rgba(0, 0, 0, 0.15)'
+                          }}
+                        >
+                          <FaPhoneAlt className="w-5 h-5" />
+                        </div>
+                        <span className="text-xs text-gray-600">Call</span>
+                      </button>
+                    )}
+
+                    {/* Email Icon */}
+                    {profileData.email && profileData.enableEmail && (
+                      <button
+                        onClick={() => handleContact("email", profileData.email)}
+                        className="flex flex-col items-center justify-center"
+                        title="Email"
+                      >
+                        <div 
+                          className="rounded-full flex items-center justify-center text-white mb-1"
+                          style={{
+                            width: '46px',
+                            height: '44px',
+                            background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                            boxShadow: '0 3px 10px rgba(0, 0, 0, 0.15)'
+                          }}
+                        >
+                          <FaEnvelope className="w-5 h-5" />
+                        </div>
+                        <span className="text-xs text-gray-600">Email</span>
+                      </button>
                     )}
                   </div>
-                </div>
+                )}
               </div>
 
-              {/* Title Line / Recognition */}
-              {profileData.titleLine && (
+              {/* Title Line / Recognition - Only for Business and Business Premium */}
+              {currentPlan.showCheckUsOut && profileData.titleLine && (
                 <div
                   className="relative rounded-full w-80 h-13 px-6 py-3 flex items-center justify-center mt-0 mx-auto mb-10"
                   style={{
@@ -630,7 +546,7 @@ const ModernCard = ({ cardData = {} }) => {
                 </div>
               )}
 
-              {/* ABOUT Section - Removed company name section */}
+              {/* ABOUT Section - Show for all plans */}
               <div className="mb-16">
                 <h2 
                   className="mb-10 text-center"
@@ -704,51 +620,61 @@ const ModernCard = ({ cardData = {} }) => {
                 )}
               </div>
 
-              {/* CHECK US OUT Section - Now directly after ABOUT */}
-              <div className="mb-16">
-                <h2 
-                  className="mb-10 text-center"
-                  style={{
-                    fontFamily: "'Montserrat', sans-serif",
-                    fontSize: '22px',
-                    fontWeight: 500,
-                    letterSpacing: '0.5px',
-                    color: '#000000'
-                  }}
-                >
-                  CHECK US OUT
-                </h2>
-                
-                {/* Learn More button */}
-                <div className="flex justify-center mb-10">
-                  <button 
-                    className="flex items-center justify-between px-10 py-4 border-2 border-blue-500 text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-300 group active:scale-95"
+              {/* CHECK US OUT Section - Only for Business and Business Premium */}
+              {currentPlan.showCheckUsOut && (
+                <div className="mb-16">
+                  <h2 
+                    className="mb-10 text-center"
                     style={{
-                      fontSize: '15px',
-                      minWidth: '300px',
-                      fontWeight: 400,
-                      borderWidth: '2px',
-                      fontFamily: "'Poppins', sans-serif"
+                      fontFamily: "'Montserrat', sans-serif",
+                      fontSize: '22px',
+                      fontWeight: 500,
+                      letterSpacing: '0.5px',
+                      color: '#000000'
                     }}
                   >
-                    <span>Learn More About Our Company</span>
-                    <FaChevronRight className="ml-4 group-hover:translate-x-2 transition-transform" style={{ fontSize: '14px' }} />
-                  </button>
-                </div>
+                    CHECK US OUT
+                  </h2>
+                  
+                  {/* Learn More button */}
+                  <div className="flex justify-center mb-10">
+                    <button 
+                      className="flex items-center justify-between px-10 py-4 border-2 border-blue-500 text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-300 group active:scale-95"
+                      style={{
+                        fontSize: '15px',
+                        minWidth: '300px',
+                        fontWeight: 400,
+                        borderWidth: '2px',
+                        fontFamily: "'Poppins', sans-serif"
+                      }}
+                      onClick={() => {
+                        if (profileData.websites[0]?.url) {
+                          handleContact("website", profileData.websites[0].url);
+                        }
+                      }}
+                    >
+                      <span>Learn More About Our Company</span>
+                      <FaChevronRight className="ml-4 group-hover:translate-x-2 transition-transform" style={{ fontSize: '14px' }} />
+                    </button>
+                  </div>
 
-                {/* Website link */}
-                <div className="flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors cursor-pointer mb-12" style={{
-                  fontFamily: "'Poppins', sans-serif"
-                }}>
-                  <FaGlobe className="mr-3" style={{ fontSize: '16px' }} />
-                  <span style={{ fontSize: '16px', fontWeight: 400 }}>
-                    {profileData.websites[0]?.url?.replace('https://', '').replace('http://', '').split('/')[0] || 'www.ny-software.co'}
-                  </span>
+                  {/* Website link */}
+                  {profileData.websites[0]?.url && (
+                    <div className="flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors cursor-pointer mb-12" style={{
+                      fontFamily: "'Poppins', sans-serif"
+                    }}
+                    onClick={() => handleContact("website", profileData.websites[0].url)}>
+                      <FaGlobe className="mr-3" style={{ fontSize: '16px' }} />
+                      <span style={{ fontSize: '16px', fontWeight: 400 }}>
+                        {profileData.websites[0]?.url?.replace('https://', '').replace('http://', '').split('/')[0] || 'www.ny-software.co'}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
 
-              {/* Brand Label */}
-              {profileData.brandLabel && (
+              {/* Brand Label - Only for Business Premium */}
+              {currentPlan.showBrandLabel && profileData.brandLabel && (
                 <div className="text-center mb-16">
                   <h3
                     className="text-base font-semibold text-black flex justify-center items-center mb-2"
@@ -768,8 +694,8 @@ const ModernCard = ({ cardData = {} }) => {
                 </div>
               )}
 
-              {/* Profile Video Section */}
-              {profileData.profileVideo?.url && (
+              {/* Profile Video Section - Only for Business and Business Premium */}
+              {currentPlan.showVideo && profileData.profileVideo?.url && (
                 <div className="text-center mb-16">
                   <h3
                     className="text-base font-semibold text-black flex justify-center items-center mb-2"
@@ -789,8 +715,8 @@ const ModernCard = ({ cardData = {} }) => {
                 </div>
               )}
 
-              {/* Gallery Section */}
-              {profileData.gallery.length > 0 && (
+              {/* Gallery Section - Only for Business and Business Premium */}
+              {currentPlan.showGallery && profileData.gallery.length > 0 && (
                 <div className="text-center mb-16">
                   <h3
                     className="text-base font-semibold text-black flex justify-center items-center mb-2"
@@ -862,8 +788,8 @@ const ModernCard = ({ cardData = {} }) => {
                 </div>
               )}
 
-              {/* Services Section */}
-              {profileData.services.length > 0 && (
+              {/* Services Section - Only for Business Premium */}
+              {currentPlan.showServices && profileData.services.length > 0 && (
                 <div className="text-center mb-16">
                   <h3
                     className="text-base font-semibold text-black flex justify-center items-center mb-2"
@@ -890,8 +816,8 @@ const ModernCard = ({ cardData = {} }) => {
                 </div>
               )}
 
-              {/* Testimonials Section */}
-              {profileData.testimonials.length > 0 && (
+              {/* Testimonials Section - Only for Business and Business Premium */}
+              {currentPlan.showTestimonials && profileData.testimonials.length > 0 && (
                 <div className="text-center mb-16">
                   <h3
                     className="text-base font-semibold text-black flex justify-center items-center mb-2"
@@ -961,77 +887,79 @@ const ModernCard = ({ cardData = {} }) => {
                 </div>
               </div>
 
-              {/* OUR TEAM Section */}
-              <div className="pt-8 border-t border-gray-200 pb-12">
-                <h2 
-                  className="mb-10 text-center"
-                  style={{
-                    fontFamily: "'Montserrat', sans-serif",
-                    fontSize: '22px',
-                    fontWeight: 500,
-                    letterSpacing: '0.5px',
-                    color: '#000000'
-                  }}
-                >
-                  OUR TEAM
-                </h2>
-                
-                <div className="flex items-center justify-center">
-                  <div className="flex -space-x-4 mr-8">
-                    {profileData.clientList.slice(0, 3).map((_, index) => (
+              {/* OUR TEAM Section - Only for Business Premium */}
+              {currentPlan.showTeam && profileData.clientList.length > 0 && (
+                <div className="pt-8 border-t border-gray-200 pb-12">
+                  <h2 
+                    className="mb-10 text-center"
+                    style={{
+                      fontFamily: "'Montserrat', sans-serif",
+                      fontSize: '22px',
+                      fontWeight: 500,
+                      letterSpacing: '0.5px',
+                      color: '#000000'
+                    }}
+                  >
+                    OUR TEAM
+                  </h2>
+                  
+                  <div className="flex items-center justify-center">
+                    <div className="flex -space-x-4 mr-8">
+                      {profileData.clientList.slice(0, 3).map((client, index) => (
+                        <div 
+                          key={index} 
+                          className="rounded-full border-3 border-white overflow-hidden shadow-md"
+                          style={{ 
+                            width: '55px', 
+                            height: '55px',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                          }}
+                        >
+                          <div className="w-full h-full flex items-center justify-center text-white text-sm">
+                            {(client?.name || client)?.charAt(0)?.toUpperCase() || "T"}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="ml-3">
                       <div 
-                        key={index} 
-                        className="rounded-full border-3 border-white overflow-hidden shadow-md"
-                        style={{ 
-                          width: '55px', 
+                        className="rounded-full border-3 border-white shadow-md flex items-center justify-center"
+                        style={{
+                          width: '55px',
                           height: '55px',
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                          background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)'
                         }}
                       >
-                        <div className="w-full h-full flex items-center justify-center text-white text-sm">
-                          {profileData.clientList[index]?.charAt(0) || "T"}
-                        </div>
+                        <span 
+                          style={{ 
+                            fontSize: '14px',
+                            fontFamily: "'Poppins', sans-serif",
+                            fontWeight: 400,
+                            color: '#6b7280'
+                          }}
+                        >
+                          +{Math.max(0, profileData.clientList.length - 3)}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                  
-                  <div className="ml-3">
-                    <div 
-                      className="rounded-full border-3 border-white shadow-md flex items-center justify-center"
-                      style={{
-                        width: '55px',
-                        height: '55px',
-                        background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)'
-                      }}
-                    >
+                    </div>
+                    
+                    <div className="ml-10">
                       <span 
                         style={{ 
-                          fontSize: '14px',
-                          fontFamily: "'Poppins', sans-serif",
-                          fontWeight: 400,
-                          color: '#6b7280'
+                          fontSize: '20px',
+                          fontFamily: "'Montserrat', sans-serif",
+                          fontWeight: 500,
+                          letterSpacing: '0.3px',
+                          color: '#000000'
                         }}
                       >
-                        +{Math.max(0, profileData.clientList.length - 3)}
+                        Team
                       </span>
                     </div>
                   </div>
-                  
-                  <div className="ml-10">
-                    <span 
-                      style={{ 
-                        fontSize: '20px',
-                        fontFamily: "'Montserrat', sans-serif",
-                        fontWeight: 500,
-                        letterSpacing: '0.3px',
-                        color: '#000000'
-                      }}
-                    >
-                      Team
-                    </span>
-                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Decorative bottom border */}
               <div 
