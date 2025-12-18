@@ -40,12 +40,14 @@ import {
   FaCrown,
   FaGem,
   FaTimes,
-  FaUserTie
+  FaUserTie,
+  FaArrowLeft
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { CARD_URL } from "../../../src/utility/constants";
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || "";
 const VITE_API_URL = import.meta.env.VITE_API_URL || "";
+
 // Card plans configuration
 const cardPlans = {
   'Personal': {
@@ -55,9 +57,21 @@ const cardPlans = {
     color: 'blue',
     features: [
       'Profile Page',
-      'Basic Contact Info',
-      'Social Links',
-      'Custom Design'
+      'Profile Photo/Logo',
+      'Name/Source Name',
+      'Tag Line/Slogan',
+      'Profile Video',
+      'About Myself',
+      'Contact Management',
+      'One-tap Call, WhatsApp, Email',
+      'Website/Portfolio Link',
+      'Location [Address]',
+      'Social & Digital Hub',
+      'Dynamic QR Code',
+      'Share',
+      'NFC Card Development with Print',
+      'Downloads',
+      'Videos'
     ],
     price: 'Free'
   },
@@ -67,27 +81,73 @@ const cardPlans = {
     icon: <FaGem className="w-5 h-5" />,
     color: 'purple',
     features: [
-      'Profile Page with Video',
-      'Professional/Personal Details',
-      'Product Showcase/Gallery',
+      'Profile Page',
+      'Profile Photo/Logo',
+      'Name/Source Name',
+      'Tag Line/Slogan',
+      'Company Name/Organization',
+      'Profile Video',
+      'About Myself/Company/Organization',
+      'Contact Management',
+      'One-tap Call, WhatsApp, Email',
+      'Website/Portfolio Link',
+      'Location [Address]',
+      'Virtual Number Integration (Optional at extra cost)',
+      'Business Hours',
+      'Professional/Business Details',
+      'Services/Provision',
+      'Brief about Product/Services',
+      'Product Showcase/Gallery/Portfolio',
+      'Product/Catalog [PDF]',
+      'Product Video',
+      'Testimonials',
+      'Social & Digital Hub',
       'Dynamic QR Code',
-      'Downloads Section',
-      'Testimonials'
+      'Share',
+      'NFC Card Development with Print',
+      'Downloads',
+      'Videos'
     ],
     price: '$9.99/month'
   },
   'Business Premium': {
-    name: 'Personal Professional',
-    description: 'Advanced features for Personal professionals',
+    name: 'Business Premium',
+    description: 'Advanced features with interactive elements',
     icon: <FaCrown className="w-5 h-5" />,
     color: 'gold',
     features: [
-      'All Premium Features +',
-      'Brand Label Products/Services',
+      'Profile Page',
+      'Profile Photo/Logo',
+      'Name/Source Name',
+      'Tag Line/Slogan',
+      'Company Name/Organization',
+      'Profile Video',
+      'About Myself/Company/Organization',
+      'Contact Management',
+      'One-tap Call, WhatsApp, Email',
+      'Website/Portfolio Link',
+      'Location [Address]',
+      'Virtual Number Integration (Optional at extra cost)',
+      'Business Hours',
+      'Professional/Business Details',
+      'Services/Provision',
+      'Individual Product Display',
+      'Product Showcase/Gallery/Portfolio',
+      'Testimonials / Client List',
+      'Product Video',
+      'Social & Digital Hub',
       'Interactive Elements',
-      'NFC Card Support',
-      'Services & Products Catalog',
-      'Client List Display'
+      'Call-to-Action',
+      'Live Chat – WhatsApp / Messages',
+      'Appointment Scheduler',
+      'Digital Payments',
+      'Lead / Contact Form',
+      'Chat Assistant',
+      'Dynamic QR Code',
+      'Share',
+      'NFC Card Development with Print',
+      'Downloads',
+      'Videos'
     ],
     price: '$19.99/month'
   }
@@ -103,28 +163,31 @@ const fieldPlanMap = {
   'profilePhoto': ['Personal', 'Business', 'Business Premium'],
   
   // Profile Page Fields
-  'profileVideo': ['Business', 'Business Premium'],
-  'titleLine': ['Business', 'Business Premium'],
-  'aboutText': ['Business', 'Business Premium'],
+  'profileVideo': ['Personal', 'Business', 'Business Premium'],
+  'titleLine': ['Personal', 'Business', 'Business Premium'],
+  'aboutText': ['Personal', 'Business', 'Business Premium'],
   
   // Professional/Personal Details
-  'companyName': ['Personal', 'Business', 'Business Premium'],
-  'department': ['Personal', 'Business', 'Business Premium'],
+  'companyName': ['Business', 'Business Premium'],
+  'department': ['Business', 'Business Premium'],
   'jobTitle': ['Personal', 'Business', 'Business Premium'],
   'bio': ['Personal', 'Business', 'Business Premium'],
-  'companyLogo': ['Personal', 'Business', 'Business Premium'],
-  'logoSize': ['Personal', 'Business', 'Business Premium'],
+  'companyLogo': ['Business', 'Business Premium'],
+  'logoSize': ['Business', 'Business Premium'],
   'foundedName': ['Business Premium'],
-  'organization': ['Business Premium'],
+  'organization': ['Business', 'Business Premium'],
   'servicesProducts': ['Business', 'Business Premium'],
   'brandLabel': ['Business Premium'],
   'productRangeDisplay': ['Business Premium'],
-  'catalog': ['Business Premium'],
+  'catalog': ['Business', 'Business Premium'],
+  'catalogPDF': ['Business', 'Business Premium'],
+  'productVideo': ['Business', 'Business Premium'],
   
   // Contact Details
   'phones': ['Personal', 'Business', 'Business Premium'],
   'websites': ['Personal', 'Business', 'Business Premium'],
-  'addresses': ['Business', 'Business Premium'],
+  'addresses': ['Personal', 'Business', 'Business Premium'],
+  'virtualNumber': ['Business', 'Business Premium'],
   
   // Services & Products
   'services': ['Business Premium'],
@@ -137,15 +200,20 @@ const fieldPlanMap = {
   'testimonials': ['Business', 'Business Premium'],
   'clientList': ['Business Premium'],
   'gallery': ['Business', 'Business Premium'],
-  'dynamicQRCode': ['Business', 'Business Premium'],
-  'nfcSettings': ['Business Premium'],
-  'downloads': ['Business', 'Business Premium'],
+  'dynamicQRCode': ['Personal', 'Business', 'Business Premium'],
+  'nfcSettings': ['Personal', 'Business', 'Business Premium'],
+  'downloads': ['Personal', 'Business', 'Business Premium'],
+  'videos': ['Personal', 'Business', 'Business Premium'],
   
   // New Contact Management Fields
   'enableOneTapCall': ['Personal', 'Business', 'Business Premium'],
   'enableWhatsApp': ['Personal', 'Business', 'Business Premium'],
   'enableEmail': ['Personal', 'Business', 'Business Premium'],
-  'businessHours': ['Personal', 'Business', 'Business Premium']
+  'businessHours': ['Business', 'Business Premium'],
+  
+  // Chat & Assistant Fields
+  'chatAssistant': ['Business Premium'],
+  'liveChat': ['Business Premium']
 };
 
 // Function to clean form data by removing empty fields
@@ -164,7 +232,7 @@ const cleanFormData = (data) => {
     // Card Type
     cardType: data.cardType || 'Personal',
     
-    // NEW: Include createdBy field
+    // Include createdBy field
     ...(data.createdBy && { createdBy: data.createdBy }),
     
     // URL Customization
@@ -190,6 +258,9 @@ const cleanFormData = (data) => {
     ...(data.brandLabel && { brandLabel: data.brandLabel }),
     ...(data.productRangeDisplay && { productRangeDisplay: data.productRangeDisplay }),
     ...(data.catalog && { catalog: data.catalog }),
+    ...(data.catalogPDF && { catalogPDF: data.catalogPDF }),
+    ...(data.productVideo?.url && { productVideo: data.productVideo }),
+    ...(data.virtualNumber && { virtualNumber: data.virtualNumber }),
     
     // Contact Details
     phones: data.phones.filter(phone => phone.number && phone.number.trim() !== ""),
@@ -293,6 +364,23 @@ const cleanFormData = (data) => {
         }))
     }),
 
+    // Videos
+    ...(data.videos && data.videos.length > 0 && {
+      videos: data.videos
+        .filter(video => video.url && video.url.trim() !== "")
+        .map(video => ({
+          type: video.type || 'youtube',
+          url: video.url,
+          ...(video.thumbnail && { thumbnail: video.thumbnail }),
+          ...(video.title && { title: video.title }),
+          ...(video.description && { description: video.description })
+        }))
+    }),
+
+    // Chat Features
+    ...(data.chatAssistant && { chatAssistant: data.chatAssistant }),
+    ...(data.liveChat && { liveChat: data.liveChat }),
+
     // Contact Management
     enableOneTapCall: data.enableOneTapCall !== undefined ? data.enableOneTapCall : true,
     enableWhatsApp: data.enableWhatsApp !== undefined ? data.enableWhatsApp : true,
@@ -306,8 +394,7 @@ const cleanFormData = (data) => {
     cardLayout: data.cardLayout
   };
 
-  const payloadSize = JSON.stringify(optimized).length;
-  console.log(`📤 Final payload size: ${payloadSize} bytes (${(payloadSize / 1024 / 1024).toFixed(2)} MB)`);
+  console.log(`📤 Final payload size: ${JSON.stringify(optimized).length} bytes`);
   
   return optimized;
 };
@@ -450,12 +537,10 @@ const CreateCard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get plan from navigation state (coming from PlanSelection -> Signup -> CreateCard)
+  // Get plan from navigation state
   const selectedPlanFromState = location.state?.selectedPlan || 'Personal';
   const userEmailFromSignIn = location.state?.userEmail || '';
   const editingCard = location.state?.card || null;
-  
-  // NEW: Partner ID from navigation state (when coming from partner dashboard)
   const partnerIdFromState = location.state?.createdBy || '';
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -475,20 +560,16 @@ const CreateCard = () => {
   const [copied, setCopied] = useState(false);
   const [generatedSlug, setGeneratedSlug] = useState("");
 
-  // NEW: Partner ID state
+  // Partner ID state
   const [partnerId, setPartnerId] = useState(partnerIdFromState || "");
   const [isPartnerFlow, setIsPartnerFlow] = useState(!!partnerIdFromState);
   const [showPartnerIdField, setShowPartnerIdField] = useState(!partnerIdFromState);
 
-  // ✅ AUTO-SAVE STATES (minimal)
+  // Auto-save states
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  
-  // Auto-save refs
   const autoSaveTimeoutRef = useRef(null);
   const formDataRef = useRef(null);
   const [changeCount, setChangeCount] = useState(0);
-  
-  // Track if user is coming from login (auto-filled email)
   const [isFromLogin, setIsFromLogin] = useState(false);
 
   // Field visibility based on selected plan
@@ -507,7 +588,7 @@ const CreateCard = () => {
     const steps = [1]; // Step 1 is always available
     
     // Check Step 2
-    const step2Fields = ['companyName', 'department', 'jobTitle', 'bio', 'companyLogo', 'logoSize', 'foundedName', 'organization', 'servicesProducts', 'brandLabel', 'catalog', 'businessHours'];
+    const step2Fields = ['companyName', 'department', 'jobTitle', 'bio', 'companyLogo', 'logoSize', 'foundedName', 'organization', 'servicesProducts', 'brandLabel', 'catalog', 'businessHours', 'virtualNumber', 'catalogPDF', 'productVideo'];
     if (isSectionVisible(step2Fields)) {
       steps.push(2);
     }
@@ -516,18 +597,28 @@ const CreateCard = () => {
     steps.push(3);
     
     // Check Step 4
-    const step4Fields = ['interactiveElements', 'testimonials', 'gallery', 'dynamicQRCode', 'nfcSettings', 'downloads'];
+    const step4Fields = ['interactiveElements', 'testimonials', 'gallery', 'dynamicQRCode', 'nfcSettings', 'downloads', 'videos', 'chatAssistant', 'liveChat'];
     if (isSectionVisible(step4Fields)) {
       steps.push(4);
     }
     
+    // Step 5 is always DESIGN SELECTION
+    steps.push(5);
+    
     return steps;
   };
 
-  // Check if current step is the last available step
-  const isLastStep = () => {
+  // Check if current step is the design step
+  const isDesignStep = () => {
+    return currentStep === 5;
+  };
+
+  // Check if current step is the last content step before design
+  const isLastContentStep = () => {
     const availableSteps = getAvailableSteps();
-    return currentStep === availableSteps[availableSteps.length - 1];
+    // Find the last step before design (step 5)
+    const contentSteps = availableSteps.filter(step => step < 5);
+    return currentStep === Math.max(...contentSteps);
   };
 
   // INITIAL FORM STATE
@@ -539,13 +630,13 @@ const CreateCard = () => {
     suffix: "",
     profilePhoto: null,
     
-    // Email - AUTO-FILLED FROM SIGNUP
+    // Email
     email: userEmailFromSignIn || "",
     
-    // Card Type - SET FROM NAVIGATION STATE
+    // Card Type
     cardType: selectedPlanFromState,
     
-    // NEW: Partner ID field
+    // Partner ID field
     createdBy: partnerIdFromState || "",
     
     // URL Customization
@@ -575,6 +666,13 @@ const CreateCard = () => {
     brandLabel: "",
     productRangeDisplay: "grid",
     catalog: "",
+    catalogPDF: null,
+    productVideo: {
+      url: "",
+      thumbnail: "",
+      title: ""
+    },
+    virtualNumber: "",
     
     // Contact Details
     phones: [{ label: "work", number: "" }],
@@ -643,6 +741,19 @@ const CreateCard = () => {
       lastUsed: null
     },
     downloads: [],
+    videos: [],
+    
+    // Chat Features
+    chatAssistant: {
+      isEnabled: false,
+      welcomeMessage: "Hello! How can I help you today?",
+      responses: []
+    },
+    liveChat: {
+      isEnabled: false,
+      platform: "whatsapp",
+      phoneNumber: ""
+    },
 
     // Contact Management
     enableOneTapCall: true,
@@ -655,7 +766,7 @@ const CreateCard = () => {
       tuesday: { open: '09:00', close: '17:00' },
       wednesday: { open: '09:00', close: '17:00' },
       thursday: { open: '09:00', close: '17:00' },
-      Friday: { open: '09:00', close: '17:00' },
+      friday: { open: '09:00', close: '17:00' },
       saturday: { open: '', close: '' },
       sunday: { open: '', close: '' }
     },
@@ -673,7 +784,7 @@ const CreateCard = () => {
     formDataRef.current = formData;
   }, []);
 
-  // NEW: Handle partner ID change
+  // Handle partner ID change
   const handlePartnerIdChange = (e) => {
     const value = e.target.value;
     setPartnerId(value);
@@ -682,19 +793,15 @@ const CreateCard = () => {
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
-  // NEW: Toggle partner ID field
+  // Toggle partner ID field
   const togglePartnerIdField = () => {
     setShowPartnerIdField(!showPartnerIdField);
     if (showPartnerIdField) {
-      // Clearing the partner ID when hiding the field
       setPartnerId("");
       const updatedData = { ...formData, createdBy: "" };
       setFormData(updatedData);
@@ -735,7 +842,6 @@ const CreateCard = () => {
       setEmailError("Please enter a valid email address");
     }
     
-    // Trigger auto-save
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     autoSaveToLocalStorage(updatedData);
@@ -743,13 +849,14 @@ const CreateCard = () => {
 
   // ✅ LOCAL STORAGE AUTO-SAVE FUNCTION
   const autoSaveToLocalStorage = useCallback((data) => {
+    if (editingCard) return; // Don't auto-save when editing
+    
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
     }
     
     autoSaveTimeoutRef.current = setTimeout(() => {
       try {
-        // Create storage-safe version
         const storageData = {
           email: data.email,
           firstName: data.firstName,
@@ -758,10 +865,12 @@ const CreateCard = () => {
           customUrl: data.customUrl,
           urlSlug: data.urlSlug,
           createdBy: data.createdBy,
+          design: data.design,
           formData: {
             ...data,
             profilePhoto: data.profilePhoto ? 'SAVED' : null,
             companyLogo: data.companyLogo ? 'SAVED' : null,
+            catalogPDF: data.catalogPDF ? 'SAVED' : null,
             services: data.services?.map(service => ({
               ...service,
               image: service.image ? 'SAVED' : null
@@ -781,7 +890,6 @@ const CreateCard = () => {
           plan: data.cardType
         };
         
-        // Save to localStorage
         localStorage.setItem(`card_draft_${data.email || 'anonymous'}`, JSON.stringify(storageData));
         localStorage.setItem(`card_draft_form_${data.email || 'anonymous'}`, JSON.stringify(data));
         
@@ -792,7 +900,7 @@ const CreateCard = () => {
         console.error('LocalStorage save error:', error);
       }
     }, 1500);
-  }, [currentStep]);
+  }, [currentStep, editingCard]);
 
   // ✅ LOAD DRAFT FROM LOCALSTORAGE
   const loadDraftFromLocalStorage = useCallback(() => {
@@ -803,7 +911,6 @@ const CreateCard = () => {
       if (savedFormData) {
         const parsedData = JSON.parse(savedFormData);
         
-        // Merge with existing formData
         setFormData(prev => {
           const merged = {
             ...prev,
@@ -817,14 +924,16 @@ const CreateCard = () => {
             testimonials: parsedData.testimonials || prev.testimonials,
             gallery: parsedData.gallery || prev.gallery,
             interactiveElements: parsedData.interactiveElements || prev.interactiveElements,
-            downloads: parsedData.downloads || prev.downloads
+            downloads: parsedData.downloads || prev.downloads,
+            videos: parsedData.videos || prev.videos,
+            chatAssistant: parsedData.chatAssistant || prev.chatAssistant,
+            liveChat: parsedData.liveChat || prev.liveChat
           };
           
           formDataRef.current = merged;
           return merged;
         });
         
-        // Load draft info
         const draftInfo = localStorage.getItem(`card_draft_${email}`);
         if (draftInfo) {
           const info = JSON.parse(draftInfo);
@@ -868,11 +977,9 @@ const CreateCard = () => {
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -935,15 +1042,12 @@ const CreateCard = () => {
     const { name, value } = e.target;
     const updatedData = { ...formData, [name]: value };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -953,15 +1057,12 @@ const CreateCard = () => {
     updatedArray[index] = { ...updatedArray[index], [subField]: value };
     const updatedData = { ...formData, [field]: updatedArray };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -974,15 +1075,12 @@ const CreateCard = () => {
     );
     const updatedData = { ...formData, socialLinks: updatedSocialLinks };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
     
     setActiveSocialPlatform("");
@@ -995,15 +1093,12 @@ const CreateCard = () => {
       [field]: [...formData[field], defaultItem]
     };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1012,15 +1107,12 @@ const CreateCard = () => {
     const updatedArray = formData[field].filter((_, i) => i !== index);
     const updatedData = { ...formData, [field]: updatedArray };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1036,15 +1128,12 @@ const CreateCard = () => {
       updatedArray[index] = { ...updatedArray[index], image: base64Image };
       const updatedData = { ...formData, [field]: updatedArray };
       
-      // Update state
       setFormData(updatedData);
       formDataRef.current = updatedData;
       
-      // Mark as changed
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
       
-      // Trigger auto-save
       autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
@@ -1060,15 +1149,33 @@ const CreateCard = () => {
       const base64Image = e.target.result;
       const updatedData = { ...formData, [field]: base64Image };
       
-      // Update state
       setFormData(updatedData);
       formDataRef.current = updatedData;
       
-      // Mark as changed
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
       
-      // Trigger auto-save
+      autoSaveToLocalStorage(updatedData);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle PDF upload
+  const handleCatalogPDFUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64PDF = e.target.result;
+      const updatedData = { ...formData, catalogPDF: base64PDF };
+      
+      setFormData(updatedData);
+      formDataRef.current = updatedData;
+      
+      setHasUnsavedChanges(true);
+      setChangeCount(prev => prev + 1);
+      
       autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
@@ -1080,15 +1187,12 @@ const CreateCard = () => {
     updatedAddresses[index] = { ...updatedAddresses[index], [field]: value };
     const updatedData = { ...formData, addresses: updatedAddresses };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1111,15 +1215,12 @@ const CreateCard = () => {
       ]
     };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1127,15 +1228,12 @@ const CreateCard = () => {
     const updatedAddresses = formData.addresses.filter((_, i) => i !== index);
     const updatedData = { ...formData, addresses: updatedAddresses };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1146,15 +1244,12 @@ const CreateCard = () => {
     }));
     const updatedData = { ...formData, addresses: updatedAddresses };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1183,15 +1278,12 @@ const CreateCard = () => {
     updatedTestimonials[index] = { ...updatedTestimonials[index], [field]: value };
     const updatedData = { ...formData, testimonials: updatedTestimonials };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1200,15 +1292,12 @@ const CreateCard = () => {
     updatedGallery[index] = { ...updatedGallery[index], [field]: value };
     const updatedData = { ...formData, gallery: updatedGallery };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1217,15 +1306,12 @@ const CreateCard = () => {
     updatedElements[index] = { ...updatedElements[index], [field]: value };
     const updatedData = { ...formData, interactiveElements: updatedElements };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1234,15 +1320,91 @@ const CreateCard = () => {
     updatedDownloads[index] = { ...updatedDownloads[index], [field]: value };
     const updatedData = { ...formData, downloads: updatedDownloads };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
+  };
+
+  // Handle virtual number change
+  const handleVirtualNumberChange = (e) => {
+    const updatedData = { ...formData, virtualNumber: e.target.value };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    autoSaveToLocalStorage(updatedData);
+  };
+
+  // Handle product video change
+  const handleProductVideoChange = (field, value) => {
+    const updatedData = {
+      ...formData,
+      productVideo: { ...formData.productVideo, [field]: value }
+    };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    autoSaveToLocalStorage(updatedData);
+  };
+
+  // Handle video change
+  const handleVideoChange = (index, field, value) => {
+    const updatedVideos = [...formData.videos];
+    updatedVideos[index] = { ...updatedVideos[index], [field]: value };
+    const updatedData = { ...formData, videos: updatedVideos };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    autoSaveToLocalStorage(updatedData);
+  };
+
+  // Handle chat assistant toggle
+  const handleChatAssistantToggle = (e) => {
+    const updatedData = {
+      ...formData,
+      chatAssistant: {
+        ...formData.chatAssistant,
+        isEnabled: e.target.checked
+      }
+    };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    autoSaveToLocalStorage(updatedData);
+  };
+
+  // Handle live chat change
+  const handleLiveChatChange = (field, value) => {
+    const updatedData = {
+      ...formData,
+      liveChat: { ...formData.liveChat, [field]: value }
+    };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1261,15 +1423,12 @@ const CreateCard = () => {
       ]
     };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1289,15 +1448,12 @@ const CreateCard = () => {
       ]
     };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1315,15 +1471,12 @@ const CreateCard = () => {
       ]
     };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1342,15 +1495,36 @@ const CreateCard = () => {
       ]
     };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
+  };
+
+  const addVideo = () => {
+    const updatedData = {
+      ...formData,
+      videos: [
+        ...formData.videos,
+        {
+          type: 'youtube',
+          url: "",
+          thumbnail: "",
+          title: "",
+          description: ""
+        }
+      ]
+    };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1359,15 +1533,12 @@ const CreateCard = () => {
     const updatedTestimonials = formData.testimonials.filter((_, i) => i !== index);
     const updatedData = { ...formData, testimonials: updatedTestimonials };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1375,15 +1546,12 @@ const CreateCard = () => {
     const updatedGallery = formData.gallery.filter((_, i) => i !== index);
     const updatedData = { ...formData, gallery: updatedGallery };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1391,15 +1559,12 @@ const CreateCard = () => {
     const updatedElements = formData.interactiveElements.filter((_, i) => i !== index);
     const updatedData = { ...formData, interactiveElements: updatedElements };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -1407,20 +1572,38 @@ const CreateCard = () => {
     const updatedDownloads = formData.downloads.filter((_, i) => i !== index);
     const updatedData = { ...formData, downloads: updatedDownloads };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
+    autoSaveToLocalStorage(updatedData);
+  };
+
+  const removeVideo = (index) => {
+    const updatedVideos = formData.videos.filter((_, i) => i !== index);
+    const updatedData = { ...formData, videos: updatedVideos };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
     autoSaveToLocalStorage(updatedData);
   };
 
   // Validate current step
   const validateCurrentStep = () => {
+    if (isDesignStep()) {
+      if (!formData.design?.trim()) {
+        setWarningMessage("Please select a design theme before creating your card!");
+        return false;
+      }
+      return true;
+    }
+    
     switch (currentStep) {
       case 1:
         if (!formData.email?.trim()) {
@@ -1431,16 +1614,8 @@ const CreateCard = () => {
           setWarningMessage("Please enter a valid email address before moving to the next step!");
           return false;
         }
-        // ✅ FIXED: Require firstName on step 1
         if (!formData.firstName?.trim()) {
           setWarningMessage("Please fill in your First Name before moving to the next step!");
-          return false;
-        }
-        break;
-      case 4:
-        // Make sure a design is selected before final step
-        if (!formData.design?.trim()) {
-          setWarningMessage("Please select a design theme in the final step!");
           return false;
         }
         break;
@@ -1456,168 +1631,119 @@ const CreateCard = () => {
       return;
     }
     
-    if (isLastStep()) {
-      setShowDesignSelection(true);
-    } else {
-      const availableSteps = getAvailableSteps();
-      const currentIndex = availableSteps.indexOf(currentStep);
-      setCurrentStep(availableSteps[currentIndex + 1]);
+    const availableSteps = getAvailableSteps();
+    const currentIndex = availableSteps.indexOf(currentStep);
+    
+    if (currentIndex < availableSteps.length - 1) {
+      const nextStepIndex = availableSteps[currentIndex + 1];
+      setCurrentStep(nextStepIndex);
+      
+      if (nextStepIndex === 5) {
+        setShowDesignSelection(true);
+      }
     }
   };
 
   const prevStep = () => {
-    if (showDesignSelection) {
-      setShowDesignSelection(false);
-    } else {
-      const availableSteps = getAvailableSteps();
-      const currentIndex = availableSteps.indexOf(currentStep);
-      if (currentIndex > 0) {
-        setCurrentStep(availableSteps[currentIndex - 1]);
+    const availableSteps = getAvailableSteps();
+    const currentIndex = availableSteps.indexOf(currentStep);
+    
+    if (currentIndex > 0) {
+      const prevStepIndex = availableSteps[currentIndex - 1];
+      setCurrentStep(prevStepIndex);
+      
+      if (currentStep === 5) {
+        setShowDesignSelection(false);
       }
     }
   };
 
-  // ✅ FIXED: Updated saveCardToBackend function
+  // ✅ FIXED: Updated saveCardToBackend function for editing
   const saveCardToBackend = async (cardData) => {
     try {
       setLoading(true);
-      setSaveStatus("Creating account and card...");
+      setSaveStatus("Saving card...");
       
       const cleanedData = cleanFormData(cardData);
       
-      // 🔑 STEP 1: Auto-create user account if needed
-      if (!editingCard && cleanedData.email) {
-        try {
-          console.log("🔑 Auto-creating user account for:", cleanedData.email);
-          
-          const userResponse = await fetch(`${VITE_API_URL}/api/v1/user/auto-create-for-card`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: cleanedData.email,
-              selectedPlan: cleanedData.cardType
-            }),
-          });
-          
-          const userData = await userResponse.json();
-          
-          if (userResponse.ok && userData.success) {
-            console.log("✅ User account handled:", userData.message);
-            
-            // Store user info in localStorage
-            if (userData.data?._id) {
-              localStorage.setItem('user_id', userData.data._id);
-              localStorage.setItem('user_email', cleanedData.email);
-              localStorage.setItem('user_role', userData.data.role || 'customer');
-              console.log("📝 User stored in localStorage");
-            }
-          } else {
-            console.warn("⚠️ User account issue:", userData.error);
-            throw new Error(`User account issue: ${userData.error}`);
-          }
-        } catch (userError) {
-          console.error("⚠️ User account creation error:", userError);
-          throw new Error(`Failed to create user account: ${userError.message}`);
-        }
-      }
-      
-      // 🔗 STEP 2: Generate unique URL slug ONLY for new cards
-      if (!editingCard) {
-        let baseSlug = '';
-        
-        if (cleanedData.customUrl && cleanedData.customUrl.trim()) {
-          baseSlug = cleanedData.customUrl;
-        } else if (cleanedData.email) {
-          baseSlug = cleanedData.email.split('@')[0];
-        } else {
-          baseSlug = 'card';
-        }
-        
-        // Clean the slug
-        let cleanSlug = baseSlug.toLowerCase()
-          .replace(/[^a-z0-9]/g, '-')
-          .replace(/-+/g, '-')
-          .replace(/^-|-$/g, '');
-        
-        // Add timestamp for uniqueness
-        const timestamp = Date.now().toString().slice(-6);
-        cleanedData.urlSlug = `${cleanSlug}-${timestamp}`;
-        
-        console.log("🔗 Generated URL slug:", cleanedData.urlSlug);
-      }
-      
-      // ⚠️ CRITICAL VALIDATION: Check required fields before sending
-      if (!cleanedData.firstName || cleanedData.firstName.trim() === "") {
-        throw new Error("First Name is required. Please fill it in step 1.");
-      }
-      
-      if (!cleanedData.design || cleanedData.design.trim() === "") {
-        throw new Error("Please select a design theme in the final step.");
-      }
-      
-      if (!cleanedData.email || !validateEmail(cleanedData.email)) {
-        throw new Error("Please enter a valid email address.");
-      }
-      
-      // 📤 STEP 3: Save the card (ONLY ONCE - no auto-save)
-      let url, method;
-      
-      if (editingCard && editingCard._id) {
-        // Editing existing card
-        url = `${CARD_URL}/update-card/${editingCard._id}`;
-        method = "PUT";
-      } else {
-        // Creating new card
-        url = `${CARD_URL}/create-card`;
-        method = "POST";
-      }
-      
-      console.log("📤 Saving card to:", url);
-      console.log("📦 Card data being sent:", {
+      console.log("📤 Saving card data:", {
+        editing: !!editingCard,
         email: cleanedData.email,
         firstName: cleanedData.firstName,
         design: cleanedData.design,
-        urlSlug: cleanedData.urlSlug,
-        cardType: cleanedData.cardType,
-        createdBy: cleanedData.createdBy
+        createdBy: cleanedData.createdBy,
+        urlSlug: cleanedData.urlSlug
       });
       
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(cleanedData)
-      });
-      
-      const responseText = await response.text();
-      console.log("📨 Server response:", responseText);
-      
-      if (!response.ok) {
-        console.error('❌ Card creation error status:', response.status);
-        console.error('❌ Card creation error text:', responseText);
+      // For editing: preserve the existing URL slug
+      if (editingCard && editingCard._id) {
+        // Keep the original URL slug when editing
+        cleanedData.urlSlug = editingCard.urlSlug || cleanedData.urlSlug;
         
-        // Handle specific errors
-        if (responseText.includes('duplicate') && responseText.includes('urlSlug')) {
-          throw new Error('This URL is already taken. Please try a different custom URL.');
+        // Use the update endpoint
+        const url = `${CARD_URL}/update-card/${editingCard._id}`;
+        console.log("🔄 Updating existing card at:", url);
+        
+        const response = await fetch(url, {
+          method: "PUT",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(cleanedData)
+        });
+        
+        const responseText = await response.text();
+        console.log("📨 Update response:", responseText.substring(0, 200));
+        
+        if (!response.ok) {
+          console.error('❌ Update error status:', response.status);
+          
+          if (responseText.includes('duplicate') && responseText.includes('urlSlug')) {
+            throw new Error('This URL is already taken by another card.');
+          }
+          
+          if (responseText.includes('Card not found')) {
+            throw new Error('Card not found. It may have been deleted.');
+          }
+          
+          throw new Error(`Update failed (${response.status}): ${responseText.substring(0, 100)}`);
         }
         
-        if (responseText.includes('Email already has')) {
-          throw new Error('A card already exists for this email. Please login to edit your existing card.');
+        const responseData = JSON.parse(responseText);
+        setSaveStatus("🎉 Card updated successfully!");
+        console.log("✅ Update successful:", responseData);
+        
+        return responseData.card || responseData;
+      } else {
+        // For new cards
+        console.log("🆕 Creating new card");
+        
+        const response = await fetch(`${CARD_URL}/create-card`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(cleanedData)
+        });
+        
+        const responseText = await response.text();
+        
+        if (!response.ok) {
+          console.error('❌ Create error:', response.status, responseText);
+          
+          if (responseText.includes('Email already has')) {
+            throw new Error('A card already exists for this email. Please login to edit your existing card.');
+          }
+          
+          throw new Error(`Creation failed (${response.status}): ${responseText.substring(0, 100)}`);
         }
         
-        if (response.status === 400) {
-          throw new Error(`Validation error: ${responseText}`);
-        }
+        const responseData = JSON.parse(responseText);
+        setSaveStatus("🎉 Card created successfully!");
+        console.log("✅ Creation successful:", responseData);
         
-        throw new Error(`Server error (${response.status}): ${responseText}`);
+        return responseData.card || responseData;
       }
-      
-      const responseData = JSON.parse(responseText);
-      setSaveStatus("🎉 Card created successfully!");
-      console.log("✅ Card save successful:", responseData);
-      
-      return responseData.card || responseData;
       
     } catch (error) {
       console.error('❌ Error saving card:', error);
@@ -1631,63 +1757,68 @@ const CreateCard = () => {
   const handleDesignSelect = (designId) => {
     const updatedData = { ...formData, design: designId };
     
-    // Update state
     setFormData(updatedData);
     formDataRef.current = updatedData;
     
-    // Mark as changed
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     
-    // Trigger auto-save
     autoSaveToLocalStorage(updatedData);
   };
 
+  // ✅ FIXED: handleFinalSubmit function
   const handleFinalSubmit = async () => {
     try {
       setLoading(true);
       
-      // ✅ Clean the form data
-      const cleanedData = cleanFormData(formData);
-      
-      // ✅ Send ALL data to backend
-      let url, method;
-      
-      if (editingCard && editingCard._id) {
-        url = `${CARD_URL}/update-card/${editingCard._id}`;
-        method = "PUT";
-      } else {
-        url = `${CARD_URL}/create-card`;
-        method = "POST";
+      // Validate design is selected
+      if (!formData.design || formData.design.trim() === "") {
+        setWarningMessage("Please select a design theme before creating your card!");
+        setShowWarning(true);
+        setLoading(false);
+        return;
       }
       
-      console.log("📤 Sending ALL data to backend...");
-      
-      const response = await fetch(url, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cleanedData)
-      });
-      
-      const responseText = await response.text();
-      
-      if (!response.ok) {
-        throw new Error(`Server error (${response.status}): ${responseText}`);
+      // Validate required fields
+      if (!formData.email || !validateEmail(formData.email)) {
+        setWarningMessage("Please enter a valid email address!");
+        setShowWarning(true);
+        setLoading(false);
+        return;
       }
       
-      const responseData = JSON.parse(responseText);
+      if (!formData.firstName || formData.firstName.trim() === "") {
+        setWarningMessage("Please enter your first name!");
+        setShowWarning(true);
+        setLoading(false);
+        return;
+      }
       
-      setSaveStatus("🎉 Card created successfully!");
+      console.log("🚀 Final submit - Editing mode:", !!editingCard);
       
-      // ✅ Navigate to preview
-      const shareUrl = `${FRONTEND_URL}/preview/${responseData.card?.urlSlug || cleanedData.urlSlug}`;
+      // Save the card
+      const result = await saveCardToBackend(formData);
+      
+      // Get the URL
+      const shareUrl = `${FRONTEND_URL}/preview/${result.urlSlug || formData.urlSlug}`;
+      
+      // Show success message
       alert(`🎉 Card ${editingCard ? 'updated' : 'created'} successfully!\n\n🔗 Your shareable URL:\n${shareUrl}`);
       
+      // Copy to clipboard
       navigator.clipboard.writeText(shareUrl);
-      navigate(`/preview/${responseData.card?.urlSlug || cleanedData.urlSlug}`);
+      
+      // Clear local storage if this was a new card
+      if (!editingCard && formData.email) {
+        localStorage.removeItem(`card_draft_${formData.email}`);
+        localStorage.removeItem(`card_draft_form_${formData.email}`);
+      }
+      
+      // Navigate to preview
+      navigate(`/preview/${result.urlSlug || formData.urlSlug}`);
       
     } catch (error) {
-      console.error('❌ Error saving card:', error);
+      console.error('❌ Final submit error:', error);
       setSaveStatus(`Error: ${error.message}`);
       alert(`Failed to ${editingCard ? 'update' : 'create'} card: ${error.message}`);
     } finally {
@@ -1695,15 +1826,15 @@ const CreateCard = () => {
     }
   };
 
-  // ✅ Handle Go Back to Home
-  const handleGoBackHome = () => {
+  // ✅ Handle Go Back to Dashboard
+  const handleGoBackDashboard = () => {
     if (hasUnsavedChanges) {
       const confirmLeave = window.confirm(
         'You have unsaved changes. Are you sure you want to leave?'
       );
       if (!confirmLeave) return;
     }
-    navigate('/');
+    navigate('/card-dashbord');
   };
 
   // UseEffects
@@ -1713,14 +1844,51 @@ const CreateCard = () => {
     }
   }, [userEmailFromSignIn, editingCard]);
 
+  // ✅ FIXED: Load editing card data properly
   useEffect(() => {
     if (editingCard) {
-      setFormData(editingCard);
-      formDataRef.current = editingCard;
+      console.log("📝 Loading editing card data:", editingCard._id);
+      
+      // Ensure all fields are properly loaded
+      const loadedData = {
+        ...initialFormState,
+        ...editingCard,
+        // Ensure arrays are properly set
+        phones: editingCard.phones || initialFormState.phones,
+        websites: editingCard.websites || initialFormState.websites,
+        addresses: editingCard.addresses || initialFormState.addresses,
+        socialLinks: editingCard.socialLinks || initialFormState.socialLinks,
+        services: editingCard.services || initialFormState.services,
+        products: editingCard.products || initialFormState.products,
+        testimonials: editingCard.testimonials || initialFormState.testimonials,
+        gallery: editingCard.gallery || initialFormState.gallery,
+        interactiveElements: editingCard.interactiveElements || initialFormState.interactiveElements,
+        downloads: editingCard.downloads || initialFormState.downloads,
+        videos: editingCard.videos || initialFormState.videos,
+        // Ensure design is set
+        design: editingCard.design || "",
+        // Ensure createdBy is set
+        createdBy: editingCard.createdBy || ""
+      };
+      
+      setFormData(loadedData);
+      formDataRef.current = loadedData;
+      
       if (editingCard.urlSlug) {
         setGeneratedSlug(editingCard.urlSlug);
       }
+      
+      // Always go to design step when editing
+      setTimeout(() => {
+        const availableSteps = getAvailableSteps();
+        if (availableSteps.includes(5)) {
+          setCurrentStep(5);
+          setShowDesignSelection(true);
+        }
+      }, 300);
+      
       setIsFromLogin(true);
+      setHasUnsavedChanges(false);
     }
   }, [editingCard]);
 
@@ -1747,9 +1915,12 @@ const CreateCard = () => {
 
   // ✅ LOAD DRAFT ON MOUNT
   useEffect(() => {
-    if (editingCard) return; // Don't load drafts for editing
+    if (editingCard) {
+      // Don't load drafts for editing
+      console.log("Editing mode - skipping draft load");
+      return;
+    }
     
-    // Load after short delay
     const timeoutId = setTimeout(() => {
       loadDraftFromLocalStorage();
     }, 300);
@@ -1787,7 +1958,7 @@ const CreateCard = () => {
 
   // RENDER FUNCTIONS
 
-  // Step 1: Profile Page - Filtered by plan
+  // Step 1: Profile Page
   const renderProfilePage = () => {
     const profileSectionFields = ['prefix', 'firstName', 'lastName', 'suffix', 'profilePhoto', 'profileVideo', 'titleLine', 'aboutText'];
     const urlSectionFields = ['customUrl', 'urlSlug'];
@@ -1810,62 +1981,7 @@ const CreateCard = () => {
 
     return (
       <div className="space-y-6">
-        {/* NEW: Partner ID Section */}
-        <div className="border border-slate-200 rounded-lg p-6 bg-blue-50">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-lg font-semibold text-slate-800 flex items-center">
-              <FaUserTie className="w-5 h-5 text-blue-500 mr-2" />
-              Partner Referral (Optional)
-            </h4>
-            <button
-              type="button"
-              onClick={togglePartnerIdField}
-              className="text-blue-500 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
-            >
-              {showPartnerIdField ? "✕ Remove" : "+ Add Partner ID"}
-            </button>
-          </div>
-          
-          {showPartnerIdField && (
-            <div className="space-y-3">
-              <div>
-                <label className="block text-slate-700 mb-2 font-medium">
-                  Partner User ID
-                </label>
-                <input 
-                  type="text"
-                  placeholder="Enter partner's user ID (if referred by a partner)"
-                  value={partnerId}
-                  onChange={handlePartnerIdChange}
-                  className="w-full p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                />
-                <p className="text-sm text-slate-500 mt-2">
-                  If you were referred by a partner, enter their Partner User ID here. 
-                  This helps track your card to the correct partner.
-                </p>
-              </div>
-              
-              {partnerIdFromState && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                  <div className="flex items-center">
-                    <FaCheck className="w-4 h-4 text-green-500 mr-2" />
-                    <span className="text-green-700 text-sm font-medium">
-                      Partner ID auto-filled from referral: <code className="bg-green-100 px-2 py-1 rounded">{partnerIdFromState}</code>
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          
-          {!showPartnerIdField && !partnerIdFromState && (
-            <p className="text-slate-600 text-sm">
-              Were you referred by a partner? Click "Add Partner ID" to enter their referral code.
-            </p>
-          )}
-        </div>
-
-        {/* Profile Photo - Visible for all plans */}
+        {/* Profile Photo */}
         {isFieldVisible('profilePhoto') && (
           <div className="mb-6">
             <label className="block font-semibold text-slate-700 mb-2">Profile Photo</label>
@@ -1910,7 +2026,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Personal Info - Visible for all plans */}
+        {/* Personal Info */}
         {(isFieldVisible('prefix') || isFieldVisible('firstName') || isFieldVisible('lastName') || isFieldVisible('suffix')) && (
           <>
             {isFieldVisible('prefix') && (
@@ -1978,7 +2094,7 @@ const CreateCard = () => {
           </>
         )}
 
-        {/* Email Field - Visible for all plans - AUTO-FILLED */}
+        {/* Email Field */}
         <div>
           <label className="block text-slate-700 mb-1">Email Address *</label>
           <input 
@@ -1989,13 +2105,17 @@ const CreateCard = () => {
             value={formData.email || ""}
             onChange={handleEmailChange}
             className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-gray-50"
+            readOnly={editingCard} // Make email read-only when editing
           />
           {userEmailFromSignIn && (
             <p className="text-green-600 text-sm mt-1">✓ Email auto-filled from your account</p>
           )}
+          {editingCard && (
+            <p className="text-blue-600 text-sm mt-1">Email cannot be changed when editing</p>
+          )}
         </div>
 
-        {/* Profile Video - Only for premium and pro plans */}
+        {/* Profile Video */}
         {isFieldVisible('profileVideo') && (
           <div className="border border-slate-200 rounded-lg p-4">
             <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
@@ -2071,7 +2191,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Title Line - Only for premium and pro plans */}
+        {/* Title Line */}
         {isFieldVisible('titleLine') && (
           <div>
             <label className="block text-slate-700 mb-1">Tag Line / Recognition</label>
@@ -2086,7 +2206,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* About Text - Only for premium and pro plans */}
+        {/* About Text */}
         {isFieldVisible('aboutText') && (
           <div>
             <label className="block text-slate-700 mb-1">About Myself / Company / Organisation</label>
@@ -2101,7 +2221,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* URL Customization Section - Visible for all plans */}
+        {/* URL Customization Section */}
         {shouldShowUrlSection && (
           <div className="border-t pt-6 mt-6">
             <h4 className="text-lg font-semibold text-slate-800 mb-4">Your Shareable Card URL</h4>
@@ -2129,11 +2249,13 @@ const CreateCard = () => {
                 </div>
               )}
 
-              {/* Custom URL Input */}
+              {/* Custom URL Input - Disabled when editing */}
               <div>
-                <label className="block text-slate-700 mb-2 font-medium">Custom URL (Optional)</label>
+                <label className="block text-slate-700 mb-2 font-medium">Custom URL {editingCard ? '(Cannot change when editing)' : '(Optional)'}</label>
                 <p className="text-sm text-slate-600 mb-3">
-                  Customize the last part of your URL. If left empty, it will be generated from your email.
+                  {editingCard 
+                    ? 'URL cannot be changed after card creation.' 
+                    : 'Customize the last part of your URL. If left empty, it will be generated from your email.'}
                 </p>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -2145,6 +2267,7 @@ const CreateCard = () => {
                     value={formData.customUrl || ""}
                     onChange={handleCustomUrlChange}
                     className="w-full pl-64 pr-24 py-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    disabled={editingCard} // Disable when editing
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                     {checkingUrl ? (
@@ -2168,11 +2291,13 @@ const CreateCard = () => {
                   </p>
                 )}
                 
-                <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-blue-800">
-                    <strong>Tips:</strong> Use letters, numbers, and hyphens only. No spaces or special characters.
-                  </p>
-                </div>
+                {!editingCard && (
+                  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      <strong>Tips:</strong> Use letters, numbers, and hyphens only. No spaces or special characters.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -2181,11 +2306,12 @@ const CreateCard = () => {
     );
   };
 
-  // Step 2: Professional/Personal Details - Filtered by plan
+  // Step 2: Professional/Personal Details
   const renderProfessionalDetails = () => {
     const professionalFields = [
       'companyName', 'department', 'jobTitle', 'bio', 'companyLogo', 'logoSize',
-      'foundedName', 'organization', 'servicesProducts', 'brandLabel', 'catalog', 'businessHours'
+      'foundedName', 'organization', 'servicesProducts', 'brandLabel', 'catalog', 'businessHours',
+      'virtualNumber', 'catalogPDF', 'productVideo'
     ];
     
     const shouldShowProfessionalSection = isSectionVisible(professionalFields);
@@ -2205,7 +2331,7 @@ const CreateCard = () => {
 
     return (
       <div className="space-y-6">
-        {/* Company Details - Visible for all plans */}
+        {/* Company Details */}
         {isFieldVisible('companyName') && (
           <div>
             <label className="block text-slate-700 mb-1">Company Name / Organisation</label>
@@ -2252,7 +2378,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Organization Fields - Only for pro plan */}
+        {/* Organization Fields */}
         {(isFieldVisible('foundedName') || isFieldVisible('organization')) && (
           <div className="grid grid-cols-2 gap-4">
             {isFieldVisible('foundedName') && (
@@ -2299,7 +2425,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Services & Products Overview - Only for premium and pro plans */}
+        {/* Services & Products Overview */}
         {isFieldVisible('servicesProducts') && (
           <div>
             <label className="block text-slate-700 mb-1">Brief about Products/Services</label>
@@ -2314,7 +2440,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Brand Label - Only for pro plan */}
+        {/* Brand Label */}
         {isFieldVisible('brandLabel') && (
           <div>
             <label className="block text-slate-700 mb-1">Brand Label</label>
@@ -2329,7 +2455,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Catalog - Only for pro plan */}
+        {/* Catalog */}
         {isFieldVisible('catalog') && (
           <div>
             <label className="block text-slate-700 mb-1">Catalog</label>
@@ -2344,7 +2470,22 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Company Logo - Visible for all plans */}
+        {/* Virtual Number */}
+        {isFieldVisible('virtualNumber') && (
+          <div>
+            <label className="block text-slate-700 mb-1">Virtual Number (Optional)</label>
+            <input 
+              type="tel" 
+              placeholder="+1 (555) 123-4567"
+              value={formData.virtualNumber || ""}
+              onChange={handleVirtualNumberChange}
+              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+            <p className="text-sm text-slate-500 mt-1">Optional virtual number at extra cost</p>
+          </div>
+        )}
+
+        {/* Company Logo */}
         {isFieldVisible('companyLogo') && (
           <div>
             <label className="block font-semibold text-slate-700 mb-2">Company Logo</label>
@@ -2405,7 +2546,99 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Business Hours - Visible for all plans */}
+        {/* Catalog PDF */}
+        {isFieldVisible('catalogPDF') && (
+          <div>
+            <label className="block font-semibold text-slate-700 mb-2">Product Catalog PDF</label>
+            <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+              {formData.catalogPDF ? (
+                <div className="flex flex-col items-center">
+                  <FaFilePdf className="w-12 h-12 text-red-500 mb-2" />
+                  <p className="text-sm text-slate-600 mb-2">Catalog PDF uploaded</p>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const updatedData = { ...formData, catalogPDF: null };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
+                    className="text-red-500 text-sm hover:text-red-700"
+                  >
+                    Remove PDF
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <p className="text-slate-500 mb-2">Upload PDF catalog</p>
+                  <input 
+                    type="file" 
+                    accept=".pdf" 
+                    onChange={handleCatalogPDFUpload}
+                    className="hidden" 
+                    id="catalogPDF"
+                  />
+                  <label 
+                    htmlFor="catalogPDF"
+                    className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                  >
+                    Upload PDF
+                  </label>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Product Video */}
+        {isFieldVisible('productVideo') && (
+          <div className="border border-slate-200 rounded-lg p-4">
+            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
+              <FaVideo className="w-5 h-5 text-red-500 mr-2" />
+              Product/Service Video
+            </h4>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-slate-700 mb-1">Video URL</label>
+                <input 
+                  type="url"
+                  placeholder="https://youtube.com/your-product-video"
+                  value={formData.productVideo?.url || ""}
+                  onChange={(e) => handleProductVideoChange('url', e.target.value)}
+                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 mb-1">Video Title</label>
+                  <input 
+                    type="text"
+                    placeholder="Product Demonstration"
+                    value={formData.productVideo?.title || ""}
+                    onChange={(e) => handleProductVideoChange('title', e.target.value)}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-slate-700 mb-1">Thumbnail URL</label>
+                  <input 
+                    type="url"
+                    placeholder="https://example.com/thumbnail.jpg"
+                    value={formData.productVideo?.thumbnail || ""}
+                    onChange={(e) => handleProductVideoChange('thumbnail', e.target.value)}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Business Hours */}
         {isFieldVisible('businessHours') && (
           <div className="border border-slate-200 rounded-lg p-6">
             <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
@@ -2491,7 +2724,7 @@ const CreateCard = () => {
     );
   };
 
-  // Step 3: Contact Management & Social Hub - Filtered by plan
+  // Step 3: Contact Management & Social Hub
   const renderContactAndSocial = () => {
     const contactFields = [
       'enableOneTapCall', 'enableWhatsApp', 'enableEmail', 'phones', 'websites', 'addresses'
@@ -2603,7 +2836,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Phones - Visible for all plans */}
+        {/* Phones */}
         {isFieldVisible('phones') && (
           <div className="border border-slate-200 rounded-lg p-6">
             <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
@@ -2650,7 +2883,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Websites - Visible for all plans */}
+        {/* Websites */}
         {isFieldVisible('websites') && (
           <div className="border border-slate-200 rounded-lg p-6">
             <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
@@ -2697,7 +2930,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Address Section - Only for premium and pro plans */}
+        {/* Address Section */}
         {isFieldVisible('addresses') && (
           <div className="border border-slate-200 rounded-lg p-6">
             <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
@@ -2849,7 +3082,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Social & Digital Hub Section - Always visible since it's core functionality */}
+        {/* Social & Digital Hub Section */}
         <div className="border border-slate-200 rounded-lg p-6">
           <h4 className="text-lg font-semibold text-slate-800 mb-4">Social Media Links</h4>
           <p className="text-slate-600 text-sm mb-4">Click on any social media icon to add your profile link</p>
@@ -2974,21 +3207,31 @@ const CreateCard = () => {
     );
   };
 
-  // Step 4: Interactive Elements & Premium Features - Filtered by plan
+  // Step 4: Interactive Elements & Premium Features
   const renderInteractiveAndPremium = () => {
     const premiumFields = [
-      'interactiveElements', 'testimonials', 'gallery', 'dynamicQRCode', 'nfcSettings', 'downloads'
+      'interactiveElements', 'testimonials', 'gallery', 'dynamicQRCode', 'nfcSettings', 'downloads',
+      'videos', 'chatAssistant', 'liveChat'
     ];
     
     const shouldShowPremiumSection = isSectionVisible(premiumFields);
 
     if (!shouldShowPremiumSection) {
-      return null; // Don't render anything if no premium features available
+      return (
+        <div className="text-center py-12">
+          <p className="text-slate-500 text-lg">
+            No premium features available for your current plan ({formData.cardType}).
+          </p>
+          <p className="text-slate-400 text-sm mt-2">
+            Upgrade to Business or Business Premium plan for premium features.
+          </p>
+        </div>
+      );
     }
 
     return (
       <div className="space-y-6">
-        {/* Interactive Elements Section - Only for pro plan */}
+        {/* Interactive Elements Section */}
         {isFieldVisible('interactiveElements') && (
           <>
             <div className="border border-slate-200 rounded-lg p-6">
@@ -3081,7 +3324,7 @@ const CreateCard = () => {
         {/* Premium Features Section */}
         {(isFieldVisible('testimonials') || isFieldVisible('gallery') || isFieldVisible('downloads') || isFieldVisible('dynamicQRCode') || isFieldVisible('nfcSettings')) && (
           <>
-            {/* Testimonials - Only for premium and pro plans */}
+            {/* Testimonials */}
             {isFieldVisible('testimonials') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Testimonials & Client List</h4>
@@ -3162,7 +3405,7 @@ const CreateCard = () => {
               </div>
             )}
 
-            {/* Gallery - Only for premium and pro plans */}
+            {/* Gallery */}
             {isFieldVisible('gallery') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Product Gallery & Portfolio</h4>
@@ -3312,7 +3555,7 @@ const CreateCard = () => {
               </div>
             )}
 
-            {/* Downloads - Only for premium and pro plans */}
+            {/* Downloads */}
             {isFieldVisible('downloads') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Downloads</h4>
@@ -3392,7 +3635,203 @@ const CreateCard = () => {
               </div>
             )}
 
-            {/* QR Code Settings - Only for premium and pro plans */}
+            {/* Videos Section */}
+            {isFieldVisible('videos') && (
+              <div className="border border-slate-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-slate-800 mb-4">Videos</h4>
+                
+                {formData.videos.map((video, index) => (
+                  <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h5 className="font-medium text-slate-700">Video {index + 1}</h5>
+                      {formData.videos.length > 1 && (
+                        <button 
+                          type="button"
+                          onClick={() => removeVideo(index)}
+                          className="text-red-500 hover:text-red-700 text-sm"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-slate-700 mb-1">Video Type</label>
+                        <select 
+                          value={video.type || "youtube"}
+                          onChange={(e) => handleVideoChange(index, "type", e.target.value)}
+                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="youtube">YouTube</option>
+                          <option value="vimeo">Vimeo</option>
+                          <option value="direct">Direct Link</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-slate-700 mb-1">Video URL</label>
+                        <input 
+                          type="url"
+                          placeholder="https://youtube.com/watch?v=..."
+                          value={video.url || ""}
+                          onChange={(e) => handleVideoChange(index, "url", e.target.value)}
+                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-slate-700 mb-1">Video Title</label>
+                        <input 
+                          type="text"
+                          placeholder="Video title"
+                          value={video.title || ""}
+                          onChange={(e) => handleVideoChange(index, "title", e.target.value)}
+                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-slate-700 mb-1">Thumbnail URL</label>
+                        <input 
+                          type="url"
+                          placeholder="https://example.com/thumbnail.jpg"
+                          value={video.thumbnail || ""}
+                          onChange={(e) => handleVideoChange(index, "thumbnail", e.target.value)}
+                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-700 mb-1">Description</label>
+                      <textarea 
+                        placeholder="Video description"
+                        value={video.description || ""}
+                        onChange={(e) => handleVideoChange(index, "description", e.target.value)}
+                        rows="2"
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                ))}
+                
+                <button 
+                  type="button"
+                  onClick={addVideo}
+                  className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 flex items-center justify-center gap-2"
+                >
+                  <FaVideo className="w-4 h-4" />
+                  Add Video
+                </button>
+              </div>
+            )}
+
+            {/* Chat Assistant */}
+            {isFieldVisible('chatAssistant') && (
+              <div className="border border-slate-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                  <FaComments className="w-5 h-5 text-blue-500 mr-2" />
+                  Chat Assistant
+                </h4>
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <label className="flex items-center text-slate-700">
+                      <input 
+                        type="checkbox"
+                        checked={formData.chatAssistant?.isEnabled || false}
+                        onChange={handleChatAssistantToggle}
+                        className="mr-2"
+                      />
+                      Enable Chat Assistant
+                    </label>
+                  </div>
+                  
+                  {formData.chatAssistant?.isEnabled && (
+                    <>
+                      <div>
+                        <label className="block text-slate-700 mb-1">Welcome Message</label>
+                        <textarea 
+                          placeholder="Hello! How can I help you today?"
+                          value={formData.chatAssistant?.welcomeMessage || ""}
+                          onChange={(e) => {
+                            const updatedData = {
+                              ...formData,
+                              chatAssistant: {
+                                ...formData.chatAssistant,
+                                welcomeMessage: e.target.value
+                              }
+                            };
+                            setFormData(updatedData);
+                            formDataRef.current = updatedData;
+                            setHasUnsavedChanges(true);
+                            setChangeCount(prev => prev + 1);
+                            autoSaveToLocalStorage(updatedData);
+                          }}
+                          rows="2"
+                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Live Chat */}
+            {isFieldVisible('liveChat') && (
+              <div className="border border-slate-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                  <FaWhatsapp className="w-5 h-5 text-green-500 mr-2" />
+                  Live Chat Integration
+                </h4>
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <label className="flex items-center text-slate-700">
+                      <input 
+                        type="checkbox"
+                        checked={formData.liveChat?.isEnabled || false}
+                        onChange={(e) => handleLiveChatChange('isEnabled', e.target.checked)}
+                        className="mr-2"
+                      />
+                      Enable Live Chat (WhatsApp/Messages)
+                    </label>
+                  </div>
+                  
+                  {formData.liveChat?.isEnabled && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-slate-700 mb-1">Platform</label>
+                        <select 
+                          value={formData.liveChat?.platform || "whatsapp"}
+                          onChange={(e) => handleLiveChatChange('platform', e.target.value)}
+                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="whatsapp">WhatsApp</option>
+                          <option value="messenger">Messenger</option>
+                          <option value="telegram">Telegram</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-slate-700 mb-1">Phone Number</label>
+                        <input 
+                          type="tel"
+                          placeholder="+1 (555) 123-4567"
+                          value={formData.liveChat?.phoneNumber || ""}
+                          onChange={(e) => handleLiveChatChange('phoneNumber', e.target.value)}
+                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* QR Code Settings */}
             {isFieldVisible('dynamicQRCode') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
@@ -3446,7 +3885,7 @@ const CreateCard = () => {
               </div>
             )}
 
-            {/* NFC Settings - Only for pro plan */}
+            {/* NFC Settings */}
             {isFieldVisible('nfcSettings') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
@@ -3507,6 +3946,7 @@ const CreateCard = () => {
     );
   };
 
+  // Design Selection Component
   const renderDesignSelection = () => (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold text-slate-800 mb-4">Choose Your Card Design</h3>
@@ -3548,10 +3988,32 @@ const CreateCard = () => {
       </div>
       
       {!formData.design && (
-        <p className="text-red-500 text-sm mt-2">Please select a design theme</p>
+        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-600 text-sm">⚠️ Please select a design theme before proceeding</p>
+        </div>
       )}
     </div>
   );
+
+  // Main render function
+  const renderCurrentStep = () => {
+    if (isDesignStep()) {
+      return renderDesignSelection();
+    }
+    
+    switch (currentStep) {
+      case 1:
+        return renderProfilePage();
+      case 2:
+        return renderProfessionalDetails();
+      case 3:
+        return renderContactAndSocial();
+      case 4:
+        return renderInteractiveAndPremium();
+      default:
+        return renderProfilePage();
+    }
+  };
 
   // Progress Steps Component
   const ProgressSteps = () => {
@@ -3560,7 +4022,8 @@ const CreateCard = () => {
       1: 'PROFILE',
       2: 'BUSINESS', 
       3: 'CONTACT',
-      4: 'FEATURES'
+      4: 'FEATURES',
+      5: 'DESIGN'
     };
     
     return (
@@ -3578,7 +4041,7 @@ const CreateCard = () => {
                 currentStep >= step 
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'bg-slate-200 text-slate-500'
-              }`}
+              } ${currentStep === step ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
             >
               {index + 1}
             </div>
@@ -3592,81 +4055,87 @@ const CreateCard = () => {
   };
 
   return (
-    <div className="w-[90vw] h-[85vh] bg-white p-8 rounded-lg shadow-md mx-auto my-8 overflow-y-auto relative">
+    <div className="w-full max-w-6xl mx-auto p-4 md:p-8">
       <WarningPopup />
       
-      {/* ✅ CROSS BUTTON TO GO BACK HOME */}
+      {/* Back to Dashboard Button */}
       <button
-        onClick={handleGoBackHome}
-        className="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-200"
-        title="Go back to home"
+        onClick={handleGoBackDashboard}
+        className="mb-6 flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+        title="Go back to dashboard"
       >
-        <FaTimes className="w-5 h-5" />
+        <FaArrowLeft className="w-4 h-4 mr-2" />
+        <span className="font-medium">Back to Dashboard</span>
       </button>
 
-      <h2 className="text-2xl font-bold mb-6 text-slate-800 text-center">
-        {editingCard ? "Edit Card" : "Create Card"}
-      </h2>
+      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-slate-800 text-center">
+          {editingCard ? "Edit Your Card" : "Create Your Card"}
+        </h2>
 
-      <ProgressSteps />
+        {editingCard && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center">
+              <FaCheck className="w-5 h-5 text-blue-500 mr-2" />
+              <p className="text-blue-700">
+                <strong>Editing Mode:</strong> You are editing an existing card. 
+                {formData.design && " You can change the design or any other details."}
+              </p>
+            </div>
+          </div>
+        )}
 
-      <form onSubmit={(e) => e.preventDefault()}>
-        <div className="mb-6 min-h-96">
-          {showDesignSelection ? (
-            renderDesignSelection()
-          ) : (
-            <>
-              {currentStep === 1 && renderProfilePage()}
-              {currentStep === 2 && renderProfessionalDetails()}
-              {currentStep === 3 && renderContactAndSocial()}
-              {currentStep === 4 && renderInteractiveAndPremium()}
-            </>
-          )}
-        </div>
+        <ProgressSteps />
 
-        <div className="flex justify-between items-center">
-          <button
-            type="button"
-            onClick={prevStep}
-            disabled={(currentStep === 1 && !showDesignSelection) || loading}
-            className={`px-4 py-2 rounded transition-colors ${
-              (currentStep === 1 && !showDesignSelection) 
-                ? 'bg-slate-300 text-slate-500 cursor-not-allowed' 
-                : 'bg-slate-500 text-white hover:bg-slate-600'
-            }`}
-          >
-            BACK
-          </button>
-
-          <div className={`text-sm ${
-            saveStatus.includes("Saving") ? "text-blue-500" : 
-            saveStatus.includes("success") ? "text-green-500" : 
-            saveStatus.includes("Error") ? "text-red-500" : "text-gray-500"
-          }`}>
-            {saveStatus}
+        <form onSubmit={(e) => e.preventDefault()}>
+          <div className="mb-8 min-h-[400px]">
+            {renderCurrentStep()}
           </div>
 
-          {showDesignSelection ? (
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <button
               type="button"
-              onClick={handleFinalSubmit}
-              disabled={loading || !formData.design}
-              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded shadow-md hover:from-blue-600 hover:to-purple-700 disabled:from-blue-300 disabled:to-purple-400 transition-colors"
+              onClick={prevStep}
+              disabled={(currentStep === 1) || loading}
+              className={`px-6 py-3 rounded-lg transition-colors w-full md:w-auto ${
+                (currentStep === 1) 
+                  ? 'bg-slate-300 text-slate-500 cursor-not-allowed' 
+                  : 'bg-slate-500 text-white hover:bg-slate-600'
+              }`}
             >
-              {loading ? "Creating..." : `${editingCard ? 'Update' : 'Create'} Card`}
+              BACK
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={nextStep}
-              disabled={loading}
-              className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300 transition-colors"
-            >
-              {isLastStep() ? "CHOOSE DESIGN" : "NEXT"}
-            </button>
-          )}
-        </div>
-      </form>
+
+            <div className={`text-sm text-center ${
+              saveStatus.includes("Saving") ? "text-blue-500" : 
+              saveStatus.includes("success") ? "text-green-500" : 
+              saveStatus.includes("Error") ? "text-red-500" : "text-gray-500"
+            }`}>
+              {saveStatus}
+            </div>
+
+            {isDesignStep() ? (
+              <button
+                type="button"
+                onClick={handleFinalSubmit}
+                disabled={loading || !formData.design}
+                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 disabled:from-blue-300 disabled:to-purple-400 transition-colors w-full md:w-auto"
+              >
+                {loading ? (editingCard ? "Updating..." : "Creating...") : `${editingCard ? 'Update' : 'Create'} Card`}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={nextStep}
+                disabled={loading}
+                className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300 transition-colors w-full md:w-auto"
+              >
+                {isLastContentStep() ? "CHOOSE DESIGN" : "NEXT"}
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

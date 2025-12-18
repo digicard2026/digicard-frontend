@@ -99,7 +99,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toPng } from "html-to-image";
-import DefaultCard from "../../components/Cardstyles/DefaultCard";
+// import DefaultCard from "../../components/Cardstyles/DefaultCard";
 import ModernCard from "../../components/Cardstyles/ModernCard";
 import DarkCard from "../../components/Cardstyles/DarkCard";
 import LightCard from "../../components/Cardstyles/LightCard";
