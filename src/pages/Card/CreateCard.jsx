@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -41,14 +42,17 @@ import {
   FaGem,
   FaTimes,
   FaUserTie,
-  FaArrowLeft
+  FaArrowLeft,
+  FaUpload,
+  FaLink,
+  FaCloudUploadAlt
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { CARD_URL } from "../../../src/utility/constants";
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || "";
 const VITE_API_URL = import.meta.env.VITE_API_URL || "";
 
-// Card plans configuration
+// Card plans configuration - Updated to match your requirements
 const cardPlans = {
   'Personal': {
     name: 'Personal',
@@ -110,8 +114,8 @@ const cardPlans = {
     ],
     price: '$9.99/month'
   },
-  'Business Premium': {
-    name: 'Business Premium',
+  'BusinessPremium': {
+    name: 'BusinessPremium',
     description: 'Advanced features with interactive elements',
     icon: <FaCrown className="w-5 h-5" />,
     color: 'gold',
@@ -153,70 +157,77 @@ const cardPlans = {
   }
 };
 
-// Field visibility configuration based on plans
+// Field visibility configuration based on plans - Updated to match your cardFieldsConfig
 const fieldPlanMap = {
-  // Personal Info Fields
-  'prefix': ['Personal', 'Business', 'Business Premium'],
-  'firstName': ['Personal', 'Business', 'Business Premium'],
-  'lastName': ['Personal', 'Business', 'Business Premium'],
-  'suffix': ['Personal', 'Business', 'Business Premium'],
-  'profilePhoto': ['Personal', 'Business', 'Business Premium'],
+  // Personal Info Fields (Personal, Business, BusinessPremium)
+  'prefix': ['Personal', 'Business', 'BusinessPremium'],
+  'firstName': ['Personal', 'Business', 'BusinessPremium'],
+  'lastName': ['Personal', 'Business', 'BusinessPremium'],
+  'suffix': ['Personal', 'Business', 'BusinessPremium'],
+  'profilePhoto': ['Personal', 'Business', 'BusinessPremium'],
+  'tagline': ['Personal', 'Business', 'BusinessPremium'], // Tag line / Slogan
+  'profileVideo': ['Personal', 'Business', 'BusinessPremium'],
+  'aboutText': ['Personal', 'Business', 'BusinessPremium'],
   
-  // Profile Page Fields
-  'profileVideo': ['Personal', 'Business', 'Business Premium'],
-  'titleLine': ['Personal', 'Business', 'Business Premium'],
-  'aboutText': ['Personal', 'Business', 'Business Premium'],
+  // Contact Management (Personal, Business, BusinessPremium)
+  'phones': ['Personal', 'Business', 'BusinessPremium'],
+  'emails': ['Personal', 'Business', 'BusinessPremium'],
+  'websites': ['Personal', 'Business', 'BusinessPremium'],
+  'addresses': ['Personal', 'Business', 'BusinessPremium'],
   
-  // Professional/Personal Details
-  'companyName': ['Business', 'Business Premium'],
-  'department': ['Business', 'Business Premium'],
-  'jobTitle': ['Personal', 'Business', 'Business Premium'],
-  'bio': ['Personal', 'Business', 'Business Premium'],
-  'companyLogo': ['Business', 'Business Premium'],
-  'logoSize': ['Business', 'Business Premium'],
-  'foundedName': ['Business Premium'],
-  'organization': ['Business', 'Business Premium'],
-  'servicesProducts': ['Business', 'Business Premium'],
-  'brandLabel': ['Business Premium'],
-  'productRangeDisplay': ['Business Premium'],
-  'catalog': ['Business', 'Business Premium'],
-  'catalogPDF': ['Business', 'Business Premium'],
-  'productVideo': ['Business', 'Business Premium'],
+  // Social & Digital Hub (Personal, Business, BusinessPremium)
+  'socialLinks': ['Personal', 'Business', 'BusinessPremium'],
   
-  // Contact Details
-  'phones': ['Personal', 'Business', 'Business Premium'],
-  'websites': ['Personal', 'Business', 'Business Premium'],
-  'addresses': ['Personal', 'Business', 'Business Premium'],
-  'virtualNumber': ['Business', 'Business Premium'],
+  // Utilities (Personal, Business, BusinessPremium)
+  'dynamicQRCode': ['Personal', 'Business', 'BusinessPremium'],
+  'shareableUrl': ['Personal', 'Business', 'BusinessPremium'],
+  'nfcSettings': ['Personal', 'Business', 'BusinessPremium'],
+  'downloads': ['Personal', 'Business', 'BusinessPremium'],
+  'videos': ['Personal', 'Business', 'BusinessPremium'],
   
-  // Services & Products
-  'services': ['Business Premium'],
-  'products': ['Business Premium'],
+  // Business-only fields
+  'companyName': ['Business', 'BusinessPremium'],
+  'businessHours': ['Business', 'BusinessPremium'],
+  'virtualNumber': ['Business', 'BusinessPremium'],
   
-  // Interactive Elements
-  'interactiveElements': ['Business Premium'],
+  // Professional/Business Details (Business, BusinessPremium)
+  'services': ['Business', 'BusinessPremium'],
+  'servicesProducts': ['Business', 'BusinessPremium'], // Brief about Product/Services
+  'gallery': ['Business', 'BusinessPremium'],
+  'catalog': ['Business', 'BusinessPremium'], // Product/Catalog [PDF]
+  'productVideo': ['Business', 'BusinessPremium'],
+  'testimonials': ['Business', 'BusinessPremium'],
   
-  // Premium Features
-  'testimonials': ['Business', 'Business Premium'],
-  'clientList': ['Business Premium'],
-  'gallery': ['Business', 'Business Premium'],
-  'dynamicQRCode': ['Personal', 'Business', 'Business Premium'],
-  'nfcSettings': ['Personal', 'Business', 'Business Premium'],
-  'downloads': ['Personal', 'Business', 'Business Premium'],
-  'videos': ['Personal', 'Business', 'Business Premium'],
+  // BusinessPremium-only fields
+  'interactiveElements': ['BusinessPremium'],
+  'individualProductDisplay': ['BusinessPremium'],
+  'clientList': ['BusinessPremium'],
+  'businessCardInstagram': ['BusinessPremium'],
+  'textbooks': ['BusinessPremium'],
   
-  // New Contact Management Fields
-  'enableOneTapCall': ['Personal', 'Business', 'Business Premium'],
-  'enableWhatsApp': ['Personal', 'Business', 'Business Premium'],
-  'enableEmail': ['Personal', 'Business', 'Business Premium'],
-  'businessHours': ['Business', 'Business Premium'],
+  // Additional fields for completeness
+  'department': ['Business', 'BusinessPremium'],
+  'jobTitle': ['Personal', 'Business', 'BusinessPremium'],
+  'bio': ['Personal', 'Business', 'BusinessPremium'],
+  'companyLogo': ['Business', 'BusinessPremium'],
+  'logoSize': ['Business', 'BusinessPremium'],
+  'foundedName': ['BusinessPremium'],
+  'organization': ['Business', 'BusinessPremium'],
+  'brandLabel': ['BusinessPremium'],
+  'productRangeDisplay': ['BusinessPremium'],
+  'catalogPDF': ['Business', 'BusinessPremium'],
   
   // Chat & Assistant Fields
-  'chatAssistant': ['Business Premium'],
-  'liveChat': ['Business Premium']
+  'chatAssistant': ['BusinessPremium'],
+  'liveChat': ['BusinessPremium'],
+  
+  // New Contact Management Fields
+  'enableOneTapCall': ['Personal', 'Business', 'BusinessPremium'],
+  'enableWhatsApp': ['Personal', 'Business', 'BusinessPremium'],
+  'enableEmail': ['Personal', 'Business', 'BusinessPremium']
 };
 
-// Function to clean form data by removing empty fields
+// Function to clean form data by removing empty fields and handling video objects
 const cleanFormData = (data) => {
   const optimized = {
     // Personal Info
@@ -239,11 +250,19 @@ const cleanFormData = (data) => {
     ...(data.customUrl && { customUrl: data.customUrl }),
     urlSlug: data.urlSlug,
     isPublic: data.isPublic !== undefined ? data.isPublic : true,
+    ...(data.shareableUrl && { shareableUrl: data.shareableUrl }),
     
     // Profile Page Fields
-    ...(data.profileVideo?.url && { profileVideo: data.profileVideo }),
-    ...(data.titleLine && { titleLine: data.titleLine }),
+    ...(data.profileVideo?.url && { 
+      profileVideo: data.profileVideo.url, // Store only the URL string for MongoDB
+      profileVideoThumbnail: data.profileVideo.thumbnail,
+      profileVideoTitle: data.profileVideo.title,
+      profileVideoUploadType: data.profileVideo.uploadType
+    }),
+    ...(data.tagline && { tagline: data.tagline }),
     ...(data.aboutText && { aboutText: data.aboutText }),
+    ...(data.foundedName && { foundedName: data.foundedName }),
+    ...(data.organization && { organization: data.organization }),
     
     // Professional/Personal Details
     ...(data.companyName && { companyName: data.companyName }),
@@ -252,15 +271,27 @@ const cleanFormData = (data) => {
     ...(data.bio && { bio: data.bio }),
     ...(data.companyLogo && { companyLogo: data.companyLogo }),
     logoSize: data.logoSize,
-    ...(data.foundedName && { foundedName: data.foundedName }),
-    ...(data.organization && { organization: data.organization }),
     ...(data.servicesProducts && { servicesProducts: data.servicesProducts }),
     ...(data.brandLabel && { brandLabel: data.brandLabel }),
     ...(data.productRangeDisplay && { productRangeDisplay: data.productRangeDisplay }),
     ...(data.catalog && { catalog: data.catalog }),
     ...(data.catalogPDF && { catalogPDF: data.catalogPDF }),
-    ...(data.productVideo?.url && { productVideo: data.productVideo }),
+    // Product Video - Store as string for MongoDB
+    ...(data.productVideo?.url && { 
+      productVideo: data.productVideo.url, // Store only the URL string
+      productVideoThumbnail: data.productVideo.thumbnail,
+      productVideoTitle: data.productVideo.title,
+      productVideoUploadType: data.productVideo.uploadType
+    }),
     ...(data.virtualNumber && { virtualNumber: data.virtualNumber }),
+    ...(data.individualProductDisplay && { individualProductDisplay: data.individualProductDisplay }),
+    ...(data.businessCardInstagram && { businessCardInstagram: data.businessCardInstagram }),
+    ...(data.textbooks && { textbooks: data.textbooks }),
+    
+    // Email addresses array
+    emails: data.emails
+      ? data.emails.filter(email => email.address && email.address.trim() !== "")
+      : [],
     
     // Contact Details
     phones: data.phones.filter(phone => phone.number && phone.number.trim() !== ""),
@@ -283,6 +314,9 @@ const cleanFormData = (data) => {
     
     // Social Media Links
     socialLinks: data.socialLinks.filter(link => link.url && link.url.trim() !== ""),
+    
+    // Business Hours
+    ...(data.businessHours && { businessHours: data.businessHours }),
     
     // Services & Products
     services: data.services
@@ -327,7 +361,9 @@ const cleanFormData = (data) => {
           clientName: testimonial.clientName,
           testimonial: testimonial.testimonial,
           ...(testimonial.rating && { rating: testimonial.rating }),
-          ...(testimonial.date && { date: testimonial.date })
+          ...(testimonial.date && { date: testimonial.date }),
+          ...(testimonial.company && { company: testimonial.company }),
+          ...(testimonial.position && { position: testimonial.position })
         }))
     }),
     
@@ -344,7 +380,8 @@ const cleanFormData = (data) => {
           ...(item.thumbnail && { thumbnail: item.thumbnail }),
           ...(item.title && { title: item.title }),
           ...(item.description && { description: item.description }),
-          ...(item.category && { category: item.category })
+          ...(item.category && { category: item.category }),
+          ...(item.uploadType && { uploadType: item.uploadType })
         }))
     }),
     
@@ -352,19 +389,22 @@ const cleanFormData = (data) => {
     
     ...(data.nfcSettings && { nfcSettings: data.nfcSettings }),
     
+    // Downloads with upload type support
     ...(data.downloads && data.downloads.length > 0 && {
       downloads: data.downloads
-        .filter(download => download.name && download.fileUrl)
+        .filter(download => download.name && (download.fileUrl || download.fileData))
         .map(download => ({
           name: download.name,
-          fileUrl: download.fileUrl,
-          ...(download.fileType && { fileType: download.fileType }),
-          ...(download.fileSize && { fileSize: download.fileSize }),
+          fileUrl: download.fileUrl || '',
+          fileType: download.fileType,
+          fileSize: download.fileSize,
+          ...(download.fileData && { fileData: download.fileData }),
+          ...(download.uploadType && { uploadType: download.uploadType }),
           downloadCount: download.downloadCount || 0
         }))
     }),
 
-    // Videos
+    // Videos with upload type support
     ...(data.videos && data.videos.length > 0 && {
       videos: data.videos
         .filter(video => video.url && video.url.trim() !== "")
@@ -373,7 +413,9 @@ const cleanFormData = (data) => {
           url: video.url,
           ...(video.thumbnail && { thumbnail: video.thumbnail }),
           ...(video.title && { title: video.title }),
-          ...(video.description && { description: video.description })
+          ...(video.description && { description: video.description }),
+          ...(video.uploadType && { uploadType: video.uploadType }),
+          ...(video.videoData && { videoData: video.videoData })
         }))
     }),
 
@@ -386,15 +428,13 @@ const cleanFormData = (data) => {
     enableWhatsApp: data.enableWhatsApp !== undefined ? data.enableWhatsApp : true,
     enableEmail: data.enableEmail !== undefined ? data.enableEmail : true,
     
-    // Business Hours
-    ...(data.businessHours && { businessHours: data.businessHours }),
-    
     // Design
     design: data.design,
     cardLayout: data.cardLayout
   };
 
   console.log(`📤 Final payload size: ${JSON.stringify(optimized).length} bytes`);
+  console.log('📤 Final payload structure:', JSON.stringify(optimized, null, 2).substring(0, 500));
   
   return optimized;
 };
@@ -572,6 +612,16 @@ const CreateCard = () => {
   const [changeCount, setChangeCount] = useState(0);
   const [isFromLogin, setIsFromLogin] = useState(false);
 
+  // Upload type states for videos and documents
+  const [uploadType, setUploadType] = useState({
+    profileVideo: 'url', // 'url' or 'upload'
+    productVideo: 'url',
+    catalog: 'url',
+    gallery: {}, // Store upload type per gallery item
+    downloads: {}, // Store upload type per download item
+    videos: {} // Store upload type per video item
+  });
+
   // Field visibility based on selected plan
   const isFieldVisible = (fieldName) => {
     const allowedPlans = fieldPlanMap[fieldName] || [];
@@ -621,7 +671,7 @@ const CreateCard = () => {
     return currentStep === Math.max(...contentSteps);
   };
 
-  // INITIAL FORM STATE
+  // INITIAL FORM STATE - Updated with new fields
   const initialFormState = {
     // Personal Info
     prefix: "",
@@ -632,6 +682,7 @@ const CreateCard = () => {
     
     // Email
     email: userEmailFromSignIn || "",
+    emails: [{ label: "work", address: "" }],
     
     // Card Type
     cardType: selectedPlanFromState,
@@ -642,16 +693,20 @@ const CreateCard = () => {
     // URL Customization
     customUrl: "",
     urlSlug: "",
+    shareableUrl: "",
     isPublic: true,
     
     // Profile Page Fields
     profileVideo: {
       url: "",
       thumbnail: "",
-      title: ""
+      title: "",
+      uploadType: 'url'
     },
-    titleLine: "",
+    tagline: "",
     aboutText: "",
+    foundedName: "",
+    organization: "",
     
     // Professional/Personal Details
     companyName: "",
@@ -660,8 +715,6 @@ const CreateCard = () => {
     bio: "",
     companyLogo: null,
     logoSize: "medium",
-    foundedName: "",
-    organization: "",
     servicesProducts: "",
     brandLabel: "",
     productRangeDisplay: "grid",
@@ -670,9 +723,13 @@ const CreateCard = () => {
     productVideo: {
       url: "",
       thumbnail: "",
-      title: ""
+      title: "",
+      uploadType: 'url'
     },
     virtualNumber: "",
+    individualProductDisplay: false,
+    businessCardInstagram: "",
+    textbooks: "",
     
     // Contact Details
     phones: [{ label: "work", number: "" }],
@@ -688,6 +745,16 @@ const CreateCard = () => {
       googleMapsLink: "",
       isPrimary: true
     }],
+   
+    businessHours: [
+      { day: 'monday', openingTime: '09:00', closingTime: '17:00', isClosed: false },
+      { day: 'tuesday', openingTime: '09:00', closingTime: '17:00', isClosed: false },
+      { day: 'wednesday', openingTime: '09:00', closingTime: '17:00', isClosed: false },
+      { day: 'thursday', openingTime: '09:00', closingTime: '17:00', isClosed: false },
+      { day: 'friday', openingTime: '09:00', closingTime: '17:00', isClosed: false },
+      { day: 'saturday', openingTime: '', closingTime: '', isClosed: true },
+      { day: 'sunday', openingTime: '', closingTime: '', isClosed: true }
+    ],
     
     // Social Media Links
     socialLinks: [
@@ -759,17 +826,6 @@ const CreateCard = () => {
     enableOneTapCall: true,
     enableWhatsApp: true,
     enableEmail: true,
-    
-    // Business Hours
-    businessHours: {
-      monday: { open: '09:00', close: '17:00' },
-      tuesday: { open: '09:00', close: '17:00' },
-      wednesday: { open: '09:00', close: '17:00' },
-      thursday: { open: '09:00', close: '17:00' },
-      friday: { open: '09:00', close: '17:00' },
-      saturday: { open: '', close: '' },
-      sunday: { open: '', close: '' }
-    },
     
     // Design
     design: "",
@@ -916,6 +972,7 @@ const CreateCard = () => {
             ...prev,
             ...parsedData,
             phones: parsedData.phones || prev.phones,
+            emails: parsedData.emails || prev.emails,
             websites: parsedData.websites || prev.websites,
             addresses: parsedData.addresses || prev.addresses,
             socialLinks: parsedData.socialLinks || prev.socialLinks,
@@ -927,7 +984,10 @@ const CreateCard = () => {
             downloads: parsedData.downloads || prev.downloads,
             videos: parsedData.videos || prev.videos,
             chatAssistant: parsedData.chatAssistant || prev.chatAssistant,
-            liveChat: parsedData.liveChat || prev.liveChat
+            liveChat: parsedData.liveChat || prev.liveChat,
+            businessHours: parsedData.businessHours || prev.businessHours,
+            profileVideo: parsedData.profileVideo || prev.profileVideo,
+            productVideo: parsedData.productVideo || prev.productVideo
           };
           
           formDataRef.current = merged;
@@ -1272,6 +1332,211 @@ const CreateCard = () => {
     }
   };
 
+  // ========== UPDATED HANDLERS FOR UPLOAD TYPES ==========
+
+  // Toggle upload type for video fields
+  const toggleUploadType = (field) => {
+    setUploadType(prev => ({
+      ...prev,
+      [field]: prev[field] === 'url' ? 'upload' : 'url'
+    }));
+  };
+
+  // Handle video file upload (for both profileVideo and productVideo)
+  const handleVideoUpload = async (field, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file size (limit to 50MB)
+    if (file.size > 50 * 1024 * 1024) {
+      alert("File size should be less than 50MB");
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('video/')) {
+      alert("Please upload a valid video file");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64Video = e.target.result;
+      const thumbnail = generateThumbnailFromVideo(base64Video);
+      
+      const updatedData = {
+        ...formData,
+        [field]: {
+          ...formData[field],
+          url: base64Video,
+          thumbnail: thumbnail,
+          uploadType: 'upload'
+        }
+      };
+      
+      setFormData(updatedData);
+      formDataRef.current = updatedData;
+      
+      setHasUnsavedChanges(true);
+      setChangeCount(prev => prev + 1);
+      
+      autoSaveToLocalStorage(updatedData);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Generate thumbnail from video (simple implementation)
+  const generateThumbnailFromVideo = (videoData) => {
+    // In a real implementation, you would use a video processing library
+    // For now, return a placeholder or process on the server
+    return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+  };
+
+  // Handle catalog upload (PDF or URL)
+  const handleCatalogUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file type
+    if (file.type !== 'application/pdf') {
+      alert("Please upload a PDF file");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64PDF = e.target.result;
+      const updatedData = { 
+        ...formData, 
+        catalog: base64PDF,
+        catalogPDF: base64PDF 
+      };
+      
+      setFormData(updatedData);
+      formDataRef.current = updatedData;
+      
+      setHasUnsavedChanges(true);
+      setChangeCount(prev => prev + 1);
+      
+      autoSaveToLocalStorage(updatedData);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle gallery item upload
+  const handleGalleryUpload = async (index, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const fileData = e.target.result;
+      const fileType = file.type.startsWith('image/') ? 'image' : 
+                      file.type.startsWith('video/') ? 'video' : 
+                      file.type === 'application/pdf' ? 'pdf' : 'document';
+      
+      const updatedGallery = [...formData.gallery];
+      updatedGallery[index] = { 
+        ...updatedGallery[index], 
+        type: fileType,
+        url: fileData,
+        uploadType: 'upload'
+      };
+      
+      const updatedData = { ...formData, gallery: updatedGallery };
+      
+      setFormData(updatedData);
+      formDataRef.current = updatedData;
+      
+      setHasUnsavedChanges(true);
+      setChangeCount(prev => prev + 1);
+      
+      autoSaveToLocalStorage(updatedData);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle download file upload
+  const handleDownloadUpload = async (index, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const fileData = e.target.result;
+      const fileType = file.type === 'application/pdf' ? 'pdf' : 
+                      file.type.startsWith('image/') ? 'image' : 
+                      file.type.startsWith('video/') ? 'video' : 
+                      'document';
+      
+      const updatedDownloads = [...formData.downloads];
+      updatedDownloads[index] = { 
+        ...updatedDownloads[index], 
+        fileType: fileType,
+        fileData: fileData,
+        fileSize: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+        uploadType: 'upload'
+      };
+      
+      const updatedData = { ...formData, downloads: updatedDownloads };
+      
+      setFormData(updatedData);
+      formDataRef.current = updatedData;
+      
+      setHasUnsavedChanges(true);
+      setChangeCount(prev => prev + 1);
+      
+      autoSaveToLocalStorage(updatedData);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle video file upload in videos section
+  const handleVideoSectionUpload = async (index, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file size
+    if (file.size > 50 * 1024 * 1024) {
+      alert("File size should be less than 50MB");
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('video/')) {
+      alert("Please upload a valid video file");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const videoData = e.target.result;
+      const thumbnail = generateThumbnailFromVideo(videoData);
+      
+      const updatedVideos = [...formData.videos];
+      updatedVideos[index] = { 
+        ...updatedVideos[index], 
+        type: 'direct',
+        url: videoData,
+        thumbnail: thumbnail,
+        uploadType: 'upload'
+      };
+      
+      const updatedData = { ...formData, videos: updatedVideos };
+      
+      setFormData(updatedData);
+      formDataRef.current = updatedData;
+      
+      setHasUnsavedChanges(true);
+      setChangeCount(prev => prev + 1);
+      
+      autoSaveToLocalStorage(updatedData);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // ========== END UPDATED HANDLERS ==========
+
   // Handlers for new fields
   const handleTestimonialChange = (index, field, value) => {
     const updatedTestimonials = [...formData.testimonials];
@@ -1408,6 +1673,25 @@ const CreateCard = () => {
     autoSaveToLocalStorage(updatedData);
   };
 
+  // Handle business hours change
+  const handleBusinessHoursChange = (dayIndex, field, value) => {
+    const updatedBusinessHours = [...formData.businessHours];
+    updatedBusinessHours[dayIndex] = { 
+      ...updatedBusinessHours[dayIndex], 
+      [field]: field === 'isClosed' ? (value === 'true') : value 
+    };
+    
+    const updatedData = { ...formData, businessHours: updatedBusinessHours };
+    
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    
+    autoSaveToLocalStorage(updatedData);
+  };
+
   // Add new array items
   const addTestimonial = () => {
     const updatedData = {
@@ -1418,7 +1702,9 @@ const CreateCard = () => {
           clientName: "",
           testimonial: "",
           rating: 5,
-          date: new Date().toISOString().split('T')[0]
+          date: new Date().toISOString().split('T')[0],
+          company: "",
+          position: ""
         }
       ]
     };
@@ -1443,7 +1729,8 @@ const CreateCard = () => {
           thumbnail: "",
           title: "",
           description: "",
-          category: ""
+          category: "",
+          uploadType: 'url'
         }
       ]
     };
@@ -1490,7 +1777,8 @@ const CreateCard = () => {
           fileUrl: "",
           fileType: "",
           fileSize: "",
-          downloadCount: 0
+          downloadCount: 0,
+          uploadType: 'url'
         }
       ]
     };
@@ -1514,7 +1802,8 @@ const CreateCard = () => {
           url: "",
           thumbnail: "",
           title: "",
-          description: ""
+          description: "",
+          uploadType: 'url'
         }
       ]
     };
@@ -1855,6 +2144,7 @@ const CreateCard = () => {
         ...editingCard,
         // Ensure arrays are properly set
         phones: editingCard.phones || initialFormState.phones,
+        emails: editingCard.emails || initialFormState.emails,
         websites: editingCard.websites || initialFormState.websites,
         addresses: editingCard.addresses || initialFormState.addresses,
         socialLinks: editingCard.socialLinks || initialFormState.socialLinks,
@@ -1865,10 +2155,24 @@ const CreateCard = () => {
         interactiveElements: editingCard.interactiveElements || initialFormState.interactiveElements,
         downloads: editingCard.downloads || initialFormState.downloads,
         videos: editingCard.videos || initialFormState.videos,
+        businessHours: editingCard.businessHours || initialFormState.businessHours,
         // Ensure design is set
         design: editingCard.design || "",
         // Ensure createdBy is set
-        createdBy: editingCard.createdBy || ""
+        createdBy: editingCard.createdBy || "",
+        // Handle video fields if they exist as strings
+        profileVideo: editingCard.profileVideo ? {
+          url: editingCard.profileVideo,
+          thumbnail: editingCard.profileVideoThumbnail || "",
+          title: editingCard.profileVideoTitle || "",
+          uploadType: editingCard.profileVideoUploadType || 'url'
+        } : initialFormState.profileVideo,
+        productVideo: editingCard.productVideo ? {
+          url: editingCard.productVideo,
+          thumbnail: editingCard.productVideoThumbnail || "",
+          title: editingCard.productVideoTitle || "",
+          uploadType: editingCard.productVideoUploadType || 'url'
+        } : initialFormState.productVideo
       };
       
       setFormData(loadedData);
@@ -1956,11 +2260,11 @@ const CreateCard = () => {
     }
   }, [changeCount, formData, editingCard, autoSaveToLocalStorage]);
 
-  // RENDER FUNCTIONS
+  // ========== RENDER FUNCTIONS ==========
 
-  // Step 1: Profile Page
+  // Step 1: Profile Page - Updated with upload options
   const renderProfilePage = () => {
-    const profileSectionFields = ['prefix', 'firstName', 'lastName', 'suffix', 'profilePhoto', 'profileVideo', 'titleLine', 'aboutText'];
+    const profileSectionFields = ['prefix', 'firstName', 'lastName', 'suffix', 'profilePhoto', 'profileVideo', 'tagline', 'aboutText', 'foundedName', 'organization'];
     const urlSectionFields = ['customUrl', 'urlSlug'];
     
     const shouldShowProfileSection = isSectionVisible(profileSectionFields);
@@ -2115,34 +2419,192 @@ const CreateCard = () => {
           )}
         </div>
 
-        {/* Profile Video */}
+        {/* Additional Emails */}
+        {isFieldVisible('emails') && (
+          <div className="border border-slate-200 rounded-lg p-4">
+            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
+              <FaEnvelope className="w-5 h-5 text-blue-500 mr-2" />
+              Additional Email Addresses
+            </h4>
+            {(formData.emails || []).map((email, index) => (
+              <div key={index} className="flex gap-2 mb-2">
+                <select 
+                  value={email.label || "work"}
+                  onChange={(e) => handleArrayFieldChange("emails", index, "label", e.target.value)}
+                  className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="work">Work</option>
+                  <option value="personal">Personal</option>
+                  <option value="other">Other</option>
+                  <option value="executive">Executive</option>
+                  <option value="primary">Primary</option>
+                  <option value="secondary">Secondary</option>
+                  <option value="sales">Sales</option>
+                  <option value="support">Support</option>
+                  <option value="billing">Billing</option>
+                </select>
+                <input 
+                  type="email"
+                  placeholder="Email address"
+                  value={email.address || ""}
+                  onChange={(e) => handleArrayFieldChange("emails", index, "address", e.target.value)}
+                  className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+                {(formData.emails || []).length > 1 && (
+                  <button 
+                    type="button"
+                    onClick={() => removeArrayField("emails", index)}
+                    className="bg-red-500 text-white px-3 rounded hover:bg-red-600 transition-colors"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
+            <button 
+              type="button"
+              onClick={() => addArrayField("emails", { label: "work", address: "" })}
+              className="text-blue-500 text-sm hover:text-blue-700"
+            >
+              + Add Email Address
+            </button>
+          </div>
+        )}
+
+        {/* Tag Line */}
+        {isFieldVisible('tagline') && (
+          <div>
+            <label className="block text-slate-700 mb-1">Tag Line / Slogan</label>
+            <input 
+              type="text" 
+              name="tagline"
+              placeholder="e.g., Award-Winning Digital Marketer"
+              value={formData.tagline || ""}
+              onChange={handleChange}
+              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+        )}
+
+        {/* Profile Video - Updated with upload options */}
         {isFieldVisible('profileVideo') && (
           <div className="border border-slate-200 rounded-lg p-4">
             <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
               <FaVideo className="w-5 h-5 text-blue-500 mr-2" />
               Profile Video
             </h4>
+            
+            {/* Upload Type Toggle */}
+            <div className="flex space-x-4 mb-4">
+              <button
+                type="button"
+                onClick={() => toggleUploadType('profileVideo')}
+                className={`flex items-center px-4 py-2 rounded-lg ${
+                  uploadType.profileVideo === 'url' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                <FaLink className="w-4 h-4 mr-2" />
+                URL
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleUploadType('profileVideo')}
+                className={`flex items-center px-4 py-2 rounded-lg ${
+                  uploadType.profileVideo === 'upload' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                <FaUpload className="w-4 h-4 mr-2" />
+                Upload File
+              </button>
+            </div>
+            
             <div className="space-y-4">
-              <div>
-                <label className="block text-slate-700 mb-1">Video URL</label>
-                <input 
-                  type="url"
-                  placeholder="https://youtube.com/your-video or direct video link"
-                  value={formData.profileVideo?.url || ""}
-                  onChange={(e) => {
-                    const updatedData = {
-                      ...formData, 
-                      profileVideo: { ...formData.profileVideo, url: e.target.value }
-                    };
-                    setFormData(updatedData);
-                    formDataRef.current = updatedData;
-                    setHasUnsavedChanges(true);
-                    setChangeCount(prev => prev + 1);
-                    autoSaveToLocalStorage(updatedData);
-                  }}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
+              {uploadType.profileVideo === 'url' ? (
+                <div>
+                  <label className="block text-slate-700 mb-1">Video URL</label>
+                  <input 
+                    type="url"
+                    placeholder="https://youtube.com/your-video or direct video link"
+                    value={formData.profileVideo?.url || ""}
+                    onChange={(e) => {
+                      const updatedData = {
+                        ...formData, 
+                        profileVideo: { ...formData.profileVideo, url: e.target.value, uploadType: 'url' }
+                      };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                  {formData.profileVideo?.url && formData.profileVideo?.uploadType === 'upload' ? (
+                    <div className="flex flex-col items-center">
+                      <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+                        <FaVideo className="w-12 h-12 text-blue-500" />
+                      </div>
+                      <p className="text-sm text-slate-600 mb-2">Video uploaded</p>
+                      <div className="flex space-x-2">
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = 'video/*';
+                            input.onchange = (e) => handleVideoUpload('profileVideo', e);
+                            input.click();
+                          }}
+                          className="text-blue-500 text-sm hover:text-blue-700"
+                        >
+                          Change Video
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const updatedData = {
+                              ...formData,
+                              profileVideo: { url: "", thumbnail: "", title: "", uploadType: 'url' }
+                            };
+                            setFormData(updatedData);
+                            formDataRef.current = updatedData;
+                            setHasUnsavedChanges(true);
+                            setChangeCount(prev => prev + 1);
+                            autoSaveToLocalStorage(updatedData);
+                          }}
+                          className="text-red-500 text-sm hover:text-red-700"
+                        >
+                          Remove Video
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-slate-500 mb-2">Upload video file (max 50MB)</p>
+                      <input 
+                        type="file" 
+                        accept="video/*" 
+                        onChange={(e) => handleVideoUpload('profileVideo', e)}
+                        className="hidden" 
+                        id="profileVideoUpload"
+                      />
+                      <label 
+                        htmlFor="profileVideoUpload"
+                        className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                      >
+                        Upload Video
+                      </label>
+                    </>
+                  )}
+                </div>
+              )}
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -2191,15 +2653,30 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Title Line */}
-        {isFieldVisible('titleLine') && (
+        {/* Founded Name */}
+        {isFieldVisible('foundedName') && (
           <div>
-            <label className="block text-slate-700 mb-1">Tag Line / Recognition</label>
+            <label className="block text-slate-700 mb-1">Founded Name</label>
             <input 
               type="text" 
-              name="titleLine"
-              placeholder="e.g., Award-Winning Digital Marketer"
-              value={formData.titleLine || ""}
+              name="foundedName"
+              placeholder="Founder's name or founding year"
+              value={formData.foundedName || ""}
+              onChange={handleChange}
+              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+        )}
+
+        {/* Organization */}
+        {isFieldVisible('organization') && (
+          <div>
+            <label className="block text-slate-700 mb-1">Organization</label>
+            <input 
+              type="text" 
+              name="organization"
+              placeholder="Organization or association name"
+              value={formData.organization || ""}
               onChange={handleChange}
               className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
@@ -2306,12 +2783,12 @@ const CreateCard = () => {
     );
   };
 
-  // Step 2: Professional/Personal Details
+  // Step 2: Professional/Personal Details - Updated
   const renderProfessionalDetails = () => {
     const professionalFields = [
       'companyName', 'department', 'jobTitle', 'bio', 'companyLogo', 'logoSize',
-      'foundedName', 'organization', 'servicesProducts', 'brandLabel', 'catalog', 'businessHours',
-      'virtualNumber', 'catalogPDF', 'productVideo'
+      'servicesProducts', 'brandLabel', 'catalog', 'businessHours', 'virtualNumber',
+      'productVideo', 'individualProductDisplay', 'businessCardInstagram', 'textbooks'
     ];
     
     const shouldShowProfessionalSection = isSectionVisible(professionalFields);
@@ -2323,7 +2800,7 @@ const CreateCard = () => {
             No professional details available for your current plan ({formData.cardType}).
           </p>
           <p className="text-slate-400 text-sm mt-2">
-            Upgrade to Business or Business Premium plan for professional features.
+            Upgrade to Business or BusinessPremium plan for professional features.
           </p>
         </div>
       );
@@ -2378,39 +2855,6 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Organization Fields */}
-        {(isFieldVisible('foundedName') || isFieldVisible('organization')) && (
-          <div className="grid grid-cols-2 gap-4">
-            {isFieldVisible('foundedName') && (
-              <div>
-                <label className="block text-slate-700 mb-1">Founded Name</label>
-                <input 
-                  type="text" 
-                  name="foundedName"
-                  placeholder="Name / found name"
-                  value={formData.foundedName || ""}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-            )}
-            
-            {isFieldVisible('organization') && (
-              <div>
-                <label className="block text-slate-700 mb-1">Organization</label>
-                <input 
-                  type="text" 
-                  name="organization"
-                  placeholder="Contact/voice/Organization"
-                  value={formData.organization || ""}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-            )}
-          </div>
-        )}
-
         {isFieldVisible('bio') && (
           <div>
             <label className="block text-slate-700 mb-1">Bio</label>
@@ -2455,18 +2899,106 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Catalog */}
+        {/* Catalog - Updated with upload options */}
         {isFieldVisible('catalog') && (
           <div>
-            <label className="block text-slate-700 mb-1">Catalog</label>
-            <input 
-              type="text" 
-              name="catalog"
-              placeholder="Resolving/Catalog information"
-              value={formData.catalog || ""}
-              onChange={handleChange}
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
+            <label className="block text-slate-700 mb-1">Product Catalog</label>
+            <div className="flex space-x-4 mb-4">
+              <button
+                type="button"
+                onClick={() => setUploadType(prev => ({ ...prev, catalog: 'url' }))}
+                className={`flex items-center px-4 py-2 rounded-lg ${
+                  uploadType.catalog === 'url' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                <FaLink className="w-4 h-4 mr-2" />
+                URL
+              </button>
+              <button
+                type="button"
+                onClick={() => setUploadType(prev => ({ ...prev, catalog: 'upload' }))}
+                className={`flex items-center px-4 py-2 rounded-lg ${
+                  uploadType.catalog === 'upload' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                <FaUpload className="w-4 h-4 mr-2" />
+                Upload PDF
+              </button>
+            </div>
+            
+            {uploadType.catalog === 'url' ? (
+              <input 
+                type="text" 
+                name="catalog"
+                placeholder="https://example.com/catalog.pdf"
+                value={formData.catalog || ""}
+                onChange={handleChange}
+                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            ) : (
+              <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                {formData.catalogPDF ? (
+                  <div className="flex flex-col items-center">
+                    <FaFilePdf className="w-12 h-12 text-red-500 mb-2" />
+                    <p className="text-sm text-slate-600 mb-2">PDF catalog uploaded</p>
+                    <div className="flex space-x-2">
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = '.pdf';
+                          input.onchange = handleCatalogPDFUpload;
+                          input.click();
+                        }}
+                        className="text-blue-500 text-sm hover:text-blue-700"
+                      >
+                        Change PDF
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const updatedData = { 
+                            ...formData, 
+                            catalog: "",
+                            catalogPDF: null 
+                          };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
+                        className="text-red-500 text-sm hover:text-red-700"
+                      >
+                        Remove PDF
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-slate-500 mb-2">Upload PDF catalog file</p>
+                    <input 
+                      type="file" 
+                      accept=".pdf" 
+                      onChange={handleCatalogPDFUpload}
+                      className="hidden" 
+                      id="catalogPDFUpload"
+                    />
+                    <label 
+                      htmlFor="catalogPDFUpload"
+                      className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                    >
+                      Upload PDF
+                    </label>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -2546,70 +3078,115 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Catalog PDF */}
-        {isFieldVisible('catalogPDF') && (
-          <div>
-            <label className="block font-semibold text-slate-700 mb-2">Product Catalog PDF</label>
-            <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-              {formData.catalogPDF ? (
-                <div className="flex flex-col items-center">
-                  <FaFilePdf className="w-12 h-12 text-red-500 mb-2" />
-                  <p className="text-sm text-slate-600 mb-2">Catalog PDF uploaded</p>
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      const updatedData = { ...formData, catalogPDF: null };
-                      setFormData(updatedData);
-                      formDataRef.current = updatedData;
-                      setHasUnsavedChanges(true);
-                      setChangeCount(prev => prev + 1);
-                      autoSaveToLocalStorage(updatedData);
-                    }}
-                    className="text-red-500 text-sm hover:text-red-700"
-                  >
-                    Remove PDF
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <p className="text-slate-500 mb-2">Upload PDF catalog</p>
-                  <input 
-                    type="file" 
-                    accept=".pdf" 
-                    onChange={handleCatalogPDFUpload}
-                    className="hidden" 
-                    id="catalogPDF"
-                  />
-                  <label 
-                    htmlFor="catalogPDF"
-                    className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
-                  >
-                    Upload PDF
-                  </label>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Product Video */}
+        {/* Product Video - Updated with upload options */}
         {isFieldVisible('productVideo') && (
           <div className="border border-slate-200 rounded-lg p-4">
             <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
               <FaVideo className="w-5 h-5 text-red-500 mr-2" />
               Product/Service Video
             </h4>
+            
+            {/* Upload Type Toggle */}
+            <div className="flex space-x-4 mb-4">
+              <button
+                type="button"
+                onClick={() => toggleUploadType('productVideo')}
+                className={`flex items-center px-4 py-2 rounded-lg ${
+                  uploadType.productVideo === 'url' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                <FaLink className="w-4 h-4 mr-2" />
+                URL
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleUploadType('productVideo')}
+                className={`flex items-center px-4 py-2 rounded-lg ${
+                  uploadType.productVideo === 'upload' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                <FaUpload className="w-4 h-4 mr-2" />
+                Upload File
+              </button>
+            </div>
+            
             <div className="space-y-4">
-              <div>
-                <label className="block text-slate-700 mb-1">Video URL</label>
-                <input 
-                  type="url"
-                  placeholder="https://youtube.com/your-product-video"
-                  value={formData.productVideo?.url || ""}
-                  onChange={(e) => handleProductVideoChange('url', e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
+              {uploadType.productVideo === 'url' ? (
+                <div>
+                  <label className="block text-slate-700 mb-1">Video URL</label>
+                  <input 
+                    type="url"
+                    placeholder="https://youtube.com/your-product-video"
+                    value={formData.productVideo?.url || ""}
+                    onChange={(e) => handleProductVideoChange('url', e.target.value)}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                  {formData.productVideo?.url && formData.productVideo?.uploadType === 'upload' ? (
+                    <div className="flex flex-col items-center">
+                      <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+                        <FaVideo className="w-12 h-12 text-red-500" />
+                      </div>
+                      <p className="text-sm text-slate-600 mb-2">Product video uploaded</p>
+                      <div className="flex space-x-2">
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = 'video/*';
+                            input.onchange = (e) => handleVideoUpload('productVideo', e);
+                            input.click();
+                          }}
+                          className="text-blue-500 text-sm hover:text-blue-700"
+                        >
+                          Change Video
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const updatedData = {
+                              ...formData,
+                              productVideo: { url: "", thumbnail: "", title: "", uploadType: 'url' }
+                            };
+                            setFormData(updatedData);
+                            formDataRef.current = updatedData;
+                            setHasUnsavedChanges(true);
+                            setChangeCount(prev => prev + 1);
+                            autoSaveToLocalStorage(updatedData);
+                          }}
+                          className="text-red-500 text-sm hover:text-red-700"
+                        >
+                          Remove Video
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-slate-500 mb-2">Upload product video file (max 50MB)</p>
+                      <input 
+                        type="file" 
+                        accept="video/*" 
+                        onChange={(e) => handleVideoUpload('productVideo', e)}
+                        className="hidden" 
+                        id="productVideoUpload"
+                      />
+                      <label 
+                        htmlFor="productVideoUpload"
+                        className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                      >
+                        Upload Video
+                      </label>
+                    </>
+                  )}
+                </div>
+              )}
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -2647,76 +3224,111 @@ const CreateCard = () => {
             </h4>
             
             <div className="space-y-4">
-              {[
-                { day: 'Monday', key: 'monday' },
-                { day: 'Tuesday', key: 'tuesday' },
-                { day: 'Wednesday', key: 'wednesday' },
-                { day: 'Thursday', key: 'thursday' },
-                { day: 'Friday', key: 'friday' },
-                { day: 'Saturday', key: 'saturday' },
-                { day: 'Sunday', key: 'sunday' }
-              ].map(({ day, key }) => (
-                <div key={key} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <span className="font-medium text-slate-700 w-24">{day}</span>
-                  <div className="flex items-center space-x-4 flex-1 max-w-md">
+              {formData.businessHours.map((day, index) => (
+                <div key={day.day} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <span className="font-medium text-slate-700 w-24 capitalize">{day.day}</span>
+                  
+                  <div className="flex items-center space-x-4">
                     <select 
-                      value={formData.businessHours?.[key]?.open || ''}
-                      onChange={(e) => {
-                        const updatedData = {
-                          ...formData,
-                          businessHours: {
-                            ...formData.businessHours,
-                            [key]: {
-                              ...formData.businessHours?.[key],
-                              open: e.target.value
-                            }
-                          }
-                        };
-                        setFormData(updatedData);
-                        formDataRef.current = updatedData;
-                        setHasUnsavedChanges(true);
-                        setChangeCount(prev => prev + 1);
-                        autoSaveToLocalStorage(updatedData);
-                      }}
+                      value={day.isClosed ? 'true' : 'false'}
+                      onChange={(e) => handleBusinessHoursChange(index, 'isClosed', e.target.value)}
                       className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     >
-                      <option value="">Closed</option>
-                      <option value="09:00">9:00 AM</option>
-                      <option value="10:00">10:00 AM</option>
-                      <option value="11:00">11:00 AM</option>
-                      <option value="12:00">12:00 PM</option>
+                      <option value="false">Open</option>
+                      <option value="true">Closed</option>
                     </select>
-                    <span className="text-slate-500">to</span>
-                    <select 
-                      value={formData.businessHours?.[key]?.close || ''}
-                      onChange={(e) => {
-                        const updatedData = {
-                          ...formData,
-                          businessHours: {
-                            ...formData.businessHours,
-                            [key]: {
-                              ...formData.businessHours?.[key],
-                              close: e.target.value
-                            }
-                          }
-                        };
-                        setFormData(updatedData);
-                        formDataRef.current = updatedData;
-                        setHasUnsavedChanges(true);
-                        setChangeCount(prev => prev + 1);
-                        autoSaveToLocalStorage(updatedData);
-                      }}
-                      className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    >
-                      <option value="">Closed</option>
-                      <option value="17:00">5:00 PM</option>
-                      <option value="18:00">6:00 PM</option>
-                      <option value="19:00">7:00 PM</option>
-                      <option value="20:00">8:00 PM</option>
-                    </select>
+                    
+                    {!day.isClosed && (
+                      <>
+                        <input 
+                          type="time"
+                          value={day.openingTime || ''}
+                          onChange={(e) => handleBusinessHoursChange(index, 'openingTime', e.target.value)}
+                          className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                        <span className="text-slate-500">to</span>
+                        <input 
+                          type="time"
+                          value={day.closingTime || ''}
+                          onChange={(e) => handleBusinessHoursChange(index, 'closingTime', e.target.value)}
+                          className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* BusinessPremium-only fields */}
+        {isFieldVisible('individualProductDisplay') && (
+          <div className="border border-slate-200 rounded-lg p-4">
+            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
+              <FaShoppingCart className="w-5 h-5 text-green-500 mr-2" />
+              Product Display Options
+            </h4>
+            
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <label className="flex items-center text-slate-700">
+                  <input 
+                    type="checkbox"
+                    checked={formData.individualProductDisplay || false}
+                    onChange={(e) => {
+                      const updatedData = { ...formData, individualProductDisplay: e.target.checked };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
+                    className="mr-2"
+                  />
+                  Enable Individual Product Display
+                </label>
+              </div>
+              
+              {isFieldVisible('businessCardInstagram') && (
+                <div>
+                  <label className="block text-slate-700 mb-1">Business Card Instagram</label>
+                  <input 
+                    type="url"
+                    placeholder="https://instagram.com/yourbusiness"
+                    value={formData.businessCardInstagram || ""}
+                    onChange={(e) => {
+                      const updatedData = { ...formData, businessCardInstagram: e.target.value };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              )}
+              
+              {isFieldVisible('textbooks') && (
+                <div>
+                  <label className="block text-slate-700 mb-1">Textbooks / Learning Materials</label>
+                  <textarea 
+                    placeholder="List textbooks or learning materials"
+                    value={formData.textbooks || ""}
+                    onChange={(e) => {
+                      const updatedData = { ...formData, textbooks: e.target.value };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
+                    rows="3"
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -2724,7 +3336,7 @@ const CreateCard = () => {
     );
   };
 
-  // Step 3: Contact Management & Social Hub
+  // Step 3: Contact Management & Social Hub - Updated
   const renderContactAndSocial = () => {
     const contactFields = [
       'enableOneTapCall', 'enableWhatsApp', 'enableEmail', 'phones', 'websites', 'addresses'
@@ -2854,6 +3466,12 @@ const CreateCard = () => {
                   <option value="personal">Personal</option>
                   <option value="mobile">Mobile</option>
                   <option value="other">Other</option>
+                  <option value="assistant">Assistant</option>
+                  <option value="fax">Fax</option>
+                  <option value="home">Home</option>
+                  <option value="office">Office</option>
+                  <option value="direct">Direct</option>
+                  <option value="main">Main</option>
                 </select>
                 <input 
                   type="tel"
@@ -2901,6 +3519,12 @@ const CreateCard = () => {
                   <option value="work">Work</option>
                   <option value="portfolio">Portfolio</option>
                   <option value="other">Other</option>
+                  <option value="company">Company</option>
+                  <option value="blog">Blog</option>
+                  <option value="shop">Shop</option>
+                  <option value="documentation">Documentation</option>
+                  <option value="support">Support</option>
+                  <option value="booking">Booking</option>
                 </select>
                 <input 
                   type="url"
@@ -2979,6 +3603,9 @@ const CreateCard = () => {
                       <option value="headquarters">Headquarters</option>
                       <option value="branch">Branch</option>
                       <option value="other">Other</option>
+                      <option value="warehouse">Warehouse</option>
+                      <option value="store">Store</option>
+                      <option value="factory">Factory</option>
                     </select>
                   </div>
                   
@@ -3207,11 +3834,11 @@ const CreateCard = () => {
     );
   };
 
-  // Step 4: Interactive Elements & Premium Features
+  // Step 4: Interactive Elements & Premium Features - Updated
   const renderInteractiveAndPremium = () => {
     const premiumFields = [
       'interactiveElements', 'testimonials', 'gallery', 'dynamicQRCode', 'nfcSettings', 'downloads',
-      'videos', 'chatAssistant', 'liveChat'
+      'videos', 'chatAssistant', 'liveChat', 'clientList', 'services', 'products'
     ];
     
     const shouldShowPremiumSection = isSectionVisible(premiumFields);
@@ -3223,7 +3850,7 @@ const CreateCard = () => {
             No premium features available for your current plan ({formData.cardType}).
           </p>
           <p className="text-slate-400 text-sm mt-2">
-            Upgrade to Business or Business Premium plan for premium features.
+            Upgrade to Business or BusinessPremium plan for premium features.
           </p>
         </div>
       );
@@ -3321,6 +3948,371 @@ const CreateCard = () => {
           </>
         )}
 
+        {/* Services Section */}
+        {isFieldVisible('services') && (
+          <div className="border border-slate-200 rounded-lg p-6">
+            <h4 className="text-lg font-semibold text-slate-800 mb-4">Services</h4>
+            
+            {formData.services.map((service, index) => (
+              <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h5 className="font-medium text-slate-700">Service {index + 1}</h5>
+                  {formData.services.length > 1 && (
+                    <button 
+                      type="button"
+                      onClick={() => removeArrayField("services", index)}
+                      className="text-red-500 hover:text-red-700 text-sm"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-slate-700 mb-1">Service Name</label>
+                    <input 
+                      type="text"
+                      placeholder="Service name"
+                      value={service.name || ""}
+                      onChange={(e) => handleArrayFieldChange("services", index, "name", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-slate-700 mb-1">Category</label>
+                    <select 
+                      value={service.category || ""}
+                      onChange={(e) => handleArrayFieldChange("services", index, "category", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="">Select Category</option>
+                      <option value="design">Design</option>
+                      <option value="development">Development</option>
+                      <option value="consulting">Consulting</option>
+                      <option value="marketing">Marketing</option>
+                      <option value="training">Training</option>
+                      <option value="support">Support</option>
+                      <option value="maintenance">Maintenance</option>
+                      <option value="strategy">Strategy</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <label className="block text-slate-700 mb-1">Description</label>
+                  <textarea 
+                    placeholder="Service description"
+                    value={service.description || ""}
+                    onChange={(e) => handleArrayFieldChange("services", index, "description", e.target.value)}
+                    rows="2"
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-slate-700 mb-1">Price</label>
+                    <input 
+                      type="number"
+                      placeholder="0.00"
+                      value={service.price || ""}
+                      onChange={(e) => handleArrayFieldChange("services", index, "price", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-slate-700 mb-1">Currency</label>
+                    <select 
+                      value={service.currency || "USD"}
+                      onChange={(e) => handleArrayFieldChange("services", index, "currency", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="GBP">GBP</option>
+                      <option value="INR">INR</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-slate-700 mb-1">Duration</label>
+                    <input 
+                      type="text"
+                      placeholder="e.g., 1 hour, 2 weeks"
+                      value={service.duration || ""}
+                      onChange={(e) => handleArrayFieldChange("services", index, "duration", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                
+                {/* Service Image Upload */}
+                <div className="mt-4">
+                  <label className="block text-slate-700 mb-2">Service Image</label>
+                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
+                    {service.image ? (
+                      <div className="flex flex-col items-center">
+                        <img src={service.image} alt="Service" className="max-w-32 max-h-32 object-contain mb-2 rounded-lg" />
+                        <div className="flex space-x-2">
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const input = document.createElement('input');
+                              input.type = 'file';
+                              input.accept = 'image/*';
+                              input.onchange = (e) => handleServiceProductImageUpload("services", index, e);
+                              input.click();
+                            }}
+                            className="text-blue-500 text-sm hover:text-blue-700"
+                          >
+                            Change Image
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const updatedServices = [...formData.services];
+                              updatedServices[index] = { ...updatedServices[index], image: null };
+                              const updatedData = { ...formData, services: updatedServices };
+                              setFormData(updatedData);
+                              formDataRef.current = updatedData;
+                              setHasUnsavedChanges(true);
+                              setChangeCount(prev => prev + 1);
+                              autoSaveToLocalStorage(updatedData);
+                            }}
+                            className="text-red-500 text-sm hover:text-red-700"
+                          >
+                            Remove Image
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-slate-500 mb-2">Upload service image</p>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={(e) => handleServiceProductImageUpload("services", index, e)}
+                          className="hidden" 
+                          id={`service-image-${index}`}
+                        />
+                        <label 
+                          htmlFor={`service-image-${index}`}
+                          className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                        >
+                          Upload Image
+                        </label>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            <button 
+              type="button"
+              onClick={() => addArrayField("services", {
+                name: "",
+                description: "",
+                price: "",
+                currency: "USD",
+                duration: "",
+                category: "",
+                image: null
+              })}
+              className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
+            >
+              + Add Service
+            </button>
+          </div>
+        )}
+
+        {/* Products Section */}
+        {isFieldVisible('products') && (
+          <div className="border border-slate-200 rounded-lg p-6">
+            <h4 className="text-lg font-semibold text-slate-800 mb-4">Products</h4>
+            
+            {formData.products.map((product, index) => (
+              <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h5 className="font-medium text-slate-700">Product {index + 1}</h5>
+                  {formData.products.length > 1 && (
+                    <button 
+                      type="button"
+                      onClick={() => removeArrayField("products", index)}
+                      className="text-red-500 hover:text-red-700 text-sm"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-slate-700 mb-1">Product Name</label>
+                    <input 
+                      type="text"
+                      placeholder="Product name"
+                      value={product.name || ""}
+                      onChange={(e) => handleArrayFieldChange("products", index, "name", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-slate-700 mb-1">Category</label>
+                    <select 
+                      value={product.category || ""}
+                      onChange={(e) => handleArrayFieldChange("products", index, "category", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="">Select Category</option>
+                      <option value="digital">Digital</option>
+                      <option value="physical">Physical</option>
+                      <option value="software">Software</option>
+                      <option value="book">Book</option>
+                      <option value="course">Course</option>
+                      <option value="service">Service</option>
+                      <option value="subscription">Subscription</option>
+                      <option value="hardware">Hardware</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <label className="block text-slate-700 mb-1">Description</label>
+                  <textarea 
+                    placeholder="Product description"
+                    value={product.description || ""}
+                    onChange={(e) => handleArrayFieldChange("products", index, "description", e.target.value)}
+                    rows="2"
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label className="block text-slate-700 mb-1">Price</label>
+                    <input 
+                      type="number"
+                      placeholder="0.00"
+                      value={product.price || ""}
+                      onChange={(e) => handleArrayFieldChange("products", index, "price", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-slate-700 mb-1">Currency</label>
+                    <select 
+                      value={product.currency || "USD"}
+                      onChange={(e) => handleArrayFieldChange("products", index, "currency", e.target.value)}
+                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="GBP">GBP</option>
+                      <option value="INR">INR</option>
+                    </select>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <label className="flex items-center text-slate-700">
+                      <input 
+                        type="checkbox"
+                        checked={product.inStock !== undefined ? product.inStock : true}
+                        onChange={(e) => handleArrayFieldChange("products", index, "inStock", e.target.checked)}
+                        className="mr-2"
+                      />
+                      In Stock
+                    </label>
+                  </div>
+                </div>
+                
+                {/* Product Image Upload */}
+                <div className="mt-4">
+                  <label className="block text-slate-700 mb-2">Product Image</label>
+                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
+                    {product.image ? (
+                      <div className="flex flex-col items-center">
+                        <img src={product.image} alt="Product" className="max-w-32 max-h-32 object-contain mb-2 rounded-lg" />
+                        <div className="flex space-x-2">
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const input = document.createElement('input');
+                              input.type = 'file';
+                              input.accept = 'image/*';
+                              input.onchange = (e) => handleServiceProductImageUpload("products", index, e);
+                              input.click();
+                            }}
+                            className="text-blue-500 text-sm hover:text-blue-700"
+                          >
+                            Change Image
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const updatedProducts = [...formData.products];
+                              updatedProducts[index] = { ...updatedProducts[index], image: null };
+                              const updatedData = { ...formData, products: updatedProducts };
+                              setFormData(updatedData);
+                              formDataRef.current = updatedData;
+                              setHasUnsavedChanges(true);
+                              setChangeCount(prev => prev + 1);
+                              autoSaveToLocalStorage(updatedData);
+                            }}
+                            className="text-red-500 text-sm hover:text-red-700"
+                          >
+                            Remove Image
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-slate-500 mb-2">Upload product image</p>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={(e) => handleServiceProductImageUpload("products", index, e)}
+                          className="hidden" 
+                          id={`product-image-${index}`}
+                        />
+                        <label 
+                          htmlFor={`product-image-${index}`}
+                          className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                        >
+                          Upload Image
+                        </label>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            <button 
+              type="button"
+              onClick={() => addArrayField("products", {
+                name: "",
+                description: "",
+                price: "",
+                currency: "USD",
+                category: "",
+                image: null,
+                inStock: true
+              })}
+              className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
+            >
+              + Add Product
+            </button>
+          </div>
+        )}
+
         {/* Premium Features Section */}
         {(isFieldVisible('testimonials') || isFieldVisible('gallery') || isFieldVisible('downloads') || isFieldVisible('dynamicQRCode') || isFieldVisible('nfcSettings')) && (
           <>
@@ -3372,6 +4364,30 @@ const CreateCard = () => {
                       </div>
                     </div>
                     
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-slate-700 mb-1">Company</label>
+                        <input 
+                          type="text"
+                          placeholder="Client's company"
+                          value={testimonial.company || ""}
+                          onChange={(e) => handleTestimonialChange(index, "company", e.target.value)}
+                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-slate-700 mb-1">Position</label>
+                        <input 
+                          type="text"
+                          placeholder="Client's position"
+                          value={testimonial.position || ""}
+                          onChange={(e) => handleTestimonialChange(index, "position", e.target.value)}
+                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                    
                     <div className="mb-4">
                       <label className="block text-slate-700 mb-1">Testimonial</label>
                       <textarea 
@@ -3405,7 +4421,70 @@ const CreateCard = () => {
               </div>
             )}
 
-            {/* Gallery */}
+            {/* Client List */}
+            {isFieldVisible('clientList') && (
+              <div className="border border-slate-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-slate-800 mb-4">Client List</h4>
+                
+                {formData.clientList.map((client, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg mb-2">
+                    <input 
+                      type="text"
+                      placeholder="Client name or company"
+                      value={client || ""}
+                      onChange={(e) => {
+                        const updatedClientList = [...formData.clientList];
+                        updatedClientList[index] = e.target.value;
+                        const updatedData = { ...formData, clientList: updatedClientList };
+                        setFormData(updatedData);
+                        formDataRef.current = updatedData;
+                        setHasUnsavedChanges(true);
+                        setChangeCount(prev => prev + 1);
+                        autoSaveToLocalStorage(updatedData);
+                      }}
+                      className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                    {formData.clientList.length > 1 && (
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const updatedClientList = formData.clientList.filter((_, i) => i !== index);
+                          const updatedData = { ...formData, clientList: updatedClientList };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
+                        className="ml-2 text-red-500 hover:text-red-700"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                ))}
+                
+                <button 
+                  type="button"
+                  onClick={() => {
+                    const updatedData = {
+                      ...formData,
+                      clientList: [...formData.clientList, ""]
+                    };
+                    setFormData(updatedData);
+                    formDataRef.current = updatedData;
+                    setHasUnsavedChanges(true);
+                    setChangeCount(prev => prev + 1);
+                    autoSaveToLocalStorage(updatedData);
+                  }}
+                  className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
+                >
+                  + Add Client
+                </button>
+              </div>
+            )}
+
+            {/* Gallery - Updated with upload options */}
             {isFieldVisible('gallery') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Product Gallery & Portfolio</h4>
@@ -3425,74 +4504,129 @@ const CreateCard = () => {
                       )}
                     </div>
                     
-                    {/* Enhanced Image Upload Section */}
-                    <div className="mb-4">
-                      <label className="block text-slate-700 mb-2">Gallery Image</label>
-                      <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                        {item.url ? (
-                          <div className="flex flex-col items-center">
-                            <img src={item.url} alt="Gallery" className="max-w-48 max-h-48 object-contain mb-2 rounded-lg" />
-                            <div className="flex space-x-2">
-                              <button 
-                                type="button"
-                                onClick={() => {
-                                  const input = document.createElement('input');
-                                  input.type = 'file';
-                                  input.accept = 'image/*';
-                                  input.onchange = (e) => {
-                                    const file = e.target.files[0];
-                                    if (file) {
-                                      const reader = new FileReader();
-                                      reader.onload = (e) => {
-                                        handleGalleryChange(index, "url", e.target.result);
-                                      };
-                                      reader.readAsDataURL(file);
-                                    }
-                                  };
-                                  input.click();
-                                }}
-                                className="text-blue-500 text-sm hover:text-blue-700"
-                              >
-                                Change Image
-                              </button>
-                              <button 
-                                type="button"
-                                onClick={() => handleGalleryChange(index, "url", "")}
-                                className="text-red-500 text-sm hover:text-red-700"
-                              >
-                                Remove Image
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <p className="text-slate-500 mb-2">Drag and drop image or click to upload</p>
-                            <input 
-                              type="file" 
-                              accept="image/*" 
-                              onChange={(e) => {
-                                const file = e.target.files[0];
-                                if (file) {
-                                  const reader = new FileReader();
-                                  reader.onload = (e) => {
-                                    handleGalleryChange(index, "url", e.target.result);
-                                  };
-                                  reader.readAsDataURL(file);
-                                }
-                              }}
-                              className="hidden" 
-                              id={`gallery-image-${index}`}
-                            />
-                            <label 
-                              htmlFor={`gallery-image-${index}`}
-                              className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
-                            >
-                              Upload Image
-                            </label>
-                          </>
-                        )}
-                      </div>
+                    {/* Upload Type Toggle */}
+                    <div className="flex space-x-4 mb-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedGallery = [...formData.gallery];
+                          updatedGallery[index] = { ...updatedGallery[index], uploadType: 'url' };
+                          const updatedData = { ...formData, gallery: updatedGallery };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
+                        className={`flex items-center px-4 py-2 rounded-lg ${
+                          item.uploadType === 'url' 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        <FaLink className="w-4 h-4 mr-2" />
+                        URL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedGallery = [...formData.gallery];
+                          updatedGallery[index] = { ...updatedGallery[index], uploadType: 'upload' };
+                          const updatedData = { ...formData, gallery: updatedGallery };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
+                        className={`flex items-center px-4 py-2 rounded-lg ${
+                          item.uploadType === 'upload' 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        <FaUpload className="w-4 h-4 mr-2" />
+                        Upload File
+                      </button>
                     </div>
+                    
+                    {/* Gallery Item Content */}
+                    {item.uploadType === 'url' ? (
+                      <div className="mb-4">
+                        <label className="block text-slate-700 mb-1">File URL</label>
+                        <input 
+                          type="url"
+                          placeholder="https://example.com/image.jpg"
+                          value={item.url || ""}
+                          onChange={(e) => handleGalleryChange(index, "url", e.target.value)}
+                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                    ) : (
+                      <div className="mb-4">
+                        <label className="block text-slate-700 mb-2">Upload File</label>
+                        <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                          {item.url ? (
+                            <div className="flex flex-col items-center">
+                              {item.type === 'image' ? (
+                                <img src={item.url} alt="Gallery" className="max-w-48 max-h-48 object-contain mb-2 rounded-lg" />
+                              ) : item.type === 'video' ? (
+                                <div className="w-48 h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+                                  <FaVideo className="w-12 h-12 text-blue-500" />
+                                </div>
+                              ) : item.type === 'pdf' ? (
+                                <div className="w-48 h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+                                  <FaFilePdf className="w-12 h-12 text-red-500" />
+                                </div>
+                              ) : (
+                                <div className="w-48 h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+                                  <FaFileAlt className="w-12 h-12 text-gray-500" />
+                                </div>
+                              )}
+                              <div className="flex space-x-2">
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const input = document.createElement('input');
+                                    input.type = 'file';
+                                    input.accept = 'image/*,video/*,.pdf';
+                                    input.onchange = (e) => handleGalleryUpload(index, e);
+                                    input.click();
+                                  }}
+                                  className="text-blue-500 text-sm hover:text-blue-700"
+                                >
+                                  Change File
+                                </button>
+                                <button 
+                                  type="button"
+                                  onClick={() => handleGalleryChange(index, "url", "")}
+                                  className="text-red-500 text-sm hover:text-red-700"
+                                >
+                                  Remove File
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-slate-500 mb-2">Upload image, video, or document</p>
+                              <input 
+                                type="file" 
+                                accept="image/*,video/*,.pdf" 
+                                onChange={(e) => handleGalleryUpload(index, e)}
+                                className="hidden" 
+                                id={`gallery-upload-${index}`}
+                              />
+                              <label 
+                                htmlFor={`gallery-upload-${index}`}
+                                className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                              >
+                                Upload File
+                              </label>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div>
@@ -3505,6 +4639,8 @@ const CreateCard = () => {
                           <option value="image">Image</option>
                           <option value="video">Video</option>
                           <option value="document">Document</option>
+                          <option value="pdf">PDF</option>
+                          <option value="audio">Audio</option>
                         </select>
                       </div>
                       
@@ -3555,7 +4691,7 @@ const CreateCard = () => {
               </div>
             )}
 
-            {/* Downloads */}
+            {/* Downloads - Updated with upload options */}
             {isFieldVisible('downloads') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Downloads</h4>
@@ -3575,19 +4711,64 @@ const CreateCard = () => {
                       )}
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label className="block text-slate-700 mb-1">File Name</label>
-                        <input 
-                          type="text"
-                          placeholder="e.g., Company Brochure"
-                          value={download.name || ""}
-                          onChange={(e) => handleDownloadChange(index, "name", e.target.value)}
-                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
+                    <div className="flex space-x-4 mb-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedDownloads = [...formData.downloads];
+                          updatedDownloads[index] = { ...updatedDownloads[index], uploadType: 'url' };
+                          const updatedData = { ...formData, downloads: updatedDownloads };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
+                        className={`flex items-center px-4 py-2 rounded-lg ${
+                          download.uploadType === 'url' 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        <FaLink className="w-4 h-4 mr-2" />
+                        URL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedDownloads = [...formData.downloads];
+                          updatedDownloads[index] = { ...updatedDownloads[index], uploadType: 'upload' };
+                          const updatedData = { ...formData, downloads: updatedDownloads };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
+                        className={`flex items-center px-4 py-2 rounded-lg ${
+                          download.uploadType === 'upload' 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        <FaUpload className="w-4 h-4 mr-2" />
+                        Upload File
+                      </button>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label className="block text-slate-700 mb-1">File Name</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g., Company Brochure"
+                        value={download.name || ""}
+                        onChange={(e) => handleDownloadChange(index, "name", e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    
+                    {download.uploadType === 'url' ? (
+                      <div className="mb-4">
                         <label className="block text-slate-700 mb-1">File URL</label>
                         <input 
                           type="url"
@@ -3597,7 +4778,73 @@ const CreateCard = () => {
                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
-                    </div>
+                    ) : (
+                      <div className="mb-4">
+                        <label className="block text-slate-700 mb-2">Upload File</label>
+                        <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                          {download.fileData ? (
+                            <div className="flex flex-col items-center">
+                              <FaFileAlt className="w-12 h-12 text-blue-500 mb-2" />
+                              <p className="text-sm text-slate-600 mb-2">File uploaded</p>
+                              <div className="flex space-x-2">
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const input = document.createElement('input');
+                                    input.type = 'file';
+                                    input.accept = '*/*';
+                                    input.onchange = (e) => handleDownloadUpload(index, e);
+                                    input.click();
+                                  }}
+                                  className="text-blue-500 text-sm hover:text-blue-700"
+                                >
+                                  Change File
+                                </button>
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const updatedDownloads = [...formData.downloads];
+                                    updatedDownloads[index] = { 
+                                      ...updatedDownloads[index], 
+                                      fileData: null,
+                                      fileUrl: "",
+                                      fileType: "",
+                                      fileSize: ""
+                                    };
+                                    const updatedData = { ...formData, downloads: updatedDownloads };
+                                    setFormData(updatedData);
+                                    formDataRef.current = updatedData;
+                                    setHasUnsavedChanges(true);
+                                    setChangeCount(prev => prev + 1);
+                                    autoSaveToLocalStorage(updatedData);
+                                  }}
+                                  className="text-red-500 text-sm hover:text-red-700"
+                                >
+                                  Remove File
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-slate-500 mb-2">Upload any file type</p>
+                              <input 
+                                type="file" 
+                                accept="*/*" 
+                                onChange={(e) => handleDownloadUpload(index, e)}
+                                className="hidden" 
+                                id={`download-upload-${index}`}
+                              />
+                              <label 
+                                htmlFor={`download-upload-${index}`}
+                                className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                              >
+                                Upload File
+                              </label>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -3635,7 +4882,7 @@ const CreateCard = () => {
               </div>
             )}
 
-            {/* Videos Section */}
+            {/* Videos Section - Updated with upload options */}
             {isFieldVisible('videos') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Videos</h4>
@@ -3655,31 +4902,148 @@ const CreateCard = () => {
                       )}
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label className="block text-slate-700 mb-1">Video Type</label>
-                        <select 
-                          value={video.type || "youtube"}
-                          onChange={(e) => handleVideoChange(index, "type", e.target.value)}
-                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        >
-                          <option value="youtube">YouTube</option>
-                          <option value="vimeo">Vimeo</option>
-                          <option value="direct">Direct Link</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-slate-700 mb-1">Video URL</label>
-                        <input 
-                          type="url"
-                          placeholder="https://youtube.com/watch?v=..."
-                          value={video.url || ""}
-                          onChange={(e) => handleVideoChange(index, "url", e.target.value)}
-                          className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        />
-                      </div>
+                    <div className="flex space-x-4 mb-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedVideos = [...formData.videos];
+                          updatedVideos[index] = { ...updatedVideos[index], uploadType: 'url' };
+                          const updatedData = { ...formData, videos: updatedVideos };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
+                        className={`flex items-center px-4 py-2 rounded-lg ${
+                          video.uploadType === 'url' 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        <FaLink className="w-4 h-4 mr-2" />
+                        URL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedVideos = [...formData.videos];
+                          updatedVideos[index] = { ...updatedVideos[index], uploadType: 'upload' };
+                          const updatedData = { ...formData, videos: updatedVideos };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
+                        className={`flex items-center px-4 py-2 rounded-lg ${
+                          video.uploadType === 'upload' 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        <FaUpload className="w-4 h-4 mr-2" />
+                        Upload File
+                      </button>
                     </div>
+                    
+                    {video.uploadType === 'url' ? (
+                      <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          <div>
+                            <label className="block text-slate-700 mb-1">Video Type</label>
+                            <select 
+                              value={video.type || "youtube"}
+                              onChange={(e) => handleVideoChange(index, "type", e.target.value)}
+                              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            >
+                              <option value="youtube">YouTube</option>
+                              <option value="vimeo">Vimeo</option>
+                              <option value="direct">Direct Link</option>
+                            </select>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-slate-700 mb-1">Video URL</label>
+                            <input 
+                              type="url"
+                              placeholder="https://youtube.com/watch?v=..."
+                              value={video.url || ""}
+                              onChange={(e) => handleVideoChange(index, "url", e.target.value)}
+                              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="mb-4">
+                        <label className="block text-slate-700 mb-2">Upload Video File</label>
+                        <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                          {video.url && video.uploadType === 'upload' ? (
+                            <div className="flex flex-col items-center">
+                              <div className="w-48 h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+                                <FaVideo className="w-12 h-12 text-blue-500" />
+                              </div>
+                              <p className="text-sm text-slate-600 mb-2">Video file uploaded</p>
+                              <div className="flex space-x-2">
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const input = document.createElement('input');
+                                    input.type = 'file';
+                                    input.accept = 'video/*';
+                                    input.onchange = (e) => handleVideoSectionUpload(index, e);
+                                    input.click();
+                                  }}
+                                  className="text-blue-500 text-sm hover:text-blue-700"
+                                >
+                                  Change Video
+                                </button>
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const updatedVideos = [...formData.videos];
+                                    updatedVideos[index] = { 
+                                      ...updatedVideos[index], 
+                                      type: 'direct',
+                                      url: "",
+                                      thumbnail: "",
+                                      uploadType: 'url'
+                                    };
+                                    const updatedData = { ...formData, videos: updatedVideos };
+                                    setFormData(updatedData);
+                                    formDataRef.current = updatedData;
+                                    setHasUnsavedChanges(true);
+                                    setChangeCount(prev => prev + 1);
+                                    autoSaveToLocalStorage(updatedData);
+                                  }}
+                                  className="text-red-500 text-sm hover:text-red-700"
+                                >
+                                  Remove Video
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-slate-500 mb-2">Upload video file (max 50MB)</p>
+                              <input 
+                                type="file" 
+                                accept="video/*" 
+                                onChange={(e) => handleVideoSectionUpload(index, e)}
+                                className="hidden" 
+                                id={`video-upload-${index}`}
+                              />
+                              <label 
+                                htmlFor={`video-upload-${index}`}
+                                className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                              >
+                                Upload Video
+                              </label>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div>
@@ -4028,7 +5392,7 @@ const CreateCard = () => {
     
     return (
       <div className="flex justify-between mb-8 relative">
-        <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -z-10"></div>
+        <div className="absolute top-1/2 left-0 right=0 h-1 bg-slate-200 -z-10"></div>
         <div 
           className="absolute top-1/2 left-0 h-1 bg-blue-500 -z-10 transition-all duration-300"
           style={{ width: `${((availableSteps.indexOf(currentStep)) / (availableSteps.length - 1)) * 100}%` }}
@@ -4055,7 +5419,7 @@ const CreateCard = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 md:p-8">
+    <div className="w-full max-w-8xl mx-auto p-3 md:p-6 pl-2 md:pl-4 ml-2">
       <WarningPopup />
       
       {/* Back to Dashboard Button */}
@@ -4068,7 +5432,7 @@ const CreateCard = () => {
         <span className="font-medium">Back to Dashboard</span>
       </button>
 
-      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+      <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 w-full">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-slate-800 text-center">
           {editingCard ? "Edit Your Card" : "Create Your Card"}
         </h2>

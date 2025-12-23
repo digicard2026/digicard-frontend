@@ -319,7 +319,7 @@
 //   const getCardTypeDisplay = (cardType) => {
 //     const typeMap = {
 //       'business': 'Business',
-//       'business-premium': 'Business Premium',
+//       'business-premium': 'BusinessPremium',
 //       'business-pro': 'Business Professional'
 //     };
 //     return typeMap[cardType] || cardType || 'Business';
