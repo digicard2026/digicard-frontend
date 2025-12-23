@@ -39,9 +39,9 @@
 //       ],
 //       price: '₹800/month'
 //     },
-//     'Business Premium': { 
-//       name: 'Business Premium', 
-//       description: 'Advanced features for Business Premium', 
+//     'BusinessPremium': { 
+//       name: 'BusinessPremium', 
+//       description: 'Advanced features for BusinessPremium', 
 //       icon: <FaCrown className="w-8 h-8" />,
 //       color: 'gold',
 //       features: [
@@ -391,7 +391,7 @@ const cardFieldsConfig = {
   },
 
   BusinessPremium: {
-    name: 'Business Premium',
+    name: 'BusinessPremium',
     description: 'Advanced features with interactive elements',
     allowed: [
       'profilePhoto',
