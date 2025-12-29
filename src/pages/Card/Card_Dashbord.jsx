@@ -460,47 +460,151 @@
 // export default Card_Dashboard;
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaEdit, FaEye, FaShareAlt, FaCalendarAlt, FaEnvelope, FaPlus, FaSearch, FaUser, FaBuilding, FaPhone, FaGlobe, FaArrowRight, FaCreditCard, FaChartLine, FaUsers, FaQrcode, FaEllipsisV, FaCheck } from "react-icons/fa";
+import { FaEdit, FaEye, FaShareAlt, FaCalendarAlt, FaEnvelope, FaPlus, FaSearch, FaUser, FaBuilding, FaPhone, FaGlobe, FaArrowRight, FaCreditCard, FaChartLine, FaUsers, FaQrcode, FaEllipsisV, FaCheck, FaExclamationTriangle, FaLock } from "react-icons/fa";
 import { CARD_URL } from "../../../src/utility/constants";
 
 const Card_Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { userEmail: locationEmail, userData } = location.state || {};
-  
+
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
+  const [subscriptionData, setSubscriptionData] = useState(null);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [stats, setStats] = useState({
     totalCards: 0,
     totalViews: 0,
     totalShares: 0,
-    newContents: 0  // Changed from newContacts to match image
+    newContents: 0
   });
+
+  // Check if subscription is expired
+  const isSubscriptionExpired = subscriptionData?.status === "expired" || subscriptionData?.daysLeft <= 0;
+
+  // ✅ GET AUTH TOKEN
+  // const getAuthToken = () => {
+  //   return localStorage.getItem('auth_token') || 
+  //          localStorage.getItem('token') || 
+  //          localStorage.getItem('accessToken') ||
+  //          sessionStorage.getItem('auth_token');
+  // };
+
+  const getAuthToken = () => {
+  // 1️⃣ Try to get token from cookies (non-httpOnly only)
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      return parts.pop().split(';').shift();
+    }
+    return null;
+  };
+
+  return (
+    getCookie('auth_token') ||
+    getCookie('token') ||
+    getCookie('accessToken') ||
+
+    // 2️⃣ Fallbacks (won’t break existing code)
+    localStorage.getItem('auth_token') ||
+    localStorage.getItem('token') ||
+    localStorage.getItem('accessToken') ||
+    sessionStorage.getItem('auth_token')
+  );
+};
+
 
   // ✅ GET EMAIL FROM MULTIPLE SOURCES
   const getUserEmail = () => {
     // 1. From location state (when navigating from signup)
     if (locationEmail) return locationEmail;
-    
+   
     // 2. From localStorage (when user logs in)
     const storedEmail = localStorage.getItem('user_email');
     if (storedEmail) return storedEmail;
-    
+   
     // 3. From user data in location
     if (userData?.email) return userData.email;
-    
+   
     return null;
   };
 
   const userEmail = getUserEmail();
+  const authToken = getAuthToken();
+
+  // ✅ Fetch subscription status WITH CREDENTIALS and auth token
+  const fetchSubscriptionStatus = async () => {
+    try {
+      // Prepare headers
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add authorization header if token exists
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+
+      // Try with credentials first (session-based auth)
+      let response = await fetch('http://localhost:3000/api/v1/check/status', {
+        method: 'GET',
+        credentials: 'include', // Include cookies
+        headers: headers,
+      });
+      
+      // If 401 Unauthorized, try without credentials but with token
+      if (response.status === 401 && authToken) {
+        console.log('Session expired, trying with token only...');
+        response = await fetch('http://localhost:3000/api/v1/check/status', {
+          method: 'GET',
+          headers: headers, // Token only, no credentials
+        });
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setSubscriptionData(data.data);
+        
+        // Show modal if subscription is expired
+        if (data.data.status === "expired" || data.data.daysLeft <= 0) {
+          setShowSubscriptionModal(true);
+        }
+      } else if (response.status === 401) {
+        console.warn('Authentication required for subscription check');
+        // If auth fails, assume trial hasn't started or user needs to login
+        // You can set a default subscription state here
+        setSubscriptionData({
+          hasSubscription: false,
+          status: "inactive",
+          daysLeft: 0,
+          startDate: null,
+          endDate: null
+        });
+      } else {
+        console.warn('Subscription API returned success: false', data);
+      }
+    } catch (error) {
+      console.error('Error fetching subscription status:', error);
+      // Set default subscription data on error
+      setSubscriptionData({
+        hasSubscription: false,
+        status: "error",
+        daysLeft: 0,
+        startDate: null,
+        endDate: null
+      });
+    }
+  };
 
   // ✅ UPDATED: Fetch ALL user's cards by email
   useEffect(() => {
-    const fetchUserCards = async () => {
+    const fetchUserData = async () => {
       const emailToFetch = getUserEmail();
-      
+     
       if (!emailToFetch) {
         setError("No user email found. Please login again.");
         setLoading(false);
@@ -510,15 +614,30 @@ const Card_Dashboard = () => {
       try {
         setLoading(true);
         setError("");
-        
-        const response = await fetch(`${CARD_URL}/email/${encodeURIComponent(emailToFetch)}`);
-        
+       
+        // Fetch subscription status
+        await fetchSubscriptionStatus();
+       
+        // Fetch user cards
+        const headers = {
+          'Content-Type': 'application/json',
+        };
+
+        // Add authorization header if token exists
+        if (authToken) {
+          headers['Authorization'] = `Bearer ${authToken}`;
+        }
+
+        const response = await fetch(`${CARD_URL}/email/${encodeURIComponent(emailToFetch)}`, {
+          method: 'GET',
+          headers: headers,
+        });
+       
         if (response.ok) {
           const data = await response.json();
-          
-          // ✅ UPDATED: Handle the new response format with cards array
+         
           let cardsArray = [];
-          
+         
           if (data.cards && Array.isArray(data.cards)) {
             cardsArray = data.cards;
           } else if (Array.isArray(data)) {
@@ -530,23 +649,27 @@ const Card_Dashboard = () => {
           } else {
             cardsArray = [];
           }
-          
+         
           setCards(cardsArray);
-          
+         
           // Calculate stats based on cards
           const totalViews = cardsArray.reduce((sum, card) => sum + (card.views || 0), 0);
           const totalShares = cardsArray.reduce((sum, card) => sum + (card.shares || 0), 0);
-          
+         
           setStats({
             totalCards: cardsArray.length,
             totalViews,
             totalShares,
-            newContents: Math.floor(totalViews * 0.05) // Changed to match "New Contents"
+            newContents: Math.floor(totalViews * 0.05)
           });
-          
+         
         } else if (response.status === 404) {
           console.log('ℹ️ No cards found for this email');
           setCards([]);
+        } else if (response.status === 401) {
+          setError("Session expired. Please login again.");
+          // Optionally redirect to login
+          // navigate('/signin/franchise');
         } else {
           const errorText = await response.text();
           throw new Error(`Failed to fetch cards: ${response.status}`);
@@ -560,15 +683,45 @@ const Card_Dashboard = () => {
       }
     };
 
-    fetchUserCards();
-  }, [userEmail]);
+    fetchUserData();
+  }, [userEmail, authToken]);
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  // Calculate remaining days with countdown
+  const getRemainingDays = () => {
+    if (!subscriptionData?.endDate) return 0;
+    
+    const endDate = new Date(subscriptionData.endDate);
+    const now = new Date();
+    const diffTime = endDate - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays > 0 ? diffDays : 0;
+  };
 
   // Handle edit card
   const handleEditClick = (card) => {
-    navigate('/create', { 
-      state: { 
+    // Check if subscription is active before allowing edit
+    if (isSubscriptionExpired) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+    
+    navigate('/create', {
+      state: {
         userEmail: userEmail,
-        card: card 
+        card: card,
+        authToken: authToken
       }
     });
   };
@@ -595,12 +748,19 @@ const Card_Dashboard = () => {
 
   // Handle create new card
   const handleCreateNew = () => {
-    const selectedPlan = localStorage.getItem('selected_plan');
+    // Check if subscription is active before allowing creation
+    if (isSubscriptionExpired) {
+      setShowSubscriptionModal(true);
+      return;
+    }
     
-    navigate('/create', { 
-      state: { 
+    const selectedPlan = localStorage.getItem('selected_plan');
+   
+    navigate('/create', {
+      state: {
         userEmail: userEmail,
-        selectedPlan: selectedPlan
+        selectedPlan: selectedPlan,
+        authToken: authToken
       }
     });
   };
@@ -614,18 +774,40 @@ const Card_Dashboard = () => {
     card.jobTitle?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // ✅ SHOW EMAIL NOT FOUND ERROR
-  if (!userEmail && !loading) {
+  // Handle subscription renewal
+  const handleRenewSubscription = () => {
+    setShowSubscriptionModal(false);
+    navigate("/pricing", {
+      state: {
+        userEmail: userEmail,
+        authToken: authToken
+      }
+    });
+  };
+
+  // Handle login redirect
+  const handleLoginRedirect = () => {
+    // Clear any existing auth data
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
+    sessionStorage.removeItem('auth_token');
+    
+    navigate('/signin');
+  };
+
+  // ✅ SHOW AUTH ERROR
+  if (!authToken && !loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center bg-white p-8 rounded-2xl shadow-lg max-w-md">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FaUser className="w-8 h-8 text-red-500" />
+            <FaLock className="w-8 h-8 text-red-500" />
           </div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">User Not Found</h2>
-          <p className="text-gray-600 mb-4">Unable to identify user. Please login again.</p>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Authentication Required</h2>
+          <p className="text-gray-600 mb-4">You need to be logged in to access this page.</p>
           <button
-            onClick={() => navigate('/signin/franchise')}
+            onClick={handleLoginRedirect}
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors font-medium"
           >
             Go to Login
@@ -641,7 +823,7 @@ const Card_Dashboard = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
           <div className="text-xl text-gray-700 font-medium">Loading your dashboard...</div>
-          <p className="text-gray-500 mt-2">for {userEmail}</p>
+          <p className="text-gray-500 mt-2">for {userEmail || 'User'}</p>
         </div>
       </div>
     );
@@ -649,19 +831,76 @@ const Card_Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Fixed: Removed lg:ml-64 which was causing left margin */}
-      <main className="p-4 sm:p-6 lg:p-8">
-        {/* Header - Fixed to match image */}
-        {/* <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">
-            Welcome back, {userEmail?.split('@')[0] || 'User'}!
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Manage your digital business cards and track your networking success.
-          </p>
-        </div> */}
+      {/* Subscription Expiry Modal */}
+      {showSubscriptionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <FaLock className="w-6 h-6 text-red-500" />
+                </div>
+              </div>
+              
+              <h3 className="text-xl font-bold text-center text-gray-800 mb-2">
+                Access Restricted
+              </h3>
+              
+              <p className="text-gray-600 text-center mb-6">
+                {subscriptionData?.status === "expired" 
+                  ? "Your free trial has ended. Your card management features are now locked."
+                  : "Your subscription is not active. Please upgrade to access card management features."
+                }
+              </p>
+              
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-red-500 mb-2">
+                    {subscriptionData?.status === "expired" ? "Trial Ended" : "Access Locked"}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {subscriptionData?.endDate 
+                      ? `Ended on ${formatDate(subscriptionData.endDate)}` 
+                      : 'No active subscription'
+                    }
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowSubscriptionModal(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Dismiss
+                </button>
+                <button
+                  onClick={handleRenewSubscription}
+                  className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Upgrade to Unlock
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-        {/* Stats Grid - Updated to match image style */}
+      <main className="p-4 sm:p-6 lg:p-8">
+        {/* Subscription Status Banner */}
+        {subscriptionData && (
+          <div className="mb-6">
+            <SubscriptionBanner 
+              data={subscriptionData}
+              remainingDays={getRemainingDays()}
+              onUpgrade={() => navigate("/pricing", { 
+                state: { userEmail, authToken }
+              })}
+            />
+          </div>
+        )}
+
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Total Cards"
@@ -671,7 +910,7 @@ const Card_Dashboard = () => {
             iconBg="bg-blue-100"
             iconColor="text-blue-600"
           />
-          
+         
           <StatCard
             title="Total Views"
             value={stats.totalViews.toLocaleString()}
@@ -680,7 +919,7 @@ const Card_Dashboard = () => {
             iconBg="bg-green-100"
             iconColor="text-green-600"
           />
-          
+         
           <StatCard
             title="Total Shares"
             value={stats.totalShares}
@@ -689,7 +928,7 @@ const Card_Dashboard = () => {
             iconBg="bg-purple-100"
             iconColor="text-purple-600"
           />
-          
+         
           <StatCard
             title="New Contents"
             value={stats.newContents}
@@ -700,120 +939,294 @@ const Card_Dashboard = () => {
           />
         </div>
 
-        {/* Subscription Banner - Updated to match image */}
+        {/* Subscription Plan Banner */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 mb-8">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-semibold text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
-                  30-Day Free Trial
+                <span className={`text-sm font-semibold px-3 py-1 rounded-full ${
+                  subscriptionData?.status === "active" 
+                    ? "text-blue-600 bg-blue-100" 
+                    : "text-red-600 bg-red-100"
+                }`}>
+                  {subscriptionData?.status === "active" 
+                    ? `${getRemainingDays()} Days Left` 
+                    : subscriptionData?.status === "expired"
+                    ? "Subscription Expired"
+                    : "No Active Subscription"}
                 </span>
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
-                Choose Your Plan
+                {subscriptionData?.hasSubscription ? "Manage Your Subscription" : "Choose Your Plan"}
               </h3>
               <p className="text-gray-600 mb-6">
-                You're on a 30-day free trial. Upgrade to continue after trial ends.
+                {subscriptionData?.status === "expired" 
+                  ? "Your subscription has expired. Upgrade now to continue using all features."
+                  : subscriptionData?.status === "active"
+                  ? `Plan active until ${formatDate(subscriptionData.endDate)}`
+                  : "Start your free trial or choose a plan to create digital business cards."
+                }
               </p>
 
-              {/* Card Status - Matching image */}
+              {/* Card Status */}
               <div className="mb-6">
                 <div className="flex justify-between mb-4">
                   <span className="font-medium text-gray-700">Card Listed</span>
-                  <button className="text-blue-600 font-medium hover:text-blue-800">
+                  <button 
+                    onClick={() => navigate("/pricing", { 
+                      state: { userEmail, authToken }
+                    })}
+                    className="text-blue-600 font-medium hover:text-blue-800"
+                  >
                     View Plans
                   </button>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
-                  <PlanStatus 
-                    title="Current Status" 
-                    value="500/mo" 
+                  <PlanStatus
+                    title="Current Status"
+                    value="500/mo"
                     isActive={false}
                   />
-                  <PlanStatus 
-                    title="Business Status" 
-                    value="800/mo" 
+                  <PlanStatus
+                    title="Business Status"
+                    value="800/mo"
                     isActive={true}
                   />
-                  <PlanStatus 
-                    title="Premium Status" 
-                    value="1200/mo" 
+                  <PlanStatus
+                    title="Premium Status"
+                    value="1200/mo"
                     isActive={false}
                   />
                 </div>
               </div>
 
-              <button 
+              <button
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                onClick={() => navigate("/pricing")}
+                onClick={() => navigate("/pricing", { 
+                  state: { userEmail, authToken }
+                })}
               >
-                View Plans
+                {subscriptionData?.status === "expired" ? "Renew Subscription" : "View Plans"}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Cards Section Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-bold text-black">Your Cards</h2>
-            <p className="text-sm text-gray-600">
-              {cards.length} card{cards.length !== 1 ? 's' : ''} created
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            {cards.length > 0 && (
-              <div className="relative">
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search cards..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
-                />
+        {/* Cards Section - DISABLED WHEN EXPIRED */}
+        <div className={`${isSubscriptionExpired ? 'opacity-50 pointer-events-none' : ''}`}>
+          {/* Overlay when expired */}
+          {isSubscriptionExpired && (
+            <div className="relative mb-6">
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-xl z-10 flex flex-col items-center justify-center p-8">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                  <FaLock className="w-8 h-8 text-red-500" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Card Management Locked</h3>
+                <p className="text-gray-600 mb-6 text-center">
+                  Your subscription has expired. Upgrade to unlock card management features.
+                </p>
+                <button
+                  onClick={() => setShowSubscriptionModal(true)}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Upgrade to Unlock
+                </button>
               </div>
+            </div>
+          )}
+
+          {/* Cards Section Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-black">Your Cards</h2>
+              <p className="text-sm text-gray-600">
+                {cards.length} card{cards.length !== 1 ? 's' : ''} created
+              </p>
+            </div>
+           
+            <div className="flex items-center gap-4">
+              {cards.length > 0 && (
+                <div className="relative">
+                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search cards..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    disabled={isSubscriptionExpired}
+                    className={`pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64 ${
+                      isSubscriptionExpired 
+                        ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed' 
+                        : 'border-gray-300'
+                    }`}
+                  />
+                </div>
+              )}
+              <button
+                onClick={handleCreateNew}
+                disabled={isSubscriptionExpired}
+                className={`px-4 py-2 rounded-lg font-medium flex items-center gap-2 ${
+                  isSubscriptionExpired 
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                    : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
+              >
+                <FaPlus /> 
+                {isSubscriptionExpired ? "Upgrade to Create Card" : "Create New Card"}
+              </button>
+            </div>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-700">{error}</p>
+            </div>
+          )}
+
+          {/* Cards Grid */}
+          {filteredCards.length === 0 ? (
+            <EmptyState
+              userEmail={userEmail}
+              hasCards={cards.length > 0}
+              onCreateNew={handleCreateNew}
+              isSubscriptionExpired={isSubscriptionExpired}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Existing Cards */}
+              {filteredCards.map((card) => (
+                <CardItem
+                  key={card._id}
+                  card={card}
+                  onEdit={handleEditClick}
+                  onView={handleViewClick}
+                  onShare={handleShareClick}
+                  userEmail={userEmail}
+                  isSubscriptionExpired={isSubscriptionExpired}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+// Subscription Banner Component
+const SubscriptionBanner = ({ data, remainingDays, onUpgrade }) => {
+  if (!data) return null;
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "active": return "bg-green-100 text-green-800";
+      case "expired": return "bg-red-100 text-red-800";
+      case "inactive": return "bg-gray-100 text-gray-800";
+      case "pending": return "bg-yellow-100 text-yellow-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case "active": return "ACTIVE";
+      case "expired": return "EXPIRED";
+      case "inactive": return "INACTIVE";
+      case "pending": return "PENDING";
+      default: return "UNKNOWN";
+    }
+  };
+
+  return (
+    <div className={`rounded-xl p-4 border ${
+      data.status === "expired" ? "border-red-200 bg-red-50" : 
+      data.status === "active" ? "border-green-200 bg-green-50" : 
+      "border-gray-200 bg-gray-50"
+    }`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+            data.status === "expired" ? "bg-red-100" : 
+            data.status === "active" ? "bg-green-100" : 
+            "bg-gray-100"
+          }`}>
+            {data.status === "expired" ? (
+              <FaLock className="w-5 h-5 text-red-500" />
+            ) : data.status === "active" ? (
+              <FaCheck className="w-5 h-5 text-green-500" />
+            ) : (
+              <FaExclamationTriangle className="w-5 h-5 text-gray-500" />
             )}
-            <button
-              onClick={handleCreateNew}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 flex items-center gap-2"
-            >
-              <FaPlus /> Create New Card
-            </button>
+          </div>
+          <div>
+            <h4 className="font-semibold text-gray-800">
+              {data.status === "expired" ? "Subscription Expired" : 
+               data.status === "active" ? "Active Subscription" : 
+               "Subscription Status"}
+            </h4>
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`text-xs font-medium px-2 py-1 rounded-full ${getStatusColor(data.status)}`}>
+                {getStatusText(data.status)}
+              </span>
+              <span className="text-sm text-gray-600">
+                {remainingDays > 0 ? `${remainingDays} days remaining` : 
+                 data.status === "expired" ? "Trial ended" : 
+                 "No active trial"}
+              </span>
+            </div>
           </div>
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-700">{error}</p>
+        
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <div className="text-sm text-gray-600">
+              {data.status === "active" ? "Expires on" : 
+               data.status === "expired" ? "Expired on" : 
+               "Start Date"}
+            </div>
+            <div className="font-semibold text-gray-800">
+              {data.endDate ? new Date(data.endDate).toLocaleDateString() : 
+               data.startDate ? new Date(data.startDate).toLocaleDateString() : 
+               "N/A"}
+            </div>
           </div>
-        )}
-
-        {/* Cards Grid */}
-        {filteredCards.length === 0 ? (
-          <EmptyState 
-            userEmail={userEmail} 
-            hasCards={cards.length > 0} 
-            onCreateNew={handleCreateNew}
-          />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Existing Cards */}
-            {filteredCards.map((card) => (
-              <CardItem 
-                key={card._id} 
-                card={card} 
-                onEdit={handleEditClick}
-                onView={handleViewClick}
-                onShare={handleShareClick}
-                userEmail={userEmail}
-              />
-            ))}
+          
+          {(data.status === "expired" || data.status === "inactive") && (
+            <button
+              onClick={onUpgrade}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors"
+            >
+              {data.status === "expired" ? "Renew Now" : "Start Trial"}
+            </button>
+          )}
+        </div>
+      </div>
+      
+      {/* Countdown Timer - Only show for active subscriptions */}
+      {data.status === "active" && remainingDays > 0 && (
+        <div className="mt-4">
+          <div className="text-sm text-gray-600 mb-2">Trial ends in</div>
+          <div className="flex gap-2">
+            <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-center">
+              <div className="text-lg font-bold text-gray-800">{remainingDays}</div>
+              <div className="text-xs text-gray-500">Days</div>
+            </div>
+            <div className="flex-1">
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(100, (remainingDays / 30) * 100)}%` }}
+                ></div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>Start: {data.startDate ? new Date(data.startDate).toLocaleDateString() : "N/A"}</span>
+                <span>End: {data.endDate ? new Date(data.endDate).toLocaleDateString() : "N/A"}</span>
+              </div>
+            </div>
           </div>
-        )}
-      </main>
+        </div>
+      )}
     </div>
   );
 };
@@ -848,8 +1261,8 @@ const PlanStatus = ({ title, value, isActive }) => (
   </div>
 );
 
-// Empty State component
-const EmptyState = ({ userEmail, hasCards, onCreateNew }) => (
+// Updated Empty State component
+const EmptyState = ({ userEmail, hasCards, onCreateNew, isSubscriptionExpired }) => (
   <div className="text-center py-12">
     <div className="bg-white rounded-2xl p-8 max-w-md mx-auto shadow-sm border border-gray-200">
       <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -859,27 +1272,33 @@ const EmptyState = ({ userEmail, hasCards, onCreateNew }) => (
         {hasCards ? "No Matching Cards" : "No Cards Found"}
       </h3>
       <p className="text-gray-600 mb-6 text-sm">
-        {hasCards 
+        {isSubscriptionExpired 
+          ? "Your subscription has expired. Please renew to create new cards."
+          : hasCards
           ? "No cards match your search criteria."
           : `You haven't created any digital business cards yet.`
         }
       </p>
       <button
         onClick={onCreateNew}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 mx-auto"
+        disabled={isSubscriptionExpired}
+        className={`px-6 py-3 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 mx-auto ${
+          isSubscriptionExpired
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700 text-white"
+        }`}
       >
         <FaPlus />
-        Create Your First Card
+        {isSubscriptionExpired ? "Renew to Create Card" : "Create Your First Card"}
       </button>
     </div>
   </div>
 );
 
-// Simplified CardItem component to match image
-const CardItem = ({ card, onEdit, onView, onShare, userEmail }) => {
+// Updated CardItem component
+const CardItem = ({ card, onEdit, onView, onShare, userEmail, isSubscriptionExpired }) => {
   const displayName = `${card.firstName || ''} ${card.lastName || ''}`.trim() || 'Unnamed Card';
-  
-  // Get card background color
+
   const getCardBg = () => {
     switch(card.cardType) {
       case 'business-premium': return 'bg-gradient-to-r from-purple-600 to-pink-500';
@@ -889,9 +1308,19 @@ const CardItem = ({ card, onEdit, onView, onShare, userEmail }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-      {/* Card Preview - Dark background for contrast */}
-      <div className={`p-6 text-white ${getCardBg()}`}>
+    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow relative ${
+      isSubscriptionExpired ? 'opacity-50' : ''
+    }`}>
+      {/* Lock icon overlay for expired subscription */}
+      {isSubscriptionExpired && (
+        <div className="absolute top-2 right-2 z-10">
+          <div className="bg-red-100 text-red-600 p-2 rounded-full">
+            <FaLock className="w-4 h-4" />
+          </div>
+        </div>
+      )}
+      
+      <div className={`p-6 text-white ${getCardBg()} ${isSubscriptionExpired ? 'opacity-80' : ''}`}>
         <div className="flex justify-between items-start mb-4">
           <div>
             <h3 className="text-lg font-bold">{displayName}</h3>
@@ -904,7 +1333,7 @@ const CardItem = ({ card, onEdit, onView, onShare, userEmail }) => {
           </div>
           <FaQrcode className="w-6 h-6 opacity-80" />
         </div>
-        
+       
         <div className="space-y-1 text-sm">
           <p className="opacity-90">{card.email || userEmail || 'No email'}</p>
           {card.phones?.[0] && (
@@ -913,8 +1342,7 @@ const CardItem = ({ card, onEdit, onView, onShare, userEmail }) => {
         </div>
       </div>
 
-      {/* Card Actions */}
-      <div className="p-4">
+      <div className={`p-4 ${isSubscriptionExpired ? 'bg-gray-50' : ''}`}>
         <div className="flex justify-between items-center mb-3">
           <div>
             <h4 className="font-semibold text-gray-800">{displayName}</h4>
@@ -928,25 +1356,39 @@ const CardItem = ({ card, onEdit, onView, onShare, userEmail }) => {
         <div className="flex gap-2 mb-3">
           <button
             onClick={() => onView(card)}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            disabled={isSubscriptionExpired}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+              isSubscriptionExpired
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+            }`}
           >
             <FaEye /> View
           </button>
           <button
             onClick={() => onEdit(card)}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            disabled={isSubscriptionExpired}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+              isSubscriptionExpired
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+            }`}
           >
-            <FaEdit /> Edit
+            <FaEdit /> {isSubscriptionExpired ? 'Locked' : 'Edit'}
           </button>
           <button
             onClick={() => onShare(card)}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            disabled={isSubscriptionExpired}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+              isSubscriptionExpired
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+            }`}
           >
-            <FaShareAlt /> Share
+            <FaShareAlt /> {isSubscriptionExpired ? 'Locked' : 'Share'}
           </button>
         </div>
 
-        {/* Stats and Info */}
         <div className="flex items-center justify-between text-xs text-gray-500 border-t pt-3">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
@@ -959,7 +1401,7 @@ const CardItem = ({ card, onEdit, onView, onShare, userEmail }) => {
           <div className="flex items-center gap-1">
             <FaCalendarAlt className="w-3 h-3" />
             <span>
-              {card.updatedAt 
+              {card.updatedAt
                 ? new Date(card.updatedAt).toLocaleDateString()
                 : 'Recently'
               }
