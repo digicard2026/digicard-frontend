@@ -57,12 +57,14 @@ import CreateCard from './pages/Card/CreateCard';
 import PreviewCard from './pages/Card/PreviewCard';
 import PublicCard from './pages/Card/PublicCard';
 import PlanSelection from './pages/Card/PlanSelection';
-import CardDashbord from './pages/Card/Card_Dashbord';
+// import CardDashbord from './pages/Card/Card_Dashbord';
 import RegistrationPage from './pages/Authentication/RegistrationPage';
 import FranchiseSignIn from './pages/Authentication/FranchiseSignIn';
 import FranchiseDashboard from './pages/Dashboard/FranchisedashBoard';
 import HHome from './components/ui/index';
 import PartnerDashboard from './pages/Dashboard/PartnerDashboard';
+import CardDashbord from  './pages/Card/dashbord/CardMain';
+import SubscriptionPlans from  './pages/Card/SubscriptionPlans';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -495,13 +497,13 @@ function App() {
 />
 
       
-      <Route path="/create" element={<CreateCard />} />
+      <Route path="/create" element={<DefaultLayout><CreateCard /></DefaultLayout>} />
       <Route path="/preview" element={ <DefaultLayout> <PreviewCard /> </DefaultLayout> } />
       <Route path="/card/public" element={<PublicCard />} />
       <Route path="/preview/:urlSlug" element={<PreviewCard />} />
        <Route path="/signin" element={<SignIn/>} />
       <Route path="/choose-plan" element={<PlanSelection />} />
-      <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} />
+      {/* <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} /> */}
          <Route path="/signin/franchise" element={<FranchiseSignIn/>} />
 
       {/* <Route path="/ui" element={<HHome/>} /> */}
@@ -583,7 +585,8 @@ function App() {
     </>
   }
 />
-
+      <Route path="/card-dashbord" element={ <DefaultLayout> <CardDashbord /> </DefaultLayout> } />
+        <Route path="/pricing" element={ <DefaultLayout>  <SubscriptionPlans /> </DefaultLayout> } />
     </Routes>
 
     

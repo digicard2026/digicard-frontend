@@ -280,7 +280,7 @@ const PreviewCard = () => {
       )}
 
       {/* Simple back button for shared view */}
-      {urlSlug && !buttonsVisible && cardData && (
+      {/* {urlSlug && !buttonsVisible && cardData && (
         <div className="mt-6 flex gap-4">
           <button onClick={() => navigate("/")} className="bg-gray-500 text-balck px-4 py-2 rounded shadow-md hover:bg-gray-600">
             Back to Home
@@ -289,7 +289,7 @@ const PreviewCard = () => {
             Copy My Card URL
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
