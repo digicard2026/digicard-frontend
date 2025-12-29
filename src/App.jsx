@@ -64,7 +64,9 @@ import FranchiseDashboard from './pages/Dashboard/FranchisedashBoard';
 import HHome from './components/ui/index';
 import PartnerDashboard from './pages/Dashboard/PartnerDashboard';
 import CardDashbord from  './pages/Card/dashbord/CardMain';
+
 import SubscriptionPlans from  './pages/Card/SubscriptionPlans';
+
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -586,7 +588,10 @@ function App() {
   }
 />
       <Route path="/card-dashbord" element={ <DefaultLayout> <CardDashbord /> </DefaultLayout> } />
+
         <Route path="/pricing" element={ <DefaultLayout>  <SubscriptionPlans /> </DefaultLayout> } />
+
+
     </Routes>
 
     
