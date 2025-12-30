@@ -329,6 +329,7 @@ import { CreateCardButton } from "./CreateCardButton";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CARD_URL } from "../../../utility/constants";
+import { CHECK_URL } from "../../../utility/constants";
 
 const Indexs = () => {
   const navigate = useNavigate();
@@ -410,7 +411,7 @@ const Indexs = () => {
         'Authorization': `Bearer ${token}`
       };
 
-      const response = await fetch('http://localhost:3000/api/v1/check/status', {
+      const response = await fetch(`${CHECK_URL}/status`, {
         method: 'GET',
         headers: headers,
         credentials: 'include',
