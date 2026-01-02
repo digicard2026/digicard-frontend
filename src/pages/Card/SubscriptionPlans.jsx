@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PLAN_URL } from "../../utility/constants";
 
 const SubscriptionPlans = () => {
   const [plans, setPlans] = useState([]);
@@ -19,7 +20,7 @@ const SubscriptionPlans = () => {
   const fetchPlans = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/v1/plans/');
+      const response = await fetch(`${PLAN_URL}/`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

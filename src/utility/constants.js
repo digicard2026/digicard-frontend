@@ -11,6 +11,9 @@ export const LISTUPLOAD_URL = `${API_URL}/api/v1/vb-list-leads`;
 export const CALL_URL = `${API_URL}/api/v1/call`;
 export const CARD_URL = `${API_URL}/api/v1/card-routes`;
 export const CHECK_URL = `${API_URL}/api/v1/check`;
+
+export const PLAN_URL = `${API_URL}/api/v1/plans`;
+
 export const TOAST_TYPES = {
   SUCCESS: 'success',
   ERROR: 'error',
