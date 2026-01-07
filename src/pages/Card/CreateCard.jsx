@@ -5975,6 +5975,13 @@ const designTemplates = [
     preview: "bg-gradient-to-r from-blue-500 to-purple-600"
   },
   {
+    id:"creative",
+    name: "Creative",
+    gradient: "from-pink-500 to-yellow-500",
+    description: "Vibrant and artistic style",
+    preview: "bg-gradient-to-r from-pink-500 to-yellow-500"
+  },
+  {
     id: "dark",
     name: "Dark",
     gradient: "from-slate-900 to-purple-800",
@@ -10899,6 +10906,7 @@ const renderDesignSelection = () => (
                 <p className="text-xs text-slate-500 font-medium">
                   Best for: {
                     template.id === 'default' ? 'All professionals' :
+                    template.id === 'creative' ? 'Executives/managers' :
                     template.id === 'modern' ? 'Creative fields' :
                     template.id === 'dark' ? 'Artists/designers' :
                     'Business/corporate'

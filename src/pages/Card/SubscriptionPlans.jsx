@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { PLAN_URL } from "../../utility/constants";
+const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
+import { CHECK_URL, PLAN_URL, PAYMENT_URL } from "../../utility/constants";
+
+console.log("rozerpay id", RAZORPAY_KEY_ID);
 
 const SubscriptionPlans = () => {
   const [plans, setPlans] = useState([]);
@@ -7,109 +10,140 @@ const SubscriptionPlans = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [billingCycle, setBillingCycle] = useState('monthly');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [activeSubscription, setActiveSubscription] = useState(null);
+  const [userInfo, setUserInfo] = useState({
+    name: 'John Doe',
+    email: 'john@example.com',
+    contact: '9478548595'
+  });
 
+  // Load Razorpay script
   useEffect(() => {
-    fetchPlans();
+    const loadRazorpayScript = () => {
+      if (window.Razorpay) return;
+
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onerror = () => {
+        console.error('Failed to load Razorpay script');
+      };
+      document.body.appendChild(script);
+    };
+
+    loadRazorpayScript();
   }, []);
 
+  // Load plans and subscription status
+  useEffect(() => {
+    loadInitialData();
+  }, []);
+
+  // Filter plans when category changes
   useEffect(() => {
     filterPlans();
   }, [selectedCategory, plans]);
 
-  const fetchPlans = async () => {
+  const loadInitialData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${PLAN_URL}/`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Load plans from your existing endpoint
+      const plansRes = await fetch(`${PLAN_URL}/`, {
+        credentials: 'include' // Important: Send cookies
+      });
+      
+      if (plansRes.ok) {
+        const plansData = await plansRes.json();
+        setPlans(plansData);
+        setFilteredPlans(plansData);
+      } else {
+        // Fallback to demo data if API fails
+        loadDemoData();
       }
-      const data = await response.json();
-      setPlans(data);
-      setFilteredPlans(data);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching plans:', err);
-      setError('Failed to load subscription plans. Please try again later.');
-      // Fallback to the provided data if API fails
-      const fallbackData = [
-        {
-          "_id": "6942fdffe68a4733d3db5584",
-          "category": "personal",
-          "duration": "monthly",
-          "durationDays": 30,
-          "price": 500,
-          "__v": 0
-        },
-        {
-          "_id": "6942fdffe68a4733d3db5585",
-          "category": "personal",
-          "duration": "six_months",
-          "durationDays": 180,
-          "price": 1500,
-          "__v": 0
-        },
-        {
-          "_id": "6942fdffe68a4733d3db5586",
-          "category": "personal",
-          "duration": "yearly",
-          "durationDays": 365,
-          "price": 3500,
-          "__v": 0
-        },
-        {
-          "_id": "6942fdffe68a4733d3db5587",
-          "category": "business",
-          "duration": "monthly",
-          "durationDays": 30,
-          "price": 800,
-          "__v": 0
-        },
-        {
-          "_id": "6942fdffe68a4733d3db5588",
-          "category": "business",
-          "duration": "six_months",
-          "durationDays": 180,
-          "price": 2800,
-          "__v": 0
-        },
-        {
-          "_id": "6942fdffe68a4733d3db5589",
-          "category": "business",
-          "duration": "yearly",
-          "durationDays": 365,
-          "price": 6800,
-          "__v": 0
-        },
-        {
-          "_id": "6942fdffe68a4733d3db558a",
-          "category": "business premium",
-          "duration": "monthly",
-          "durationDays": 30,
-          "price": 1200,
-          "__v": 0
-        },
-        {
-          "_id": "6942fdffe68a4733d3db558b",
-          "category": "business premium",
-          "duration": "six_months",
-          "durationDays": 180,
-          "price": 4200,
-          "__v": 0
-        },
-        {
-          "_id": "6942fdffe68a4733d3db558c",
-          "category": "business premium",
-          "duration": "yearly",
-          "durationDays": 365,
-          "price": 8200,
-          "__v": 0
-        }
-      ];
-      setPlans(fallbackData);
-      setFilteredPlans(fallbackData);
+
+      // Load active subscription
+      await checkUserSubscription();
+      
+    } catch (error) {
+      console.error('Error loading data:', error);
+      loadDemoData();
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadDemoData = () => {
+    // Demo plans data
+    const demoPlans = [
+      {
+        "_id": "6942fdffe68a4733d3db5584",
+        "category": "personal",
+        "duration": "monthly",
+        "durationDays": 30,
+        "price": 500
+      },
+      {
+        "_id": "6942fdffe68a4733d3db5585",
+        "category": "personal",
+        "duration": "six_months",
+        "durationDays": 180,
+        "price": 1500
+      },
+      {
+        "_id": "6942fdffe68a4733d3db5586",
+        "category": "personal",
+        "duration": "yearly",
+        "durationDays": 365,
+        "price": 3500
+      },
+      {
+        "_id": "6942fdffe68a4733d3db5587",
+        "category": "business",
+        "duration": "monthly",
+        "durationDays": 30,
+        "price": 800
+      },
+      {
+        "_id": "6942fdffe68a4733d3db5588",
+        "category": "business",
+        "duration": "six_months",
+        "durationDays": 180,
+        "price": 2800
+      },
+      {
+        "_id": "6942fdffe68a4733d3db5589",
+        "category": "business",
+        "duration": "yearly",
+        "durationDays": 365,
+        "price": 6800
+      },
+      {
+        "_id": "6942fdffe68a4733d3db558a",
+        "category": "business premium",
+        "duration": "monthly",
+        "durationDays": 30,
+        "price": 1200
+      },
+      {
+        "_id": "6942fdffe68a4733d3db558b",
+        "category": "business premium",
+        "duration": "six_months",
+        "durationDays": 180,
+        "price": 4200
+      },
+      {
+        "_id": "6942fdffe68a4733d3db558c",
+        "category": "business premium",
+        "duration": "yearly",
+        "durationDays": 365,
+        "price": 8200
+      }
+    ];
+    
+    setPlans(demoPlans);
+    setFilteredPlans(demoPlans);
+    setError('Using demo data. Please connect to backend for real data.');
   };
 
   const filterPlans = () => {
@@ -123,6 +157,184 @@ const SubscriptionPlans = () => {
     }
   };
 
+  // Check user's active subscription
+  const checkUserSubscription = async () => {
+    try {
+      const response = await fetch(`${CHECK_URL}/status`, {
+        credentials: 'include' // Cookies will be sent automatically
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data.hasSubscription) {
+          setActiveSubscription(data.data);
+        } else {
+          setActiveSubscription(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    }
+  };
+
+  // Cancel subscription
+  const cancelSubscription = async () => {
+    if (!window.confirm('Are you sure you want to cancel your subscription?')) return;
+
+    try {
+      const response = await fetch(`${PAYMENT_URL}/cancel`, {
+        method: 'POST',
+        credentials: 'include', // Send cookies
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('Subscription cancelled successfully');
+        await checkUserSubscription(); // Refresh status
+      } else {
+        alert(`Failed to cancel: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error cancelling subscription:', error);
+      alert('Error cancelling subscription');
+    }
+  };
+
+  // Handle payment
+  const handlePayment = async (plan) => {
+    if (!window.Razorpay) {
+      alert('Payment service is not available. Please try again later.');
+      return;
+    }
+
+    // Check if key is configured
+    if (RAZORPAY_KEY_ID === 'rzp_test_YOUR_ACTUAL_KEY_HERE') {
+      alert('⚠️ Please configure your Razorpay Key ID!\n\n1. Go to Razorpay Dashboard\n2. Get your Key ID from Settings → API Keys\n3. Replace "rzp_test_YOUR_ACTUAL_KEY_HERE" with your actual key');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      console.log('Starting payment for plan:', plan);
+
+      // 1. Create subscription order
+      const orderResponse = await fetch(`${PAYMENT_URL}/create-subscription-order`, {
+        method: 'POST',
+        credentials: 'include', // Send cookies
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          planId: plan._id
+        })
+      });
+
+      if (!orderResponse.ok) {
+        throw new Error(`Failed to create order: ${orderResponse.status}`);
+      }
+
+      const orderData = await orderResponse.json();
+
+      if (!orderData.success) {
+        throw new Error(orderData.message || 'Failed to create order');
+      }
+
+      console.log('Order created:', orderData.order.id);
+
+      // 2. Initialize Razorpay
+      const options = {
+        key: RAZORPAY_KEY_ID,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: 'Gravity Wave Labs',
+        description: `${plan.category} - ${formatDuration(plan.duration)} Subscription`,
+        image: 'https://via.placeholder.com/100', // Add your logo
+        order_id: orderData.order.id,
+        handler: async function(response) {
+          setIsProcessing(true);
+          
+          try {
+            console.log('Payment response received:', response);
+
+            // 3. Verify and activate subscription
+            const verifyResponse = await fetch(`${PAYMENT_URL}/verify-and-activate`, {
+              method: 'POST',
+              credentials: 'include', // Send cookies
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                planId: plan._id
+              })
+            });
+
+            const verifyData = await verifyResponse.json();
+            setIsProcessing(false);
+
+            if (verifyData.success) {
+              console.log('Subscription activated:', verifyData);
+              
+              // Show success message with dates
+              const endDate = new Date(verifyData.planDetails.endDate);
+              const formattedEndDate = endDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              });
+
+              alert(`🎉 PAYMENT SUCCESSFUL!\n\nYour ${plan.category} ${formatDuration(plan.duration)} subscription is now active.\n\nAmount: ₹${plan.price}\nValid until: ${formattedEndDate}\nPayment ID: ${response.razorpay_payment_id}`);
+              
+              // Refresh subscription status
+              await checkUserSubscription();
+            } else {
+              alert(`❌ Payment verification failed: ${verifyData.message}`);
+              console.error('Payment verification failed:', verifyData);
+            }
+          } catch (verifyError) {
+            setIsProcessing(false);
+            console.error('Error verifying payment:', verifyError);
+            alert('⚠️ Error verifying payment. Please contact support with your payment ID.');
+          }
+        },
+        prefill: {
+          name: userInfo.name,
+          email: userInfo.email,
+          contact: userInfo.contact
+        },
+        notes: {
+          planId: plan._id,
+          planName: `${plan.category} - ${formatDuration(plan.duration)}`
+        },
+        theme: {
+          color: '#4F46E5'
+        },
+        modal: {
+          ondismiss: function() {
+            setIsProcessing(false);
+            console.log('Payment modal dismissed by user');
+          }
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+
+    } catch (error) {
+      setIsProcessing(false);
+      console.error('Error initiating payment:', error);
+      alert(`❌ Failed to initiate payment: ${error.message}\n\nPlease check:\n1. You are logged in\n2. Backend server is running\n3. Razorpay Key is correct`);
+    }
+  };
+
+  // Helper functions - KEEPING YOUR EXISTING LOGIC
   const formatDuration = (duration) => {
     const durationMap = {
       'monthly': 'Monthly',
@@ -139,14 +351,19 @@ const SubscriptionPlans = () => {
       .join(' ');
   };
 
-  const getDisplayPrice = (plan) => {
-    return plan.price;
+  const calculateMonthlyPrice = (price, durationDays) => {
+    return Math.round((price / (durationDays / 30)) * 100) / 100;
   };
 
+  const calculateYearlyPrice = (price, durationDays) => {
+    return Math.round((price / (durationDays / 365)) * 100) / 100;
+  };
+
+  // NEW UI FUNCTION: Get billing frequency text
   const getBillingFrequencyText = (plan) => {
     const durationMap = {
       'monthly': 'per month',
-      'six_months': 'every 6 months',
+      'six_months': ' 6 months',
       'yearly': 'per year'
     };
     return durationMap[plan.duration] || 'per period';
@@ -224,6 +441,15 @@ const SubscriptionPlans = () => {
     return Math.round(savings);
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   const categories = ['all', 'personal', 'business', 'business premium'];
 
   if (loading) {
@@ -242,7 +468,7 @@ const SubscriptionPlans = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+        {/* Header - Using new UI */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
             Choose Your Perfect Plan
@@ -250,6 +476,22 @@ const SubscriptionPlans = () => {
           <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
             Select from our flexible subscription options designed to fit your needs
           </p>
+          
+          {/* Error Message - Using new UI */}
+          {error && (
+            <div className="mb-8 rounded-lg bg-red-50 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Category Filter */}
@@ -271,29 +513,28 @@ const SubscriptionPlans = () => {
           </div>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-8 rounded-lg bg-red-50 p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
+        {/* Processing Overlay */}
+        {isProcessing && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4">
+              <div className="flex flex-col items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                <p className="text-lg font-medium text-gray-900">Processing Payment</p>
+                <p className="text-gray-600 mt-2 text-center">Please wait while we redirect you to the payment gateway...</p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Plans Grid */}
+        {/* Plans Grid - Using new UI */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredPlans.map((plan) => {
             const categoryColor = getCategoryColor(plan.category);
             const features = getFeaturesForPlan(plan.category);
             const savings = getSavingsPercentage(plan);
-            const displayPrice = getDisplayPrice(plan);
+            const displayPrice = billingCycle === 'monthly' 
+              ? calculateMonthlyPrice(plan.price, plan.durationDays)
+              : calculateYearlyPrice(plan.price, plan.durationDays);
             
             return (
               <div
@@ -309,7 +550,7 @@ const SubscriptionPlans = () => {
                   </div>
                 )}
 
-                {/* Plan Header */}
+                {/* Plan Header - Using new UI */}
                 <div className={`${categoryColor.bg} p-8 text-white`}>
                   <div className="flex justify-between items-start">
                     <div>
@@ -318,10 +559,10 @@ const SubscriptionPlans = () => {
                     </div>
                   </div>
                   
-                  {/* Price - Showing full amount with smaller frequency text */}
+                  {/* Price - Using new UI: Showing full amount with frequency */}
                   <div className="mt-6">
                     <div className="flex items-baseline flex-wrap">
-                      <span className="text-5xl font-extrabold">₹{displayPrice}</span>
+                      <span className="text-5xl font-extrabold">₹{plan.price}</span>
                       <div className="flex items-baseline ml-2">
                         <span className="text-lg text-blue-100">/</span>
                         <span className="text-base text-blue-100 ml-1 whitespace-nowrap">
@@ -332,10 +573,10 @@ const SubscriptionPlans = () => {
                   </div>
                   
                   <p className="mt-2 text-blue-100 text-sm">
-                    {plan.duration === 'monthly' 
-                      ? 'Billed monthly' 
-                      : plan.duration === 'six_months' 
-                        ? 'Billed every 6 months' 
+                    {plan.duration === 'monthly'
+                      ? 'Billed monthly'
+                      : plan.duration === 'six_months'
+                        ? 'Billed 6 months'
                         : 'Billed annually'}
                   </p>
                 </div>
@@ -372,20 +613,31 @@ const SubscriptionPlans = () => {
                       </svg>
                       <span className="text-gray-600">
                         {plan.durationDays === 30 ? 'Renews monthly' : 
-                         plan.durationDays === 180 ? 'Renews every 6 months' : 
+                         plan.durationDays === 180 ? 'Renews 6 months' : 
                          'Renews yearly'}
                       </span>
                     </div>
                   </div>
 
-                  {/* Pay Button */}
+                  {/* Subscribe Button - KEEPING YOUR LOGIC */}
                   <button
-                    className={`w-full py-3 px-6 rounded-lg font-semibold text-white transition-all duration-300 ${categoryColor.bg} hover:opacity-90 hover:shadow-md`}
+                    onClick={() => handlePayment(plan)}
+                    disabled={isProcessing || RAZORPAY_KEY_ID === 'rzp_test_YOUR_ACTUAL_KEY_HERE'}
+                    className={`w-full py-3 px-6 rounded-lg font-semibold text-white transition-all duration-300 ${categoryColor.bg} hover:opacity-90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center`}
                   >
-                    Pay 
+                    {isProcessing ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Processing...
+                      </>
+                    ) : RAZORPAY_KEY_ID === 'rzp_test_YOUR_ACTUAL_KEY_HERE' ? (
+                      'Configure Payment First'
+                    ) : (
+                      `Pay`
+                    )}
                   </button>
 
-                  {/* Additional CTA */}
+                  {/* Additional CTA - Using new UI */}
                   <p className="text-center text-sm text-gray-500 mt-4">
                     No credit card required for trial
                   </p>
@@ -424,10 +676,25 @@ const SubscriptionPlans = () => {
               <p className="mt-1">Cancel anytime</p>
             </div>
           </div>
+          
+          {/* Payment Security Info */}
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <div className="flex items-center justify-center space-x-4">
+              <svg className="h-8 w-8 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <p className="text-sm text-gray-600">
+                Payments securely processed by <span className="font-semibold">Razorpay</span>
+              </p>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Your payment information is encrypted and secure. We never store your card details.
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default SubscriptionPlans;
+export default SubscriptionPlans; 

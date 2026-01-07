@@ -3,9 +3,12 @@ import DefaultCard from "./DefaultCard";
 import ModernCard from "./ModernCard";
 import DarkCard from "./DarkCard";
 import LightCard from "./LightCard";
+import ModernCard2 from "./ModernCard2";
+import { C } from "jssip";
 
 const CARD_MAP = {
   default: DefaultCard,
+  creative: ModernCard2,
   modern: ModernCard,
   dark: DarkCard,
   light:LightCard
