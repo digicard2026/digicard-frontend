@@ -4,7 +4,7 @@ export const ACTIVITYLOG_URL = `${API_URL}/api/v1/activity`;
 export const ORDER_URL = `${API_URL}/api/v1/order`;
 export const INVENTORY_URL = `${API_URL}/api/v1/inventory`;
 export const REPORT_URL = `${API_URL}/api/v1/report`;
-export const PAYMENT_URL = `${API_URL}/api/v1/payment`;
+export const PAYMENT_URL = `${API_URL}/api/v1/payments`;
 export const TRANSACTION_URL = `${API_URL}/api/v1/transaction`;
 export const WALLET_URL = `${API_URL}/api/v1/wallet`;
 export const LISTUPLOAD_URL = `${API_URL}/api/v1/vb-list-leads`;
@@ -13,7 +13,6 @@ export const CARD_URL = `${API_URL}/api/v1/card-routes`;
 export const CHECK_URL = `${API_URL}/api/v1/check`;
 
 export const PLAN_URL = `${API_URL}/api/v1/plans`;
-
 export const TOAST_TYPES = {
   SUCCESS: 'success',
   ERROR: 'error',
