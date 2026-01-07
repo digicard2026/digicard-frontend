@@ -103,6 +103,7 @@ import DefaultCard from "../../components/Cardstyles/DefaultCard";
 import ModernCard from "../../components/Cardstyles/ModernCard";
 import DarkCard from "../../components/Cardstyles/DarkCard";
 import LightCard from "../../components/Cardstyles/LightCard";
+import ModernCard2  from "../../components/Cardstyles/ModernCard2";
 import { CARD_URL } from "../../../src/utility/constants";
 
 const PreviewCard = () => {
@@ -162,6 +163,7 @@ const PreviewCard = () => {
       if (data.success && data.card) {
         setCardData(data.card);
         setButtonsVisible(showButtons);
+        console.log('✅ Card data set:', data.card);
       } else {
         throw new Error('Card data not found in response');
       }
@@ -240,6 +242,8 @@ const PreviewCard = () => {
 
     // Render based on card design
     switch (cardData.design) {
+      case "creative":
+        return <ModernCard2 cardData={cardData} />;
       case "modern":
         return <ModernCard cardData={cardData} />;
       case "dark":
@@ -252,15 +256,15 @@ const PreviewCard = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-100 p-6">
+    <div className="flex flex-col items-center shadow-sm justify-center min-h-screen overflow-auto bg-zinc-100 py-1 px-2">
       {/* <h2 className="text-3xl font-bold mb-6 text-zinc-800">
         {urlSlug ? `${cardData?.firstName || ''}'s Personal Card` : "Preview Your Personal Card"}
       </h2> */}
 
-      <div ref={cardRef}>{renderCard()}</div>
+      <div  ref={cardRef}>{renderCard()}</div>
 
       {buttonsVisible && cardData && (
-        <div className="mt-6 flex gap-4 flex-wrap justify-center">
+        <div className="mt-0 flex gap-4 flex-wrap items-center justify-center">
           <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded shadow-md hover:bg-green-600">
             Save Locally
           </button>
