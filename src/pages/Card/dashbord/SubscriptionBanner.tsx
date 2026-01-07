@@ -1,46 +1,181 @@
-// import { Sparkles, ArrowRight, Check } from "lucide-react";
+
+// import { Sparkles, ArrowRight, Check, Lock, User, Building, Gem } from "lucide-react";
 // import { useNavigate } from "react-router-dom";
 
 // interface SubscriptionBannerProps {
-//   plan: "free" | "personal" | "business" | "premium";
+//   subscriptionData: {
+//     hasSubscription: boolean;
+//     status: "active" | "expired" | "inactive" | "pending" | "error";
+//     daysLeft: number;
+//     startDate: string | null;
+//     endDate: string | null;
+//     planType?: "free" | "Personal" | "Business" | "Business Premium";
+//     planName?: string;
+//     price?: string;
+//     maxCards?: number;
+//   } | null;
+//   remainingDays: number;
 //   cardsUsed: number;
-//   cardsLimit: number;
-//   trialDaysLeft?: number;
+//   maxCards?: number;
+//   userCards?: any[];
+//   onUpgrade: () => void;
 // }
 
-// const planDetails = {
+// interface PlanDetail {
+//   name: string;
+//   description: string;
+//   features: string[];
+//   icon: any;
+//   color: string;
+//   price?: string;
+//   maxCards: number;
+// }
+
+// type PlanDetails = {
+//   free: PlanDetail & { maxCards: number };
+//   Personal: PlanDetail & { price: string; maxCards: number };
+//   Business: PlanDetail & { price: string; maxCards: number };
+//   "Business Premium": PlanDetail & { price: string; maxCards: number };
+// }
+
+// const planDetails: PlanDetails = {
 //   free: {
 //     name: "Free Trial",
-//     description: "You're on a 30-day free trial. Upgrade to continue after trial ends.",
-//     features: ["Limited cards", "Basic analytics", "Standard templates"],
+//     description: "You're on a free trial. Upgrade to continue after trial ends.",
+//     features: ["Up to 5 cards", "Basic analytics", "Standard templates"],
+//     icon: Sparkles,
+//     color: "#f97316",
+//     maxCards: 5,
 //   },
-//   personal: {
+//   Personal: {
 //     name: "Personal Plan",
-//     price: "$5/mo",
+//     price: "$5/month",
 //     description: "Perfect for individuals with their digital presence.",
-//     features: ["1 Digital Card", "Basic analytics", "Standard templates", "Email support"],
+//     features: ["10 Digital Cards", "Basic analytics", "Standard templates", "Email support"],
+//     icon: User,
+//     color: "#3b82f6",
+//     maxCards: 10,
 //   },
-//   business: {
+//   Business: {
 //     name: "Business Plan",
-//     price: "$15/mo",
+//     price: "$15/month",
 //     description: "Ideal for professionals and small teams.",
-//     features: ["5 Digital Cards", "Advanced analytics", "Premium templates", "Priority support"],
+//     features: ["50 Digital Cards", "Advanced analytics", "Premium templates", "Priority support"],
+//     icon: Building,
+//     color: "#8b5cf6",
+//     maxCards: 50,
 //   },
-//   premium: {
+//   "Business Premium": {
 //     name: "Premium Plan",
-//     price: "$29/mo",
+//     price: "$29/month",
 //     description: "Unlimited power for growing businesses.",
 //     features: ["Unlimited Cards", "Real-time analytics", "All templates", "24/7 support"],
+//     icon: Gem,
+//     color: "#f59e0b",
+//     maxCards: 999, // Unlimited
 //   },
 // };
 
-// export function SubscriptionBanner({ plan, cardsUsed, cardsLimit, trialDaysLeft }: SubscriptionBannerProps) {
+// export function SubscriptionBanner({ 
+//   subscriptionData, 
+//   remainingDays, 
+//   cardsUsed, 
+//   maxCards: propMaxCards, 
+//   userCards, 
+//   onUpgrade 
+// }: SubscriptionBannerProps) {
 //   const navigate = useNavigate();
-//   const details = planDetails[plan];
+  
+//   // Determine current plan based on subscription data with priority
+//   const getCurrentPlan = () => {
+//     // If subscriptionData is null, show free trial
+//     if (!subscriptionData) return "free" as const;
+    
+//     // Use planType if available from API - match your card types exactly
+//     if (subscriptionData.planType) {
+//       const plan = subscriptionData.planType;
+//       if (plan === "Business Premium") return "Business Premium" as const;
+//       if (plan === "Business") return "Business" as const;
+//       if (plan === "Personal") return "Personal" as const;
+//       if (plan === "free") return "free" as const;
+//     }
+    
+//     // Check user's cards to detect highest card type
+//     if (userCards && userCards.length > 0) {
+//       const cardTypes = userCards.map(card => card.cardType);
+      
+//       if (cardTypes.some(type => type === "Business Premium")) {
+//         return "Business Premium" as const;
+//       }
+      
+//       if (cardTypes.some(type => type === "Business")) {
+//         return "Business" as const;
+//       }
+      
+//       if (cardTypes.some(type => type === "Personal")) {
+//         return "Personal" as const;
+//       }
+//     }
+    
+//     // Determine based on hasSubscription and status
+//     if (subscriptionData.hasSubscription) {
+//       if (subscriptionData.status === "active") {
+//         // Default to Personal if has subscription but no specific type
+//         return "Personal" as const;
+//       }
+//     }
+    
+//     // If expired or inactive, show free (needs upgrade)
+//     if (subscriptionData.status === "expired" || subscriptionData.status === "inactive") {
+//       return "free" as const;
+//     }
+    
+//     // Default to free trial
+//     return "free" as const;
+//   };
+  
+//   const plan = getCurrentPlan();
+//   const details = planDetails[plan as keyof typeof planDetails];
+//   const PlanIcon = details.icon;
+  
+//   // Get card limits based on plan - use prop if provided, otherwise use plan defaults
+//   const cardsLimit = propMaxCards || details.maxCards;
 //   const usagePercentage = (cardsUsed / cardsLimit) * 100;
 //   const isNearLimit = usagePercentage >= 80;
+//   const isAtLimit = cardsUsed >= cardsLimit;
+//   const cardsRemaining = cardsLimit - cardsUsed;
+  
+//   // Handle null subscriptionData properly
+//   const isSubscriptionExpired = subscriptionData ? 
+//     (subscriptionData.status === "expired" || subscriptionData.daysLeft <= 0) : 
+//     false;
+    
+//   const isActiveSubscription = subscriptionData ? 
+//     (subscriptionData.status === "active" && subscriptionData.hasSubscription) : 
+//     false;
 
-//   if (plan !== "free") {
+//   // Get the price with proper type checking
+//   const getPriceDisplay = () => {
+//     // For paid plans, show actual price or default
+//     if (plan !== "free" && details.price) {
+//       return subscriptionData?.price || details.price;
+//     }
+    
+//     // For free plan or if no price, return appropriate text
+//     if (isSubscriptionExpired) {
+//       return "Subscription Expired";
+//     }
+    
+//     if (remainingDays > 0) {
+//       return "Free Trial";
+//     }
+    
+//     return "Choose Plan";
+//   };
+
+//   // If user has an active paid subscription
+//   if (isActiveSubscription && plan !== "free") {
+//     const priceDisplay = getPriceDisplay();
 //     return (
 //       <div
 //         style={{
@@ -48,9 +183,8 @@
 //           borderRadius: "1rem",
 //           padding: "1.5rem",
 //           boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-//           border: "1px solid rgba(59, 130, 246, 0.2)", // primary/20 from screenshot (blueish)
-//           color: "#1f2937", // text color (gray-800)
-//           fontFamily: "system-ui, sans-serif",
+//           border: "1px solid rgba(59, 130, 246, 0.2)",
+//           color: "#1f2937",
 //         }}
 //       >
 //         <div
@@ -68,23 +202,23 @@
 //                 width: 40,
 //                 height: 40,
 //                 borderRadius: "0.75rem",
-//                 background: "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)", // bright blue gradient
+//                 background: `linear-gradient(135deg, ${details.color} 0%, ${details.color}99 100%)`,
 //                 display: "flex",
 //                 alignItems: "center",
 //                 justifyContent: "center",
 //               }}
 //             >
-//               <Sparkles style={{ width: 20, height: 20, color: "#ffffff" }} />
+//               <PlanIcon style={{ width: 20, height: 20, color: "#ffffff" }} />
 //             </div>
 //             <div>
 //               <h3 style={{ fontWeight: 600, color: "#111827", margin: 0 }}>{details.name}</h3>
 //               <p style={{ fontSize: "0.875rem", color: "#6b7280", marginTop: 4 }}>
-//                 {(details as any).price} • Active subscription
+//                 {priceDisplay} • Active subscription
 //               </p>
 //             </div>
 //           </div>
 //           <button
-//             onClick={() => navigate("/pricing")}
+//             onClick={onUpgrade}
 //             style={{
 //               border: "1px solid #3b82f6",
 //               backgroundColor: "transparent",
@@ -102,6 +236,51 @@
 //             Manage Plan
 //           </button>
 //         </div>
+
+//         {/* Card Usage Bar for active subscriptions */}
+//         <div style={{ marginBottom: "1rem" }}>
+//           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+//             <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>Cards Used</span>
+//             <span style={{ 
+//               fontSize: "0.875rem", 
+//               fontWeight: isNearLimit ? "600" : "400",
+//               color: isNearLimit ? "#f59e0b" : "#111827"
+//             }}>
+//               {cardsUsed} / {cardsLimit === 999 ? "Unlimited" : cardsLimit}
+//               {cardsLimit !== 999 && !isAtLimit && ` (${cardsRemaining} left)`}
+//             </span>
+//           </div>
+//           <div
+//             style={{
+//               height: 8,
+//               backgroundColor: "#e5e7eb",
+//               borderRadius: 9999,
+//               overflow: "hidden",
+//             }}
+//           >
+//             <div
+//               style={{
+//                 height: "100%",
+//                 width: `${Math.min(usagePercentage, 100)}%`,
+//                 backgroundColor: isAtLimit ? "#ef4444" : 
+//                                 isNearLimit ? "#f59e0b" : "rgba(59, 130, 246, 0.8)",
+//                 borderRadius: 9999,
+//                 transition: "width 0.5s ease",
+//               }}
+//             />
+//           </div>
+//           {isAtLimit && cardsLimit !== 999 && (
+//             <p style={{ fontSize: "0.75rem", color: "#ef4444", marginTop: "0.5rem" }}>
+//               You've reached your plan limit. Upgrade to create more cards.
+//             </p>
+//           )}
+//           {isNearLimit && !isAtLimit && cardsLimit !== 999 && (
+//             <p style={{ fontSize: "0.75rem", color: "#f59e0b", marginTop: "0.5rem" }}>
+//               You're running low on cards. Consider upgrading.
+//             </p>
+//           )}
+//         </div>
+
 //         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
 //           {details.features.map((feature) => (
 //             <span
@@ -111,8 +290,8 @@
 //                 alignItems: "center",
 //                 gap: 4,
 //                 padding: "0.25rem 0.75rem",
-//                 backgroundColor: "rgba(59, 130, 246, 0.1)", // primary/10
-//                 color: "#3b82f6", // primary color
+//                 backgroundColor: "rgba(59, 130, 246, 0.1)",
+//                 color: "#3b82f6",
 //                 fontSize: "0.75rem",
 //                 fontWeight: 600,
 //                 borderRadius: "9999px",
@@ -126,18 +305,20 @@
 //     );
 //   }
 
-//   // Free plan (trial) UI
+//   // Free plan (trial) UI or expired subscription
 //   return (
 //     <div
 //       style={{
 //         position: "relative",
 //         overflow: "hidden",
-//         background: "linear-gradient(90deg, rgba(251,253,255,0.7) 0%, rgba(238,246,255,0.7) 100%)",
+//         background: isSubscriptionExpired 
+//           ? "linear-gradient(90deg, rgba(254, 242, 242, 0.7) 0%, rgba(255, 241, 242, 0.7) 100%)" 
+//           : "linear-gradient(90deg, rgba(251,253,255,0.7) 0%, rgba(238,246,255,0.7) 100%)",
 //         borderRadius: "1rem",
 //         padding: "1.5rem",
-//         border: "1px solid rgba(59, 130, 246, 0.2)", // primary/20 border
-//         fontFamily: "system-ui, sans-serif",
-//         color: "#1f2937",
+//         border: isSubscriptionExpired 
+//           ? "1px solid rgba(239, 68, 68, 0.2)" 
+//           : "1px solid rgba(59, 130, 246, 0.2)",
 //       }}
 //     >
 //       {/* Background decoration */}
@@ -148,7 +329,9 @@
 //           right: 0,
 //           width: 256,
 //           height: 256,
-//           backgroundColor: "rgba(59, 130, 246, 0.03)", // primary/5
+//           backgroundColor: isSubscriptionExpired 
+//             ? "rgba(239, 68, 68, 0.03)" 
+//             : "rgba(59, 130, 246, 0.03)",
 //           borderRadius: "50%",
 //           filter: "blur(48px)",
 //           transform: "translate(50%, -50%)",
@@ -160,30 +343,52 @@
 //         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem" }}>
 //           <div style={{ flex: 1 }}>
 //             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-//               <Sparkles style={{ width: 20, height: 20, color: "#f97316" }} /> {/* accent color orange */}
-//               <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "#f97316" }}>
-//                 {trialDaysLeft !== undefined ? `${trialDaysLeft} days left in trial` : "30-Day Free Trial"}
+//               {isSubscriptionExpired ? (
+//                 <Lock style={{ width: 20, height: 20, color: "#ef4444" }} />
+//               ) : (
+//                 <PlanIcon style={{ width: 20, height: 20, color: "#f97316" }} />
+//               )}
+//               <span style={{ 
+//                 fontSize: "0.875rem", 
+//                 fontWeight: 600, 
+//                 color: isSubscriptionExpired ? "#ef4444" : "#f97316" 
+//               }}>
+//                 {isSubscriptionExpired 
+//                   ? "Subscription Expired" 
+//                   : remainingDays > 0 
+//                     ? `${remainingDays} days left in trial` 
+//                     : "Free Trial"
+//                 }
 //               </span>
 //             </div>
+            
 //             <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#111827", marginBottom: 8 }}>
-//               Choose Your Plan
+//               {isSubscriptionExpired ? "Upgrade Your Plan" : "Choose Your Plan"}
 //             </h3>
+            
 //             <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: 16 }}>
-//               {details.description}
+//               {isSubscriptionExpired 
+//                 ? "Your free trial has ended. Upgrade to continue using all features."
+//                 : details.description
+//               }
 //             </p>
 
-//             {/* Usage Bar */}
+//             {/* Card Usage Bar - show for all states */}
 //             <div style={{ marginBottom: 16 }}>
 //               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem", marginBottom: 8 }}>
 //                 <span style={{ color: "#6b7280" }}>Cards used</span>
-//                 <span style={{ color: isNearLimit ? "#f59e0b" : "#111827", fontWeight: isNearLimit ? "600" : "400" }}>
-//                   {cardsUsed} / {cardsLimit}
+//                 <span style={{ 
+//                   color: isAtLimit ? "#ef4444" : isNearLimit ? "#f59e0b" : "#111827", 
+//                   fontWeight: isAtLimit || isNearLimit ? "600" : "400" 
+//                 }}>
+//                   {cardsUsed} / {cardsLimit === 999 ? "Unlimited" : cardsLimit}
+//                   {cardsLimit !== 999 && !isAtLimit && ` (${cardsRemaining} left)`}
 //                 </span>
 //               </div>
 //               <div
 //                 style={{
 //                   height: 8,
-//                   backgroundColor: "#e5e7eb", // muted bg gray-200
+//                   backgroundColor: "#e5e7eb",
 //                   borderRadius: 9999,
 //                   overflow: "hidden",
 //                 }}
@@ -192,61 +397,103 @@
 //                   style={{
 //                     height: "100%",
 //                     width: `${Math.min(usagePercentage, 100)}%`,
-//                     backgroundColor: isNearLimit ? "#f59e0b" : "rgba(59, 130, 246, 0.6)", // warning orange or primary gradient fallback
+//                     backgroundColor: isAtLimit ? "#ef4444" : 
+//                                     isNearLimit ? "#f59e0b" : 
+//                                     "rgba(59, 130, 246, 0.6)",
 //                     borderRadius: 9999,
 //                     transition: "width 0.5s ease",
 //                   }}
 //                 />
 //               </div>
+//               {isAtLimit && cardsLimit !== 999 && (
+//                 <p style={{ fontSize: "0.75rem", color: "#ef4444", marginTop: "0.5rem" }}>
+//                   You've reached your plan limit. Upgrade to create more cards.
+//                 </p>
+//               )}
 //             </div>
 
-//             {/* Plan Options */}
+//             {/* Plan Options - Highlight current plan if any */}
 //             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-//               <span
+//               <div
 //                 style={{
 //                   padding: "0.375rem 0.75rem",
-//                   backgroundColor: "#ffffff",
-//                   border: "1px solid #d1d5db", // border-gray-300
+//                   backgroundColor: plan === "Personal" ? "rgba(147,197,253,0.2)" : "#ffffff",
+//                   border: plan === "Personal" ? "1px solid rgba(59,130,246,0.3)" : "1px solid #d1d5db",
 //                   borderRadius: 12,
 //                   fontSize: "0.75rem",
-//                   color: "#111827",
+//                   color: plan === "Personal" ? "#2563eb" : "#111827",
 //                   fontWeight: 600,
+//                   display: "flex",
+//                   flexDirection: "column",
+//                   alignItems: "flex-start",
+//                   minWidth: 120,
 //                 }}
 //               >
-//                 Personal <span style={{ color: "#6b7280" }}>$5/mo</span>
-//               </span>
-//               <span
+//                 <div>Personal</div>
+//                 <div style={{ 
+//                   color: plan === "Personal" ? "rgba(37,99,235,0.7)" : "#6b7280",
+//                   fontSize: "0.7rem",
+//                   marginTop: 2
+//                 }}>
+//                   $5/mo • 10 cards
+//                 </div>
+//               </div>
+//               <div
 //                 style={{
 //                   padding: "0.375rem 0.75rem",
-//                   backgroundColor: "rgba(147,197,253,0.2)", // blue-300/20
-//                   border: "1px solid rgba(59,130,246,0.3)", // primary/30
+//                   backgroundColor: plan === "Business" ? "rgba(147,197,253,0.2)" : "#ffffff",
+//                   border: plan === "Business" ? "1px solid rgba(59,130,246,0.3)" : "1px solid #d1d5db",
 //                   borderRadius: 12,
 //                   fontSize: "0.75rem",
-//                   color: "#2563eb", // blue-600 text-primary
+//                   color: plan === "Business" ? "#2563eb" : "#111827",
 //                   fontWeight: 600,
+//                   display: "flex",
+//                   flexDirection: "column",
+//                   alignItems: "flex-start",
+//                   minWidth: 120,
 //                 }}
 //               >
-//                 Business <span style={{ color: "rgba(37,99,235,0.7)" }}>$15/mo</span>
-//               </span>
-//               <span
+//                 <div>Business</div>
+//                 <div style={{ 
+//                   color: plan === "Business" ? "rgba(37,99,235,0.7)" : "#6b7280",
+//                   fontSize: "0.7rem",
+//                   marginTop: 2
+//                 }}>
+//                   $15/mo • 50 cards
+//                 </div>
+//               </div>
+//               <div
 //                 style={{
 //                   padding: "0.375rem 0.75rem",
-//                   backgroundColor: "#ffffff",
-//                   border: "1px solid #d1d5db", // border-gray-300
+//                   backgroundColor: plan === "Business Premium" ? "rgba(147,197,253,0.2)" : "#ffffff",
+//                   border: plan === "Business Premium" ? "1px solid rgba(59,130,246,0.3)" : "1px solid #d1d5db",
 //                   borderRadius: 12,
 //                   fontSize: "0.75rem",
-//                   color: "#111827",
+//                   color: plan === "Business Premium" ? "#2563eb" : "#111827",
 //                   fontWeight: 600,
+//                   display: "flex",
+//                   flexDirection: "column",
+//                   alignItems: "flex-start",
+//                   minWidth: 120,
 //                 }}
 //               >
-//                 Premium <span style={{ color: "#6b7280" }}>$29/mo</span>
-//               </span>
+//                 <div>Premium</div>
+//                 <div style={{ 
+//                   color: plan === "Business Premium" ? "rgba(37,99,235,0.7)" : "#6b7280",
+//                   fontSize: "0.7rem",
+//                   marginTop: 2
+//                 }}>
+//                   $29/mo • Unlimited
+//                 </div>
+//               </div>
 //             </div>
 
 //             <button
-//               onClick={() => navigate("/pricing")}
+//               onClick={onUpgrade}
 //               style={{
-//                 background: "linear-gradient(90deg, #f97316 0%, #ea580c 100%)", // gradient-accent from screenshot (orange)
+//                 background: isSubscriptionExpired 
+//                   ? "linear-gradient(90deg, #ef4444 0%, #dc2626 100%)" 
+//                   : "linear-gradient(90deg, #f97316 0%, #ea580c 100%)",
 //                 border: "none",
 //                 borderRadius: "0.5rem",
 //                 color: "#fff",
@@ -262,16 +509,39 @@
 //               onMouseEnter={e => (e.currentTarget.style.opacity = "0.9")}
 //               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
 //             >
-//               View Plans
+//               {isSubscriptionExpired ? "Renew Subscription" : 
+//                isAtLimit ? "Upgrade to Create More" : "View Plans"}
 //               <ArrowRight style={{ width: 16, height: 16 }} />
 //             </button>
 //           </div>
+          
+//           {/* Status badge for expired subscriptions */}
+//           {isSubscriptionExpired && (
+//             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+//               <div style={{
+//                 backgroundColor: "#fee2e2",
+//                 color: "#dc2626",
+//                 padding: "0.375rem 0.75rem",
+//                 borderRadius: "0.5rem",
+//                 fontSize: "0.875rem",
+//                 fontWeight: 500,
+//                 marginBottom: "0.5rem"
+//               }}>
+//                 Access Restricted
+//               </div>
+//               <div style={{ textAlign: "right" }}>
+//                 <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>Expired on</div>
+//                 <div style={{ fontWeight: 600, color: "#111827" }}>
+//                   {subscriptionData?.endDate ? new Date(subscriptionData.endDate).toLocaleDateString() : "N/A"}
+//                 </div>
+//               </div>
+//             </div>
+//           )}
 //         </div>
 //       </div>
 //     </div>
 //   );
 // }
-// SubscriptionBanner.tsx
 import { Sparkles, ArrowRight, Check, Lock, User, Building, Gem } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -285,11 +555,9 @@ interface SubscriptionBannerProps {
     planType?: "free" | "Personal" | "Business" | "Business Premium";
     planName?: string;
     price?: string;
-    maxCards?: number;
   } | null;
   remainingDays: number;
   cardsUsed: number;
-  maxCards?: number;
   userCards?: any[];
   onUpgrade: () => void;
 }
@@ -301,14 +569,13 @@ interface PlanDetail {
   icon: any;
   color: string;
   price?: string;
-  maxCards: number;
 }
 
 type PlanDetails = {
-  free: PlanDetail & { maxCards: number };
-  Personal: PlanDetail & { price: string; maxCards: number };
-  Business: PlanDetail & { price: string; maxCards: number };
-  "Business Premium": PlanDetail & { price: string; maxCards: number };
+  free: PlanDetail;
+  Personal: PlanDetail & { price: string };
+  Business: PlanDetail & { price: string };
+  "Business Premium": PlanDetail & { price: string };
 }
 
 const planDetails: PlanDetails = {
@@ -318,34 +585,30 @@ const planDetails: PlanDetails = {
     features: ["Up to 5 cards", "Basic analytics", "Standard templates"],
     icon: Sparkles,
     color: "#f97316",
-    maxCards: 5,
   },
   Personal: {
-    name: "Personal Plan",
-    price: "$5/month",
+    name: "",
+    price: "",
     description: "Perfect for individuals with their digital presence.",
-    features: ["10 Digital Cards", "Basic analytics", "Standard templates", "Email support"],
+    features: [""],
     icon: User,
     color: "#3b82f6",
-    maxCards: 10,
   },
   Business: {
     name: "Business Plan",
-    price: "$15/month",
+    price: "₹800/month",
     description: "Ideal for professionals and small teams.",
-    features: ["50 Digital Cards", "Advanced analytics", "Premium templates", "Priority support"],
+    features: [""],
     icon: Building,
     color: "#8b5cf6",
-    maxCards: 50,
   },
   "Business Premium": {
     name: "Premium Plan",
-    price: "$29/month",
+    price: "₹1200/month",
     description: "Unlimited power for growing businesses.",
-    features: ["Unlimited Cards", "Real-time analytics", "All templates", "24/7 support"],
+    features: [""],
     icon: Gem,
     color: "#f59e0b",
-    maxCards: 999, // Unlimited
   },
 };
 
@@ -353,7 +616,6 @@ export function SubscriptionBanner({
   subscriptionData, 
   remainingDays, 
   cardsUsed, 
-  maxCards: propMaxCards, 
   userCards, 
   onUpgrade 
 }: SubscriptionBannerProps) {
@@ -411,12 +673,33 @@ export function SubscriptionBanner({
   const details = planDetails[plan as keyof typeof planDetails];
   const PlanIcon = details.icon;
   
-  // Get card limits based on plan - use prop if provided, otherwise use plan defaults
-  const cardsLimit = propMaxCards || details.maxCards;
-  const usagePercentage = (cardsUsed / cardsLimit) * 100;
-  const isNearLimit = usagePercentage >= 80;
-  const isAtLimit = cardsUsed >= cardsLimit;
-  const cardsRemaining = cardsLimit - cardsUsed;
+  // Calculate days progress for free trial/active subscription
+  const getDaysProgress = () => {
+    if (!subscriptionData) return 0;
+    
+    if (subscriptionData.status === "active" && subscriptionData.hasSubscription) {
+      // For paid subscriptions, show days left progress
+      if (subscriptionData.endDate) {
+        const endDate = new Date(subscriptionData.endDate);
+        const now = new Date();
+        const startDate = subscriptionData.startDate ? new Date(subscriptionData.startDate) : new Date();
+        
+        const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        const daysLeft = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (totalDays > 0 && daysLeft > 0) {
+          return ((totalDays - daysLeft) / totalDays) * 100;
+        }
+      }
+    }
+    
+    // For free trial, show remaining days progress
+    if (remainingDays > 0 && remainingDays <= 30) {
+      return ((30 - remainingDays) / 30) * 100;
+    }
+    
+    return 0;
+  };
   
   // Handle null subscriptionData properly
   const isSubscriptionExpired = subscriptionData ? 
@@ -446,9 +729,33 @@ export function SubscriptionBanner({
     return "Choose Plan";
   };
 
+  // Get days display text
+  const getDaysDisplay = () => {
+    if (isSubscriptionExpired) {
+      return "Expired";
+    }
+    
+    if (isActiveSubscription && subscriptionData?.daysLeft !== undefined) {
+      const daysLeft = subscriptionData.daysLeft;
+      if (daysLeft > 0) {
+        return `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`;
+      }
+      return "Expires today";
+    }
+    
+    if (remainingDays > 0) {
+      return `${remainingDays} day${remainingDays === 1 ? '' : 's'} left in trial`;
+    }
+    
+    return "Trial ended";
+  };
+
   // If user has an active paid subscription
   if (isActiveSubscription && plan !== "free") {
     const priceDisplay = getPriceDisplay();
+    const daysDisplay = getDaysDisplay();
+    const daysProgress = getDaysProgress();
+    
     return (
       <div
         style={{
@@ -510,17 +817,16 @@ export function SubscriptionBanner({
           </button>
         </div>
 
-        {/* Card Usage Bar for active subscriptions */}
+        {/* Days Progress Bar for active subscriptions */}
         <div style={{ marginBottom: "1rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>Cards Used</span>
+            <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>Subscription Status</span>
             <span style={{ 
               fontSize: "0.875rem", 
-              fontWeight: isNearLimit ? "600" : "400",
-              color: isNearLimit ? "#f59e0b" : "#111827"
+              fontWeight: "600",
+              color: subscriptionData?.daysLeft && subscriptionData.daysLeft <= 7 ? "#f59e0b" : "#111827"
             }}>
-              {cardsUsed} / {cardsLimit === 999 ? "Unlimited" : cardsLimit}
-              {cardsLimit !== 999 && !isAtLimit && ` (${cardsRemaining} left)`}
+              {daysDisplay}
             </span>
           </div>
           <div
@@ -534,22 +840,21 @@ export function SubscriptionBanner({
             <div
               style={{
                 height: "100%",
-                width: `${Math.min(usagePercentage, 100)}%`,
-                backgroundColor: isAtLimit ? "#ef4444" : 
-                                isNearLimit ? "#f59e0b" : "rgba(59, 130, 246, 0.8)",
+                width: `${Math.min(daysProgress, 100)}%`,
+                backgroundColor: subscriptionData?.daysLeft && subscriptionData.daysLeft <= 7 ? "#f59e0b" : "rgba(59, 130, 246, 0.8)",
                 borderRadius: 9999,
                 transition: "width 0.5s ease",
               }}
             />
           </div>
-          {isAtLimit && cardsLimit !== 999 && (
-            <p style={{ fontSize: "0.75rem", color: "#ef4444", marginTop: "0.5rem" }}>
-              You've reached your plan limit. Upgrade to create more cards.
+          {subscriptionData?.daysLeft && subscriptionData.daysLeft <= 7 && subscriptionData.daysLeft > 0 && (
+            <p style={{ fontSize: "0.75rem", color: "#f59e0b", marginTop: "0.5rem" }}>
+              Your subscription will expire soon. Renew to continue uninterrupted service.
             </p>
           )}
-          {isNearLimit && !isAtLimit && cardsLimit !== 999 && (
-            <p style={{ fontSize: "0.75rem", color: "#f59e0b", marginTop: "0.5rem" }}>
-              You're running low on cards. Consider upgrading.
+          {subscriptionData?.daysLeft === 0 && (
+            <p style={{ fontSize: "0.75rem", color: "#ef4444", marginTop: "0.5rem" }}>
+              Your subscription has expired. Renew to restore all features.
             </p>
           )}
         </div>
@@ -579,6 +884,9 @@ export function SubscriptionBanner({
   }
 
   // Free plan (trial) UI or expired subscription
+  const daysProgress = getDaysProgress();
+  const daysDisplay = getDaysDisplay();
+  
   return (
     <div
       style={{
@@ -628,9 +936,7 @@ export function SubscriptionBanner({
               }}>
                 {isSubscriptionExpired 
                   ? "Subscription Expired" 
-                  : remainingDays > 0 
-                    ? `${remainingDays} days left in trial` 
-                    : "Free Trial"
+                  : daysDisplay
                 }
               </span>
             </div>
@@ -646,16 +952,16 @@ export function SubscriptionBanner({
               }
             </p>
 
-            {/* Card Usage Bar - show for all states */}
+            {/* Days Progress Bar */}
             <div style={{ marginBottom: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem", marginBottom: 8 }}>
-                <span style={{ color: "#6b7280" }}>Cards used</span>
+                <span style={{ color: "#6b7280" }}>Trial Status</span>
                 <span style={{ 
-                  color: isAtLimit ? "#ef4444" : isNearLimit ? "#f59e0b" : "#111827", 
-                  fontWeight: isAtLimit || isNearLimit ? "600" : "400" 
+                  color: isSubscriptionExpired ? "#ef4444" : 
+                         remainingDays <= 7 ? "#f59e0b" : "#111827", 
+                  fontWeight: isSubscriptionExpired || remainingDays <= 7 ? "600" : "400" 
                 }}>
-                  {cardsUsed} / {cardsLimit === 999 ? "Unlimited" : cardsLimit}
-                  {cardsLimit !== 999 && !isAtLimit && ` (${cardsRemaining} left)`}
+                  {daysDisplay}
                 </span>
               </div>
               <div
@@ -669,18 +975,18 @@ export function SubscriptionBanner({
                 <div
                   style={{
                     height: "100%",
-                    width: `${Math.min(usagePercentage, 100)}%`,
-                    backgroundColor: isAtLimit ? "#ef4444" : 
-                                    isNearLimit ? "#f59e0b" : 
+                    width: `${Math.min(daysProgress, 100)}%`,
+                    backgroundColor: isSubscriptionExpired ? "#ef4444" : 
+                                    remainingDays <= 7 ? "#f59e0b" : 
                                     "rgba(59, 130, 246, 0.6)",
                     borderRadius: 9999,
                     transition: "width 0.5s ease",
                   }}
                 />
               </div>
-              {isAtLimit && cardsLimit !== 999 && (
-                <p style={{ fontSize: "0.75rem", color: "#ef4444", marginTop: "0.5rem" }}>
-                  You've reached your plan limit. Upgrade to create more cards.
+              {remainingDays > 0 && remainingDays <= 7 && (
+                <p style={{ fontSize: "0.75rem", color: "#f59e0b", marginTop: "0.5rem" }}>
+                  Your trial will expire soon. Upgrade to continue using all features.
                 </p>
               )}
             </div>
@@ -708,7 +1014,7 @@ export function SubscriptionBanner({
                   fontSize: "0.7rem",
                   marginTop: 2
                 }}>
-                  $5/mo • 10 cards
+                  ₹500/month 
                 </div>
               </div>
               <div
@@ -732,7 +1038,7 @@ export function SubscriptionBanner({
                   fontSize: "0.7rem",
                   marginTop: 2
                 }}>
-                  $15/mo • 50 cards
+                  ₹800/month 
                 </div>
               </div>
               <div
@@ -750,13 +1056,13 @@ export function SubscriptionBanner({
                   minWidth: 120,
                 }}
               >
-                <div>Premium</div>
+                <div>Business Premium</div>
                 <div style={{ 
                   color: plan === "Business Premium" ? "rgba(37,99,235,0.7)" : "#6b7280",
                   fontSize: "0.7rem",
                   marginTop: 2
                 }}>
-                  $29/mo • Unlimited
+                  ₹1200/month 
                 </div>
               </div>
             </div>
@@ -783,7 +1089,7 @@ export function SubscriptionBanner({
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
             >
               {isSubscriptionExpired ? "Renew Subscription" : 
-               isAtLimit ? "Upgrade to Create More" : "View Plans"}
+               remainingDays <= 0 ? "Upgrade Now" : "View Plans"}
               <ArrowRight style={{ width: 16, height: 16 }} />
             </button>
           </div>

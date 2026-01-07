@@ -66,11 +66,8 @@ const VideoPlayer = ({ src, poster, title, className = "" }) => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   
-  // Get video source URL with fallback
   const getVideoUrl = (url) => {
     if (!url) return '';
-    
-    // If it's a relative path or S3 URL, return as-is
     return url;
   };
   
@@ -143,9 +140,258 @@ const LightCard = ({ cardData = {} }) => {
   const [currentClientSlide, setCurrentClientSlide] = useState(0);
   const [currentVideoSlide, setCurrentVideoSlide] = useState(0);
   const [showAllClients, setShowAllClients] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(false);
 
   // Updated background image
   const backgroundImage = "https://images.pexels.com/photos/1257860/pexels-photo-1257860.jpeg";
+
+  // Get current plan from cardData
+  const currentPlan = cardData?.cardType || 'Personal';
+
+  // Helper to check if a feature is allowed for current plan
+  const isFeatureAllowed = (featureName) => {
+    // All plans get basic features
+    const basicFeatures = [
+      'Profile Photo/Logo',
+      'Name/Source Name',
+      'Tag Line/Slogan',
+      'Profile Video',
+      'About Me',
+      'Contact Management',
+      'One-tap Call, WhatsApp, Email',
+      'Website/Portfolio Link',
+      'Location [Address]',
+      'Social & Digital Hub',
+      'Dynamic QR Code',
+      'Share',
+      'Downloads',
+      'Videos'
+    ];
+    
+    if (basicFeatures.includes(featureName)) {
+      return true;
+    }
+    
+    // Business and BusinessPremium features
+    const businessFeatures = [
+      'About Me/Company/Organization',
+      'Virtual Number Integration',
+      'Business Hours',
+      'Professional/Business Details',
+      'Services/Provision',
+      'Brief about Product/Services',
+      'Product Showcase/Gallery/Portfolio',
+      'Product/Catalog [PDF]',
+      'Product Video',
+      'Testimonials'
+    ];
+    
+    if (businessFeatures.includes(featureName)) {
+      return currentPlan === 'Business' || currentPlan === 'BusinessPremium';
+    }
+    
+    // BusinessPremium only features
+    const premiumFeatures = [
+      'Individual Product Display',
+      'Testimonials / Client List',
+      'Interactive Elements',
+      'Call-to-Action',
+      'Live Chat – WhatsApp / Messages',
+      'Appointment Scheduler',
+      'Digital Payments',
+      'Lead / Contact Form',
+      'Chat Assistant',
+      'Brand Label Product/Services',
+      'Product Range Display',
+      'NFC Card Development with Print'
+    ];
+    
+    if (premiumFeatures.includes(featureName)) {
+      return currentPlan === 'BusinessPremium';
+    }
+    
+    // Default fallback
+    return true;
+  };
+
+  // Build complete profileData from cardData WITH ALL FIELDS
+  const profileData = {
+    // Personal Info
+    prefix: cardData?.prefix || "",
+    firstName: cardData?.firstName || "",
+    lastName: cardData?.lastName || "",
+    suffix: cardData?.suffix || "",
+    name: `${cardData?.prefix || ""} ${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim(),
+    tagline: cardData?.tagline || "",
+    
+    // Professional Info
+    jobTitle: cardData?.jobTitle || "",
+    companyName: cardData?.companyName || "",
+    department: cardData?.department || "",
+    foundedName: cardData?.foundedName || "",
+    organization: cardData?.organization || "",
+    
+    // Contact Info
+    email: cardData?.email || "",
+    emails: cardData?.emails || [
+      { 
+        address: cardData?.email || "", 
+        label: "primary", 
+        isPrimary: true 
+      }
+    ],
+    phones: cardData?.phones || [{ number: "", isPrimary: true }],
+    websites: cardData?.websites || [],
+    addresses: cardData?.addresses || [],
+    virtualNumber: cardData?.virtualNumber || { number: "", isEnabled: false },
+    
+    // Profile Content
+    profileVideo: cardData?.profileVideo || { url: "", title: "Intro Video" },
+    productVideo: cardData?.productVideo || null,
+    videos: cardData?.videos || [],
+    aboutText: cardData?.aboutText || ".",
+    bio: cardData?.bio || cardData?.aboutText || "",
+    servicesProducts: cardData?.servicesProducts || "",
+    
+    // Catalog
+    catalog: cardData?.catalog || cardData?.catalogPDF || "",
+    
+    // Business Hours
+    businessHours: cardData?.businessHours || [],
+    
+    // Social & Media
+    socialLinks: cardData?.socialLinks || [],
+    profilePhoto: cardData?.profilePhoto,
+    companyLogo: cardData?.companyLogo,
+    logoSize: cardData?.logoSize || "medium",
+    
+    // Services & Products
+    services: cardData?.services || [],
+    products: cardData?.products || [],
+    
+    // Premium Features
+    testimonials: cardData?.testimonials || [],
+    clientList: cardData?.clientList || [],
+    gallery: cardData?.gallery || [],
+    downloads: cardData?.downloads || [],
+    interactiveElements: cardData?.interactiveElements || [],
+    individualProductDisplay: cardData?.individualProductDisplay || false,
+    businessCardInstagram: cardData?.businessCardInstagram || "",
+    textbooks: cardData?.textbooks || [],
+
+    // Digital Features
+    dynamicQRCode: cardData?.dynamicQRCode || null,
+    
+    // Shareable URL
+    shareableUrl: cardData?.shareableUrl || cardData?.shareUrl || "",
+    
+    // Brand & Product
+    brandLabel: cardData?.brandLabel || "",
+    productRangeDisplay: cardData?.productRangeDisplay || "grid",
+    
+    nfcSettings: cardData?.nfcSettings || { isEnabled: false },
+    
+    // Chat Features
+    chatAssistant: cardData?.chatAssistant || { isEnabled: false, welcomeMessage: "Hello! How can I help you today?" },
+    liveChat: cardData?.liveChat || { isEnabled: false, platform: "whatsapp", phoneNumber: "" },
+    
+    // Plan Info
+    cardType: currentPlan,
+    
+    // Settings
+    enableOneTapCall: cardData?.enableOneTapCall !== undefined ? cardData.enableOneTapCall : true,
+    enableWhatsApp: cardData?.enableWhatsApp !== undefined ? cardData.enableWhatsApp : true,
+    enableEmail: cardData?.enableEmail !== undefined ? cardData.enableEmail : true
+  };
+
+  // Feature to actual field mapping
+  const featureToFieldMap = {
+    // Personal Plan Features
+    'Profile Photo/Logo': ['profilePhoto'],
+    'Name/Source Name': ['firstName', 'lastName', 'name'],
+    'Tag Line/Slogan': ['tagline'],
+    'Profile Video': ['profileVideo'],
+    'About Me': ['aboutText'],
+    'Contact Management': ['emails', 'phones'],
+    'One-tap Call, WhatsApp, Email': ['phones', 'emails'],
+    'Website/Portfolio Link': ['websites'],
+    'Location [Address]': ['addresses'],
+    'Social & Digital Hub': ['socialLinks'],
+    'Dynamic QR Code': ['dynamicQRCode'],
+    'Share': ['shareableUrl'],
+    'Downloads': ['downloads'],
+    'Videos': ['videos'],
+    
+    // Business Plan Additional Features
+    'About Me/Company/Organization': ['aboutText', 'companyName'],
+    'Virtual Number Integration': ['virtualNumber'],
+    'Business Hours': ['businessHours'],
+    'Professional/Business Details': ['companyName', 'department'],
+    'Services/Provision': ['services'],
+    'Brief about Product/Services': ['servicesProducts'],
+    'Product Showcase/Gallery/Portfolio': ['gallery'],
+    'Product/Catalog [PDF]': ['catalog'],
+    'Product Video': ['productVideo'],
+    'Testimonials': ['testimonials'],
+    
+    // BusinessPremium Additional Features
+    'Individual Product Display': ['services', 'individualProductDisplay'],
+    'Testimonials / Client List': ['testimonials', 'clientList'],
+    'Interactive Elements': ['interactiveElements'],
+    'Call-to-Action': ['interactiveElements'],
+    'Live Chat – WhatsApp / Messages': ['liveChat'],
+    'Appointment Scheduler': ['interactiveElements'],
+    'Digital Payments': ['interactiveElements'],
+    'Lead / Contact Form': ['interactiveElements'],
+    'Chat Assistant': ['chatAssistant'],
+    'Brand Label Product/Services': ['brandLabel'],
+    'Product Range Display': ['productRangeDisplay'],
+    'NFC Card Development with Print': ['nfcSettings']
+  };
+
+  // Helper to check if a feature should be shown (both allowed by plan AND has data)
+  const shouldShowFeature = (featureName, profileData) => {
+    // First check if feature is allowed for current plan
+    if (!isFeatureAllowed(featureName)) {
+      return false;
+    }
+    
+    // Then check if there's data for this feature
+    const fields = featureToFieldMap[featureName] || [];
+    return fields.some(field => {
+      const data = profileData[field];
+      if (Array.isArray(data)) {
+        return data.length > 0;
+      } else if (typeof data === 'object' && data !== null) {
+        if (field === 'profileVideo' || field === 'productVideo') {
+          return data?.url;
+        }
+        if (field === 'dynamicQRCode') {
+          return data?.targetUrl || data?.qrImage;
+        }
+        if (field === 'nfcSettings') {
+          return data?.isEnabled;
+        }
+        if (field === 'virtualNumber') {
+          return data?.number || data?.isEnabled;
+        }
+        if (field === 'chatAssistant') {
+          return data?.isEnabled;
+        }
+        if (field === 'liveChat') {
+          return data?.isEnabled;
+        }
+        return Object.keys(data).length > 0;
+      } else {
+        return !!data && data !== '.';
+      }
+    });
+  };
+
+  // Helper to check if a feature should be shown for current user
+  const checkFeature = (featureName) => {
+    return shouldShowFeature(featureName, profileData);
+  };
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -360,6 +606,42 @@ const LightCard = ({ cardData = {} }) => {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       }
       
+      /* QR Code Modal */
+      .qr-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+      }
+      
+      .qr-modal-content {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 300px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+      
+      .qr-image {
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
+        margin: 0 auto 20px;
+        border-radius: 10px;
+        background: white;
+        padding: 10px;
+      }
+      
       /* Mobile-specific adjustments */
       @media (max-width: 640px) {
         .social-icon-large {
@@ -435,234 +717,7 @@ const LightCard = ({ cardData = {} }) => {
     };
   }, []);
 
-  // Build complete profileData from cardData WITH ALL FIELDS
-  const profileData = {
-    // Personal Info
-    prefix: cardData?.prefix || "",
-    firstName: cardData?.firstName || "",
-    lastName: cardData?.lastName || "",
-    suffix: cardData?.suffix || "",
-    name: `${cardData?.prefix || ""} ${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim(),
-    tagline: cardData?.tagline || "",
-    
-    // Professional Info
-    jobTitle: cardData?.jobTitle || "",
-    companyName: cardData?.companyName || "",
-    department: cardData?.department || "",
-    foundedName: cardData?.foundedName || "",
-    organization: cardData?.organization || "",
-    
-    // Contact Info
-    email: cardData?.email || "",
-    emails: cardData?.emails || [{ address: cardData?.email || "", label: "primary", isPrimary: true }],
-    phones: cardData?.phones || [{ number: "", isPrimary: true }],
-    websites: cardData?.websites || [],
-    addresses: cardData?.addresses || [],
-    virtualNumber: cardData?.virtualNumber || { number: "", isEnabled: false },
-    
-    // Profile Content
-    profileVideo: cardData?.profileVideo || { url: "", title: "Intro Video" },
-    productVideo: cardData?.productVideo || null,
-    videos: cardData?.videos || [],
-    aboutText: cardData?.aboutText || ".",
-    bio: cardData?.bio || cardData?.aboutText || "",
-    servicesProducts: cardData?.servicesProducts || "",
-    
-    // Catalog - FIXED: Use correct field from model
-    catalog: cardData?.catalog || cardData?.catalogPDF || "",
-    
-    // Business Hours - FIXED: Fixed structure
-    businessHours: cardData?.businessHours || [],
-    
-    // Social & Media
-    socialLinks: cardData?.socialLinks || [],
-    profilePhoto: cardData?.profilePhoto,
-    companyLogo: cardData?.companyLogo,
-    logoSize: cardData?.logoSize || "medium",
-    
-    // Services & Products
-    services: cardData?.services || [],
-    products: cardData?.products || [],
-    
-    // Premium Features
-    testimonials: cardData?.testimonials || [],
-    clientList: cardData?.clientList || [],
-    gallery: cardData?.gallery || [],
-    downloads: cardData?.downloads || [],
-    interactiveElements: cardData?.interactiveElements || [],
-    individualProductDisplay: cardData?.individualProductDisplay || false,
-    businessCardInstagram: cardData?.businessCardInstagram || "",
-    textbooks: cardData?.textbooks || [],
-
-    // Digital Features
-    dynamicQRCode: cardData?.dynamicQRCode || null,
-    
-    // Shareable URL
-    shareableUrl: cardData?.shareableUrl || cardData?.shareUrl || "",
-    
-    // Brand & Product
-    brandLabel: cardData?.brandLabel || "",
-    productRangeDisplay: cardData?.productRangeDisplay || "grid",
-    
-    nfcSettings: cardData?.nfcSettings || { isEnabled: false },
-    
-    // Chat Features - FIXED: Added from model
-    chatAssistant: cardData?.chatAssistant || { isEnabled: false, welcomeMessage: "Hello! How can I help you today?" },
-    liveChat: cardData?.liveChat || { isEnabled: false, platform: "whatsapp", phoneNumber: "" },
-    
-    // Plan Info
-    cardType: cardData?.cardType || 'Personal',
-    
-    // Settings
-    enableOneTapCall: cardData?.enableOneTapCall !== undefined ? cardData.enableOneTapCall : true,
-    enableWhatsApp: cardData?.enableWhatsApp !== undefined ? cardData.enableWhatsApp : true,
-    enableEmail: cardData?.enableEmail !== undefined ? cardData.enableEmail : true
-  };
-
-  // Get current plan
-  const currentPlan = profileData.cardType || 'Personal';
-
-  // Helper to check if a field/feature is allowed for current plan
-  const isFieldAllowed = (fieldName) => {
-    // Business Hours should only show for Business and BusinessPremium plans
-    if (fieldName === 'businessHours') {
-      return currentPlan === 'Business' || currentPlan === 'BusinessPremium';
-    }
-    
-    // Virtual Number should only show for Business and BusinessPremium plans
-    if (fieldName === 'virtualNumber') {
-      return currentPlan === 'Business' || currentPlan === 'BusinessPremium';
-    }
-    
-    // Catalog should only show for Business and BusinessPremium plans
-    if (fieldName === 'catalog') {
-      return currentPlan === 'Business' || currentPlan === 'BusinessPremium';
-    }
-    
-    // Services & Products overview
-    if (fieldName === 'servicesProducts') {
-      return currentPlan === 'Business' || currentPlan === 'BusinessPremium';
-    }
-    
-    // Brand Label - Business Premium only
-    if (fieldName === 'brandLabel') {
-      return currentPlan === 'BusinessPremium';
-    }
-    
-    // Product Range Display - Business Premium only
-    if (fieldName === 'productRangeDisplay') {
-      return currentPlan === 'BusinessPremium';
-    }
-    
-    // Product Video - Business and BusinessPremium
-    if (fieldName === 'productVideo') {
-      return currentPlan === 'Business' || currentPlan === 'BusinessPremium';
-    }
-    
-    // Gallery - Business and BusinessPremium
-    if (fieldName === 'gallery') {
-      return currentPlan === 'Business' || currentPlan === 'BusinessPremium';
-    }
-    
-    // Shareable URL is for all plans
-    return true;
-  };
-
-  // Helper to check if a feature should be shown
-  const shouldShowFeature = (featureName, profileData) => {
-    // Business Hours feature - only for Business/BusinessPremium
-    if (featureName === 'Business Hours') {
-      if (!isFieldAllowed('businessHours')) return false;
-      const hours = profileData.businessHours;
-      if (!hours || (Array.isArray(hours) && hours.length === 0)) return false;
-      return true;
-    }
-    
-    // Virtual Number feature - only for Business/BusinessPremium
-    if (featureName === 'Virtual Number Integration') {
-      if (!isFieldAllowed('virtualNumber')) return false;
-      return profileData.virtualNumber?.number && profileData.virtualNumber?.isEnabled;
-    }
-    
-    // Catalog feature - only for Business/BusinessPremium
-    if (featureName === 'Product/Catalog [PDF]') {
-      if (!isFieldAllowed('catalog')) return false;
-      return !!profileData.catalog;
-    }
-    
-    // Services/Products feature
-    if (featureName === 'Brief about Product/Services') {
-      if (!isFieldAllowed('servicesProducts')) return false;
-      return !!profileData.servicesProducts;
-    }
-    
-    // Brand Label feature - Business Premium only
-    if (featureName === 'Brand Label Product/Services') {
-      if (!isFieldAllowed('brandLabel')) return false;
-      return !!profileData.brandLabel;
-    }
-    
-    // Product Range Display feature - Business Premium only
-    if (featureName === 'Product Range Display') {
-      if (!isFieldAllowed('productRangeDisplay')) return false;
-      return !!profileData.productRangeDisplay;
-    }
-    
-    // Product Video feature
-    if (featureName === 'Product Video') {
-      if (!isFieldAllowed('productVideo')) return false;
-      return !!profileData.productVideo?.url;
-    }
-    
-    // Gallery feature
-    if (featureName === 'Product Showcase/Gallery/Portfolio') {
-      if (!isFieldAllowed('gallery')) return false;
-      return profileData.gallery?.length > 0;
-    }
-    
-    // Share feature - for all plans
-    if (featureName === 'Share') {
-      return !!profileData.shareableUrl;
-    }
-    
-    // Default logic for other features
-    const fields = featureToFieldMap[featureName] || [];
-    return fields.some(field => {
-      const data = profileData[field];
-      if (Array.isArray(data)) {
-        return data.length > 0;
-      } else if (typeof data === 'object' && data !== null) {
-        if (field === 'profileVideo' || field === 'productVideo') {
-          return data?.url;
-        }
-        if (field === 'dynamicQRCode') {
-          return data?.targetUrl || data?.qrImage;
-        }
-        if (field === 'nfcSettings') {
-          return data?.isEnabled;
-        }
-        if (field === 'virtualNumber') {
-          return data?.number || data?.isEnabled;
-        }
-        if (field === 'chatAssistant') {
-          return data?.isEnabled;
-        }
-        if (field === 'liveChat') {
-          return data?.isEnabled;
-        }
-        return Object.keys(data).length > 0;
-      } else {
-        return !!data && data !== '.';
-      }
-    });
-  };
-
-  // Helper to check if a feature should be shown for current user
-  const checkFeature = (featureName) => {
-    return shouldShowFeature(featureName, profileData);
-  };
-
-  // Format business hours - FIXED: Shows both start and end time
+  // Format business hours
   const formatBusinessHours = () => {
     const hours = profileData.businessHours;
     if (!hours || (Array.isArray(hours) && hours.length === 0)) return null;
@@ -685,51 +740,6 @@ const LightCard = ({ cardData = {} }) => {
     });
   };
 
-  // Feature to actual field mapping
-  const featureToFieldMap = {
-    // Personal Plan Features
-    'Profile Photo/Logo': ['profilePhoto'],
-    'Name/Source Name': ['firstName', 'lastName', 'name'],
-    'Tag Line/Slogan': ['tagline'],
-    'Profile Video': ['profileVideo'],
-    'About Me': ['aboutText'],
-    'Contact Management': ['emails', 'phones'],
-    'One-tap Call, WhatsApp, Email': ['phones', 'emails'],
-    'Website/Portfolio Link': ['websites'],
-    'Location [Address]': ['addresses'],
-    'Social & Digital Hub': ['socialLinks'],
-    'Dynamic QR Code': ['dynamicQRCode'],
-    'Share': ['shareableUrl'],
-    'NFC Card Development with Print': ['nfcSettings'],
-    'Downloads': ['downloads'],
-    'Videos': ['videos'],
-    
-    // Business Plan Additional Features
-    'About Me/Company/Organization': ['aboutText', 'companyName'],
-    'Virtual Number Integration': ['virtualNumber'],
-    'Business Hours': ['businessHours'],
-    'Professional/Business Details': ['companyName', 'department'],
-    'Services/Provision': ['services'],
-    'Brief about Product/Services': ['servicesProducts'],
-    'Product Showcase/Gallery/Portfolio': ['gallery'],
-    'Product/Catalog [PDF]': ['catalog'],
-    'Product Video': ['productVideo'],
-    'Testimonials': ['testimonials'],
-    
-    // BusinessPremium Additional Features
-    'Individual Product Display': ['services', 'individualProductDisplay'],
-    'Testimonials / Client List': ['testimonials', 'clientList'],
-    'Interactive Elements': ['interactiveElements'],
-    'Call-to-Action': ['interactiveElements'],
-    'Live Chat – WhatsApp / Messages': ['liveChat'],
-    'Appointment Scheduler': ['interactiveElements'],
-    'Digital Payments': ['interactiveElements'],
-    'Lead / Contact Form': ['interactiveElements'],
-    'Chat Assistant': ['chatAssistant'],
-    'Brand Label Product/Services': ['brandLabel'],
-    'Product Range Display': ['productRangeDisplay']
-  };
-
   // Bottom navbar tabs - show based on plan and data availability
   const getAvailableTabs = () => {
     const allTabs = [
@@ -738,7 +748,7 @@ const LightCard = ({ cardData = {} }) => {
         label: 'Profile', 
         icon: FaUser, 
         tooltip: 'Profile',
-        show: true
+        show: true // Always show profile tab
       },
       { 
         id: 'services', 
@@ -836,6 +846,43 @@ const LightCard = ({ cardData = {} }) => {
         alert('Link copied to clipboard!');
       });
     }
+  };
+
+  // QR Code functionality
+  const renderQRCodeModal = () => {
+    if (!showQRCode || !profileData.dynamicQRCode) return null;
+    
+    const qrData = profileData.dynamicQRCode;
+    const qrImageUrl = qrData.qrImage || 
+      `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData.targetUrl || profileData.shareableUrl || window.location.href)}`;
+    
+    return (
+      <div className="qr-modal-overlay" onClick={() => setShowQRCode(false)}>
+        <div className="qr-modal-content" onClick={(e) => e.stopPropagation()}>
+          <h3 className="rumaila-font text-xl mb-4">Scan QR Code</h3>
+          <img 
+            src={qrImageUrl} 
+            alt="QR Code" 
+            className="qr-image"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.style.display = 'none';
+              const placeholder = document.createElement('div');
+              placeholder.className = 'qr-image flex items-center justify-center bg-white';
+              placeholder.innerHTML = '<FaQrcode className="w-16 h-16 text-gray-400" />';
+              e.target.parentElement.appendChild(placeholder);
+            }}
+          />
+          <p className="casper-font text-sm mb-4">Scan to save contact or visit profile</p>
+          <button
+            onClick={() => setShowQRCode(false)}
+            className="casper-font bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-4 py-2 rounded-lg transition-all"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
   };
 
   const getSocialIcon = (platform) => {
@@ -945,10 +992,9 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
-  // Business Hours Component - FIXED: Shows in Contact tab only
+  // Business Hours Component
   const renderBusinessHours = () => {
-    // Check if current plan allows business hours
-    if (!isFieldAllowed('businessHours')) return null;
+    if (!checkFeature('Business Hours')) return null;
     
     const hours = formatBusinessHours();
     if (!hours) return null;
@@ -976,10 +1022,9 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
-  // Virtual Number Component - FIXED: Shows in Contact tab only
+  // Virtual Number Component
   const renderVirtualNumber = () => {
-    // Check if current plan allows virtual number
-    if (!isFieldAllowed('virtualNumber')) return null;
+    if (!checkFeature('Virtual Number Integration')) return null;
     if (!profileData.virtualNumber?.number || !profileData.virtualNumber?.isEnabled) return null;
     
     return (
@@ -998,10 +1043,9 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
-  // Catalog Component - FIXED: Shows in Services tab only
+  // Catalog Component
   const renderCatalog = () => {
-    // Check if current plan allows catalog
-    if (!isFieldAllowed('catalog')) return null;
+    if (!checkFeature('Product/Catalog [PDF]')) return null;
     
     const catalog = profileData.catalog;
     if (!catalog) return null;
@@ -1031,9 +1075,9 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
-  // Brand Label Component - FIXED: Business Premium only
+  // Brand Label Component
   const renderBrandLabel = () => {
-    if (!isFieldAllowed('brandLabel')) return null;
+    if (!checkFeature('Brand Label Product/Services')) return null;
     if (!profileData.brandLabel) return null;
     
     return (
@@ -1049,9 +1093,9 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
-  // Product Video Component - FIXED: Shows in Services tab
+  // Product Video Component
   const renderProductVideo = () => {
-    if (!isFieldAllowed('productVideo')) return null;
+    if (!checkFeature('Product Video')) return null;
     if (!profileData.productVideo?.url) return null;
     
     return (
@@ -1108,16 +1152,12 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
-  // Share Button Component - FIXED: Shows in More tab only
+  // Share Button Component
   const renderShareButton = () => {
     if (!profileData.shareableUrl) return null;
     
     return (
       <div className="mb-4 mt-5">
-        <div className="flex items-center justify-center mb-2">
-          <FaShare className="w-5 h-5 text-purple-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Share Card</h3>
-        </div>
         <button
           onClick={handleShare}
           className="w-full share-button hover:opacity-90 text-white py-3 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-center"
@@ -1129,9 +1169,54 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
+  // QR Code Component
+  const renderQRCode = () => {
+    if (!profileData.dynamicQRCode) return null;
+    
+    const qrData = profileData.dynamicQRCode;
+    const qrImageUrl = qrData.qrImage || 
+      `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData.targetUrl || profileData.shareableUrl || window.location.href)}`;
+    
+    return (
+      <div className="mb-4">
+        <div className="flex items-center justify-center mb-2">
+          <FaQrcode className="w-5 h-5 text-blue-400 mr-2" />
+          <h3 className="rumaila-font text-lg">QR Code</h3>
+        </div>
+        <div className="flex flex-col items-center">
+          <div 
+            className="bg-white/10 rounded-xl p-4 cursor-pointer transform transition-transform duration-300 hover:scale-105"
+            onClick={() => setShowQRCode(true)}
+          >
+            <img
+              src={qrImageUrl}
+              alt="QR Code"
+              className="w-32 h-32 object-contain rounded-lg"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.style.display = 'none';
+                const placeholder = document.createElement('div');
+                placeholder.className = 'w-32 h-32 flex items-center justify-center bg-white/10 rounded-lg';
+                placeholder.innerHTML = '<FaQrcode className="w-12 h-12 text-gray-400" />';
+                e.target.parentElement.appendChild(placeholder);
+              }}
+            />
+          </div>
+          <p className="casper-font text-sm mt-3 text-center">Tap to enlarge QR Code</p>
+          <button
+            onClick={() => setShowQRCode(true)}
+            className="mt-2 text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
+          >
+            View Full Size
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   // NFC Card Component
   const renderNFCCard = () => {
-    if (!profileData.nfcSettings?.isEnabled) return null;
+    if (!checkFeature('NFC Card Development with Print')) return null;
     
     return (
       <div className="mb-4">
@@ -1185,9 +1270,9 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
-  // Chat Assistant Component - FIXED: Business Premium only
+  // Chat Assistant Component
   const renderChatAssistant = () => {
-    if (!profileData.chatAssistant?.isEnabled) return null;
+    if (!checkFeature('Chat Assistant')) return null;
     
     return (
       <div className="mb-4">
@@ -1205,9 +1290,9 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
-  // Live Chat Component - FIXED: Business Premium only
+  // Live Chat Component
   const renderLiveChat = () => {
-    if (!profileData.liveChat?.isEnabled) return null;
+    if (!checkFeature('Live Chat – WhatsApp / Messages')) return null;
     
     return (
       <div className="mb-4">
@@ -1229,80 +1314,107 @@ const LightCard = ({ cardData = {} }) => {
   // ========== MAIN COMPONENT RENDERING ==========
 
   // Profile Header Component
-  const ProfileHeader = () => (
-    <div className="pb-4 pt-6 no-bg-border">
-      {/* Company Logo and Name */}
-      {profileData.companyLogo && (
-        <div className="flex justify-center items-center mb-3">
-          <div className="flex items-center space-x-2">
-            <div className="bg-white rounded-full p-1 shadow-sm">
+  const ProfileHeader = () => {
+    // Check if profile photo feature is allowed
+    if (!checkFeature('Profile Photo/Logo')) {
+      return (
+        <div className="pb-4 pt-6 no-bg-border">
+          {checkFeature('Name/Source Name') && (
+            <h1 className="rumaila-font text-4xl font-bold text-center mb-1">
+              {profileData.name}
+            </h1>
+          )}
+          {(currentPlan === 'Business' || currentPlan === 'BusinessPremium') && profileData.jobTitle && (
+            <div className="mb-2">
+              <p className="rumaila-font text-center text-m">
+                {profileData.jobTitle}
+              </p>
+            </div>
+          )}
+          {checkFeature('Tag Line/Slogan') && renderTagline()}
+        </div>
+      );
+    }
+    
+    return (
+      <div className="pb-4 pt-6 no-bg-border">
+        {/* Company Logo and Name - Only show if Business/BusinessPremium */}
+        {profileData.companyLogo && (currentPlan === 'Business' || currentPlan === 'BusinessPremium') && (
+          <div className="flex justify-center items-center mb-3">
+            <div className="flex items-center space-x-2">
+              <div className="bg-white rounded-full p-1 shadow-sm">
+                <img
+                  src={profileData.companyLogo}
+                  alt="Company Logo"
+                  className="w-6 h-6 object-contain"
+                  onError={(e) => {
+                    console.log('Company logo failed to load');
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+              {profileData.companyName && (
+                <h4 className="rumaila-font text-sm">
+                  {profileData.companyName}
+                </h4>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Profile Section */}
+        <div className="relative flex flex-col items-center justify-center px-4">
+          {/* Profile Photo - INCREASED SIZE to w-40 h-40 */}
+          <div className="mb-3">
+            {profileData.profilePhoto ? (
               <img
-                src={profileData.companyLogo}
-                alt="Company Logo"
-                className="w-6 h-6 object-contain"
+                src={profileData.profilePhoto}
+                alt={profileData.name}
+                className="w-40 h-40 rounded-full border-4 border-white/20 shadow-lg object-cover"
                 onError={(e) => {
-                  console.log('Company logo failed to load');
+                  console.log('Profile photo failed to load:', profileData.profilePhoto);
                   e.target.style.display = 'none';
                 }}
               />
-            </div>
-            {profileData.companyName && (
-              <h4 className="rumaila-font text-sm">
-                {profileData.companyName}
-              </h4>
+            ) : null}
+            {/* Fallback profile picture - SAME SIZE w-40 h-40 */}
+            {!profileData.profilePhoto && (
+              <div className="w-40 h-40 rounded-full border-4 border-white/20 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+                {profileData.name?.charAt(0) || "Z"}
+              </div>
             )}
           </div>
-        </div>
-      )}
 
-      {/* Profile Section */}
-      <div className="relative flex flex-col items-center justify-center px-4">
-        {/* Profile Photo */}
-        <div className="mb-3">
-          {profileData.profilePhoto ? (
-            <img
-              src={profileData.profilePhoto}
-              alt={profileData.name}
-              className="w-30 h-30 rounded-full border-3 border-white/20 shadow-lg object-cover"
-              onError={(e) => {
-                console.log('Profile photo failed to load:', profileData.profilePhoto);
-                e.target.style.display = 'none';
-              }}
-            />
-          ) : null}
-          {/* Fallback profile picture */}
-          {!profileData.profilePhoto && (
-            <div className="w-16 h-16 rounded-full border-3 border-white/20 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-lg font-bold shadow-lg">
-              {profileData.name?.charAt(0) || "Z"}
+          {/* Name - Only show if feature allowed */}
+          {checkFeature('Name/Source Name') && (
+            <h1 className="rumaila-font text-4xl font-bold text-center mb-1">
+              {profileData.name}
+            </h1>
+          )}
+
+          {/* Designation Box - Only for Business/BusinessPremium */}
+          {(currentPlan === 'Business' || currentPlan === 'BusinessPremium') && profileData.jobTitle && (
+            <div className="mb-2">
+              <p className="rumaila-font text-center text-m">
+                {profileData.jobTitle}
+              </p>
             </div>
           )}
+
+          {/* Tagline Box - Only show if feature allowed */}
+          {checkFeature('Tag Line/Slogan') && renderTagline()}
         </div>
-
-        {/* Name */}
-        <h1 className="rumaila-font text-4xl font-bold text-center mb-1">
-          {profileData.name}
-        </h1>
-
-        {/* Designation Box */}
-        <div className="mb-2">
-          <p className="rumaila-font text-center text-m">
-            {profileData.jobTitle}
-          </p>
-        </div>
-
-        {/* Tagline Box */}
-        {renderTagline()}
       </div>
-    </div>
-  );
+    );
+  };
 
-  // Profile Tab - FIXED: Removed Business Hours from here
+  // Profile Tab
   const ProfileTab = () => (
     <div className="space-y-6 px-4 pb-4">
       <ProfileHeader />
 
-      {/* About Section */}
-      {profileData.aboutText && profileData.aboutText !== "." && (
+      {/* About Section - Only show if feature allowed */}
+      {checkFeature('About Me') && profileData.aboutText && profileData.aboutText !== "." && (
         <div>
           <div className="mb-3 no-bg-border">
             <h3 className="rumaila-font text-xl flex items-center justify-center">
@@ -1316,8 +1428,8 @@ const LightCard = ({ cardData = {} }) => {
         </div>
       )}
 
-      {/* Professional Bio */}
-      {profileData.bio && (
+      {/* Professional Bio - Only for Business/BusinessPremium */}
+      {(currentPlan === 'Business' || currentPlan === 'BusinessPremium') && profileData.bio && (
         <div>
           <div className="mb-3 no-bg-border">
             <h3 className="rumaila-font text-xl flex items-center justify-center">
@@ -1333,11 +1445,12 @@ const LightCard = ({ cardData = {} }) => {
         </div>
       )}
 
-      {/* Services/Products Overview */}
-      {renderServicesProductsOverview()}
+      {/* Services/Products Overview - Only for Business/BusinessPremium */}
+      {checkFeature('Brief about Product/Services') && renderServicesProductsOverview()}
 
-      {/* Organization Details */}
-      {(profileData.organization || profileData.foundedName) && (
+      {/* Organization Details - Only for Business/BusinessPremium */}
+      {(currentPlan === 'Business' || currentPlan === 'BusinessPremium') && 
+       (profileData.organization || profileData.foundedName) && (
         <div>
           <div className="mb-3 no-bg-border">
             <h3 className="rumaila-font text-xl flex items-center justify-center">
@@ -1360,11 +1473,11 @@ const LightCard = ({ cardData = {} }) => {
         </div>
       )}
 
-      {/* Brand Label - FIXED: Shows in Profile tab for Business Premium */}
+      {/* Brand Label - Only for BusinessPremium */}
       {renderBrandLabel()}
 
-      {/* Profile Video */}
-      {profileData.profileVideo?.url && (
+      {/* Profile Video - Only show if feature allowed */}
+      {checkFeature('Profile Video') && profileData.profileVideo?.url && (
         <div>
           <div className="mb-3 no-bg-border">
             <h3 className="rumaila-font text-xl flex items-center justify-center">
@@ -1383,11 +1496,13 @@ const LightCard = ({ cardData = {} }) => {
     </div>
   );
 
+  // ServicesTab Component
   const ServicesTab = () => {
-    const hasServices = profileData.services?.length > 0;
-    const hasProducts = profileData.products?.length > 0;
-    const hasCatalog = !!profileData.catalog;
-    const hasProductVideo = !!profileData.productVideo?.url;
+    const hasServices = checkFeature('Services/Provision') && profileData.services?.length > 0;
+    const hasProducts = checkFeature('Services/Provision') && profileData.products?.length > 0;
+    const hasCatalog = checkFeature('Product/Catalog [PDF]') && !!profileData.catalog;
+    const hasProductVideo = checkFeature('Product Video') && !!profileData.productVideo?.url;
+    const hasIndividualDisplay = checkFeature('Individual Product Display');
 
     if (!hasServices && !hasProducts && !hasCatalog && !hasProductVideo) {
       return (
@@ -1400,7 +1515,7 @@ const LightCard = ({ cardData = {} }) => {
 
     return (
       <div className="space-y-6 px-4 pt-4 pb-4 mt-5">
-        {/* Catalog - FIXED: Shows in Services tab only */}
+        {/* Catalog */}
         {hasCatalog && renderCatalog()}
 
         {/* Product Video */}
@@ -1529,40 +1644,66 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
+  // ContactTab Component
   const ContactTab = () => {
     const primaryPhone = profileData.phones.find(phone => phone.isPrimary) || profileData.phones[0];
+    const primaryEmail = profileData.emails.find(email => email.isPrimary) || profileData.emails[0];
     
     return (  
       <div className="space-y-6 px-4 pt-4 pb-4">
-        {/* Multiple Emails */}
-        {profileData.emails.length > 0 && (
+        {/* Email Section */}
+        {profileData.email && (
           <div className="mb-4 mt-5">
+            <div className="flex items-center justify-center mb-2">
+              <FaEnvelope className="w-5 h-5 text-blue-400 mr-2" />
+              <h3 className="rumaila-font text-lg">Email</h3>
+            </div>
+            <button
+              onClick={() => handleContact("email", profileData.email)}
+              className="w-full bg-white/5 hover:bg-white/10 text-left p-3 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-between"
+            >
+              <div className="flex items-center">
+                <FaEnvelope className="w-4 h-4 text-blue-400 mr-2" />
+                <span className="casper-font text-sm">Primary Email</span>
+              </div>
+              <span className="casper-font text-sm truncate ml-2">{profileData.email}</span>
+            </button>
+          </div>
+        )}
+
+        {/* Multiple Emails */}
+        {profileData.emails.length > 0 && profileData.emails.some(email => email.address && email.address.trim()) && (
+          <div className="mb-4">
             <div className="flex items-center justify-center mb-2">
               <FaEnvelope className="w-5 h-5 text-blue-400 mr-2" />
               <h3 className="rumaila-font text-lg">Email Addresses</h3>
             </div>
             <div className="space-y-2">
-              {profileData.emails.map((email, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleContact("email", email.address)}
-                  className="w-full bg-white/5 hover:bg-white/10 text-left p-3 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-between"
-                >
-                  <div className="flex items-center">
-                    <FaEnvelope className="w-4 h-4 text-blue-400 mr-2" />
-                    <span className="casper-font text-sm">{email.label || "Email"}</span>
-                  </div>
-                  <span className="casper-font text-sm truncate ml-2">{email.address}</span>
-                </button>
-              ))}
+              {profileData.emails
+                .filter(email => email.address && email.address.trim())
+                .map((email, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleContact("email", email.address)}
+                    className="w-full bg-white/5 hover:bg-white/10 text-left p-3 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-between"
+                  >
+                    <div className="flex items-center">
+                      <FaEnvelope className="w-4 h-4 text-blue-400 mr-2" />
+                      <span className="casper-font text-sm">
+                        {email.label || (email.isPrimary ? "Primary" : `Email ${index + 1}`)}
+                      </span>
+                    </div>
+                    <span className="casper-font text-sm truncate ml-2">{email.address}</span>
+                  </button>
+                ))}
             </div>
           </div>
         )}
 
-        {/* Virtual Number - FIXED: Shows here */}
+        {/* Virtual Number */}
         {renderVirtualNumber()}
 
-        {/* Business Hours - FIXED: Shows here only (not in Profile) */}
+        {/* Business Hours */}
         {renderBusinessHours()}
 
         {/* Quick Actions */}
@@ -1586,9 +1727,9 @@ const LightCard = ({ cardData = {} }) => {
             )}
 
             {/* Email Button */}
-            {profileData.email && profileData.enableEmail && (
+            {primaryEmail?.address && profileData.enableEmail && (
               <button
-                onClick={() => handleContact("email", profileData.email)}
+                onClick={() => handleContact("email", primaryEmail.address)}
                 className="flex-1 bg-gray-800 hover:bg-gray-900 text-white rounded-xl py-4 px-4 flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-105 text-sm"
               >
                 <FaEnvelope className="w-5 h-5 mr-2" />
@@ -1597,7 +1738,7 @@ const LightCard = ({ cardData = {} }) => {
             )}
 
             {/* Website Button */}
-            {profileData.websites.length > 0 && (
+            {profileData.websites.length > 0 && profileData.websites[0].url && (
               <button
                 onClick={() => handleContact("website", profileData.websites[0].url)}
                 className="flex-1 bg-gray-800 hover:bg-gray-900 text-white rounded-xl py-4 px-4 flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-105 text-sm"
@@ -1670,9 +1811,10 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
+  // GalleryTab Component
   const GalleryTab = () => {
-    const hasGallery = profileData.gallery.length > 0;
-    const hasVideos = profileData.videos.length > 0;
+    const hasGallery = checkFeature('Product Showcase/Gallery/Portfolio') && profileData.gallery.length > 0;
+    const hasVideos = checkFeature('Videos') && profileData.videos.length > 0;
     
     if (!hasGallery && !hasVideos) {
       return (
@@ -1715,16 +1857,17 @@ const LightCard = ({ cardData = {} }) => {
     );
   };
 
+  // MoreTab Component
   const MoreTab = () => {
-    const hasTestimonials = profileData.testimonials.length > 0;
-    const hasClientList = profileData.clientList.length > 0;
-    const hasDownloads = profileData.downloads.length > 0;
-    const hasInteractiveElements = profileData.interactiveElements.length > 0;
-    const hasQRCode = !!profileData.dynamicQRCode?.targetUrl;
-    const hasNFC = !!profileData.nfcSettings?.isEnabled;
-    const hasShare = !!profileData.shareableUrl;
-    const hasChatAssistant = !!profileData.chatAssistant?.isEnabled;
-    const hasLiveChat = !!profileData.liveChat?.isEnabled;
+    const hasTestimonials = checkFeature('Testimonials') && profileData.testimonials.length > 0;
+    const hasClientList = checkFeature('Testimonials / Client List') && profileData.clientList.length > 0;
+    const hasDownloads = checkFeature('Downloads') && profileData.downloads.length > 0;
+    const hasInteractiveElements = checkFeature('Interactive Elements') && profileData.interactiveElements.length > 0;
+    const hasQRCode = checkFeature('Dynamic QR Code') && !!profileData.dynamicQRCode;
+    const hasNFC = checkFeature('NFC Card Development with Print') && !!profileData.nfcSettings?.isEnabled;
+    const hasShare = checkFeature('Share') && !!profileData.shareableUrl;
+    const hasChatAssistant = checkFeature('Chat Assistant') && !!profileData.chatAssistant?.isEnabled;
+    const hasLiveChat = checkFeature('Live Chat – WhatsApp / Messages') && !!profileData.liveChat?.isEnabled;
 
     const hasContent = hasTestimonials || hasClientList || hasDownloads || 
                       hasInteractiveElements || hasQRCode || hasNFC || hasShare ||
@@ -1741,8 +1884,11 @@ const LightCard = ({ cardData = {} }) => {
 
     return (
       <div className="space-y-6 px-4 pt-4 pb-4">
-        {/* Share Button - FIXED: Shows in More tab only */}
+        {/* Share Button */}
         {hasShare && renderShareButton()}
+
+        {/* QR Code */}
+        {hasQRCode && renderQRCode()}
 
         {/* Chat Assistant */}
         {hasChatAssistant && renderChatAssistant()}
@@ -1899,34 +2045,6 @@ const LightCard = ({ cardData = {} }) => {
           </div>
         )}
 
-        {/* QR Code */}
-        {hasQRCode && (
-          <div>
-            <div className="mb-4 no-bg-border">
-              <h3 className="rumaila-font text-xl flex items-center justify-center">
-                <FaQrcode className="w-5 h-5 text-blue-400 mr-2" />
-                QR Code
-              </h3>
-            </div>
-            <div className="flex justify-center">
-              <div className="p-4 bg-white/10 rounded-xl">
-                {profileData.dynamicQRCode.qrImage ? (
-                  <img
-                    src={profileData.dynamicQRCode.qrImage}
-                    alt="QR Code"
-                    className="w-32 h-32 object-contain"
-                  />
-                ) : (
-                  <div className="w-32 h-32 bg-white/10 flex items-center justify-center text-gray-400 rounded-lg">
-                    QR Code
-                  </div>
-                )}
-              </div>
-            </div>
-            <p className="casper-font text-center text-sm mt-3">Scan to save contact</p>
-          </div>
-        )}
-
         {/* NFC Card */}
         {hasNFC && renderNFCCard()}
       </div>
@@ -1934,57 +2052,84 @@ const LightCard = ({ cardData = {} }) => {
   };
 
   const primaryPhone = profileData.phones.find(phone => phone.isPrimary) || profileData.phones[0];
+  const primaryEmail = profileData.emails.find(email => email.isPrimary) || profileData.emails[0];
 
   return (
-    <div className="mobile-container">
-      <div className="tab-content-wrapper h-full">
-        {/* Tab Content - Scrollable with specific content for each tab */}
-        <div className="tab-content relative">
-          {activeTab === 'profile' && <ProfileTab />}
-          {activeTab === 'services' && <ServicesTab />}
-          {activeTab === 'contact' && <ContactTab />}
-          {activeTab === 'gallery' && <GalleryTab />}
-          {activeTab === 'more' && <MoreTab />}
-        </div>
+    <>
+      {/* QR Code Modal */}
+      {renderQRCodeModal()}
+      
+      <div className="mobile-container">
+        <div className="tab-content-wrapper h-full">
+          {/* Tab Content - Scrollable with specific content for each tab */}
+          <div className="tab-content relative">
+            {activeTab === 'profile' && <ProfileTab />}
+            {activeTab === 'services' && <ServicesTab />}
+            {activeTab === 'contact' && <ContactTab />}
+            {activeTab === 'gallery' && <GalleryTab />}
+            {activeTab === 'more' && <MoreTab />}
+          </div>
 
-        {/* Bottom Navigation Bar - Sticky inside container */}
-        <div className="sticky-bottom-nav safe-area-bottom">
-          <div className="backdrop-blur-xl border-t border-white/10">
-            <div className="flex justify-between items-center px-4 py-3">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex flex-col items-center justify-center transition-all duration-300 ${
-                    activeTab === tab.id 
-                      ? 'text-blue-400 transform scale-110' 
-                      : 'text-white/60 hover:text-white'
-                  }`}
-                  title={tab.tooltip}
-                >
-                  <tab.icon className="w-5 h-5 mb-1" />
-                  <span className="text-[10px] truncate max-w-12 casper-font">
-                    {tab.label}
-                  </span>
-                </button>
-              ))}
+          {/* Bottom Navigation Bar - Sticky inside container */}
+          <div className="sticky-bottom-nav safe-area-bottom">
+            <div className="backdrop-blur-xl border-t border-white/10">
+              <div className="flex justify-between items-center px-4 py-3">
+                {tabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex flex-col items-center justify-center transition-all duration-300 ${
+                      activeTab === tab.id 
+                        ? 'text-blue-400 transform scale-110' 
+                        : 'text-white/60 hover:text-white'
+                    }`}
+                    title={tab.tooltip}
+                  >
+                    <tab.icon className="w-5 h-5 mb-1" />
+                    <span className="text-[10px] truncate max-w-12 casper-font">
+                      {tab.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Fixed Call Button - Inside container at fixed position */}
-        {primaryPhone && (
-          <div className="absolute bottom-24 right-4 z-20">
-            <button
-              onClick={() => handleContact("phone", primaryPhone.number)}
-              className="w-14 h-14 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-3xl transition-all transform hover:scale-110 border border-green-400/30"
-            >
-              <FaPhoneAlt className="w-6 h-6" />
-            </button>
+          {/* Fixed Contact Buttons - INCREASED SIZE to w-12 h-12 */}
+          <div className="absolute bottom-24 right-4 z-20 flex flex-col space-y-3">
+            {/* Call Button */}
+            {primaryPhone && profileData.enableOneTapCall && (
+              <button
+                onClick={() => handleContact("phone", primaryPhone.number)}
+                className="w-12 h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-3xl transition-all transform hover:scale-110 border border-green-400/30"
+              >
+                <FaPhoneAlt className="w-4 h-4" />
+              </button>
+            )}
+            
+            {/* Email Button */}
+            {(primaryEmail?.address || profileData.email) && profileData.enableEmail && (
+              <button
+                onClick={() => handleContact("email", primaryEmail?.address || profileData.email)}
+                className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-3xl transition-all transform hover:scale-110 border border-red-400/30"
+              >
+                <FaEnvelope className="w-4 h-4" />
+              </button>
+            )}
+            
+            {/* WhatsApp Button */}
+            {primaryPhone && profileData.enableWhatsApp && (
+              <button
+                onClick={() => handleContact("whatsapp", primaryPhone.number)}
+                className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-3xl transition-all transform hover:scale-110 border border-green-400/30"
+              >
+                <FaWhatsapp className="w-4 h-4" />
+              </button>
+            )}
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

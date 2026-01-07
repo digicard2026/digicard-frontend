@@ -7,7 +7,6 @@ const SubscriptionPlans = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [billingCycle, setBillingCycle] = useState('monthly'); // monthly or yearly
 
   useEffect(() => {
     fetchPlans();
@@ -140,12 +139,17 @@ const SubscriptionPlans = () => {
       .join(' ');
   };
 
-  const calculateMonthlyPrice = (price, durationDays) => {
-    return Math.round((price / (durationDays / 30)) * 100) / 100;
+  const getDisplayPrice = (plan) => {
+    return plan.price;
   };
 
-  const calculateYearlyPrice = (price, durationDays) => {
-    return Math.round((price / (durationDays / 365)) * 100) / 100;
+  const getBillingFrequencyText = (plan) => {
+    const durationMap = {
+      'monthly': 'per month',
+      'six_months': 'every 6 months',
+      'yearly': 'per year'
+    };
+    return durationMap[plan.duration] || 'per period';
   };
 
   const getCategoryColor = (category) => {
@@ -267,32 +271,6 @@ const SubscriptionPlans = () => {
           </div>
         </div>
 
-        {/* Billing Toggle */}
-        <div className="flex justify-center items-center mb-12">
-          <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-gray-900' : 'text-gray-500'}`}>
-            Monthly
-          </span>
-          <button
-            onClick={() => setBillingCycle(prev => prev === 'monthly' ? 'yearly' : 'monthly')}
-            className="mx-4 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
-            style={{ backgroundColor: billingCycle === 'yearly' ? '#2563eb' : '#d1d5db' }}
-          >
-            <span
-              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                billingCycle === 'yearly' ? 'translate-x-5' : 'translate-x-0'
-              }`}
-            />
-          </button>
-          <span className={`text-sm font-medium ${billingCycle === 'yearly' ? 'text-gray-900' : 'text-gray-500'}`}>
-            Yearly
-          </span>
-          {billingCycle === 'yearly' && (
-            <span className="ml-3 inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
-              Save up to 20%
-            </span>
-          )}
-        </div>
-
         {/* Error Message */}
         {error && (
           <div className="mb-8 rounded-lg bg-red-50 p-4">
@@ -315,9 +293,7 @@ const SubscriptionPlans = () => {
             const categoryColor = getCategoryColor(plan.category);
             const features = getFeaturesForPlan(plan.category);
             const savings = getSavingsPercentage(plan);
-            const displayPrice = billingCycle === 'monthly' 
-              ? calculateMonthlyPrice(plan.price, plan.durationDays)
-              : calculateYearlyPrice(plan.price, plan.durationDays);
+            const displayPrice = getDisplayPrice(plan);
             
             return (
               <div
@@ -325,7 +301,7 @@ const SubscriptionPlans = () => {
                 className={`relative rounded-2xl shadow-lg overflow-hidden border ${categoryColor.border} hover:shadow-xl transition-shadow duration-300`}
               >
                 {/* Badge for savings */}
-                {savings && billingCycle === 'yearly' && (
+                {savings && (
                   <div className="absolute top-4 right-4 z-10">
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
                       Save {savings}%
@@ -342,16 +318,25 @@ const SubscriptionPlans = () => {
                     </div>
                   </div>
                   
-                  {/* Price */}
-                  <div className="mt-6 flex items-baseline">
-                    <span className="text-5xl font-extrabold">₹{displayPrice}</span>
-                    <span className="ml-2 text-xl text-blue-100">
-                      /{billingCycle === 'monthly' ? 'month' : 'year'}
-                    </span>
+                  {/* Price - Showing full amount with smaller frequency text */}
+                  <div className="mt-6">
+                    <div className="flex items-baseline flex-wrap">
+                      <span className="text-5xl font-extrabold">₹{displayPrice}</span>
+                      <div className="flex items-baseline ml-2">
+                        <span className="text-lg text-blue-100">/</span>
+                        <span className="text-base text-blue-100 ml-1 whitespace-nowrap">
+                          {getBillingFrequencyText(plan)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                   
-                  <p className="mt-2 text-blue-100">
-                    Billed ₹{plan.price} every {plan.durationDays} days
+                  <p className="mt-2 text-blue-100 text-sm">
+                    {plan.duration === 'monthly' 
+                      ? 'Billed monthly' 
+                      : plan.duration === 'six_months' 
+                        ? 'Billed every 6 months' 
+                        : 'Billed annually'}
                   </p>
                 </div>
 
@@ -393,11 +378,11 @@ const SubscriptionPlans = () => {
                     </div>
                   </div>
 
-                  {/* Subscribe Button */}
+                  {/* Pay Button */}
                   <button
                     className={`w-full py-3 px-6 rounded-lg font-semibold text-white transition-all duration-300 ${categoryColor.bg} hover:opacity-90 hover:shadow-md`}
                   >
-                    Get Started
+                    Pay 
                   </button>
 
                   {/* Additional CTA */}

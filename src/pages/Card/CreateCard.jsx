@@ -5763,10 +5763,12 @@ const cleanFormData = (data) => {
     
     // Profile Page Fields
     ...(data.profileVideo?.url && { 
-      profileVideo: data.profileVideo.url, // Store only the URL string for MongoDB
-      profileVideoThumbnail: data.profileVideo.thumbnail,
-      profileVideoTitle: data.profileVideo.title,
-      profileVideoUploadType: data.profileVideo.uploadType
+      profileVideo: {
+        url: data.profileVideo.url,
+        thumbnail: data.profileVideo.thumbnail || "",
+        title: data.profileVideo.title || "",
+        uploadType: data.profileVideo.uploadType || 'url'
+      }
     }),
     ...(data.tagline && { tagline: data.tagline }),
     ...(data.aboutText && { aboutText: data.aboutText }),
@@ -5786,11 +5788,19 @@ const cleanFormData = (data) => {
     ...(data.catalog && { catalog: data.catalog }),
     ...(data.catalogPDF && { catalogPDF: data.catalogPDF }),
     // Product Video - Store as string for MongoDB
-    ...(data.productVideo?.url && { 
-      productVideo: data.productVideo.url, // Store only the URL string
-      productVideoThumbnail: data.productVideo.thumbnail,
-      productVideoTitle: data.productVideo.title,
-      productVideoUploadType: data.productVideo.uploadType
+    // ...(data.productVideo?.url && { 
+    //   productVideo: data.productVideo.url, // Store only the URL string
+    //   productVideoThumbnail: data.productVideo.thumbnail,
+    //   productVideoTitle: data.productVideo.title,
+    //   productVideoUploadType: data.productVideo.uploadType
+    // }),
+     ...(data.productVideo?.url && {
+      productVideo: {
+        url: data.productVideo.url,
+        thumbnail: data.productVideo.thumbnail || "",
+        title: data.productVideo.title || "",
+        uploadType: data.productVideo.uploadType || 'url'
+      }
     }),
     ...(data.virtualNumber && { virtualNumber: data.virtualNumber }),
     ...(data.individualProductDisplay && { individualProductDisplay: data.individualProductDisplay }),

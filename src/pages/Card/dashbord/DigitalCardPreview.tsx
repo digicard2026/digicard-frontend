@@ -315,11 +315,11 @@ export function DigitalCardPreview({ card, onView, onEdit, onShare }: DigitalCar
           <CardIcon className="w-3 h-3" />
           {config.label}
         </Badge>
-        {isOnTrial && (
+        {/* {isOnTrial && (
           <Badge variant="outline" className="bg-card/95 backdrop-blur-sm text-xs font-medium  text-white">
             {card.trialDaysLeft} days trial left
           </Badge>
-        )}
+        )} */}
       </div>
 
       {/* Card Preview */}

@@ -124,7 +124,7 @@ const SignIn = () => {
       
       <div className="relative flex flex-col w-full overflow-hidden xl:flex-row to-custom-800 bg-gradient-to-r from-custom-900 dark:to-custom-900 dark:from-custom-950">
         <ModernImage />
-        <div className="min-h-[calc(100vh_-_theme('spacing.4')_*_2)] mx-3 lg:w-[40rem] shrink-0 px-6 py-6 flex items-center justify-center m-4 bg-white dark:bg-zink-800 rounded-lg z-10 relative dark:text-zink-100 md:mx-auto xl:mx-4 dark:border-zink-700 shadow-lg">
+        <div className="min-h-[calc(100vh_-_theme('spacing.4')_*_2)] mx-3 lg:w-[35rem] shrink-0 px-6 py-6 flex items-center justify-center m-4 bg-white dark:bg-zink-800 rounded-lg z-10 relative dark:text-zink-100 md:mx-auto xl:mx-4 dark:border-zink-700 shadow-lg">
           <div className="flex flex-col w-full h-full justify-center">
             <div className="w-full max-w-xs mx-auto">
               {/* Header */}

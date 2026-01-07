@@ -320,7 +320,6 @@
 // };
 
 // export default Indexs;
-
 import { CreditCard, Eye, Share2, Lock } from "lucide-react";
 import { StatsCard } from "./StatsCard";
 import { DigitalCardPreview, Card, CardType } from "./DigitalCardPreview";
@@ -428,9 +427,9 @@ const Indexs = () => {
 
   const getDefaultPriceForPlan = (planType: string) => {
     switch (planType) {
-      case "Personal": return "$5/month";
-      case "Business": return "$15/month";
-      case "Business Premium": return "$29/month";
+      case "Personal": return "₹500/month";
+      case "Business": return "₹800/month";
+      case "Business Premium": return "₹1200/month";
       default: return "Free";
     }
   };
@@ -667,6 +666,14 @@ const Indexs = () => {
       )}
 
       <main className="ml-2 p-8">
+        {/* Welcome Message */}
+        <header className="mb-8 animate-fade-in">
+          <h1 className="text-3xl font-bold text-foreground">Welcome back, {userName}!</h1>
+          <p className="text-muted-foreground mt-1">
+            Manage your digital business cards and track your networking success.
+          </p>
+        </header>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[
@@ -685,7 +692,6 @@ const Indexs = () => {
           subscriptionData={subscriptionData}
           remainingDays={getRemainingDays()}
           cardsUsed={stats.totalCards}
-          maxCards={maxCards}
           userCards={rawCardsArray}
           onUpgrade={handleUpgradeSubscription}
         />
@@ -696,7 +702,7 @@ const Indexs = () => {
             <div>
               <h2 className="text-xl font-bold text-foreground">Your Cards</h2>
               <p className="text-sm text-muted-foreground">
-                {cards.length} of {maxCards} cards used • {subscriptionData?.planType || "Free"} Plan
+                {/* {cards.length} of {maxCards} cards used • {subscriptionData?.planType || "Free"} Plan */}
               </p>
             </div>
           </div>
