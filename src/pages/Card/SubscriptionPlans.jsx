@@ -697,4 +697,4 @@ const SubscriptionPlans = () => {
   );
 };
 
-export default SubscriptionPlans;
+export default SubscriptionPlans; 

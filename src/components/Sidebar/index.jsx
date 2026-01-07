@@ -1013,7 +1013,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           <div className="mt-6 p-4 border-t border-slate-200 dark:border-slate-800">
             <div className="flex items-center gap-3">
               {/* User Profile Picture */}
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 overflow-hidden border-2 border-blue-100 dark:border-blue-900">
+              {/* <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 overflow-hidden border-2 border-blue-100 dark:border-blue-900">
                 {userData.photo ? (
                   <img 
                     src={userData.photo} 
@@ -1029,10 +1029,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     {userData.name?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 )}
-              </div>
+              </div> */}
               
               {/* User Info (only shows when sidebar is expanded) */}
-              {showText && userData.email && (
+              {/* {showText && userData.email && (
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
                     {userData.name}
@@ -1041,7 +1041,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     {userData.email}
                   </p>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
         </div>
