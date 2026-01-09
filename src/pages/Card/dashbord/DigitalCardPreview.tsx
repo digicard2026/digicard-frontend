@@ -251,19 +251,19 @@ const cardTypeConfig: Record<CardType, {
     label: "Personal", 
     icon: User, 
     color: "bg-blue-500/90", 
-    price: "$5/mo" 
+    price: "" 
   },
   "Business": { 
     label: "Business", 
     icon: Building, 
     color: "bg-violet-500/90", 
-    price: "$15/mo" 
+    price: "" 
   },
   "Business Premium": { 
     label: "Premium", 
     icon: Gem, 
     color: "bg-amber-500/90", 
-    price: "$29/mo" 
+    price: "" 
   },
 };
 

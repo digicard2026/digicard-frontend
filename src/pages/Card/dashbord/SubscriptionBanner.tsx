@@ -54,7 +54,7 @@ const defaultPlanDetails: PlanDetails = {
     color: "#3b82f6",
   },
   Business: {
-    name: "Business Plan",
+    name: "",
     price: "",
     description: "Ideal for professionals and small teams.",
     features: [""],
@@ -62,7 +62,7 @@ const defaultPlanDetails: PlanDetails = {
     color: "#8b5cf6",
   },
   "Business Premium": {
-    name: "Premium Plan",
+    name: "",
     price: "",
     description: "Unlimited power for growing businesses.",
     features: [""],
@@ -631,17 +631,17 @@ export function SubscriptionBanner({
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
               <div
                 style={{
-                  padding: "0.375rem 0.75rem",
-                  backgroundColor: plan === "Personal" ? "rgba(147,197,253,0.2)" : "#ffffff",
-                  border: plan === "Personal" ? "1px solid rgba(59,130,246,0.3)" : "1px solid #d1d5db",
-                  borderRadius: 12,
-                  fontSize: "0.75rem",
-                  color: plan === "Personal" ? "#2563eb" : "#111827",
-                  fontWeight: 600,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  minWidth: 120,
+                  // padding: "0.375rem 0.75rem",
+                  // backgroundColor: plan === "Personal" ? "rgba(147,197,253,0.2)" : "#ffffff",
+                  // border: plan === "Personal" ? "1px solid rgba(59,130,246,0.3)" : "1px solid #d1d5db",
+                  // borderRadius: 12,
+                  // fontSize: "0.75rem",
+                  // color: plan === "Personal" ? "#2563eb" : "#111827",
+                  // fontWeight: 600,
+                  // display: "flex",
+                  // flexDirection: "column",
+                  // alignItems: "flex-start",
+                  // minWidth: 120,
                 }}
               >
                 <div>{planDetails.Personal.name}</div>
@@ -655,17 +655,17 @@ export function SubscriptionBanner({
               </div>
               <div
                 style={{
-                  padding: "0.375rem 0.75rem",
-                  backgroundColor: plan === "Business" ? "rgba(147,197,253,0.2)" : "#ffffff",
-                  border: plan === "Business" ? "1px solid rgba(59,130,246,0.3)" : "1px solid #d1d5db",
-                  borderRadius: 12,
-                  fontSize: "0.75rem",
-                  color: plan === "Business" ? "#2563eb" : "#111827",
-                  fontWeight: 600,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  minWidth: 120,
+                  // padding: "0.375rem 0.75rem",
+                  // backgroundColor: plan === "Business" ? "rgba(147,197,253,0.2)" : "#ffffff",
+                  // border: plan === "Business" ? "1px solid rgba(59,130,246,0.3)" : "1px solid #d1d5db",
+                  // borderRadius: 12,
+                  // fontSize: "0.75rem",
+                  // color: plan === "Business" ? "#2563eb" : "#111827",
+                  // fontWeight: 600,
+                  // display: "flex",
+                  // flexDirection: "column",
+                  // alignItems: "flex-start",
+                  // minWidth: 120,
                 }}
               >
                 <div>{planDetails.Business.name}</div>
@@ -679,17 +679,17 @@ export function SubscriptionBanner({
               </div>
               <div
                 style={{
-                  padding: "0.375rem 0.75rem",
-                  backgroundColor: plan === "Business Premium" ? "rgba(147,197,253,0.2)" : "#ffffff",
-                  border: plan === "Business Premium" ? "1px solid rgba(59,130,246,0.3)" : "1px solid #d1d5db",
-                  borderRadius: 12,
-                  fontSize: "0.75rem",
-                  color: plan === "Business Premium" ? "#2563eb" : "#111827",
-                  fontWeight: 600,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  minWidth: 120,
+                  // padding: "0.375rem 0.75rem",
+                  // backgroundColor: plan === "Business Premium" ? "rgba(147,197,253,0.2)" : "#ffffff",
+                  // border: plan === "Business Premium" ? "1px solid rgba(59,130,246,0.3)" : "1px solid #d1d5db",
+                  // borderRadius: 12,
+                  // fontSize: "0.75rem",
+                  // color: plan === "Business Premium" ? "#2563eb" : "#111827",
+                  // fontWeight: 600,
+                  // display: "flex",
+                  // flexDirection: "column",
+                  // alignItems: "flex-start",
+                  // minWidth: 120,
                 }}
               >
                 <div>{planDetails["Business Premium"].name}</div>
@@ -698,7 +698,7 @@ export function SubscriptionBanner({
                   fontSize: "0.7rem",
                   marginTop: 2
                 }}>
-                  {planDetails["Business Premium"].price}
+                  {/* {planDetails["Business Premium"].price} */}
                 </div>
               </div>
             </div>
