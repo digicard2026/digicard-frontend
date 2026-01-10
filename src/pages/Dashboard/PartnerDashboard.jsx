@@ -51,7 +51,7 @@ const PartnerDashboard = () => {
       }
 
       // Fetch partner profile by userId (adjust endpoint if your backend differs)
-      const partnerRes = await fetch(`${API_URL}/api/v1/partner/profile/${userId}`
+      const partnerRes = await fetch(`${API_URL}/api/v1/franchise-partner/profile/${userId}`
 
       );
       if (!partnerRes.ok) {
@@ -80,7 +80,7 @@ const PartnerDashboard = () => {
       // Try fetch customers list using partner user id endpoint or fallback to partner.customers
       let customersList = [];
       // Preferred endpoint: returns { success, data: { customers: [...], total } }
-      const customersRes = await fetch(`${API_URL}/api/v1/partner/${partnerUserId}/customers`
+      const customersRes = await fetch(`${API_URL}/api/v1/franchise-partner/${partnerUserId}/customers`
       );
       if (customersRes.ok) {
         const customersJson = await customersRes.json();
@@ -140,7 +140,7 @@ const PartnerDashboard = () => {
 
 // In PartnerDashboard.jsx - update the handleAddCustomer function
 const handleAddCustomer = () => {
-  navigate("/choose-plan", { 
+  navigate("/", { 
     state: { 
       createdBy: partnerInfo.partnerUserId,
       fromPartnerDashboard: true // Add this flag
