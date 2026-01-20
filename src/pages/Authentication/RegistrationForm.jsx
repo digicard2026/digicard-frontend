@@ -707,7 +707,7 @@ const RegistrationForm = () => {
                 {franchiseCreatedBy && ' You are now linked to your franchise.'}
               </p>
               <button
-                onClick={() => window.location.href = '/signin/franchise'}
+                onClick={() => window.location.href = '/signin/partner'}
                 className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 font-semibold transition-all duration-200"
               >
                 Go to Login

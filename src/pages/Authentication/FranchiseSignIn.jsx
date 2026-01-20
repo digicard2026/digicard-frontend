@@ -435,7 +435,7 @@ const FranchiseSignIn = () => {
               <div className="text-center pt-8 mt-2">
                 <p className="text-gray-700 dark:text-zink-300 text-sm">
                   Don't have any account?{" "}
-                  <Link to="/signup" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+                  <Link to="/signup/partner" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
                     Sign Up
                   </Link>
                 </p>
