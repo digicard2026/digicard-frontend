@@ -10,7 +10,7 @@ import Modern from "../../assets/images/tailwickComp/Modern";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const Signup = () => {
+const  PartnerSignUp = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -76,7 +76,7 @@ const Signup = () => {
           password: values.password,
           confirmPassword: values.confirmPassword,
           createdBy: franchiseContext?.createdBy,
-          selectedPlan: location.state?.selectedPlan,
+        //   selectedPlan: location.state?.selectedPlan,
         }),
       });
 
@@ -126,15 +126,15 @@ const Signup = () => {
   const handleContinue = () => {
     if (franchiseContext) {
       navigate("/signin/partner");
-    } else if (location.state?.selectedPlan) {
-      navigate("/create", {
-        state: {
-          selectedPlan: location.state.selectedPlan,
-          userEmail,
-          createdBy: location.state?.createdBy || "",
-          fromPartnerDashboard: location.state?.fromPartnerDashboard || false,
-        },
-      });
+    // } else if (location.state?.selectedPlan) {
+    //   navigate("/create", {
+    //     state: {
+    //       selectedPlan: location.state.selectedPlan,
+    //       userEmail,
+    //       createdBy: location.state?.createdBy || "",
+    //       fromPartnerDashboard: location.state?.fromPartnerDashboard || false,
+    //     },
+    //   });
     } else {
       navigate("/signin/partner");
     }
@@ -191,7 +191,7 @@ const Signup = () => {
                 <div className="text-center pt-8 mt-2">
                   <p className="text-gray-700 dark:text-zink-300 text-sm">
                     Already have an account?{" "}
-                    <Link to="/signin" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+                    <Link to="/signin/partner" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
                       Sign In
                     </Link>
                   </p>
@@ -373,4 +373,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default PartnerSignUp;
