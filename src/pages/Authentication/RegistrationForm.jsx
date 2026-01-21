@@ -22,14 +22,14 @@ const step1Validation = Yup.object({
 });
 
 const step2Validation = Yup.object({
-  salutation: Yup.string().required('Salutation is required'),
+  salutation: Yup.string(),
   firstName: Yup.string().required('First name is required'),
   middleName: Yup.string(),
   lastName: Yup.string().required('Last name is required'),
   dateOfBirth: Yup.date().required('Date of birth is required'),
   gender: Yup.string().required('Gender is required'),
-  personalContact: Yup.string().matches(/^[0-9]{10}$/, 'Phone number must be 10 digits').required('Personal contact is required'),
-  personalEmail: Yup.string().email('Invalid email address').required('Email is required'),
+  personalContact: Yup.string().matches(/^[0-9]{10}$/, 'Phone number must be 10 digits'),
+  personalEmail: Yup.string().email('Invalid email address'),
   aadharNumber: Yup.string().matches(/^[0-9]{12}$/, 'Aadhar must be 12 digits').required('Aadhar number is required'),
   panNumber: Yup.string().matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN number').required('PAN number is required'),
   addressLine1: Yup.string().required('Address line 1 is required'),

@@ -315,14 +315,26 @@ export const SuccessIcon = () => (
 
 const agreementUrl = "https://digicard-backend.s3.eu-north-1.amazonaws.com/cards/Partner+agreement.pdf";
 
-  const handleDownloadAgreement = () => {
-    const link = document.createElement("a");
-    link.href = agreementUrl;
-    link.download = "Partner_Agreement.pdf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  // const handleDownloadAgreement = () => {
+  //   const link = document.createElement("a");
+  //   link.href = agreementUrl;
+  //   link.download = "Partner_Agreement.pdf";
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
+
+const handleDownloadAgreement = () => {
+  const link = document.createElement("a");
+  link.href = agreementUrl;
+  link.target = "_blank";        // open in new tab
+  link.rel = "noopener noreferrer";
+  link.download = "Partner_Agreement.pdf"; // still allows download
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 
 // Step Content Component
 export const StepContent = ({ currentStep, disabled, userContext, franchiseCreatedBy, formData, lastSaved, commonProps }) => {
@@ -457,14 +469,14 @@ export const StepContent = ({ currentStep, disabled, userContext, franchiseCreat
       return (
         <>
           <SectionWrapper title="Personal Details" icon={<UserIcon />}>
-            <SelectField label="Salutation" name="salutation" options={['Mr', 'Mrs', 'Ms', 'Dr']} required {...commonProps} />
+            <SelectField label="Salutation" name="salutation" options={['Mr', 'Mrs', 'Ms', 'Dr']} {...commonProps} />
             <InputField label="First Name" name="firstName" required {...commonProps} />
             <InputField label="Middle Name" name="middleName" {...commonProps} />
             <InputField label="Last Name" name="lastName" required {...commonProps} />
             <InputField label="Date of Birth" name="dateOfBirth" type="date" required {...commonProps} />
             <SelectField label="Gender" name="gender" options={['Male', 'Female', 'Other']} required {...commonProps} />
-            <InputField label="Personal Contact" name="personalContact" required {...commonProps} />
-            <InputField label="Personal Email" name="personalEmail" type="email" required {...commonProps} />
+            <InputField label="Personal Contact" name="personalContact" {...commonProps} />
+            <InputField label="Personal Email" name="personalEmail" type="email" {...commonProps} />
             <InputField label="Aadhar Number" name="aadharNumber" required {...commonProps} />
             <InputField label="PAN Number" name="panNumber" required {...commonProps} />
           </SectionWrapper>
