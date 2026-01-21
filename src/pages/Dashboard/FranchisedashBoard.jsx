@@ -1294,7 +1294,7 @@ const FranchiseDashboard = () => {
        
         setFranchiseInfo({
           franchiseId: franchiseUserId,
-          PersonalName: franchise.franchiseDetails?.PersonalName || 'Your Personal',
+          PersonalName: franchise.franchiseDetails?.firstName || 'Your Personal',
           joinDate: franchise.createdAt ? new Date(franchise.createdAt).toLocaleDateString() : 'N/A'
         });
 
