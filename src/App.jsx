@@ -66,6 +66,8 @@ import PartnerDashboard from './pages/Dashboard/PartnerDashboard';
 import CardDashbord from  './pages/Card/dashbord/CardMain';
 
 import SubscriptionPlans from  './pages/Card/SubscriptionPlans';
+import PartnerSignUp from './pages/Authentication/PartnerSignUp';
+
 import PartnerRegistrationPage from './pages/Authentication/PartnerRegistration/PartnerRegistrationPage'
 import SignupForm from './components/SignupForm'
 function App() {
@@ -507,7 +509,7 @@ function App() {
        <Route path="/signin" element={<SignIn/>} />
       <Route path="/choose-plan" element={<PlanSelection />} />
       {/* <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} /> */}
-         <Route path="/signin/franchise" element={<FranchiseSignIn/>} />
+         <Route path="/signin/partner" element={<FranchiseSignIn/>} />
 
       {/* <Route path="/ui" element={<HHome/>} /> */}
      
@@ -591,6 +593,7 @@ function App() {
       <Route path="/card-dashbord" element={ <DefaultLayout> <CardDashbord /> </DefaultLayout> } />
 
         <Route path="/pricing" element={ <DefaultLayout>  <SubscriptionPlans /> </DefaultLayout> } />
+        <Route path="/signup/partner" element={<><PageTitle title="SignUp page" /><PartnerSignUp/> </> } />
            <Route path="/partner-registration" element={<PartnerRegistrationPage />} />
             <Route path="/franchise/signup" element={<SignupForm />} />
 

@@ -313,6 +313,29 @@ export const SuccessIcon = () => (
   </svg>
 );
 
+const agreementUrl = "https://digicard-backend.s3.eu-north-1.amazonaws.com/cards/Partner+agreement.pdf";
+
+  // const handleDownloadAgreement = () => {
+  //   const link = document.createElement("a");
+  //   link.href = agreementUrl;
+  //   link.download = "Partner_Agreement.pdf";
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
+
+const handleDownloadAgreement = () => {
+  const link = document.createElement("a");
+  link.href = agreementUrl;
+  link.target = "_blank";        // open in new tab
+  link.rel = "noopener noreferrer";
+  link.download = "Partner_Agreement.pdf"; // still allows download
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
 // Step Content Component
 export const StepContent = ({ currentStep, disabled, userContext, franchiseCreatedBy, formData, lastSaved, commonProps }) => {
   switch (currentStep) {
@@ -446,14 +469,14 @@ export const StepContent = ({ currentStep, disabled, userContext, franchiseCreat
       return (
         <>
           <SectionWrapper title="Personal Details" icon={<UserIcon />}>
-            <SelectField label="Salutation" name="salutation" options={['Mr', 'Mrs', 'Ms', 'Dr']} required {...commonProps} />
+            <SelectField label="Salutation" name="salutation" options={['Mr', 'Mrs', 'Ms', 'Dr']} {...commonProps} />
             <InputField label="First Name" name="firstName" required {...commonProps} />
             <InputField label="Middle Name" name="middleName" {...commonProps} />
             <InputField label="Last Name" name="lastName" required {...commonProps} />
             <InputField label="Date of Birth" name="dateOfBirth" type="date" required {...commonProps} />
             <SelectField label="Gender" name="gender" options={['Male', 'Female', 'Other']} required {...commonProps} />
-            <InputField label="Personal Contact" name="personalContact" required {...commonProps} />
-            <InputField label="Personal Email" name="personalEmail" type="email" required {...commonProps} />
+            <InputField label="Personal Contact" name="personalContact" {...commonProps} />
+            <InputField label="Personal Email" name="personalEmail" type="email" {...commonProps} />
             <InputField label="Aadhar Number" name="aadharNumber" required {...commonProps} />
             <InputField label="PAN Number" name="panNumber" required {...commonProps} />
           </SectionWrapper>
@@ -469,52 +492,145 @@ export const StepContent = ({ currentStep, disabled, userContext, franchiseCreat
         </>
       );
 
-    case 3:
-      return (
-        <SectionWrapper title="Terms & Conditions" icon={<ShieldIcon />}>
-          <div className="lg:col-span-2 space-y-4">
-            <div className="bg-gray-50 rounded-xl p-6 max-h-80 overflow-y-auto">
-              <h4 className="font-bold text-lg mb-4 text-gray-800">Digital Card Partner Agreement</h4>
-              <div className="space-y-3 text-gray-600">
-                <p>1. Partner agrees to comply with all company policies and procedures.</p>
-                <p>2. Partner shall maintain the highest standards of service quality.</p>
-                <p>3. All transactions must be recorded accurately in the system.</p>
-                <p>4. Partner is responsible for maintaining customer data confidentiality.</p>
-                <p>5. Company reserves the right to terminate partnership for violations.</p>
-                <p>6. Partner fees are non-refundable once paid.</p>
-                <p>7. All disputes shall be subject to jurisdiction of local courts.</p>
-              </div>
+    // case 3:
+    //   return (
+    //     <SectionWrapper title="Terms & Conditions" icon={<ShieldIcon />}>
+    //       <div className="lg:col-span-2 space-y-4">
+    //         <div className="bg-gray-50 rounded-xl p-6 max-h-80 overflow-y-auto">
+    //           <h4 className="font-bold text-lg mb-4 text-gray-800">Digital Card Partner Agreement</h4>
+    //           <div className="space-y-3 text-gray-600">
+    //             <p>1. Partner agrees to comply with all company policies and procedures.</p>
+    //             <p>2. Partner shall maintain the highest standards of service quality.</p>
+    //             <p>3. All transactions must be recorded accurately in the system.</p>
+    //             <p>4. Partner is responsible for maintaining customer data confidentiality.</p>
+    //             <p>5. Company reserves the right to terminate partnership for violations.</p>
+    //             <p>6. Partner fees are non-refundable once paid.</p>
+    //             <p>7. All disputes shall be subject to jurisdiction of local courts.</p>
+    //           </div>
               
-              <h4 className="font-bold text-lg mt-6 mb-4 text-gray-800">Privacy Policy</h4>
-              <p className="text-gray-600">
-                We collect and process your personal information to provide our services. 
-                Your data is protected and will not be shared with third parties without consent.
-              </p>
-            </div>
+    //           <h4 className="font-bold text-lg mt-6 mb-4 text-gray-800">Privacy Policy</h4>
+    //           <p className="text-gray-600">
+    //             We collect and process your personal information to provide our services. 
+    //             Your data is protected and will not be shared with third parties without consent.
+    //           </p>
+    //         </div>
 
-            <CheckboxField 
-              label="I accept the Terms and Conditions" 
-              name="acceptTerms" 
-              required 
-              {...commonProps}
-              description="You must accept the terms and conditions to proceed"
-            />
-            <CheckboxField 
-              label="I accept the Privacy Policy" 
-              name="acceptPrivacyPolicy" 
-              required 
-              {...commonProps}
-              description="We respect your privacy and protect your personal data"
-            />
-            <CheckboxField 
-              label="I agree to receive communication via email and SMS" 
-              name="acceptCommunication" 
-              {...commonProps}
-              description="Stay updated with important notifications and offers"
-            />
+    //         <CheckboxField 
+    //           label="I accept the Terms and Conditions" 
+    //           name="acceptTerms" 
+    //           required 
+    //           {...commonProps}
+    //           description="You must accept the terms and conditions to proceed"
+    //         />
+    //         <CheckboxField 
+    //           label="I accept the Privacy Policy" 
+    //           name="acceptPrivacyPolicy" 
+    //           required 
+    //           {...commonProps}
+    //           description="We respect your privacy and protect your personal data"
+    //         />
+    //         <CheckboxField 
+    //           label="I agree to receive communication via email and SMS" 
+    //           name="acceptCommunication" 
+    //           {...commonProps}
+    //           description="Stay updated with important notifications and offers"
+    //         />
+    //       </div>
+    //     </SectionWrapper>
+    //   );
+
+case 3:
+  return (
+    <SectionWrapper title="Terms & Conditions" icon={<ShieldIcon />}>
+      <div className="lg:col-span-2 space-y-4">
+        <div className="bg-gray-50 rounded-xl p-6 max-h-96 overflow-y-auto">
+          <h4 className="font-bold text-lg mb-4 text-gray-800">REVA-YAH PARTNER PROGRAM (RPP) CUSTOMER AGREEMENT</h4>
+          <div className="space-y-4 text-gray-600 text-sm">
+            <p>This Agreement is between STAN INITIATIVES PVT LTD (also referred to as "Reva-Yah", "RH," "we," "us," or "our") and the PARTNER ("Franchisee/ Channel Partner/ Referral Partner"), establishing the terms and conditions for the Partner's participation in the Reva-Yah Partners Program (the "Program"). This Agreement contains the terms and conditions that govern your access to and use of the Service Offerings and is effective on the date you click "I Accept" or first use any Service Offering (the "Effective Date").</p>
+
+            <p><strong>1. Use of the Service Offerings.</strong></p>
+            <p>1.1. You may access and use the Service Offerings in accordance with this Agreement. Service Level Agreements and Service Terms apply to certain Service Offerings. You will comply with the terms of this Agreement and all laws, rules and regulations applicable to your use of the Service Offerings.</p>
+            <p>1.2. To access the Services, you must have an RPP account associated with a valid email address and a valid form of payment. Unless explicitly permitted by the Service Terms, you will only create one account per email address.</p>
+            <p>1.3. Third-Party Content may be used by you at your election. Third-Party Content is governed by this Agreement and, if applicable, separate terms and conditions accompanying such Third-Party Content, which terms and conditions may include separate fees and charges.</p>
+
+            <p><strong>2. Relationships</strong></p>
+            <p>2.1. Partner is an independent contractor engaged in marketing Reva-Yah services /products to its customers. Partner is not an agent or legal representative of Reva-Yah for any purpose, and has no authority to act for, bind or commit Reva-Yah.</p>
+            <p>2.2. Partner has no authority to make any commitment on behalf of Reva-Yah with respect to service, delivery, modifications, interfacing capability, suitability of software or suitability in specific applications. Partner has no authority to modify the warranty offered with Reva-Yah service & products. Partner will indemnify Reva-yah from liability for any modified warranty or other commitment by Partner not specifically authorized by Reva-Yah.</p>
+            <p>2.3. Partner will not represent itself in any way that implies Partner is an agent or branch of Reva-Yah. Partner will immediately change or discontinue any representation or business practice found to be misleading or deceptive by Reva-Yah immediately upon notice from Reva-Yah.</p>
+
+            <p><strong>3. Term, Limitations, Termination</strong></p>
+            <p>3.1. The term of this Agreement is twelve (12) months from the date of acceptance by Partner and Reva-Yah. This Agreement shall automatically renew on each subsequent year for a one-year term, unless it is terminated earlier in accordance with this Agreement.</p>
+            <p>3.2. Reva-Yah or Partner may terminate this Agreement without cause at any time upon thirty (30) days written notice or with cause at any time upon fifteen (15) days written notice, except that neither the expiration nor earlier termination of this Agreement shall release either party from any obligation which has accrued as of the date of termination.</p>
+            <p>3.3. Reva-Yah may, from time to time, give Partner written notice of amendments to this Agreement. Any such amendment will automatically become a part of this Agreement thirty (30) days from the date of the notice, unless otherwise specified in the notice.</p>
+            <p>3.4. Upon expiration, non-renewal or terminations of this Agreement, all interests in accrued marketing funds (if any) will automatically lapse–it does not affect any existing outstanding amounts due.</p>
+
+            <p><strong>4. Partner Programs</strong></p>
+            <p>4.1. Reva-Yah Partner program will contain various participation levels. Reva-Yah will invite Partner from time to time to participate in the co-operative advertising, market development and promotional programs offered by Reva-yah. Partner may, at its option, participate in such programs during the term of this Agreement. Reva-Yah reserves the right to terminate or modify such programs at any time at its sole discretion.</p>
+            <p>4.2. Reva-Yah shall exert best efforts to market Reva-Yah services & products, and is able to use promotional materials supplied by Reva-Yah.</p>
+            <p>4.3. Partner shall have sufficient technical knowledge of the Reva-Yah services & products in general, and will have access to appropriate Reva-Yah sales and technical training.</p>
+            <p>4.4. Reva-Yah does not represent that it will continue to develop any particular item or model of product /service indefinitely or even for any specific period. Reva-Yah specifically reserves the right to modify any of the specifications or characteristics of its products/services, to remove any product /service from the market, and/or to cease manufacturing or supporting it.</p>
+            <p>4.5. Partner is expected and encouraged to advertise and promote the sales of Reva-yah services & products through all appropriate media including trade show exhibits, catalogs and direct mailings, space advertising, educational meetings, sales aids, etc. Reva-Yah must approve all original materials that use Reva-Yah name or trademarks (aside from modifying existing Reva-Yah supplied template materials). Reva-yah will assist Partner in advertising and promoting Reva-Yah services & products in accordance with Reva-Yah policy.</p>
+
+            <p><strong>5. Limitation of Liability</strong></p>
+            <p>UNDER NO CIRCUMSTANCES, INCLUDING ANY INFRINGEMENT CLAIMS, SHALL REVA-YAH BE LIABLE TO PARTNERS OR ANY OTHER PARTY FOR ANY RE-PROCUREMENT COSTS, LOST REVENUE OR PROFITS OR FOR ANY OTHER SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES, EVEN IF COMPANY HAS BEEN INFORMED OF SUCH POTENTIAL LOSS OR DAMAGE.</p>
+            <p>WE AND OUR AFFILIATES WILL NOT BE LIABLE TO YOU FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR EXEMPLARY DAMAGES, OR FOR ANY LOSS OF REVENUE, PROFITS, OR GOODWILL, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES, ARISING IN CONNECTION WITH: (A) YOUR PARTICIPATION IN THE PROGRAM; (B) YOUR USE OF MATERIALS; OR (C) ANY INVESTMENTS, EXPENDITURES, OR COMMITMENTS BY YOU IN CONNECTION WITH THESE TERMS, THE PROGRAM, OR YOUR USE OF OR ACCESS TO MATERIALS. THE AGGREGATE LIABILITY OF AWS AND OUR AFFILIATES ARISING IN CONNECTION WITH THE PROGRAM AND MATERIALS WILL BE LIMITED TO A REFUND OF THE FEES REFERRED TO IN SECTION 1.4 PAID OR PAYABLE IN THE 12 MONTH PERIOD BEFORE THE LATEST CLAIM. THE LIMITATIONS AND EXCLUSIONS IN THIS SECTION 7 APPLY ONLY TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW.</p>
+
+            <p><strong>6. Use of Reva-Yah Trademarks</strong></p>
+            <p>6.1. Reseller acknowledges the following:</p>
+            <p>6.1.a. Reva-Yah owns all right, title and interest in the Reva-Yah names and logotypes.</p>
+            <p>6.1.b. Reva-Yah is the owner of certain other trademarks and tradenames used in connection with certain product lines and software.</p>
+            <p>6.1.c. Partner will acquire no interest in any such trademarks or tradenames by virtue of this Agreement, its activities under it, or any relationship with Reva-yah.</p>
+            <p>6.2. During the term of this Agreement, Partner may indicate to the trade and to the public that it is an Authorized Partner of the Reva-Yah services/ products. Partner may also use the Reva-Yah trademarks and trade names to promote and solicit sales or licensing of Reva-Yah services products if done so in strict accordance with Reva-Yah guidelines. Partner will not adopt or use such trademarks or tradenames, or any confusingly word or symbol, as part of its company name or allow such marks or names to be used by others.</p>
+            <p>6.3. At the expiration or termination of this Agreement, Partner shall immediately discontinue any use of the Reva-Yah and Reva-Yah names or trademarks or any other combination of words, designs, trademarks or tradenames that would indicate that it is or was a Partner of the Reva-Yah products.</p>
+
+            <p><strong>7. Proprietary Information</strong></p>
+            <p>7.1 Reva-Yah and Partner shall each exercise due diligence to maintain in confidence and not disclose to any third party any proprietary information furnished by the other to it on a confidential basis and identified as such when furnished. Except in accordance with this Agreement, neither party shall use such information without permission of the party that furnished it. As used in this paragraph, "due diligence" means the same precaution and standard of care which that party uses to safeguard its own proprietary data, but in no event less than reasonable care. The provisions of this Section shall survive for three (3) years beyond the expiration, non-renewal or termination of this Agreement.</p>
+            <p>7.2 This Agreement does not grant any license under any patents or other intellectual property rights owned or controlled by or licensed to Reva-Yah. Partner shall not have any right to develop /manufacture Reva-Yah services/ products.</p>
+
+            <p><strong>8. Export Controls</strong></p>
+            <p>Regardless of any disclosure made by Partner to Reva-Yah or Distributor of an ultimate destination of Reva-Yah services/ products, Partner shall not export, either directly or indirectly, any documentation, Reva-Yah services/ products, or system incorporating such Reva-Yah services/ products to any locations on the excluded export list. Following are the locations: None at present.</p>
+
+            <p><strong>9. Compliance with Laws</strong></p>
+            <p>Partner agrees to comply with all laws and regulations that are applicable to the business that Partner transacts. Partner agrees to indemnify and hold Reva-Yah harmless for all liability or damages caused by Partners failure to comply with the terms of this provision.</p>
+
+            <p><strong>10. Government Contract Conditions</strong></p>
+            <p>In the event that Partner elects to sell Reva-Yah products or services to the Government (national, regional or local), Partner does so solely at its own option and risk, and agrees not to obligate Reva-Yah as a subcontractor or otherwise to the Government. Partner remains solely and exclusively responsible for compliance with all statutes and regulations governing sales to the Government. Reva-Yah makes no representations, certifications or warranties whatsoever with respect to the ability of its goods, services or prices to satisfy any such statutes and regulations.</p>
+
+            <p><strong>11. Miscellaneous</strong></p>
+            <p>Notices under this Agreement must be sent by telegram, telecopy, registered or certified mail, or e-mail if receipt of e-mail is acknowledged to the appropriate party at its location submitted during the Partners application (or to a new address if the other has been properly notified of the change). A notice will not be effective until the addressee actually receives it.</p>
+            <p>This Agreement and its schedules represent the entire agreement between the parties regarding this subject. This Agreement supersedes all previous oral or written communications between the parties regarding the subject, and it may not be modified or waived except in writing and signed by an officer or other authorized representative of each party. Neither party will be liable to the other for any delay or failure to perform if that delay or failure results from a cause beyond its reasonable control. If any provision is held invalid, all other provisions shall remain valid, unless such invalidity would frustrate the purpose of this Agreement. The laws of INDIA govern this Agreement without consideration to that body of law referred to as "conflicts of laws". Reva-Yah and Partner will attempt to settle any claim or controversy arising out of it through consultation and negotiation in good faith and a spirit of mutual cooperation. Any dispute which cannot be resolved through negotiation or mediation may be submitted to the courts of appropriate jurisdiction.</p>
           </div>
-        </SectionWrapper>
-      );
+          
+          <h4 className="font-bold text-lg mt-8 mb-4 text-gray-800">Privacy Policy</h4>
+          <p className="text-gray-600 text-sm">
+            We collect and process your personal information to provide our services. 
+            Your data is protected and will not be shared with third parties without consent.
+          </p>
+        </div>
+
+        <CheckboxField 
+          label="I accept the Terms and Conditions" 
+          name="acceptTerms" 
+          required 
+          {...commonProps}
+          description="You must accept all terms and conditions to proceed"
+        />
+        <CheckboxField 
+          label="I accept the Privacy Policy" 
+          name="acceptPrivacyPolicy" 
+          required 
+          {...commonProps}
+          description="We respect your privacy and protect your personal data"
+        />
+        <CheckboxField 
+          label="I agree to receive communication via email and SMS" 
+          name="acceptCommunication" 
+          {...commonProps}
+          description="Stay updated with important notifications and offers"
+        />
+      </div>
+    </SectionWrapper>
+  );
 
     case 4:
       return (
@@ -568,8 +684,8 @@ export const StepContent = ({ currentStep, disabled, userContext, franchiseCreat
                 Please download the agreement, print it, sign it, and upload the signed copy.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-                <button
+              <div className="flex flex-col sm:flex-row gap-4 justify-center ml-45 mb-8">
+                <button onClick={handleDownloadAgreement}
                   type="button"
                   className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold transition-all duration-200 flex items-center justify-center"
                 >
