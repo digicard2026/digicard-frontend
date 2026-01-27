@@ -475,7 +475,7 @@ import { LuEyeOff, LuEye } from 'react-icons/lu';
 import ModernImage from "../../assets/images/tailwickComp/ModernImage";
 import Modern from "../../assets/images/tailwickComp/Modern";
 
-const FranchiseSignIn = () => {
+const AdminSignin = () => {
   const [message, setMessage] = useState({ text: '', type: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -505,55 +505,53 @@ const FranchiseSignIn = () => {
     }),
 
     onSubmit: async (values) => {
-      setIsLoading(true);
-      try {
-        const { response, data } = await verifyUser(values);
+  setIsLoading(true);
+  try {
+    const { response, data } = await verifyUser(values);
 
-        if (response.ok) {
-          setMessage({ text: 'Login successful!', type: 'success' });
-          setShowResend(false);
+    if (response.ok) {
+      setMessage({ text: 'Login successful!', type: 'success' });
+      setShowResend(false);
 
-          localStorage.setItem('user_id', data.user_id);
-          localStorage.setItem('user_email', values.email);
-          localStorage.setItem('token', data.token || '');
+      localStorage.setItem('user_id', data.user_id);
+      localStorage.setItem('user_email', values.email);
+      localStorage.setItem('token', data.token || '');
 
-          dispatch(setRole(data.role || ''));
-          setCookie('user_id', data.user_id, 7);
+      dispatch(setRole(data.role || ''));
+      setCookie('user_id', data.user_id, 7);
 
-          setTimeout(() => {
-            if (data.registrationComplete) {
-              if (data.role === 'franchise') {
-                navigate('/franchise/dashboard');
-              } else if (data.role === 'partner') {
-                navigate('/partner/dashboard');
-              } else {
-                navigate('/dashboard');
-              }
-            } else {
-              navigate('/register');
-            }
-          }, 1000);
-
+      setTimeout(() => {
+        if (data.registrationComplete) {
+          if (data.role === 'admin') {
+            navigate('/admin-dashbord');   // ✅ Admin redirect
+          } else {
+            navigate('/dashboard');
+          }
         } else {
-          // ❗ Always show resend button on login failure
-          setMessage({
-            text: data.message || 'Login failed. Your email might not be verified.',
-            type: 'error'
-          });
-          setShowResend(true);
+          navigate('/register');
         }
+      }, 1000);
 
-      } catch (error) {
-        console.error(error);
-        setMessage({
-          text: 'An error occurred. Your email might not be verified.',
-          type: 'error'
-        });
-        setShowResend(true);
-      } finally {
-        setIsLoading(false);
-      }
-    },
+    } else {
+      setMessage({
+        text: data.message || 'Login failed. Your email might not be verified.',
+        type: 'error'
+      });
+      setShowResend(true);
+    }
+
+  } catch (error) {
+    console.error(error);
+    setMessage({
+      text: 'An error occurred. Your email might not be verified.',
+      type: 'error'
+    });
+    setShowResend(true);
+  } finally {
+    setIsLoading(false);
+  }
+}
+
   });
 
   const handleResendEmail = async () => {
@@ -726,4 +724,4 @@ const FranchiseSignIn = () => {
   );
 };
 
-export default FranchiseSignIn;
+export default AdminSignin;
