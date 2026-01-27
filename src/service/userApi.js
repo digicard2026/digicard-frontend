@@ -196,4 +196,18 @@ export async function  getUserProfile(user_id) {
       throw error;
     }
   }
+
+  export const resendVerificationEmail = async (email) => {
+  const response = await fetch(`${USER_URL}/resend-verification-email`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  const data = await response.json();
+  return { response, data };
+};
+
  

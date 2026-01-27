@@ -68,6 +68,10 @@ import CardDashbord from  './pages/Card/dashbord/CardMain';
 import SubscriptionPlans from  './pages/Card/SubscriptionPlans';
 import PartnerSignUp from './pages/Authentication/PartnerSignUp';
 
+import PartnerRegistrationPage from './pages/Authentication/PartnerRegistration/PartnerRegistrationPage'
+import SignupForm from './components/SignupForm'
+import AdminDashBoard from './pages/Dashboard/AdminDashBoard';
+import AdminSignin from './pages/Authentication/AdminSignin';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -592,6 +596,10 @@ function App() {
 
         <Route path="/pricing" element={ <DefaultLayout>  <SubscriptionPlans /> </DefaultLayout> } />
         <Route path="/signup/partner" element={<><PageTitle title="SignUp page" /><PartnerSignUp/> </> } />
+           <Route path="/partner-registration" element={<PartnerRegistrationPage />} />
+            <Route path="/franchise/signup" element={<SignupForm />} />
+       <Route path="/admin-dashbord" element={ <DefaultLayout> <AdminDashBoard /> </DefaultLayout> } />
+       <Route path="/signin/admin" element={<AdminSignin />} />
 
     </Routes>
 
