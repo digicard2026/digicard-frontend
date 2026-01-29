@@ -24,7 +24,7 @@ const Home = () => {
           {/* Left Content */}
           <div className="col-span-12 xl:col-span-5">
             <h1
-              className="mb-4 leading-snug text-4xl lg:text-5xl 2xl:text-6xl font-bold text-zinc-900 dark:text-zinc-100"
+              className="mb-4 leading-relaxed text-5xl 2xl:text-6xl font-semibold text-zinc-800 dark:text-zinc-100"
               data-aos="fade-right"
               data-aos-delay="300"
             >
@@ -32,19 +32,17 @@ const Home = () => {
               Digital Visiting Card
                           </h1>
                           <p
-                            className="text-lg mb-7 text-slate-600 dark:text-zinc-400"
+                            className="text-lg mb-7  text-zinc-500 dark:text-zinc-400"
                             data-aos="fade-right"
                             data-aos-delay="600"
                           >
-                            Get your lifetime professional digital visiting card - absolutely  with QRCodeChimp!
-              Choose from 15+ customizable templates and seamlessly add your card to Apple Wallet or Google Wallet.
-              Boost your connections with a built-in contact exchange form, all backed by top-notch security. Start building your professional identity today, and it's free forever!
-                          </p>
+                            Get your lifetime professional digital visiting card - absolutely  with <span className="text-rosey-600"><a href="https://revayahone.com" target="_blank" rel="noopener noreferrer">Reva-Yah Business cards – Rbiz</a><br></br></span>
+             Rbiz, is a digital business card for Professionals, indivisibles, companies, entrepreneurs, business owners & many more…. that is smart, elegant & affordable Business cards meet the digital age.                          </p>
                           <div className="flex items-center gap-3" data-aos="fade-right" data-aos-delay="800">
                             <button
           type="button"
           onClick={() => scrollToSection("plan")}
-          className="px-8 py-3 text-white text-sm rounded bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-600 hover:to-indigo-500 transition flex items-center gap-2"
+          className="px-8 py-3 text-white text-sm rounded bg-gradient-to-r from-rosey-600 to-pink-600 hover:from-rosey-600 hover:to-pink-500 transition flex items-center gap-2"
         >
                 Create Now <ShoppingCart className="size-4" />
               </button>

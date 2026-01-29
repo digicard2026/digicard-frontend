@@ -607,7 +607,7 @@ const PlanSelection = () => {
               {/* Popular Badge for Business */}
               {key === 'Business' && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  <span className="bg-rosey-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
                     Most Popular
                   </span>
                 </div>
@@ -687,7 +687,7 @@ const PlanSelection = () => {
         <div className="text-center mt-12">
           <button
             onClick={handleContinue}
-            className="bg-blue-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-600 transition-colors shadow-lg"
+            className="bg-rosey-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-rose-500 transition-colors shadow-lg"
           >
             Continue with {cardFieldsConfig[selectedPlan]?.name} Plan
           </button>

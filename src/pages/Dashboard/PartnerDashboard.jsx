@@ -176,7 +176,7 @@ const handleAddCustomer = () => {
       "bg-gradient-to-br from-blue-500 to-cyan-400",
       "bg-gradient-to-br from-emerald-500 to-teal-400",
       "bg-gradient-to-br from-violet-500 to-purple-400",
-      "bg-gradient-to-br from-rose-500 to-pink-400",
+      "bg-gradient-to-br from-rosey-600 to-pink-400",
       "bg-gradient-to-br from-amber-500 to-orange-400",
       "bg-gradient-to-br from-indigo-500 to-blue-400",
       "bg-gradient-to-br from-cyan-500 to-blue-400",

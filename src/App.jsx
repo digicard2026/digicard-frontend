@@ -52,7 +52,7 @@ import LeadDetails from './pages/Agent/LeadDetails';
 
 import ProtectedRoute from './utility/ProtectedRoute';
 import LeadTabs from './pages/Agent/LeadTabs';
-import Home from './pages/Home/Home';
+// import Home from './pages/Home/Home';
 import CreateCard from './pages/Card/CreateCard';
 import PreviewCard from './pages/Card/PreviewCard';
 import PublicCard from './pages/Card/PublicCard';
@@ -61,12 +61,14 @@ import PlanSelection from './pages/Card/PlanSelection';
 import RegistrationPage from './pages/Authentication/RegistrationPage';
 import FranchiseSignIn from './pages/Authentication/FranchiseSignIn';
 import FranchiseDashboard from './pages/Dashboard/FranchisedashBoard';
-import HHome from './components/ui/index';
+import Home from './components/ui/index';
 import PartnerDashboard from './pages/Dashboard/PartnerDashboard';
 import CardDashbord from  './pages/Card/dashbord/CardMain';
-
+import RevayahHome from './pages/Revayah/RevayahHome';
 import SubscriptionPlans from  './pages/Card/SubscriptionPlans';
 import PartnerSignUp from './pages/Authentication/PartnerSignUp';
+import DigitalCards from './pages/Product/DigitalCards';
+import PublicLayout from './layout/PublicLayout';
 
 import PartnerRegistrationPage from './pages/Authentication/PartnerRegistration/PartnerRegistrationPage'
 import SignupForm from './components/SignupForm'
@@ -493,25 +495,29 @@ function App() {
       <Route path='/leads/:campaignId' element={<ProtectedRoute allowedRoles={['agent']}> <PageTitle title="Leads | UConnect Admin Dashboard" /> <DefaultLayout><Leads /></DefaultLayout> </ ProtectedRoute>} />
       <Route path='/leads/details/:_id' element={<ProtectedRoute allowedRoles={['agent']}> <PageTitle title="Details | UConnect Admin Dashboard" /> <DefaultLayout><LeadTabs /></DefaultLayout> </ ProtectedRoute>} /> */}
      
-      <Route 
+      {/* <Route 
   path="/" 
   element={
     <>
       <PageTitle title="Home" />
-      <HHome />
+      <Home />
     </>
   } 
-/>
+/> */}
 
-      
-      <Route path="/create" element={<DefaultLayout><CreateCard /></DefaultLayout>} />
-      <Route path="/preview" element={ <DefaultLayout> <PreviewCard /> </DefaultLayout> } />
-      <Route path="/card/public" element={<PublicCard />} />
-      <Route path="/preview/:urlSlug" element={<PreviewCard />} />
-       <Route path="/signin" element={<SignIn/>} />
-      <Route path="/choose-plan" element={<PlanSelection />} />
-      {/* <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} /> */}
-         <Route path="/signin/partner" element={<FranchiseSignIn/>} />
+        <Route path="/" element={<RevayahHome />} />
+        {/* <Route path="/revayah-business-card" element={<PublicLayout><Home/></PublicLayout>} /> */}
+                <Route path="/revayah-business-card" element={<Home/>} />
+
+        <Route path="/revayah-digital-cards" element={<DigitalCards/>} />
+        <Route path="/create" element={<DefaultLayout><CreateCard /></DefaultLayout>} />
+        <Route path="/preview" element={<DefaultLayout> <PreviewCard /> </DefaultLayout>} />
+        <Route path="/card/public" element={<PublicCard />} />
+        <Route path="/preview/:urlSlug" element={<PreviewCard />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/choose-plan" element={<PlanSelection />} />
+        {/* <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} /> */}
+        <Route path="/signin/partner" element={<FranchiseSignIn />} />
 
       {/* <Route path="/ui" element={<HHome/>} /> */}
      
