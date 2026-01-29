@@ -10,6 +10,14 @@
  
 }
 
+/* .dm-sans-font{
+  font-family: "DM Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+} */
+
+
 #search{
   padding-top: 15px;
   
@@ -58,7 +66,7 @@
 
 @layer base {
   body {
-    @apply font-public font-normal text-sm overflow-hidden text-body bg-whiten relative z-1;
+    @apply font-public font-normal text-sm overflow-x-hidden text-body bg-whiten relative z-1;
   }
 }
 

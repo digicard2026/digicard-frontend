@@ -34,10 +34,10 @@
 // //     bodyElement.classList.add(
 // //       "text-base",
 // //       "bg-white",
-// //       "text-gray-800",
+// //       "text-zinc-600",
 // //       "font-sans",
-// //       "dark:text-gray-50",
-// //       "dark:bg-gray-900"
+// //       "dark:text-zinc-60",
+// //       "dark:bg-zinc-600"
 // //     );
 // //   }, []);
 
@@ -49,7 +49,7 @@
 // //   };
 
 // //   return (
-// //     <div className="text-base bg-white text-gray-800 font-sans dark:text-gray-50 dark:bg-gray-900">
+// //     <div className="text-base bg-white text-zinc-600 font-sans dark:text-zinc-60 dark:bg-zinc-600">
 // //       <Navbar />
 // //       <Home />
 // //       <OurProduct />
@@ -110,7 +110,7 @@
 //   };
 
 //   return (
-//     <div className="min-h-screen flex flex-col bg-white text-gray-800 font-sans dark:text-gray-50 dark:bg-gray-900">
+//     <div className="min-h-screen flex flex-col bg-white text-zinc-600 font-sans dark:text-zinc-60 dark:bg-zinc-600">
 //       <Navbar />
       
 //       <main className="flex-1 overflow-visible">
@@ -149,6 +149,8 @@ import Footer from "./Footer";
 import Feature from "./Feature";
 // import PlanSection from "../../pages/Card/PlanSelection";
  import PlanSelection from "../../pages/Card/PlanSelection";
+import NavBar from "../../pages/Revayah/NavBar";
+import HowItWorks from "./HowItWorks";
 // import DoctorList from "../../pages/Doctor/DoctorList";
 const Product = () => {
   useEffect(() => {
@@ -180,9 +182,9 @@ const Product = () => {
 
   useEffect(() => {
     document.body.classList.add(
-      "text-base",
+      
       "bg-white",
-      "text-gray-800",
+      "text-zinc-600",
       "font-sans",
       "dark:text-zinc-50",
       "dark:bg-zinc-900",
@@ -193,8 +195,8 @@ const Product = () => {
 
   return (
     <>
-      <div className="text-base bg-white text-gray-800 font-sans dark:text-zinc-50 dark:bg-zinc-900 overflow-x-hidden">
-        <Navbar />
+      <div className=" bg-white text-zinc-600 font-sans dark:text-zinc-50 dark:bg-zinc-900">
+        <NavBar />
         <main>
           <Home /> 
            {/* <OurProduct /> */}
@@ -202,6 +204,7 @@ const Product = () => {
            <AboutUs /> 
           {/* <DoctorList/> */}
           <Feature/>
+          <HowItWorks/>
            <Feedback />
            <PlanSelection/>
         </main>
@@ -211,7 +214,7 @@ const Product = () => {
         <button
           id="back-to-top"
           onClick={handleScroll}
-          className="fixed bottom-10 right-10 w-10 h-10 flex items-center justify-center text-white bg-purple-500 rounded-md opacity-0 transition-opacity duration-300"
+          className="fixed bottom-10 right-10 w-10 h-10 flex items-center justify-center text-white bg-rosey-600 rounded-md opacity-0 transition-opacity duration-300"
           aria-label="Scroll to top"
         >
           <ChevronUp className="animate-bounce" />

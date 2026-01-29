@@ -1,7 +1,27 @@
 import React from "react";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Zap, Layers, Smartphone } from "lucide-react"; // Added icons for the new section
 
 const Feature = () => {
+  // New Content Data
+  const mainHighlights = [
+    {
+      icon: <Zap className="size-8 text-rosey-600" />,
+      title: "Business cards meet the digital age",
+      desc: "Design your business card in few minutes - it's easy, elegant. Impressive rich content. RBIZ is always in your pocket never tears and never runs out. Your RBIZ can be easily updated with our user-friendly dashboard, so you won't need to re-print a business card again."
+    },
+    {
+      icon: <Layers className="size-8 text-rosey-600" />,
+      title: "One business card, endless possibilities",
+      desc: "Express yourself in ways never before possible with a business card. You can showcase your work by uploading rich content such as photos, videos and custom links."
+    },
+    {
+      icon: <Smartphone className="size-8 text-rosey-600" />,
+      title: "Mobility at its finest",
+      desc: "The shortest route to your customers is through their mobile phones. Utilize our share options and take your brand viral by sharing your RBIZ with your clients and friends."
+    }
+  ];
+
+  // Existing Features Data
   const features = [
     {
       title: "Thousands of Personal cards",
@@ -57,13 +77,39 @@ const Feature = () => {
           Features
         </h2>
         <p
-          className="text-xl text-slate-600 mb-10 font-medium"
+          className="text-xl text-slate-600 mb-16 font-medium"
           data-aos="fade-up"
           data-aos-delay="200"
         >
-          What you get with a Personal card from <span className="text-purple-600">Degicard.com</span>
+          What you get with a Personal card from <span className="text-rosey-600"><a href="https://revayahone.com" target="_blank" rel="noopener noreferrer">Rbiz</a></span>
         </p>
 
+        {/* --- NEW CONTENT SECTION START --- */}
+        <div className="grid md:grid-cols-3 gap-10 mb-20 text-left">
+          {mainHighlights.map((item, index) => (
+            <div 
+              key={index} 
+              className="flex flex-col gap-4"
+              data-aos="fade-up"
+              data-aos-delay={index * 100}
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-rose-50 rounded-lg">
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 leading-tight">
+                  {item.title}
+                </h3>
+              </div>
+              <p className="text-slate-600 leading-relaxed">
+                {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+        {/* --- NEW CONTENT SECTION END --- */}
+
+        {/* Existing Grid Cards */}
         <div
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto text-left"
           data-aos="fade-up"
@@ -72,10 +118,10 @@ const Feature = () => {
           {features.map((item, index) => (
             <div
               key={index}
-              className="p-6 bg-white shadow-md rounded-2xl border border-slate-100 hover:shadow-lg transition duration-300"
+              className="p-6 bg-white shadow-md rounded-2xl border border-slate-100 hover:shadow-lg transition duration-300 group"
             >
               <div className="flex items-start gap-3 mb-3">
-                <CheckCircle className="text-purple-600 mt-1 w-5 h-5" />
+                <CheckCircle className="text-rosey-600 mt-1 w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
                 <h3 className="text-lg font-semibold text-slate-800">
                   {item.title}
                 </h3>

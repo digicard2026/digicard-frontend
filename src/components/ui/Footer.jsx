@@ -4,6 +4,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import logoDark from "../../assets/images/logo-dark.png";
 import logoLight from "../../assets/images/logo-light.png";
+import revayahone from "../../assets/images/revayah-logo.png";
 
 const Footer = () => {
   useEffect(() => {
@@ -13,7 +14,7 @@ const Footer = () => {
   return (
     <React.Fragment>
       <footer className="relative pt-20 pb-12 border-t border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-        <div className="absolute left-0 size-64 bg-purple-500 -top-16 opacity-10 blur-3xl"></div>
+        <div className="absolute left-0 size-64 bg-pink-600 -top-16 opacity-10 blur-3xl"></div>
         <div className="container 2xl:max-w-[87.5rem] px-4 mx-auto">
           
           {/* TOP NEWSLETTER SECTION */}
@@ -31,13 +32,13 @@ const Footer = () => {
               <form className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="email"
-                  placeholder="digicardk@themesdesign"
-                  className="flex-1 px-4 py-3 border border-slate-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-sm bg-white dark:bg-zinc-800 dark:text-zinc-100"
+                  placeholder="Enter your email address"
+                  className="flex-1 px-4 py-3 border border-slate-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 dark:focus:ring-rose-400 text-sm bg-white dark:bg-zinc-800 dark:text-zinc-100"
                   required
                 />
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold text-sm hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                  className="bg-gradient-to-r from-rosey-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold text-sm hover:from-rosey-600 hover:to-pink-600 transition-all duration-200"
                 >
                   Subscribe Now
                 </button>
@@ -49,51 +50,53 @@ const Footer = () => {
           <div className="relative z-10 grid grid-cols-12 gap-8">
             {/* Column 1 - Logo + Description + Social */}
             <div className="col-span-12 lg:col-span-4" data-aos="fade-up">
-              <div className="mb-5">
-                <a href="#!">
-                  <img src={logoLight} alt="" className="hidden h-8 dark:block" />
-                  <img src={logoDark} alt="" className="block h-8 dark:hidden" />
+              <div className="mb-4">
+                <a href="https://revayahone.com" >
+                  <img src={revayahone} alt="" className="hidden h-8 dark:block" />
+                  <img src={revayahone} alt="" className="block h-8 dark:hidden" />
                 </a>
               </div>
               <p className="mb-6 text-slate-500 dark:text-zinc-400 text-sm leading-relaxed">
-                Digital Card.com has digital Personal card designs for every
+                Reva-Yah has digital Personal card designs for every
                 industry, and we're ready to help you find the perfect one!
                 Just pick your industry or enter a keyword below.
               </p>
               
               <ul className="flex items-center gap-3">
                 <li>
-                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400">
+                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 hover:border-pink-600 dark:hover:border-pink-400">
                     <Facebook className="size-4" />
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400">
+                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 hover:border-pink-600 dark:hover:border-pink-400">
                     <Linkedin className="size-4" />
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400">
+                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 hover:border-pink-600 dark:hover:border-pink-400">
                     <Instagram className="size-4" />
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400">
+                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 hover:border-pink-600 dark:hover:border-pink-400">
                     <Twitter className="size-4" />
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400">
+                  <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 hover:border-pink-600 dark:hover:border-pink-400">
                     <Youtube className="size-4" />
                   </a>
                 </li>
               </ul>
             </div>
 
-            {/* Column 2 - Degicard.com Links */}
+            {/* Column 2 - revayahone.com Links */}
             <div className="col-span-6 md:col-span-4 lg:col-span-2" data-aos="fade-up">
-              <h5 className="mb-5 font-semibold text-lg dark:text-zinc-100">Degicard.com</h5>
-              <ul className="flex flex-col gap-3 text-sm">
+              <a href="https://revayahone.com"
+                className=" font-semibold text-lg dark:text-zinc-100">Reva-Yah ONE</a>
+
+              <ul className="flex flex-col mt-5 gap-3 text-sm">
                 <li>
                   <a href="#" className="relative inline-block transition-all duration-200 ease-linear text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 before:absolute before:border-b before:border-slate-200 dark:before:border-zinc-700 before:inset-x-0 before:bottom-0 before:w-0 hover:before:w-full before:transition-all before:duration-300 before:ease-linear">
                     Digital Personal Cards
@@ -205,9 +208,9 @@ const Footer = () => {
           {/* BOTTOM COPYRIGHT */}
           <div className="pt-10 mt-16 text-center border-t text-slate-500 dark:text-zinc-400 dark:border-zinc-800">
             <p>
-              {new Date().getFullYear()} © Digicard. Design & Develop by{" "}
-              <a href="#" className="underline text-slate-800 dark:text-zinc-100 hover:text-blue-600 dark:hover:text-blue-400">
-                Themesdesign
+              {new Date().getFullYear()} © Reva-Yah Bussines Card - Rbiz  Design & Develop by{" "}
+              <a href="https://gravitywavelabs.com" className="underline text-slate-800 dark:text-zinc-100 hover:text-blue-600 dark:hover:text-blue-400">
+                Reva-yah ONE
               </a>
             </p>
           </div>

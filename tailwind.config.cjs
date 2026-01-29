@@ -5,13 +5,13 @@ module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
   theme: {
-    fontFamily: {
-      satoshi: ['Satoshi', 'sans-serif'],
-      public: ['"Public Sans", sans-serif'],
-      tourney: ['"Tourney", sans-serif'],
-      remix: ['remixicon'],
-    
-    },
+   fontFamily: {
+  sans: ['"DM Sans"', 'sans-serif'],
+  satoshi: ['"Satoshi"', 'sans-serif'],
+  public: ['"Public Sans"', 'sans-serif'],
+  tourney: ['"Tourney"', 'sans-serif'],
+},
+
     screens: {
       '2xsm': '375px',
       xsm: '425px',
@@ -56,6 +56,7 @@ module.exports = {
         success: '#219653',
         danger: '#D34053',
         warning: '#FFA70B',
+        "rosey-600": '#bc4062',
        
 
     

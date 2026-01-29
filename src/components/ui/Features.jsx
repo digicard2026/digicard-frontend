@@ -116,7 +116,7 @@ const Features = () => {
             
             <a
               href="#"
-              className="text-custom-500 font-medium text-base inline-flex items-center hover:text-purple-600 transition-colors"
+              className="text-custom-500 font-medium text-base inline-flex items-center hover:text-rosey-600 transition-colors"
               data-aos="fade-right"
               data-aos-delay="600"
             >

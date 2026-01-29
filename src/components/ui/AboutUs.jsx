@@ -85,7 +85,7 @@ const AboutUs = () => {
           {/* Right Text Block */}
           <div className="lg:col-span-5 lg:col-start-8">
             <p
-              className="text-sm text-purple-500 font-medium mb-2"
+              className="text-sm text-rosey-600 font-medium mb-2"
               data-aos="fade-left"
               data-aos-delay="300"
             >
@@ -114,7 +114,7 @@ const AboutUs = () => {
             </p>
             <button
               type="button"
-              className="inline-flex items-center px-8 py-3 text-white text-sm rounded-md bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-500 hover:to-indigo-500 transition-all"
+              className="inline-flex items-center px-8 py-3 text-white text-sm rounded-md bg-gradient-to-r from-rosey-600 to-pink-600 hover:from-rosey-600 hover:to-pink-500 transition-all"
               data-aos="fade-left"
               data-aos-delay="600"
             >
