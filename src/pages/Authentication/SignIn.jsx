@@ -10,7 +10,7 @@ import ModernImage from "../../assets/images/tailwickComp/ModernImage";
 import Modern from "../../assets/images/tailwickComp/Modern";
 
 // Your custom services and utilities
-import { verifyUser } from "../../service/userApi";
+import { verifyUser, resendVerificationEmail } from "../../service/userApi";
 import { setRole } from "../../store/Rolestore/roleSlice";
 
 const SignIn = () => {
@@ -20,6 +20,7 @@ const SignIn = () => {
   const [message, setMessage] = useState({ text: '', type: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showResend, setShowResend] = useState(false);
 
   // Formik for login
   const formik = useFormik({
@@ -43,6 +44,7 @@ const SignIn = () => {
   const handleLogin = async (credentials) => {
     setIsLoading(true);
     setMessage({ text: '', type: '' });
+    setShowResend(false);
     
     try {
       // Prepare data for API call
@@ -85,7 +87,10 @@ const SignIn = () => {
         }, 1000);
         
       } else {
-        setMessage({ text: data.message || 'Login failed', type: 'error' });
+        // Always show resend button on login failure
+        setMessage({ text: data.message || 'Login failed. Your email might not be verified.', type: 'error' });
+        setShowResend(true);
+        
         const successAlert = document.getElementById('successAlert');
         if (successAlert) {
           successAlert.classList.add('hidden');
@@ -94,10 +99,49 @@ const SignIn = () => {
     } catch (error) {
       console.error('Error:', error);
       setMessage({ text: 'An error occurred. Please try again.', type: 'error' });
+      setShowResend(true);
+      
       const successAlert = document.getElementById('successAlert');
       if (successAlert) {
         successAlert.classList.add('hidden');
       }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendEmail = async () => {
+    try {
+      setIsLoading(true);
+      const email = formik.values.identifier;
+
+      if (!email) {
+        setMessage({ text: "Please enter your email first.", type: "error" });
+        return;
+      }
+
+      const { response, data } = await resendVerificationEmail(email);
+
+      if (response.ok) {
+        setMessage({
+          text: "Verification email sent successfully. Please check your inbox.",
+          type: "success",
+        });
+        setShowResend(false);
+      } else {
+        setMessage({
+          text: data.message || "Failed to resend verification email.",
+          type: "error",
+        });
+        setShowResend(true);
+      }
+    } catch (error) {
+      console.error(error);
+      setMessage({
+        text: "Something went wrong while resending the email.",
+        type: "error",
+      });
+      setShowResend(true);
     } finally {
       setIsLoading(false);
     }
@@ -137,9 +181,32 @@ const SignIn = () => {
                   You have <b>successfully</b> signed in.
                 </div>
                 
-                {message.type === 'error' && message.text && (
+                {message.text && message.type === 'error' && (
                   <div className="p-3 mb-3 text-xs text-red-800 border border-red-300 rounded-lg bg-red-100 dark:bg-red-500/20 dark:border-red-500/50 dark:text-red-400">
                     {message.text}
+                  </div>
+                )}
+                
+                {message.text && message.type === 'success' && (
+                  <div className="p-3 mb-3 text-xs text-blue-800 border border-blue-300 rounded-lg bg-blue-100 dark:bg-blue-500/20 dark:border-blue-500/50 dark:text-blue-400">
+                    {message.text}
+                  </div>
+                )}
+                
+                {/* Resend Verification Button */}
+                {showResend && (
+                  <div className="mt-2 text-center">
+                    <p className="text-xs text-gray-600 dark:text-zink-300 mb-2">
+                      If your email is not verified or the link has expired, you can resend it.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleResendEmail}
+                      disabled={isLoading}
+                      className="w-full py-2 text-sm font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500/50 active:bg-orange-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
+                    >
+                      {isLoading ? "Resending..." : "Resend Verification Email"}
+                    </button>
                   </div>
                 )}
                 
