@@ -74,6 +74,8 @@ import PartnerRegistrationPage from './pages/Authentication/PartnerRegistration/
 import SignupForm from './components/SignupForm'
 import AdminDashBoard from './pages/Dashboard/AdminDashBoard';
 import AdminSignin from './pages/Authentication/AdminSignin';
+import ResumeBuilder from './pages/Revayah/ResumeBuilder';
+import PartnerOpportunities from './pages/Revayah/PartnerOpportunities';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -506,8 +508,10 @@ function App() {
 /> */}
 
         <Route path="/" element={<RevayahHome />} />
+         <Route path="/revayah-resume-builder" element={<ResumeBuilder />} />
         {/* <Route path="/revayah-business-card" element={<PublicLayout><Home/></PublicLayout>} /> */}
                 <Route path="/revayah-business-card" element={<Home/>} />
+                <Route path="/partner-opportunities" element={<PartnerOpportunities/>} />
 
         <Route path="/revayah-digital-cards" element={<DigitalCards/>} />
         <Route path="/create" element={<DefaultLayout><CreateCard /></DefaultLayout>} />
