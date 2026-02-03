@@ -22,7 +22,7 @@ const DigitalCards = () => {
         <div className="font-sans text-base text-slate-800 bg-white dark:text-slate-100 dark:bg-slate-900 h-screen overflow-y-auto flex flex-col">
             <NavBar />
 
-            <main className="flex-grow w-full pt-20">
+            <main className="flex-grow w-full pt-10">
                 
                 {/* --- 1. PRODUCT HERO --- */}
                 <section className="relative py-20 lg:py-32 bg-slate-50 dark:bg-slate-950 overflow-hidden">
