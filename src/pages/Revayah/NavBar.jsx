@@ -280,7 +280,7 @@
 //                 {/* Buttons & Mobile Toggle */}
 //                 <div className="flex gap-3">
 //                     <Link to="/signin">
-//                         <button type="button" className="hidden md:inline-flex items-center justify-center py-2 px-6 text-white bg-rosey-600 border border-rose-500 hover:bg-rose-500 hover:border-rose-600 rounded transition-all shadow-md hover:shadow-rose-500/20">
+//                         <button type="button" className="hidden md:inline-flex items-center justify-center py-2 px-6 text-white bg-rosey-600 border border-rose-500 hover:bg-rose-500 hover:border-rosey-600 rounded transition-all shadow-md hover:shadow-rose-500/20">
 //                             <span className="align-middle">Sign In</span> 
 //                             <LogIn className="inline-block size-4 ml-1" />
 //                         </button>
@@ -393,7 +393,7 @@ const NavBar = () => {
                         <li>
                             <Link 
                                 to="/"
-                                className={`text-base font-medium transition-colors ${isActive('/') ? 'text-rose-600 font-bold' : 'text-slate-800 dark:text-slate-100 hover:text-rose-500'}`}
+                                className={`text-base font-medium transition-colors ${isActive('/') ? 'text-rosey-600 font-bold' : 'text-slate-800 dark:text-slate-100 hover:text-rose-500'}`}
                             >
                                 Home
                             </Link>
@@ -478,7 +478,7 @@ const NavBar = () => {
                 {/* Right Buttons */}
                 <div className="flex gap-3">
                     <Link to="/signin">
-                        <button type="button" className="hidden md:inline-flex items-center justify-center py-2 px-6 text-white bg-rose-600 border border-rose-500 hover:bg-rose-500 hover:border-rose-600 rounded transition-all shadow-md hover:shadow-rose-500/20">
+                        <button type="button" className="hidden md:inline-flex items-center justify-center py-2 px-6 text-white bg-rosey-600 border border-rose-500 hover:bg-rose-500 hover:border-rosey-600 rounded transition-all shadow-md hover:shadow-rose-500/20">
                             <span className="align-middle">Sign In</span> 
                             <LogIn className="inline-block size-4 ml-1" />
                         </button>
@@ -486,7 +486,7 @@ const NavBar = () => {
 
                     <button 
                         type="button" 
-                        className="md:hidden flex items-center justify-center size-10 text-white bg-rose-500 rounded hover:bg-rose-600 transition-colors"
+                        className="md:hidden flex items-center justify-center size-10 text-white bg-rose-500 rounded hover:bg-rosey-600 transition-colors"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     >
                         {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}

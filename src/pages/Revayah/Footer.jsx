@@ -177,11 +177,11 @@ const Footer = () => {
                                     Referral Program
                                 </Link>
                             </li>
-                            <li>
+                            {/* <li>
                                 <Link to="/contact" className="hover:text-blue-500 transition-colors">
                                     Become a Reseller
                                 </Link>
-                            </li>
+                            </li> */}
                             <li>
                                 <Link to="/signin/partner" className="hover:text-blue-500 transition-colors">
                                    Partners Login

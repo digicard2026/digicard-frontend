@@ -275,21 +275,21 @@
 //                     <div className="container max-w-7xl px-4 mx-auto relative z-10">
 //                         <div className="grid lg:grid-cols-2 gap-12 items-center">
 //                             <div>
-//                                 <h5 className="text-rose-600 dark:text-rose-400 font-bold tracking-widest uppercase mb-4 text-sm">
+//                                 <h5 className="text-rosey-600 dark:text-rose-400 font-bold tracking-widest uppercase mb-4 text-sm">
 //                                     Reva-Yah Resume Builder
 //                                 </h5>
 //                                 <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
-//                                     Create a <span className="text-rose-600">Job-Ready Resume</span> That Speaks About You
+//                                     Create a <span className="text-rosey-600">Job-Ready Resume</span> That Speaks About You
 //                                 </h1>
 //                                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
 //                                     Rresume is a web resume, a digital form of your resume over the World Wide Web. Build the perfect resume in minutes with our Rresume builder.
 //                                 </p>
 //                                 <div className="flex flex-wrap gap-4">
 //                                     {/* Updated Button Sizes & Color */}
-//                                     <button className="px-6 py-2.5 bg-rose-600 text-white rounded font-medium hover:bg-rose-700 transition shadow-lg shadow-rose-500/30">
+//                                     <button className="px-6 py-2.5 bg-rosey-600 text-white rounded font-medium hover:bg-rose-700 transition shadow-lg shadow-rose-500/30">
 //                                         Start Now
 //                                     </button>
-//                                     <button className="px-6 py-2.5 bg-white text-rose-600 border border-slate-200 hover:border-rose-200 rounded font-medium hover:bg-slate-50 transition">
+//                                     <button className="px-6 py-2.5 bg-white text-rosey-600 border border-slate-200 hover:border-rose-200 rounded font-medium hover:bg-slate-50 transition">
 //                                         View Templates
 //                                     </button>
 //                                 </div>
@@ -331,7 +331,7 @@
 
 //                             {[
 //                                 { 
-//                                     icon: <Layout className="size-8 text-rose-600" />, 
+//                                     icon: <Layout className="size-8 text-rosey-600" />, 
 //                                     title: "Select a Template", 
 //                                     desc: "Choose from our professional, recruiter-approved designs." 
 //                                 },
@@ -423,14 +423,14 @@
 //                         {/* Job Search Service */}
 //                         <div className="p-12 lg:p-20 bg-rose-50 dark:bg-slate-900 flex flex-col justify-center">
 //                             <div className="max-w-md mx-auto">
-//                                 <div className="inline-flex p-3 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-lg mb-6">
+//                                 <div className="inline-flex p-3 bg-rose-100 dark:bg-rose-900/30 text-rosey-600 rounded-lg mb-6">
 //                                     <Search className="size-6" />
 //                                 </div>
 //                                 <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Your Dream Job is Waiting</h3>
 //                                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
 //                                     We’ve partnered with <strong>fingertipsjobs.com</strong> to bring you the most results in a single search. No need to visit multiple job boards.
 //                                 </p>
-//                                 <button className="px-6 py-2.5 bg-rose-600 text-white rounded font-medium hover:bg-rose-700 transition">
+//                                 <button className="px-6 py-2.5 bg-rosey-600 text-white rounded font-medium hover:bg-rose-700 transition">
 //                                     Search Jobs
 //                                 </button>
 //                             </div>
@@ -497,6 +497,7 @@ import {
 // Reuse existing Layout Components
 import NavBar from "../Revayah/NavBar";
 import Footer from "../Revayah/Footer";
+import Resume from "../../assets/images/resume-builder.png";
 
 const ResumeBuilder = () => {
     return (
@@ -516,21 +517,21 @@ const ResumeBuilder = () => {
                     <div className="container max-w-7xl px-4 mx-auto relative z-10">
                         <div className="grid lg:grid-cols-2 gap-12 items-center">
                             <div>
-                                <h5 className="text-rose-600 dark:text-rose-400 font-bold tracking-widest uppercase mb-4 text-sm">
+                                <h5 className="text-rosey-600 dark:text-rose-400 font-semibold tracking-widest uppercase mb-4 text-sm">
                                     Reva-Yah Resume Builder
                                 </h5>
-                                <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
-                                    Create a <span className="text-rose-600">Job-Ready Resume</span> That Speaks About You
+                                <h1 className="text-4xl md:text-5xl font-semibold text-slate-900 dark:text-white mb-6 leading-tight">
+                                    Create a <span className="text-rosey-600">Job-Ready Resume</span> That Speaks About You
                                 </h1>
                                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
                                     Rresume is a web resume, a digital form of your resume over the World Wide Web. Build the perfect resume in minutes with our Rresume builder.
                                 </p>
                                 <div className="flex flex-wrap gap-4">
                                     {/* Updated Button Sizes & Color (Rose) */}
-                                    <button className="px-6 py-2.5 bg-rose-600 text-white rounded font-medium hover:bg-rose-700 transition shadow-lg shadow-rose-500/30">
+                                    <button className="py-2 px-4 bg-rosey-600 text-white rounded font-medium hover:bg-rose-700 transition shadow-lg shadow-rose-500/30">
                                         Start Now
                                     </button>
-                                    <button className="px-6 py-2.5 bg-white text-rose-600 border border-slate-200 hover:border-rose-200 rounded font-medium hover:bg-slate-50 transition">
+                                    <button className="py-2 px-4 bg-white text-rosey-600 border border-slate-200 hover:border-rose-200 rounded font-medium hover:bg-slate-50 transition">
                                         View Templates
                                     </button>
                                 </div>
@@ -541,7 +542,7 @@ const ResumeBuilder = () => {
                                 <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 aspect-[4/3] flex items-center justify-center">
                                     {/* Replace src with actual resume builder screenshot */}
                                     <img 
-                                        src="https://placehold.co/800x600/fff1f2/e11d48?text=Resume+Builder+UI" 
+                                        src={Resume}
                                         alt="Rresume Builder Interface" 
                                         className="w-full h-full object-cover"
                                     />
@@ -572,7 +573,7 @@ const ResumeBuilder = () => {
 
                             {[
                                 { 
-                                    icon: <Layout className="size-8 text-rose-600" />, 
+                                    icon: <Layout className="size-8 text-rosey-600" />, 
                                     title: "Select a Template", 
                                     desc: "Choose from our professional, recruiter-approved designs." 
                                 },
@@ -664,14 +665,14 @@ const ResumeBuilder = () => {
                         {/* Job Search Service */}
                         <div className="p-12 lg:p-20 bg-rose-50 dark:bg-slate-900 flex flex-col justify-center">
                             <div className="max-w-md mx-auto">
-                                <div className="inline-flex p-3 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-lg mb-6">
+                                <div className="inline-flex p-3 bg-rose-100 dark:bg-rose-900/30 text-rosey-600 rounded-lg mb-6">
                                     <Search className="size-6" />
                                 </div>
                                 <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Your Dream Job is Waiting</h3>
                                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
                                     We’ve partnered with <strong>fingertipsjobs.com</strong> to bring you the most results in a single search. No need to visit multiple job boards.
                                 </p>
-                                <button className="px-6 py-2.5 bg-rose-600 text-white rounded font-medium hover:bg-rose-700 transition">
+                                <button className="px-6 py-2.5 bg-rosey-600 text-white rounded font-medium hover:bg-rose-700 transition">
                                     Search Jobs
                                 </button>
                             </div>
