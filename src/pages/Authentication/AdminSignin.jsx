@@ -467,7 +467,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
-import { setRole } from '../../store/Rolestore/roleSlice';
+import { setRole } from '../../store/RoleStore/roleSlice';
 import { setCookie } from '../../utility/cookies';
 import { verifyUser, resendVerificationEmail } from '../../service/userApi';
 import { LuEyeOff, LuEye } from 'react-icons/lu';

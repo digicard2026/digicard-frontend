@@ -11,7 +11,7 @@ import Modern from "../../assets/images/tailwickComp/Modern";
 
 // Your blue services and utilities
 import { verifyUser, resendVerificationEmail } from "../../service/userApi";
-import { setRole } from "../../store/Rolestore/roleSlice";
+import { setRole } from "../../store/RoleStore/roleSlice";
 
 const SignIn = () => {
   const navigate = useNavigate();
