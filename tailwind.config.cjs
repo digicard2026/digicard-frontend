@@ -5,12 +5,12 @@ module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
   theme: {
-   fontFamily: {
-  sans: ['"DM Sans"', 'sans-serif'],
-  satoshi: ['"Satoshi"', 'sans-serif'],
-  public: ['"Public Sans"', 'sans-serif'],
-  tourney: ['"Tourney"', 'sans-serif'],
-},
+    fontFamily: {
+      sans: ['"DM Sans"', 'sans-serif'],
+      satoshi: ['"Satoshi"', 'sans-serif'],
+      public: ['"Public Sans"', 'sans-serif'],
+      tourney: ['"Tourney"', 'sans-serif'],
+    },
 
     screens: {
       '2xsm': '375px',
@@ -24,20 +24,42 @@ module.exports = {
         current: 'currentColor',
         transparent: 'transparent',
         white: '#FFFFFF',
-        black: '#1C2434',
+        black: '#0F172A',
         'black-2': '#010101',
+        navy: {
+          DEFAULT: '#0F172A',
+          50: '#F8FAFC',
+          100: '#F1F5F9',
+          200: '#E2E8F0',
+          700: '#334155',
+          800: '#1E293B',
+          900: '#0F172A',
+          950: '#0B132B',
+          midnight: '#070C1E',
+        },
+        brand: {
+          navy: '#0F172A',
+          dark: '#0B132B',
+          midnight: '#070C1E',
+          blue: '#3A57E8',
+          royal: '#4361EE',
+          indigo: '#4F46E5',
+          gold: '#D97706',
+          amber: '#F59E0B',
+        },
         body: '#64748B',
         bodydark: '#AEB7C0',
         bodydark1: '#DEE4EE',
         bodydark2: '#8A99AF',
-        primary: '#3C50E0',
+        primary: '#0F172A',
+        'primary-blue': '#3A57E8',
         secondary: '#80CAEE',
         stroke: '#E2E8F0',
         gray: '#EFF4FB',
         graydark: '#333A48',
         'gray-2': '#F7F9FC',
         'gray-3': '#FAFAFA',
-        whiten: '#F1F5F9',
+        whiten: '#F8FAFC',
         whiter: '#F5F7FD',
         boxdark: '#24303F',
         'boxdark-2': '#1A222C',
@@ -57,12 +79,6 @@ module.exports = {
         danger: '#D34053',
         warning: '#FFA70B',
         "rosey-600": '#bc4062',
-       
-
-    
-
- 
-
       },
       fontSize: {
         'title-xxl': ['44px', '55px'],

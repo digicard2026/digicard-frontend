@@ -130,6 +130,9 @@ const Signup = () => {
       navigate("/create", {
         state: {
           selectedPlan: location.state.selectedPlan,
+          selectedAddons: location.state?.selectedAddons || [],
+          addonsObject: location.state?.addonsObject || {},
+          totalPrice: location.state?.totalPrice || null,
           userEmail,
           createdBy: location.state?.createdBy || "",
           fromPartnerDashboard: location.state?.fromPartnerDashboard || false,

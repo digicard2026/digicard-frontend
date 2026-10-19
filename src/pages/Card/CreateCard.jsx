@@ -168,28 +168,28 @@
 //   'tagline': ['Personal', 'Business', 'BusinessPremium'], // Tag line / Slogan
 //   'profileVideo': ['Personal', 'Business', 'BusinessPremium'],
 //   'aboutText': ['Personal', 'Business', 'BusinessPremium'],
-  
+
 //   // Contact Management (Personal, Business, BusinessPremium)
 //   'phones': ['Personal', 'Business', 'BusinessPremium'],
 //   'emails': ['Personal', 'Business', 'BusinessPremium'],
 //   'websites': ['Personal', 'Business', 'BusinessPremium'],
 //   'addresses': ['Personal', 'Business', 'BusinessPremium'],
-  
+
 //   // Social & Digital Hub (Personal, Business, BusinessPremium)
 //   'socialLinks': ['Personal', 'Business', 'BusinessPremium'],
-  
+
 //   // Utilities (Personal, Business, BusinessPremium)
 //   'dynamicQRCode': ['Personal', 'Business', 'BusinessPremium'],
 //   'shareableUrl': ['Personal', 'Business', 'BusinessPremium'],
 //   'nfcSettings': ['Personal', 'Business', 'BusinessPremium'],
 //   'downloads': ['Personal', 'Business', 'BusinessPremium'],
 //   'videos': ['Personal', 'Business', 'BusinessPremium'],
-  
+
 //   // Business-only fields
 //   'companyName': ['Business', 'BusinessPremium'],
 //   'businessHours': ['Business', 'BusinessPremium'],
 //   'virtualNumber': ['Business', 'BusinessPremium'],
-  
+
 //   // Professional/Business Details (Business, BusinessPremium)
 //   'services': ['Business', 'BusinessPremium'],
 //   'servicesProducts': ['Business', 'BusinessPremium'], // Brief about Product/Services
@@ -197,14 +197,14 @@
 //   'catalog': ['Business', 'BusinessPremium'], // Product/Catalog [PDF]
 //   'productVideo': ['Business', 'BusinessPremium'],
 //   'testimonials': ['Business', 'BusinessPremium'],
-  
+
 //   // BusinessPremium-only fields
 //   'interactiveElements': ['BusinessPremium'],
 //   'individualProductDisplay': ['BusinessPremium'],
 //   'clientList': ['BusinessPremium'],
 //   'businessCardInstagram': ['BusinessPremium'],
 //   'textbooks': ['BusinessPremium'],
-  
+
 //   // Additional fields for completeness
 //   'department': ['Business', 'BusinessPremium'],
 //   'jobTitle': ['Personal', 'Business', 'BusinessPremium'],
@@ -216,11 +216,11 @@
 //   'brandLabel': ['BusinessPremium'],
 //   'productRangeDisplay': ['BusinessPremium'],
 //   'catalogPDF': ['Business', 'BusinessPremium'],
-  
+
 //   // Chat & Assistant Fields
 //   'chatAssistant': ['BusinessPremium'],
 //   'liveChat': ['BusinessPremium'],
-  
+
 //   // New Contact Management Fields
 //   'enableOneTapCall': ['Personal', 'Business', 'BusinessPremium'],
 //   'enableWhatsApp': ['Personal', 'Business', 'BusinessPremium'],
@@ -236,22 +236,22 @@
 //     ...(data.lastName && { lastName: data.lastName }),
 //     ...(data.suffix && { suffix: data.suffix }),
 //     ...(data.profilePhoto && { profilePhoto: data.profilePhoto }),
-    
+
 //     // Email
 //     email: data.email,
-    
+
 //     // Card Type
 //     cardType: data.cardType || 'Personal',
-    
+
 //     // Include createdBy field
 //     ...(data.createdBy && { createdBy: data.createdBy }),
-    
+
 //     // URL Customization
 //     ...(data.customUrl && { customUrl: data.customUrl }),
 //     urlSlug: data.urlSlug,
 //     isPublic: data.isPublic !== undefined ? data.isPublic : true,
 //     ...(data.shareableUrl && { shareableUrl: data.shareableUrl }),
-    
+
 //     // Profile Page Fields
 //     ...(data.profileVideo?.url && { 
 //       profileVideo: data.profileVideo.url, // Store only the URL string for MongoDB
@@ -263,7 +263,7 @@
 //     ...(data.aboutText && { aboutText: data.aboutText }),
 //     ...(data.foundedName && { foundedName: data.foundedName }),
 //     ...(data.organization && { organization: data.organization }),
-    
+
 //     // Professional/Personal Details
 //     ...(data.companyName && { companyName: data.companyName }),
 //     ...(data.department && { department: data.department }),
@@ -287,16 +287,16 @@
 //     ...(data.individualProductDisplay && { individualProductDisplay: data.individualProductDisplay }),
 //     ...(data.businessCardInstagram && { businessCardInstagram: data.businessCardInstagram }),
 //     ...(data.textbooks && { textbooks: data.textbooks }),
-    
+
 //     // Email addresses array
 //     emails: data.emails
 //       ? data.emails.filter(email => email.address && email.address.trim() !== "")
 //       : [],
-    
+
 //     // Contact Details
 //     phones: data.phones.filter(phone => phone.number && phone.number.trim() !== ""),
 //     websites: data.websites.filter(website => website.url && website.url.trim() !== ""),
-    
+
 //     // Address & Location Fields
 //     addresses: data.addresses
 //       .filter(address => address.street && address.street.trim() !== "")
@@ -311,13 +311,13 @@
 //         ...(address.googleMapsLink && { googleMapsLink: address.googleMapsLink }),
 //         isPrimary: address.isPrimary
 //       })),
-    
+
 //     // Social Media Links
 //     socialLinks: data.socialLinks.filter(link => link.url && link.url.trim() !== ""),
-    
+
 //     // Business Hours
 //     ...(data.businessHours && { businessHours: data.businessHours }),
-    
+
 //     // Services & Products
 //     services: data.services
 //       .filter(service => service.name && service.name.trim() !== "")
@@ -330,7 +330,7 @@
 //         ...(service.category && { category: service.category }),
 //         ...(service.image && { image: service.image })
 //       })),
-    
+
 //     products: data.products
 //       .filter(product => product.name && product.name.trim() !== "")
 //       .map(product => ({
@@ -342,7 +342,7 @@
 //         inStock: product.inStock,
 //         ...(product.image && { image: product.image })
 //       })),
-    
+
 //     // Interactive Elements
 //     interactiveElements: data.interactiveElements
 //       .filter(element => element.type)
@@ -352,7 +352,7 @@
 //         isActive: element.isActive !== undefined ? element.isActive : true,
 //         position: element.position || 0
 //       })),
-    
+
 //     // Premium Features
 //     ...(data.testimonials && data.testimonials.length > 0 && {
 //       testimonials: data.testimonials
@@ -366,11 +366,11 @@
 //           ...(testimonial.position && { position: testimonial.position })
 //         }))
 //     }),
-    
+
 //     ...(data.clientList && data.clientList.length > 0 && {
 //       clientList: data.clientList.filter(client => client.trim() !== "")
 //     }),
-    
+
 //     ...(data.gallery && data.gallery.length > 0 && {
 //       gallery: data.gallery
 //         .filter(item => item.url && item.url.trim() !== "")
@@ -384,11 +384,11 @@
 //           ...(item.uploadType && { uploadType: item.uploadType })
 //         }))
 //     }),
-    
+
 //     ...(data.dynamicQRCode?.targetUrl && { dynamicQRCode: data.dynamicQRCode }),
-    
+
 //     ...(data.nfcSettings && { nfcSettings: data.nfcSettings }),
-    
+
 //     // Downloads with upload type support
 //     ...(data.downloads && data.downloads.length > 0 && {
 //       downloads: data.downloads
@@ -427,7 +427,7 @@
 //     enableOneTapCall: data.enableOneTapCall !== undefined ? data.enableOneTapCall : true,
 //     enableWhatsApp: data.enableWhatsApp !== undefined ? data.enableWhatsApp : true,
 //     enableEmail: data.enableEmail !== undefined ? data.enableEmail : true,
-    
+
 //     // Design
 //     design: data.design,
 //     cardLayout: data.cardLayout
@@ -435,7 +435,7 @@
 
 //   console.log(`📤 Final payload size: ${JSON.stringify(optimized).length} bytes`);
 //   console.log('📤 Final payload structure:', JSON.stringify(optimized, null, 2).substring(0, 500));
-  
+
 //   return optimized;
 // };
 
@@ -576,7 +576,7 @@
 // const CreateCard = () => {
 //   const navigate = useNavigate();
 //   const location = useLocation();
-  
+
 //   // Get plan from navigation state
 //   const selectedPlanFromState = location.state?.selectedPlan || 'Personal';
 //   const userEmailFromSignIn = location.state?.userEmail || '';
@@ -593,7 +593,7 @@
 //   const [checkingEmail, setCheckingEmail] = useState(false);
 //   const [emailError, setEmailError] = useState("");
 //   const [showDesignSelection, setShowDesignSelection] = useState(false);
-  
+
 //   // URL Slug States
 //   const [checkingUrl, setCheckingUrl] = useState(false);
 //   const [urlAvailable, setUrlAvailable] = useState(null);
@@ -636,25 +636,25 @@
 //   // Get available steps based on plan
 //   const getAvailableSteps = () => {
 //     const steps = [1]; // Step 1 is always available
-    
+
 //     // Check Step 2
 //     const step2Fields = ['companyName', 'department', 'jobTitle', 'bio', 'companyLogo', 'logoSize', 'foundedName', 'organization', 'servicesProducts', 'brandLabel', 'catalog', 'businessHours', 'virtualNumber', 'catalogPDF', 'productVideo'];
 //     if (isSectionVisible(step2Fields)) {
 //       steps.push(2);
 //     }
-    
+
 //     // Step 3 is always available (has social links)
 //     steps.push(3);
-    
+
 //     // Check Step 4
 //     const step4Fields = ['interactiveElements', 'testimonials', 'gallery', 'dynamicQRCode', 'nfcSettings', 'downloads', 'videos', 'chatAssistant', 'liveChat'];
 //     if (isSectionVisible(step4Fields)) {
 //       steps.push(4);
 //     }
-    
+
 //     // Step 5 is always DESIGN SELECTION
 //     steps.push(5);
-    
+
 //     return steps;
 //   };
 
@@ -679,23 +679,23 @@
 //     lastName: "",
 //     suffix: "",
 //     profilePhoto: null,
-    
+
 //     // Email
 //     email: userEmailFromSignIn || "",
 //     emails: [{ label: "work", address: "" }],
-    
+
 //     // Card Type
 //     cardType: selectedPlanFromState,
-    
+
 //     // Partner ID field
 //     createdBy: partnerIdFromState || "",
-    
+
 //     // URL Customization
 //     customUrl: "",
 //     urlSlug: "",
 //     shareableUrl: "",
 //     isPublic: true,
-    
+
 //     // Profile Page Fields
 //     profileVideo: {
 //       url: "",
@@ -707,7 +707,7 @@
 //     aboutText: "",
 //     foundedName: "",
 //     organization: "",
-    
+
 //     // Professional/Personal Details
 //     companyName: "",
 //     department: "",
@@ -730,7 +730,7 @@
 //     individualProductDisplay: false,
 //     businessCardInstagram: "",
 //     textbooks: "",
-    
+
 //     // Contact Details
 //     phones: [{ label: "work", number: "" }],
 //     websites: [{ label: "personal", url: "" }],
@@ -745,7 +745,7 @@
 //       googleMapsLink: "",
 //       isPrimary: true
 //     }],
-   
+
 //     businessHours: [
 //       { day: 'monday', openingTime: '09:00', closingTime: '17:00', isClosed: false },
 //       { day: 'tuesday', openingTime: '09:00', closingTime: '17:00', isClosed: false },
@@ -755,7 +755,7 @@
 //       { day: 'saturday', openingTime: '', closingTime: '', isClosed: true },
 //       { day: 'sunday', openingTime: '', closingTime: '', isClosed: true }
 //     ],
-    
+
 //     // Social Media Links
 //     socialLinks: [
 //       { platform: "linkedin", url: "" },
@@ -768,7 +768,7 @@
 //       { platform: "telegram", url: "" },
 //       { platform: "website", url: "" }
 //     ],
-    
+
 //     // Services & Products
 //     services: [{
 //       name: "",
@@ -788,10 +788,10 @@
 //       image: null,
 //       inStock: true
 //     }],
-    
+
 //     // Interactive Elements
 //     interactiveElements: [],
-    
+
 //     // Premium Features
 //     testimonials: [],
 //     clientList: [],
@@ -809,7 +809,7 @@
 //     },
 //     downloads: [],
 //     videos: [],
-    
+
 //     // Chat Features
 //     chatAssistant: {
 //       isEnabled: false,
@@ -826,7 +826,7 @@
 //     enableOneTapCall: true,
 //     enableWhatsApp: true,
 //     enableEmail: true,
-    
+
 //     // Design
 //     design: "",
 //     cardLayout: "standard"
@@ -845,10 +845,10 @@
 //     const value = e.target.value;
 //     setPartnerId(value);
 //     const updatedData = { ...formData, createdBy: value };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
 //     autoSaveToLocalStorage(updatedData);
@@ -889,15 +889,15 @@
 //   const handleEmailChange = async (e) => {
 //     const email = e.target.value;
 //     const updatedData = { ...formData, email };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
 //     setEmailError("");
-    
+
 //     if (email && !validateEmail(email)) {
 //       setEmailError("Please enter a valid email address");
 //     }
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
 //     autoSaveToLocalStorage(updatedData);
@@ -906,11 +906,11 @@
 //   // ✅ LOCAL STORAGE AUTO-SAVE FUNCTION
 //   const autoSaveToLocalStorage = useCallback((data) => {
 //     if (editingCard) return; // Don't auto-save when editing
-    
+
 //     if (autoSaveTimeoutRef.current) {
 //       clearTimeout(autoSaveTimeoutRef.current);
 //     }
-    
+
 //     autoSaveTimeoutRef.current = setTimeout(() => {
 //       try {
 //         const storageData = {
@@ -945,12 +945,12 @@
 //           step: currentStep,
 //           plan: data.cardType
 //         };
-        
+
 //         localStorage.setItem(`card_draft_${data.email || 'anonymous'}`, JSON.stringify(storageData));
 //         localStorage.setItem(`card_draft_form_${data.email || 'anonymous'}`, JSON.stringify(data));
-        
+
 //         setHasUnsavedChanges(false);
-        
+
 //         console.log('💾 Auto-saved to localStorage');
 //       } catch (error) {
 //         console.error('LocalStorage save error:', error);
@@ -963,10 +963,10 @@
 //     try {
 //       const email = userEmailFromSignIn || formData.email || 'anonymous';
 //       const savedFormData = localStorage.getItem(`card_draft_form_${email}`);
-      
+
 //       if (savedFormData) {
 //         const parsedData = JSON.parse(savedFormData);
-        
+
 //         setFormData(prev => {
 //           const merged = {
 //             ...prev,
@@ -989,18 +989,18 @@
 //             profileVideo: parsedData.profileVideo || prev.profileVideo,
 //             productVideo: parsedData.productVideo || prev.productVideo
 //           };
-          
+
 //           formDataRef.current = merged;
 //           return merged;
 //         });
-        
+
 //         const draftInfo = localStorage.getItem(`card_draft_${email}`);
 //         if (draftInfo) {
 //           const info = JSON.parse(draftInfo);
 //           if (info.step) setCurrentStep(info.step);
 //           if (info.createdBy) setPartnerId(info.createdBy);
 //         }
-        
+
 //         setHasUnsavedChanges(false);
 //         console.log('✅ Draft loaded from localStorage');
 //       }
@@ -1033,13 +1033,13 @@
 //   const handleCustomUrlChange = (e) => {
 //     const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
 //     const updatedData = { ...formData, customUrl: value, urlSlug: value };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1077,13 +1077,13 @@
 //               ×
 //             </button>
 //           </div>
-          
+
 //           <div className="text-center py-4">
 //             <p className="text-slate-700 text-lg leading-relaxed">
 //               {warningMessage}
 //             </p>
 //           </div>
-          
+
 //           <div className="flex justify-center mt-4">
 //             <button
 //               onClick={() => setShowWarning(false)}
@@ -1101,13 +1101,13 @@
 //   const handleChange = (e) => {
 //     const { name, value } = e.target;
 //     const updatedData = { ...formData, [name]: value };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1116,13 +1116,13 @@
 //     const updatedArray = [...formData[field]];
 //     updatedArray[index] = { ...updatedArray[index], [subField]: value };
 //     const updatedData = { ...formData, [field]: updatedArray };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1134,15 +1134,15 @@
 //         : link
 //     );
 //     const updatedData = { ...formData, socialLinks: updatedSocialLinks };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
-    
+
 //     setActiveSocialPlatform("");
 //   };
 
@@ -1152,13 +1152,13 @@
 //       ...formData,
 //       [field]: [...formData[field], defaultItem]
 //     };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1166,13 +1166,13 @@
 //   const removeArrayField = (field, index) => {
 //     const updatedArray = formData[field].filter((_, i) => i !== index);
 //     const updatedData = { ...formData, [field]: updatedArray };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1187,13 +1187,13 @@
 //       const updatedArray = [...formData[field]];
 //       updatedArray[index] = { ...updatedArray[index], image: base64Image };
 //       const updatedData = { ...formData, [field]: updatedArray };
-      
+
 //       setFormData(updatedData);
 //       formDataRef.current = updatedData;
-      
+
 //       setHasUnsavedChanges(true);
 //       setChangeCount(prev => prev + 1);
-      
+
 //       autoSaveToLocalStorage(updatedData);
 //     };
 //     reader.readAsDataURL(file);
@@ -1208,13 +1208,13 @@
 //     reader.onload = (e) => {
 //       const base64Image = e.target.result;
 //       const updatedData = { ...formData, [field]: base64Image };
-      
+
 //       setFormData(updatedData);
 //       formDataRef.current = updatedData;
-      
+
 //       setHasUnsavedChanges(true);
 //       setChangeCount(prev => prev + 1);
-      
+
 //       autoSaveToLocalStorage(updatedData);
 //     };
 //     reader.readAsDataURL(file);
@@ -1229,13 +1229,13 @@
 //     reader.onload = (e) => {
 //       const base64PDF = e.target.result;
 //       const updatedData = { ...formData, catalogPDF: base64PDF };
-      
+
 //       setFormData(updatedData);
 //       formDataRef.current = updatedData;
-      
+
 //       setHasUnsavedChanges(true);
 //       setChangeCount(prev => prev + 1);
-      
+
 //       autoSaveToLocalStorage(updatedData);
 //     };
 //     reader.readAsDataURL(file);
@@ -1246,13 +1246,13 @@
 //     const updatedAddresses = [...formData.addresses];
 //     updatedAddresses[index] = { ...updatedAddresses[index], [field]: value };
 //     const updatedData = { ...formData, addresses: updatedAddresses };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1274,26 +1274,26 @@
 //         }
 //       ]
 //     };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
 //   const removeAddress = (index) => {
 //     const updatedAddresses = formData.addresses.filter((_, i) => i !== index);
 //     const updatedData = { ...formData, addresses: updatedAddresses };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1303,13 +1303,13 @@
 //       isPrimary: i === index
 //     }));
 //     const updatedData = { ...formData, addresses: updatedAddresses };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1322,10 +1322,10 @@
 //       address.postalCode,
 //       address.country
 //     ].filter(part => part && part.trim() !== "");
-    
+
 //     const fullAddress = parts.join(', ');
 //     handleAddressChange(index, 'fullAddress', fullAddress);
-    
+
 //     if (address.street && address.city) {
 //       const mapsQuery = encodeURIComponent(fullAddress);
 //       handleAddressChange(index, 'googleMapsLink', `https://maps.google.com/?q=${mapsQuery}`);
@@ -1363,7 +1363,7 @@
 //     reader.onload = (e) => {
 //       const base64Video = e.target.result;
 //       const thumbnail = generateThumbnailFromVideo(base64Video);
-      
+
 //       const updatedData = {
 //         ...formData,
 //         [field]: {
@@ -1373,13 +1373,13 @@
 //           uploadType: 'upload'
 //         }
 //       };
-      
+
 //       setFormData(updatedData);
 //       formDataRef.current = updatedData;
-      
+
 //       setHasUnsavedChanges(true);
 //       setChangeCount(prev => prev + 1);
-      
+
 //       autoSaveToLocalStorage(updatedData);
 //     };
 //     reader.readAsDataURL(file);
@@ -1411,13 +1411,13 @@
 //         catalog: base64PDF,
 //         catalogPDF: base64PDF 
 //       };
-      
+
 //       setFormData(updatedData);
 //       formDataRef.current = updatedData;
-      
+
 //       setHasUnsavedChanges(true);
 //       setChangeCount(prev => prev + 1);
-      
+
 //       autoSaveToLocalStorage(updatedData);
 //     };
 //     reader.readAsDataURL(file);
@@ -1434,7 +1434,7 @@
 //       const fileType = file.type.startsWith('image/') ? 'image' : 
 //                       file.type.startsWith('video/') ? 'video' : 
 //                       file.type === 'application/pdf' ? 'pdf' : 'document';
-      
+
 //       const updatedGallery = [...formData.gallery];
 //       updatedGallery[index] = { 
 //         ...updatedGallery[index], 
@@ -1442,15 +1442,15 @@
 //         url: fileData,
 //         uploadType: 'upload'
 //       };
-      
+
 //       const updatedData = { ...formData, gallery: updatedGallery };
-      
+
 //       setFormData(updatedData);
 //       formDataRef.current = updatedData;
-      
+
 //       setHasUnsavedChanges(true);
 //       setChangeCount(prev => prev + 1);
-      
+
 //       autoSaveToLocalStorage(updatedData);
 //     };
 //     reader.readAsDataURL(file);
@@ -1468,7 +1468,7 @@
 //                       file.type.startsWith('image/') ? 'image' : 
 //                       file.type.startsWith('video/') ? 'video' : 
 //                       'document';
-      
+
 //       const updatedDownloads = [...formData.downloads];
 //       updatedDownloads[index] = { 
 //         ...updatedDownloads[index], 
@@ -1477,15 +1477,15 @@
 //         fileSize: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
 //         uploadType: 'upload'
 //       };
-      
+
 //       const updatedData = { ...formData, downloads: updatedDownloads };
-      
+
 //       setFormData(updatedData);
 //       formDataRef.current = updatedData;
-      
+
 //       setHasUnsavedChanges(true);
 //       setChangeCount(prev => prev + 1);
-      
+
 //       autoSaveToLocalStorage(updatedData);
 //     };
 //     reader.readAsDataURL(file);
@@ -1512,7 +1512,7 @@
 //     reader.onload = (e) => {
 //       const videoData = e.target.result;
 //       const thumbnail = generateThumbnailFromVideo(videoData);
-      
+
 //       const updatedVideos = [...formData.videos];
 //       updatedVideos[index] = { 
 //         ...updatedVideos[index], 
@@ -1521,15 +1521,15 @@
 //         thumbnail: thumbnail,
 //         uploadType: 'upload'
 //       };
-      
+
 //       const updatedData = { ...formData, videos: updatedVideos };
-      
+
 //       setFormData(updatedData);
 //       formDataRef.current = updatedData;
-      
+
 //       setHasUnsavedChanges(true);
 //       setChangeCount(prev => prev + 1);
-      
+
 //       autoSaveToLocalStorage(updatedData);
 //     };
 //     reader.readAsDataURL(file);
@@ -1542,13 +1542,13 @@
 //     const updatedTestimonials = [...formData.testimonials];
 //     updatedTestimonials[index] = { ...updatedTestimonials[index], [field]: value };
 //     const updatedData = { ...formData, testimonials: updatedTestimonials };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1556,13 +1556,13 @@
 //     const updatedGallery = [...formData.gallery];
 //     updatedGallery[index] = { ...updatedGallery[index], [field]: value };
 //     const updatedData = { ...formData, gallery: updatedGallery };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1570,13 +1570,13 @@
 //     const updatedElements = [...formData.interactiveElements];
 //     updatedElements[index] = { ...updatedElements[index], [field]: value };
 //     const updatedData = { ...formData, interactiveElements: updatedElements };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1584,26 +1584,26 @@
 //     const updatedDownloads = [...formData.downloads];
 //     updatedDownloads[index] = { ...updatedDownloads[index], [field]: value };
 //     const updatedData = { ...formData, downloads: updatedDownloads };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
 //   // Handle virtual number change
 //   const handleVirtualNumberChange = (e) => {
 //     const updatedData = { ...formData, virtualNumber: e.target.value };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1613,13 +1613,13 @@
 //       ...formData,
 //       productVideo: { ...formData.productVideo, [field]: value }
 //     };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1628,13 +1628,13 @@
 //     const updatedVideos = [...formData.videos];
 //     updatedVideos[index] = { ...updatedVideos[index], [field]: value };
 //     const updatedData = { ...formData, videos: updatedVideos };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1647,13 +1647,13 @@
 //         isEnabled: e.target.checked
 //       }
 //     };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1663,13 +1663,13 @@
 //       ...formData,
 //       liveChat: { ...formData.liveChat, [field]: value }
 //     };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1680,15 +1680,15 @@
 //       ...updatedBusinessHours[dayIndex], 
 //       [field]: field === 'isClosed' ? (value === 'true') : value 
 //     };
-    
+
 //     const updatedData = { ...formData, businessHours: updatedBusinessHours };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1708,13 +1708,13 @@
 //         }
 //       ]
 //     };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1734,13 +1734,13 @@
 //         }
 //       ]
 //     };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1757,13 +1757,13 @@
 //         }
 //       ]
 //     };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1782,13 +1782,13 @@
 //         }
 //       ]
 //     };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1807,13 +1807,13 @@
 //         }
 //       ]
 //     };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1821,65 +1821,65 @@
 //   const removeTestimonial = (index) => {
 //     const updatedTestimonials = formData.testimonials.filter((_, i) => i !== index);
 //     const updatedData = { ...formData, testimonials: updatedTestimonials };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
 //   const removeGalleryItem = (index) => {
 //     const updatedGallery = formData.gallery.filter((_, i) => i !== index);
 //     const updatedData = { ...formData, gallery: updatedGallery };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
 //   const removeInteractiveElement = (index) => {
 //     const updatedElements = formData.interactiveElements.filter((_, i) => i !== index);
 //     const updatedData = { ...formData, interactiveElements: updatedElements };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
 //   const removeDownload = (index) => {
 //     const updatedDownloads = formData.downloads.filter((_, i) => i !== index);
 //     const updatedData = { ...formData, downloads: updatedDownloads };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
 //   const removeVideo = (index) => {
 //     const updatedVideos = formData.videos.filter((_, i) => i !== index);
 //     const updatedData = { ...formData, videos: updatedVideos };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -1892,7 +1892,7 @@
 //       }
 //       return true;
 //     }
-    
+
 //     switch (currentStep) {
 //       case 1:
 //         if (!formData.email?.trim()) {
@@ -1919,14 +1919,14 @@
 //       setShowWarning(true);
 //       return;
 //     }
-    
+
 //     const availableSteps = getAvailableSteps();
 //     const currentIndex = availableSteps.indexOf(currentStep);
-    
+
 //     if (currentIndex < availableSteps.length - 1) {
 //       const nextStepIndex = availableSteps[currentIndex + 1];
 //       setCurrentStep(nextStepIndex);
-      
+
 //       if (nextStepIndex === 5) {
 //         setShowDesignSelection(true);
 //       }
@@ -1936,11 +1936,11 @@
 //   const prevStep = () => {
 //     const availableSteps = getAvailableSteps();
 //     const currentIndex = availableSteps.indexOf(currentStep);
-    
+
 //     if (currentIndex > 0) {
 //       const prevStepIndex = availableSteps[currentIndex - 1];
 //       setCurrentStep(prevStepIndex);
-      
+
 //       if (currentStep === 5) {
 //         setShowDesignSelection(false);
 //       }
@@ -1952,9 +1952,9 @@
 //     try {
 //       setLoading(true);
 //       setSaveStatus("Saving card...");
-      
+
 //       const cleanedData = cleanFormData(cardData);
-      
+
 //       console.log("📤 Saving card data:", {
 //         editing: !!editingCard,
 //         email: cleanedData.email,
@@ -1963,16 +1963,16 @@
 //         createdBy: cleanedData.createdBy,
 //         urlSlug: cleanedData.urlSlug
 //       });
-      
+
 //       // For editing: preserve the existing URL slug
 //       if (editingCard && editingCard._id) {
 //         // Keep the original URL slug when editing
 //         cleanedData.urlSlug = editingCard.urlSlug || cleanedData.urlSlug;
-        
+
 //         // Use the update endpoint
 //         const url = `${CARD_URL}/update-card/${editingCard._id}`;
 //         console.log("🔄 Updating existing card at:", url);
-        
+
 //         const response = await fetch(url, {
 //           method: "PUT",
 //           headers: {
@@ -1980,33 +1980,33 @@
 //           },
 //           body: JSON.stringify(cleanedData)
 //         });
-        
+
 //         const responseText = await response.text();
 //         console.log("📨 Update response:", responseText.substring(0, 200));
-        
+
 //         if (!response.ok) {
 //           console.error('❌ Update error status:', response.status);
-          
+
 //           if (responseText.includes('duplicate') && responseText.includes('urlSlug')) {
 //             throw new Error('This URL is already taken by another card.');
 //           }
-          
+
 //           if (responseText.includes('Card not found')) {
 //             throw new Error('Card not found. It may have been deleted.');
 //           }
-          
+
 //           throw new Error(`Update failed (${response.status}): ${responseText.substring(0, 100)}`);
 //         }
-        
+
 //         const responseData = JSON.parse(responseText);
 //         setSaveStatus("🎉 Card updated successfully!");
 //         console.log("✅ Update successful:", responseData);
-        
+
 //         return responseData.card || responseData;
 //       } else {
 //         // For new cards
 //         console.log("🆕 Creating new card");
-        
+
 //         const response = await fetch(`${CARD_URL}/create-card`, {
 //           method: "POST",
 //           headers: {
@@ -2014,26 +2014,26 @@
 //           },
 //           body: JSON.stringify(cleanedData)
 //         });
-        
+
 //         const responseText = await response.text();
-        
+
 //         if (!response.ok) {
 //           console.error('❌ Create error:', response.status, responseText);
-          
+
 //           if (responseText.includes('Email already has')) {
 //             throw new Error('A card already exists for this email. Please login to edit your existing card.');
 //           }
-          
+
 //           throw new Error(`Creation failed (${response.status}): ${responseText.substring(0, 100)}`);
 //         }
-        
+
 //         const responseData = JSON.parse(responseText);
 //         setSaveStatus("🎉 Card created successfully!");
 //         console.log("✅ Creation successful:", responseData);
-        
+
 //         return responseData.card || responseData;
 //       }
-      
+
 //     } catch (error) {
 //       console.error('❌ Error saving card:', error);
 //       setSaveStatus(`Error: ${error.message}`);
@@ -2045,13 +2045,13 @@
 
 //   const handleDesignSelect = (designId) => {
 //     const updatedData = { ...formData, design: designId };
-    
+
 //     setFormData(updatedData);
 //     formDataRef.current = updatedData;
-    
+
 //     setHasUnsavedChanges(true);
 //     setChangeCount(prev => prev + 1);
-    
+
 //     autoSaveToLocalStorage(updatedData);
 //   };
 
@@ -2059,7 +2059,7 @@
 //   const handleFinalSubmit = async () => {
 //     try {
 //       setLoading(true);
-      
+
 //       // Validate design is selected
 //       if (!formData.design || formData.design.trim() === "") {
 //         setWarningMessage("Please select a design theme before creating your card!");
@@ -2067,7 +2067,7 @@
 //         setLoading(false);
 //         return;
 //       }
-      
+
 //       // Validate required fields
 //       if (!formData.email || !validateEmail(formData.email)) {
 //         setWarningMessage("Please enter a valid email address!");
@@ -2075,37 +2075,37 @@
 //         setLoading(false);
 //         return;
 //       }
-      
+
 //       if (!formData.firstName || formData.firstName.trim() === "") {
 //         setWarningMessage("Please enter your first name!");
 //         setShowWarning(true);
 //         setLoading(false);
 //         return;
 //       }
-      
+
 //       console.log("🚀 Final submit - Editing mode:", !!editingCard);
-      
+
 //       // Save the card
 //       const result = await saveCardToBackend(formData);
-      
+
 //       // Get the URL
 //       const shareUrl = `${FRONTEND_URL}/preview/${result.urlSlug || formData.urlSlug}`;
-      
+
 //       // Show success message
 //       alert(`🎉 Card ${editingCard ? 'updated' : 'created'} successfully!\n\n🔗 Your shareable URL:\n${shareUrl}`);
-      
+
 //       // Copy to clipboard
 //       navigator.clipboard.writeText(shareUrl);
-      
+
 //       // Clear local storage if this was a new card
 //       if (!editingCard && formData.email) {
 //         localStorage.removeItem(`card_draft_${formData.email}`);
 //         localStorage.removeItem(`card_draft_form_${formData.email}`);
 //       }
-      
+
 //       // Navigate to preview
 //       navigate(`/preview/${result.urlSlug || formData.urlSlug}`);
-      
+
 //     } catch (error) {
 //       console.error('❌ Final submit error:', error);
 //       setSaveStatus(`Error: ${error.message}`);
@@ -2137,7 +2137,7 @@
 //   useEffect(() => {
 //     if (editingCard) {
 //       console.log("📝 Loading editing card data:", editingCard._id);
-      
+
 //       // Ensure all fields are properly loaded
 //       const loadedData = {
 //         ...initialFormState,
@@ -2174,14 +2174,14 @@
 //           uploadType: editingCard.productVideoUploadType || 'url'
 //         } : initialFormState.productVideo
 //       };
-      
+
 //       setFormData(loadedData);
 //       formDataRef.current = loadedData;
-      
+
 //       if (editingCard.urlSlug) {
 //         setGeneratedSlug(editingCard.urlSlug);
 //       }
-      
+
 //       // Always go to design step when editing
 //       setTimeout(() => {
 //         const availableSteps = getAvailableSteps();
@@ -2190,7 +2190,7 @@
 //           setShowDesignSelection(true);
 //         }
 //       }, 300);
-      
+
 //       setIsFromLogin(true);
 //       setHasUnsavedChanges(false);
 //     }
@@ -2224,11 +2224,11 @@
 //       console.log("Editing mode - skipping draft load");
 //       return;
 //     }
-    
+
 //     const timeoutId = setTimeout(() => {
 //       loadDraftFromLocalStorage();
 //     }, 300);
-    
+
 //     return () => clearTimeout(timeoutId);
 //   }, [editingCard, loadDraftFromLocalStorage]);
 
@@ -2244,7 +2244,7 @@
 //     };
 
 //     window.addEventListener('beforeunload', handleBeforeUnload);
-    
+
 //     return () => {
 //       window.removeEventListener('beforeunload', handleBeforeUnload);
 //       if (autoSaveTimeoutRef.current) {
@@ -2266,7 +2266,7 @@
 //   const renderProfilePage = () => {
 //     const profileSectionFields = ['prefix', 'firstName', 'lastName', 'suffix', 'profilePhoto', 'profileVideo', 'tagline', 'aboutText', 'foundedName', 'organization'];
 //     const urlSectionFields = ['customUrl', 'urlSlug'];
-    
+
 //     const shouldShowProfileSection = isSectionVisible(profileSectionFields);
 //     const shouldShowUrlSection = isSectionVisible(urlSectionFields);
 
@@ -2350,7 +2350,7 @@
 //                     <option value="Prof.">Prof.</option>
 //                   </select>
 //                 </div>
-                
+
 //                 <div>
 //                   <label className="block text-slate-700 mb-1">Suffix</label>
 //                   <input 
@@ -2379,7 +2379,7 @@
 //                     required
 //                   />
 //                 </div>
-                
+
 //                 {isFieldVisible('lastName') && (
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Last Name</label>
@@ -2493,7 +2493,7 @@
 //               <FaVideo className="w-5 h-5 text-blue-500 mr-2" />
 //               Profile Video
 //             </h4>
-            
+
 //             {/* Upload Type Toggle */}
 //             <div className="flex space-x-4 mb-4">
 //               <button
@@ -2521,7 +2521,7 @@
 //                 Upload File
 //               </button>
 //             </div>
-            
+
 //             <div className="space-y-4">
 //               {uploadType.profileVideo === 'url' ? (
 //                 <div>
@@ -2605,7 +2605,7 @@
 //                   )}
 //                 </div>
 //               )}
-              
+
 //               <div className="grid grid-cols-2 gap-4">
 //                 <div>
 //                   <label className="block text-slate-700 mb-1">Video Title</label>
@@ -2627,7 +2627,7 @@
 //                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                   />
 //                 </div>
-                
+
 //                 <div>
 //                   <label className="block text-slate-700 mb-1">Thumbnail URL</label>
 //                   <input 
@@ -2702,7 +2702,7 @@
 //         {shouldShowUrlSection && (
 //           <div className="border-t pt-6 mt-6">
 //             <h4 className="text-lg font-semibold text-slate-800 mb-4">Your Shareable Card URL</h4>
-            
+
 //             <div className="space-y-4">
 //               {(formData.urlSlug || generatedSlug) && (
 //                 <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
@@ -2756,7 +2756,7 @@
 //                     ) : null}
 //                   </div>
 //                 </div>
-                
+
 //                 {urlAvailable === false && !isFromLogin && (
 //                   <p className="text-red-600 text-sm mt-2">
 //                     This URL is already taken. Please choose a different one.
@@ -2767,7 +2767,7 @@
 //                     This URL is available! You can use it for your card.
 //                   </p>
 //                 )}
-                
+
 //                 {!editingCard && (
 //                   <div className="mt-3 p-3 bg-blue-50 rounded-lg">
 //                     <p className="text-sm text-blue-800">
@@ -2790,7 +2790,7 @@
 //       'servicesProducts', 'brandLabel', 'catalog', 'businessHours', 'virtualNumber',
 //       'productVideo', 'individualProductDisplay', 'businessCardInstagram', 'textbooks'
 //     ];
-    
+
 //     const shouldShowProfessionalSection = isSectionVisible(professionalFields);
 
 //     if (!shouldShowProfessionalSection) {
@@ -2838,7 +2838,7 @@
 //                 />
 //               </div>
 //             )}
-            
+
 //             {isFieldVisible('jobTitle') && (
 //               <div>
 //                 <label className="block text-slate-700 mb-1">Job Title</label>
@@ -2929,7 +2929,7 @@
 //                 Upload PDF
 //               </button>
 //             </div>
-            
+
 //             {uploadType.catalog === 'url' ? (
 //               <input 
 //                 type="text" 
@@ -3059,7 +3059,7 @@
 //                 </>
 //               )}
 //             </div>
-            
+
 //             {isFieldVisible('logoSize') && (
 //               <div className="mt-4">
 //                 <label className="block text-slate-700 mb-1">Logo Size</label>
@@ -3085,7 +3085,7 @@
 //               <FaVideo className="w-5 h-5 text-red-500 mr-2" />
 //               Product/Service Video
 //             </h4>
-            
+
 //             {/* Upload Type Toggle */}
 //             <div className="flex space-x-4 mb-4">
 //               <button
@@ -3113,7 +3113,7 @@
 //                 Upload File
 //               </button>
 //             </div>
-            
+
 //             <div className="space-y-4">
 //               {uploadType.productVideo === 'url' ? (
 //                 <div>
@@ -3187,7 +3187,7 @@
 //                   )}
 //                 </div>
 //               )}
-              
+
 //               <div className="grid grid-cols-2 gap-4">
 //                 <div>
 //                   <label className="block text-slate-700 mb-1">Video Title</label>
@@ -3199,7 +3199,7 @@
 //                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                   />
 //                 </div>
-                
+
 //                 <div>
 //                   <label className="block text-slate-700 mb-1">Thumbnail URL</label>
 //                   <input 
@@ -3222,12 +3222,12 @@
 //               <FaClock className="w-5 h-5 text-blue-500 mr-2" />
 //               Business Hours
 //             </h4>
-            
+
 //             <div className="space-y-4">
 //               {formData.businessHours.map((day, index) => (
 //                 <div key={day.day} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
 //                   <span className="font-medium text-slate-700 w-24 capitalize">{day.day}</span>
-                  
+
 //                   <div className="flex items-center space-x-4">
 //                     <select 
 //                       value={day.isClosed ? 'true' : 'false'}
@@ -3237,7 +3237,7 @@
 //                       <option value="false">Open</option>
 //                       <option value="true">Closed</option>
 //                     </select>
-                    
+
 //                     {!day.isClosed && (
 //                       <>
 //                         <input 
@@ -3269,7 +3269,7 @@
 //               <FaShoppingCart className="w-5 h-5 text-green-500 mr-2" />
 //               Product Display Options
 //             </h4>
-            
+
 //             <div className="space-y-4">
 //               <div className="flex items-center">
 //                 <label className="flex items-center text-slate-700">
@@ -3289,7 +3289,7 @@
 //                   Enable Individual Product Display
 //                 </label>
 //               </div>
-              
+
 //               {isFieldVisible('businessCardInstagram') && (
 //                 <div>
 //                   <label className="block text-slate-700 mb-1">Business Card Instagram</label>
@@ -3309,7 +3309,7 @@
 //                   />
 //                 </div>
 //               )}
-              
+
 //               {isFieldVisible('textbooks') && (
 //                 <div>
 //                   <label className="block text-slate-700 mb-1">Textbooks / Learning Materials</label>
@@ -3341,7 +3341,7 @@
 //     const contactFields = [
 //       'enableOneTapCall', 'enableWhatsApp', 'enableEmail', 'phones', 'websites', 'addresses'
 //     ];
-    
+
 //     const shouldShowContactSection = isSectionVisible(contactFields);
 
 //     return (
@@ -3353,7 +3353,7 @@
 //               <FaComments className="w-5 h-5 text-green-500 mr-2" />
 //               One-Tap Contact
 //             </h4>
-            
+
 //             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 //               {/* Call */}
 //               <div className="border border-slate-200 rounded-lg p-4">
@@ -3561,7 +3561,7 @@
 //               <FaMapMarkerAlt className="w-5 h-5 text-blue-500 mr-2" />
 //               Location & Addresses
 //             </h4>
-            
+
 //             {(formData.addresses || []).map((address, index) => (
 //               <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
 //                 <div className="flex justify-between items-center mb-4">
@@ -3589,7 +3589,7 @@
 //                     )}
 //                   </div>
 //                 </div>
-                
+
 //                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Label</label>
@@ -3608,7 +3608,7 @@
 //                       <option value="factory">Factory</option>
 //                     </select>
 //                   </div>
-                  
+
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Street Address</label>
 //                     <input 
@@ -3620,7 +3620,7 @@
 //                     />
 //                   </div>
 //                 </div>
-                
+
 //                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">City</label>
@@ -3632,7 +3632,7 @@
 //                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                     />
 //                   </div>
-                  
+
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">State</label>
 //                     <input 
@@ -3643,7 +3643,7 @@
 //                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                     />
 //                   </div>
-                  
+
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Postal Code</label>
 //                     <input 
@@ -3654,7 +3654,7 @@
 //                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                     />
 //                   </div>
-                  
+
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Country</label>
 //                     <input 
@@ -3666,7 +3666,7 @@
 //                     />
 //                   </div>
 //                 </div>
-                
+
 //                 <div className="mb-4">
 //                   <label className="block text-slate-700 mb-1">Full Address (Auto-generated)</label>
 //                   <textarea 
@@ -3684,7 +3684,7 @@
 //                     Generate Full Address
 //                   </button>
 //                 </div>
-                
+
 //                 <div>
 //                   <label className="block text-slate-700 mb-1">Google Maps Link</label>
 //                   <input 
@@ -3697,7 +3697,7 @@
 //                 </div>
 //               </div>
 //             ))}
-            
+
 //             <button 
 //               type="button"
 //               onClick={addAddress}
@@ -3713,12 +3713,12 @@
 //         <div className="border border-slate-200 rounded-lg p-6">
 //           <h4 className="text-lg font-semibold text-slate-800 mb-4">Social Media Links</h4>
 //           <p className="text-slate-600 text-sm mb-4">Click on any social media icon to add your profile link</p>
-          
+
 //           <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
 //             {Object.entries(socialMediaConfig).map(([platform, config]) => {
 //               const socialLink = (formData.socialLinks || []).find(link => link.platform === platform);
 //               const hasUrl = socialLink && socialLink.url;
-              
+
 //               return (
 //                 <div key={platform} className="flex flex-col items-center">
 //                   <button
@@ -3746,7 +3746,7 @@
 //               );
 //             })}
 //           </div>
-          
+
 //           {/* Input box that appears under the active social media platform */}
 //           {activeSocialPlatform && (
 //             <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6 animate-fadeIn">
@@ -3792,7 +3792,7 @@
 //               </div>
 //             </div>
 //           )}
-          
+
 //           {/* Show added links */}
 //           <div className="mt-6">
 //             {(formData.socialLinks || []).filter(link => link.url).length > 0 && (
@@ -3840,7 +3840,7 @@
 //       'interactiveElements', 'testimonials', 'gallery', 'dynamicQRCode', 'nfcSettings', 'downloads',
 //       'videos', 'chatAssistant', 'liveChat', 'clientList', 'services', 'products'
 //     ];
-    
+
 //     const shouldShowPremiumSection = isSectionVisible(premiumFields);
 
 //     if (!shouldShowPremiumSection) {
@@ -3864,7 +3864,7 @@
 //             <div className="border border-slate-200 rounded-lg p-6">
 //               <h4 className="text-lg font-semibold text-slate-800 mb-4">Available Interactive Elements</h4>
 //               <p className="text-slate-600 text-sm mb-6">Click on any element to add it to your card</p>
-              
+
 //               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
 //                 {Object.entries(interactiveElementsConfig).map(([type, config]) => (
 //                   <div
@@ -3922,7 +3922,7 @@
 //                           </button>
 //                         </div>
 //                       </div>
-                      
+
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">Configuration (JSON)</label>
 //                         <textarea 
@@ -3952,7 +3952,7 @@
 //         {isFieldVisible('services') && (
 //           <div className="border border-slate-200 rounded-lg p-6">
 //             <h4 className="text-lg font-semibold text-slate-800 mb-4">Services</h4>
-            
+
 //             {formData.services.map((service, index) => (
 //               <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
 //                 <div className="flex justify-between items-center mb-4">
@@ -3967,7 +3967,7 @@
 //                     </button>
 //                   )}
 //                 </div>
-                
+
 //                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Service Name</label>
@@ -3979,7 +3979,7 @@
 //                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                     />
 //                   </div>
-                  
+
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Category</label>
 //                     <select 
@@ -4000,7 +4000,7 @@
 //                     </select>
 //                   </div>
 //                 </div>
-                
+
 //                 <div className="mb-4">
 //                   <label className="block text-slate-700 mb-1">Description</label>
 //                   <textarea 
@@ -4011,7 +4011,7 @@
 //                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                   />
 //                 </div>
-                
+
 //                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Price</label>
@@ -4023,7 +4023,7 @@
 //                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                     />
 //                   </div>
-                  
+
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Currency</label>
 //                     <select 
@@ -4037,7 +4037,7 @@
 //                       <option value="INR">INR</option>
 //                     </select>
 //                   </div>
-                  
+
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Duration</label>
 //                     <input 
@@ -4049,7 +4049,7 @@
 //                     />
 //                   </div>
 //                 </div>
-                
+
 //                 {/* Service Image Upload */}
 //                 <div className="mt-4">
 //                   <label className="block text-slate-700 mb-2">Service Image</label>
@@ -4111,7 +4111,7 @@
 //                 </div>
 //               </div>
 //             ))}
-            
+
 //             <button 
 //               type="button"
 //               onClick={() => addArrayField("services", {
@@ -4134,7 +4134,7 @@
 //         {isFieldVisible('products') && (
 //           <div className="border border-slate-200 rounded-lg p-6">
 //             <h4 className="text-lg font-semibold text-slate-800 mb-4">Products</h4>
-            
+
 //             {formData.products.map((product, index) => (
 //               <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
 //                 <div className="flex justify-between items-center mb-4">
@@ -4149,7 +4149,7 @@
 //                     </button>
 //                   )}
 //                 </div>
-                
+
 //                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Product Name</label>
@@ -4161,7 +4161,7 @@
 //                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                     />
 //                   </div>
-                  
+
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Category</label>
 //                     <select 
@@ -4182,7 +4182,7 @@
 //                     </select>
 //                   </div>
 //                 </div>
-                
+
 //                 <div className="mb-4">
 //                   <label className="block text-slate-700 mb-1">Description</label>
 //                   <textarea 
@@ -4193,7 +4193,7 @@
 //                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                   />
 //                 </div>
-                
+
 //                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Price</label>
@@ -4205,7 +4205,7 @@
 //                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                     />
 //                   </div>
-                  
+
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Currency</label>
 //                     <select 
@@ -4219,7 +4219,7 @@
 //                       <option value="INR">INR</option>
 //                     </select>
 //                   </div>
-                  
+
 //                   <div className="flex items-center">
 //                     <label className="flex items-center text-slate-700">
 //                       <input 
@@ -4232,7 +4232,7 @@
 //                     </label>
 //                   </div>
 //                 </div>
-                
+
 //                 {/* Product Image Upload */}
 //                 <div className="mt-4">
 //                   <label className="block text-slate-700 mb-2">Product Image</label>
@@ -4294,7 +4294,7 @@
 //                 </div>
 //               </div>
 //             ))}
-            
+
 //             <button 
 //               type="button"
 //               onClick={() => addArrayField("products", {
@@ -4320,7 +4320,7 @@
 //             {isFieldVisible('testimonials') && (
 //               <div className="border border-slate-200 rounded-lg p-6">
 //                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Testimonials & Client List</h4>
-                
+
 //                 {formData.testimonials.map((testimonial, index) => (
 //                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
 //                     <div className="flex justify-between items-center mb-4">
@@ -4335,7 +4335,7 @@
 //                         </button>
 //                       )}
 //                     </div>
-                    
+
 //                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">Client Name</label>
@@ -4347,7 +4347,7 @@
 //                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                         />
 //                       </div>
-                      
+
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">Rating</label>
 //                         <select 
@@ -4363,7 +4363,7 @@
 //                         </select>
 //                       </div>
 //                     </div>
-                    
+
 //                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">Company</label>
@@ -4375,7 +4375,7 @@
 //                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                         />
 //                       </div>
-                      
+
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">Position</label>
 //                         <input 
@@ -4387,7 +4387,7 @@
 //                         />
 //                       </div>
 //                     </div>
-                    
+
 //                     <div className="mb-4">
 //                       <label className="block text-slate-700 mb-1">Testimonial</label>
 //                       <textarea 
@@ -4398,7 +4398,7 @@
 //                         className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                       />
 //                     </div>
-                    
+
 //                     <div>
 //                       <label className="block text-slate-700 mb-1">Date</label>
 //                       <input 
@@ -4410,7 +4410,7 @@
 //                     </div>
 //                   </div>
 //                 ))}
-                
+
 //                 <button 
 //                   type="button"
 //                   onClick={addTestimonial}
@@ -4425,7 +4425,7 @@
 //             {isFieldVisible('clientList') && (
 //               <div className="border border-slate-200 rounded-lg p-6">
 //                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Client List</h4>
-                
+
 //                 {formData.clientList.map((client, index) => (
 //                   <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg mb-2">
 //                     <input 
@@ -4463,7 +4463,7 @@
 //                     )}
 //                   </div>
 //                 ))}
-                
+
 //                 <button 
 //                   type="button"
 //                   onClick={() => {
@@ -4488,7 +4488,7 @@
 //             {isFieldVisible('gallery') && (
 //               <div className="border border-slate-200 rounded-lg p-6">
 //                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Product Gallery & Portfolio</h4>
-                
+
 //                 {formData.gallery.map((item, index) => (
 //                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
 //                     <div className="flex justify-between items-center mb-4">
@@ -4503,7 +4503,7 @@
 //                         </button>
 //                       )}
 //                     </div>
-                    
+
 //                     {/* Upload Type Toggle */}
 //                     <div className="flex space-x-4 mb-4">
 //                       <button
@@ -4549,7 +4549,7 @@
 //                         Upload File
 //                       </button>
 //                     </div>
-                    
+
 //                     {/* Gallery Item Content */}
 //                     {item.uploadType === 'url' ? (
 //                       <div className="mb-4">
@@ -4627,7 +4627,7 @@
 //                         </div>
 //                       </div>
 //                     )}
-                    
+
 //                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">Type</label>
@@ -4643,7 +4643,7 @@
 //                           <option value="audio">Audio</option>
 //                         </select>
 //                       </div>
-                      
+
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">Category</label>
 //                         <input 
@@ -4655,7 +4655,7 @@
 //                         />
 //                       </div>
 //                     </div>
-                    
+
 //                     <div className="mb-4">
 //                       <label className="block text-slate-700 mb-1">Title</label>
 //                       <input 
@@ -4666,7 +4666,7 @@
 //                         className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                       />
 //                     </div>
-                    
+
 //                     <div>
 //                       <label className="block text-slate-700 mb-1">Description</label>
 //                       <textarea 
@@ -4679,7 +4679,7 @@
 //                     </div>
 //                   </div>
 //                 ))}
-                
+
 //                 <button 
 //                   type="button"
 //                   onClick={addGalleryItem}
@@ -4695,7 +4695,7 @@
 //             {isFieldVisible('downloads') && (
 //               <div className="border border-slate-200 rounded-lg p-6">
 //                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Downloads</h4>
-                
+
 //                 {formData.downloads.map((download, index) => (
 //                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
 //                     <div className="flex justify-between items-center mb-4">
@@ -4710,7 +4710,7 @@
 //                         </button>
 //                       )}
 //                     </div>
-                    
+
 //                     <div className="flex space-x-4 mb-4">
 //                       <button
 //                         type="button"
@@ -4755,7 +4755,7 @@
 //                         Upload File
 //                       </button>
 //                     </div>
-                    
+
 //                     <div className="mb-4">
 //                       <label className="block text-slate-700 mb-1">File Name</label>
 //                       <input 
@@ -4766,7 +4766,7 @@
 //                         className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                       />
 //                     </div>
-                    
+
 //                     {download.uploadType === 'url' ? (
 //                       <div className="mb-4">
 //                         <label className="block text-slate-700 mb-1">File URL</label>
@@ -4845,7 +4845,7 @@
 //                         </div>
 //                       </div>
 //                     )}
-                    
+
 //                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">File Type</label>
@@ -4857,7 +4857,7 @@
 //                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                         />
 //                       </div>
-                      
+
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">File Size</label>
 //                         <input 
@@ -4871,7 +4871,7 @@
 //                     </div>
 //                   </div>
 //                 ))}
-                
+
 //                 <button 
 //                   type="button"
 //                   onClick={addDownload}
@@ -4886,7 +4886,7 @@
 //             {isFieldVisible('videos') && (
 //               <div className="border border-slate-200 rounded-lg p-6">
 //                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Videos</h4>
-                
+
 //                 {formData.videos.map((video, index) => (
 //                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
 //                     <div className="flex justify-between items-center mb-4">
@@ -4901,7 +4901,7 @@
 //                         </button>
 //                       )}
 //                     </div>
-                    
+
 //                     <div className="flex space-x-4 mb-4">
 //                       <button
 //                         type="button"
@@ -4946,7 +4946,7 @@
 //                         Upload File
 //                       </button>
 //                     </div>
-                    
+
 //                     {video.uploadType === 'url' ? (
 //                       <>
 //                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -4962,7 +4962,7 @@
 //                               <option value="direct">Direct Link</option>
 //                             </select>
 //                           </div>
-                          
+
 //                           <div>
 //                             <label className="block text-slate-700 mb-1">Video URL</label>
 //                             <input 
@@ -5044,7 +5044,7 @@
 //                         </div>
 //                       </div>
 //                     )}
-                    
+
 //                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">Video Title</label>
@@ -5056,7 +5056,7 @@
 //                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
 //                         />
 //                       </div>
-                      
+
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">Thumbnail URL</label>
 //                         <input 
@@ -5068,7 +5068,7 @@
 //                         />
 //                       </div>
 //                     </div>
-                    
+
 //                     <div>
 //                       <label className="block text-slate-700 mb-1">Description</label>
 //                       <textarea 
@@ -5081,7 +5081,7 @@
 //                     </div>
 //                   </div>
 //                 ))}
-                
+
 //                 <button 
 //                   type="button"
 //                   onClick={addVideo}
@@ -5112,7 +5112,7 @@
 //                       Enable Chat Assistant
 //                     </label>
 //                   </div>
-                  
+
 //                   {formData.chatAssistant?.isEnabled && (
 //                     <>
 //                       <div>
@@ -5163,7 +5163,7 @@
 //                       Enable Live Chat (WhatsApp/Messages)
 //                     </label>
 //                   </div>
-                  
+
 //                   {formData.liveChat?.isEnabled && (
 //                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //                       <div>
@@ -5178,7 +5178,7 @@
 //                           <option value="telegram">Telegram</option>
 //                         </select>
 //                       </div>
-                      
+
 //                       <div>
 //                         <label className="block text-slate-700 mb-1">Phone Number</label>
 //                         <input 
@@ -5224,7 +5224,7 @@
 //                       <option value="static">Static</option>
 //                     </select>
 //                   </div>
-                  
+
 //                   <div>
 //                     <label className="block text-slate-700 mb-1">Target URL</label>
 //                     <input 
@@ -5278,7 +5278,7 @@
 //                       Enable NFC
 //                     </label>
 //                   </div>
-                  
+
 //                   {formData.nfcSettings?.isEnabled && (
 //                     <div>
 //                       <label className="block text-slate-700 mb-1">NFC ID</label>
@@ -5315,7 +5315,7 @@
 //     <div className="space-y-6">
 //       <h3 className="text-xl font-semibold text-slate-800 mb-4">Choose Your Card Design</h3>
 //       <p className="text-slate-600 mb-6">Select a design template for your digital card</p>
-      
+
 //       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 //         {designTemplates.map((template) => (
 //           <div
@@ -5350,7 +5350,7 @@
 //           </div>
 //         ))}
 //       </div>
-      
+
 //       {!formData.design && (
 //         <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
 //           <p className="text-red-600 text-sm">⚠️ Please select a design theme before proceeding</p>
@@ -5364,7 +5364,7 @@
 //     if (isDesignStep()) {
 //       return renderDesignSelection();
 //     }
-    
+
 //     switch (currentStep) {
 //       case 1:
 //         return renderProfilePage();
@@ -5389,7 +5389,7 @@
 //       4: 'FEATURES',
 //       5: 'DESIGN'
 //     };
-    
+
 //     return (
 //       <div className="flex justify-between mb-8 relative">
 //         <div className="absolute top-1/2 left-0 right=0 h-1 bg-slate-200 -z-10"></div>
@@ -5397,7 +5397,7 @@
 //           className="absolute top-1/2 left-0 h-1 bg-blue-500 -z-10 transition-all duration-300"
 //           style={{ width: `${((availableSteps.indexOf(currentStep)) / (availableSteps.length - 1)) * 100}%` }}
 //         ></div>
-        
+
 //         {availableSteps.map((step, index) => (
 //           <div key={step} className="flex flex-col items-center">
 //             <div 
@@ -5421,7 +5421,7 @@
 //   return (
 //     <div className="w-full max-w-8xl mx-auto p-3 md:p-6 pl-2 md:pl-4 ml-2">
 //       <WarningPopup />
-      
+
 //       {/* Back to Dashboard Button */}
 //       <button
 //         onClick={handleGoBackDashboard}
@@ -5509,12 +5509,12 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { 
-  FaGlobe, 
-  FaFacebookF, 
-  FaInstagram, 
-  FaLinkedinIn, 
-  FaTelegramPlane, 
+import {
+  FaGlobe,
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaTelegramPlane,
   FaWhatsapp,
   FaGithub,
   FaYoutube,
@@ -5569,22 +5569,21 @@ const cardPlans = {
     icon: <FaBuilding className="w-5 h-5" />,
     color: 'blue',
     features: [
-      'Profile Page',
-      'Profile Photo/Logo',
-      'Name/Source Name',
-      'Tag Line/Slogan',
-      'Profile Video',
-      'About Myself',
-      'Contact Management',
-      'One-tap Call, WhatsApp, Email',
-      'Website/Portfolio Link',
-      'Location [Address]',
-      'Social & Digital Hub',
-      'Dynamic QR Code',
-      'Share',
-      'NFC Card Development with Print',
-      'Downloads',
-      'Videos'
+      'Profile photo',
+      'Name',
+      'Designation/ Title',
+      'Tag line',
+      'Short intro',
+      'Location',
+      'Mobile 1, Mobile 2',
+      'WhatsApp',
+      'Email',
+      'Website',
+      'Address',
+      'Location map',
+      'LinkedIn, Facebook, Instagram, X/ Twitter, Others',
+      'QR code',
+      'Share'
     ],
     price: 'Free'
   },
@@ -5625,144 +5624,244 @@ const cardPlans = {
   },
   'BusinessPremium': {
     name: 'BusinessPremium',
-    description: 'Advanced features with interactive elements',
+    description: 'DI - Service Providers - Individuals',
     icon: <FaCrown className="w-5 h-5" />,
     color: 'gold',
     features: [
-      'Profile Page',
-      'Profile Photo/Logo',
-      'Name/Source Name',
-      'Tag Line/Slogan',
-      'Company Name/Organization',
-      'Profile Video',
-      'About Myself/Company/Organization',
-      'Contact Management',
-      'One-tap Call, WhatsApp, Email',
-      'Website/Portfolio Link',
-      'Location [Address]',
-      'Virtual Number Integration (Optional at extra cost)',
-      'Business Hours',
-      'Professional/Business Details',
-      'Services/Provision',
-      'Individual Product Display',
-      'Product Showcase/Gallery/Portfolio',
-      'Testimonials / Client List',
-      'Product Video',
-      'Social & Digital Hub',
-      'Interactive Elements',
-      'Call-to-Action',
-      'Live Chat – WhatsApp / Messages',
-      'Appointment Scheduler',
-      'Digital Payments',
-      'Lead / Contact Form',
-      'Chat Assistant',
-      'Dynamic QR Code',
-      'Share',
-      'NFC Card Development with Print',
-      'Downloads',
-      'Videos'
+      'Name',
+      'Profile Photo',
+      'Service / Profession',
+      'About The Services',
+      'Service Area',
+      'Location & Map',
+      'Contacts (Mobile, WhatsApp, Email)',
+      'Services / Provision',
+      'Availability (Working days, Working Hours, Service availability)',
+      'Customer Inquire (Service Require, Preferred date, Preferred time, Contact no)',
+      'Dynamic QR Code & Share',
+      'Interactive Elements (CTA, Digital Payments)',
+      'NFC Card Support',
+      'Downloads & Documents'
     ],
-    price: '$19.99/month'
+    price: '₹1200/month'
+  },
+  'Professionals': {
+    name: 'Professionals',
+    description: 'DI - Professionals with full corporate and portfolio suite',
+    icon: <FaUserTie className="w-5 h-5" />,
+    color: 'emerald',
+    features: [
+      'Personal Details (Profile Photo, Name, Tag line, About me)',
+      'Personal Contacts (Mobile 1/2, WhatsApp, Email, Web/Portfolio, Social)',
+      'Company Details (Company Name, Designation, Address, Contacts)',
+      'Professional Summary (About, Expertise, Services, Certifications, Memberships)',
+      'Portfolio Link & Testimonials',
+      'Documents & Docs Upload',
+      'Upload Video & Product Video',
+      'Dynamic QR Code & Share',
+      'Call to Action (CTA)',
+      'Photo Gallery (Add-On)',
+      'Catalog & Brochure Builder (Add-On)',
+      'Profile & Portfolio Builder (Add-On)',
+      'NFC Card Development (Add-On)',
+      'Lead Generation & Management (Add-On)',
+      'Appointment Booking & WhatsApp Integration (Add-On)',
+      'Analytics & Docs Manager (Add-On)'
+    ],
+    price: '₹1500/month'
+  },
+  'Entrepreneurials': {
+    name: 'Entrepreneurials',
+    description: 'DI - Entrepreneurials - Business & Role Showcase',
+    icon: <FaBriefcase className="w-5 h-5" />,
+    color: 'amber',
+    features: [
+      'Personal Details (Profile Photo, Name, Tag line, Contact)',
+      'Business Details (Company Name, Designation, Role, Products/Services)',
+      'Location, Address, Contact No, Email ID, Website',
+      'Mobile 1/2, WhatsApp, Email, Web/Portfolio, Social Media',
+      'Dynamic QR Code, Share & CTA',
+      'Photo Gallery (Add-On)',
+      'Docs Builder (Add-On)',
+      'Profile/Portfolio Builder (Add-On)',
+      'NFC Card (Add-On)'
+    ],
+    price: '₹1800/month'
+  },
+  'EntrepreneurialsMulti': {
+    name: 'EntrepreneurialsMulti',
+    description: 'DI - Entrepreneurials Multi-Activities - Ventures & Projects',
+    icon: <FaStore className="w-5 h-5" />,
+    color: 'indigo',
+    features: [
+      'Personal Details (Profile Photo, Name, Founder/Entrepreneur, Short Intro)',
+      'My Ventures +',
+      'My Expertise +',
+      'My Projects +',
+      'My Services +',
+      'My Products +',
+      'WhatsApp Me & Book Me Direct Action',
+      'Dynamic QR Code & Share'
+    ],
+    price: '₹2200/month'
+  },
+  'CorporateBusiness': {
+    name: 'CorporateBusiness',
+    description: 'DI - Business - Corporate Entity & Multi-location Management',
+    icon: <FaBuilding className="w-5 h-5" />,
+    color: 'teal',
+    features: [
+      'Company Identity (Logo, Brand Name, Business Name, Tag line, Intro)',
+      'About Business (Overview, Products, Services, Docs Upload)',
+      'Contact Structure (Multiple locations, Multiple persons, Roles & designation)',
+      'Social Media Hub & Direct Inquiries',
+      'Dynamic QR Code & Share',
+      'Photo Gallery (Add-On)',
+      'Docs Builder (Add-On)',
+      'NFC Card (Add-On)'
+    ],
+    price: '₹2500/month'
+  },
+  'MiniWebsite': {
+    name: 'MiniWebsite',
+    description: 'DP - Mini Website - Complete Digital Web & Landing Presence',
+    icon: <FaGlobe className="w-5 h-5" />,
+    color: 'cyan',
+    features: [
+      'Company Logo, Brand Name, Business Name, Tag line, Overview',
+      'Products & Services Showcase',
+      'Photo Gallery & Embedded Video Showcase',
+      'Brochures & Document Downloads',
+      'Client Testimonials & Ratings',
+      'Google Maps Location & Business Hours',
+      'Lead Generation & Contact Form',
+      'Custom Domain/URL & Basic Analytics'
+    ],
+    price: '₹3000/month'
   }
 };
 
+const allPlansList = [
+  'Personal', 
+  'Business', 
+  'BusinessPremium', 
+  'Professionals', 
+  'Entrepreneurials', 
+  'EntrepreneurialsMulti', 
+  'CorporateBusiness', 
+  'MiniWebsite'
+];
+
+const businessPlansList = [
+  'Business', 
+  'BusinessPremium', 
+  'Professionals', 
+  'Entrepreneurials', 
+  'EntrepreneurialsMulti', 
+  'CorporateBusiness', 
+  'MiniWebsite'
+];
+
 // Field visibility configuration based on plans - Updated to match your cardFieldsConfig
 const fieldPlanMap = {
-  // Personal Info Fields (Personal, Business, BusinessPremium)
-  'prefix': ['Personal', 'Business', 'BusinessPremium'],
-  'firstName': ['Personal', 'Business', 'BusinessPremium'],
-  'lastName': ['Personal', 'Business', 'BusinessPremium'],
-  'suffix': ['Personal', 'Business', 'BusinessPremium'],
-  'profilePhoto': ['Personal', 'Business', 'BusinessPremium'],
-  'tagline': ['Personal', 'Business', 'BusinessPremium'], // Tag line / Slogan
-  'profileVideo': ['Personal', 'Business', 'BusinessPremium'],
-  'aboutText': ['Personal', 'Business', 'BusinessPremium'],
-  
-  // Contact Management (Personal, Business, BusinessPremium)
-  'phones': ['Personal', 'Business', 'BusinessPremium'],
-  'emails': ['Personal', 'Business', 'BusinessPremium'],
-  'websites': ['Personal', 'Business', 'BusinessPremium'],
-  'addresses': ['Personal', 'Business', 'BusinessPremium'],
-  
-  // Social & Digital Hub (Personal, Business, BusinessPremium)
-  'socialLinks': ['Personal', 'Business', 'BusinessPremium'],
-  
-  // Utilities (Personal, Business, BusinessPremium)
-  'dynamicQRCode': ['Personal', 'Business', 'BusinessPremium'],
-  'shareableUrl': ['Personal', 'Business', 'BusinessPremium'],
-  'nfcSettings': ['Personal', 'Business', 'BusinessPremium'],
-  'downloads': ['Personal', 'Business', 'BusinessPremium'],
-  'videos': ['Personal', 'Business', 'BusinessPremium'],
-  
-  // Business-only fields
-  'companyName': ['Business', 'BusinessPremium'],
-  'businessHours': ['Business', 'BusinessPremium'],
-  'virtualNumber': ['Business', 'BusinessPremium'],
-  
-  // Professional/Business Details (Business, BusinessPremium)
-  'services': ['Business', 'BusinessPremium'],
-  'servicesProducts': ['Business', 'BusinessPremium'], // Brief about Product/Services
-  'gallery': ['Business', 'BusinessPremium'],
-  'catalog': ['Business', 'BusinessPremium'], // Product/Catalog [PDF]
-  'productVideo': ['Business', 'BusinessPremium'],
-  'testimonials': ['Business', 'BusinessPremium'],
-  
-  // BusinessPremium-only fields
-  'interactiveElements': ['BusinessPremium'],
-  'individualProductDisplay': ['BusinessPremium'],
-  'clientList': ['BusinessPremium'],
-  'businessCardInstagram': ['BusinessPremium'],
-  'textbooks': ['BusinessPremium'],
-  
+  // Personal Info Fields
+  'prefix': allPlansList,
+  'firstName': allPlansList,
+  'lastName': allPlansList,
+  'suffix': allPlansList,
+  'profilePhoto': allPlansList,
+  'tagline': allPlansList,
+  'profileVideo': businessPlansList,
+  'aboutText': allPlansList,
+
+  // Contact Management
+  'phones': allPlansList,
+  'emails': allPlansList,
+  'websites': allPlansList,
+  'addresses': allPlansList,
+
+  // Social & Digital Hub
+  'socialLinks': allPlansList,
+
+  // Utilities
+  'dynamicQRCode': allPlansList,
+  'shareableUrl': allPlansList,
+  'nfcSettings': businessPlansList,
+  'downloads': businessPlansList,
+  'videos': businessPlansList,
+
+  // Business fields
+  'companyName': businessPlansList,
+  'businessHours': businessPlansList,
+  'virtualNumber': businessPlansList,
+
+  // Professional/Business Details
+  'services': businessPlansList,
+  'servicesProducts': businessPlansList,
+  'gallery': businessPlansList,
+  'catalog': businessPlansList,
+  'productVideo': businessPlansList,
+  'testimonials': businessPlansList,
+
+  // Advanced & Interactive fields
+  'interactiveElements': ['BusinessPremium', 'Professionals', 'EntrepreneurialsMulti', 'CorporateBusiness', 'MiniWebsite'],
+  'individualProductDisplay': ['BusinessPremium', 'Professionals', 'CorporateBusiness', 'MiniWebsite'],
+  'clientList': ['BusinessPremium', 'Professionals', 'CorporateBusiness', 'MiniWebsite'],
+  'businessCardInstagram': ['BusinessPremium', 'Professionals', 'CorporateBusiness', 'MiniWebsite'],
+  'textbooks': ['BusinessPremium', 'Professionals'],
+
   // Additional fields for completeness
-  'department': ['Business', 'BusinessPremium'],
-  'jobTitle': ['Personal', 'Business', 'BusinessPremium'],
-  'bio': ['Personal', 'Business', 'BusinessPremium'],
-  'companyLogo': ['Business', 'BusinessPremium'],
-  'logoSize': ['Business', 'BusinessPremium'],
-  'foundedName': ['BusinessPremium'],
-  'organization': ['Business', 'BusinessPremium'],
-  'brandLabel': ['BusinessPremium'],
-  'productRangeDisplay': ['BusinessPremium'],
-  'catalogPDF': ['Business', 'BusinessPremium'],
-  
+  'department': businessPlansList,
+  'jobTitle': allPlansList,
+  'bio': allPlansList,
+  'companyLogo': businessPlansList,
+  'logoSize': businessPlansList,
+  'foundedName': ['BusinessPremium', 'Professionals', 'EntrepreneurialsMulti', 'CorporateBusiness', 'MiniWebsite'],
+  'organization': businessPlansList,
+  'brandLabel': ['BusinessPremium', 'Professionals', 'CorporateBusiness', 'MiniWebsite'],
+  'productRangeDisplay': ['BusinessPremium', 'Professionals', 'CorporateBusiness', 'MiniWebsite'],
+  'catalogPDF': businessPlansList,
+
   // Chat & Assistant Fields
-  'chatAssistant': ['BusinessPremium'],
-  'liveChat': ['BusinessPremium'],
-  
-  // New Contact Management Fields
-  'enableOneTapCall': ['Personal', 'Business', 'BusinessPremium'],
-  'enableWhatsApp': ['Personal', 'Business', 'BusinessPremium'],
-  'enableEmail': ['Personal', 'Business', 'BusinessPremium']
+  'chatAssistant': ['BusinessPremium', 'Professionals', 'MiniWebsite'],
+  'liveChat': ['BusinessPremium', 'Professionals', 'MiniWebsite'],
+
+  // Contact Management Fields
+  'enableOneTapCall': allPlansList,
+  'enableWhatsApp': allPlansList,
+  'enableEmail': allPlansList
 };
 
 // Function to clean form data by removing empty fields and handling video objects
 const cleanFormData = (data) => {
+  const isPersonal = (data.cardType || 'Personal') === 'Personal';
+  const isBusinessPremium = data.cardType === 'BusinessPremium';
+
   const optimized = {
-    // Personal Info
+    // Personal Info (A. DIGITAL IDENTITY)
     ...(data.prefix && { prefix: data.prefix }),
     firstName: data.firstName || "",
     ...(data.lastName && { lastName: data.lastName }),
     ...(data.suffix && { suffix: data.suffix }),
     ...(data.profilePhoto && { profilePhoto: data.profilePhoto }),
-    
+
     // Email
     email: data.email,
-    
+
     // Card Type
     cardType: data.cardType || 'Personal',
-    
+
     // Include createdBy field
     ...(data.createdBy && { createdBy: data.createdBy }),
-    
+
     // URL Customization
     ...(data.customUrl && { customUrl: data.customUrl }),
     urlSlug: data.urlSlug,
     isPublic: data.isPublic !== undefined ? data.isPublic : true,
     ...(data.shareableUrl && { shareableUrl: data.shareableUrl }),
-    
+
     // Profile Page Fields
-    ...(data.profileVideo?.url && { 
+    ...(!isPersonal && data.profileVideo?.url && {
       profileVideo: {
         url: data.profileVideo.url,
         thumbnail: data.profileVideo.thumbnail || "",
@@ -5772,29 +5871,22 @@ const cleanFormData = (data) => {
     }),
     ...(data.tagline && { tagline: data.tagline }),
     ...(data.aboutText && { aboutText: data.aboutText }),
-    ...(data.foundedName && { foundedName: data.foundedName }),
-    ...(data.organization && { organization: data.organization }),
-    
+    ...(!isPersonal && data.foundedName && { foundedName: data.foundedName }),
+    ...(!isPersonal && data.organization && { organization: data.organization }),
+
     // Professional/Personal Details
-    ...(data.companyName && { companyName: data.companyName }),
-    ...(data.department && { department: data.department }),
+    ...(!isPersonal && data.companyName && { companyName: data.companyName }),
+    ...(!isPersonal && data.department && { department: data.department }),
     ...(data.jobTitle && { jobTitle: data.jobTitle }),
     ...(data.bio && { bio: data.bio }),
-    ...(data.companyLogo && { companyLogo: data.companyLogo }),
-    logoSize: data.logoSize,
-    ...(data.servicesProducts && { servicesProducts: data.servicesProducts }),
-    ...(data.brandLabel && { brandLabel: data.brandLabel }),
-    ...(data.productRangeDisplay && { productRangeDisplay: data.productRangeDisplay }),
-    ...(data.catalog && { catalog: data.catalog }),
-    ...(data.catalogPDF && { catalogPDF: data.catalogPDF }),
-    // Product Video - Store as string for MongoDB
-    // ...(data.productVideo?.url && { 
-    //   productVideo: data.productVideo.url, // Store only the URL string
-    //   productVideoThumbnail: data.productVideo.thumbnail,
-    //   productVideoTitle: data.productVideo.title,
-    //   productVideoUploadType: data.productVideo.uploadType
-    // }),
-     ...(data.productVideo?.url && {
+    ...(!isPersonal && data.companyLogo && { companyLogo: data.companyLogo }),
+    ...(!isPersonal && data.logoSize && { logoSize: data.logoSize }),
+    ...(!isPersonal && data.servicesProducts && { servicesProducts: data.servicesProducts }),
+    ...(!isPersonal && data.brandLabel && { brandLabel: data.brandLabel }),
+    ...(!isPersonal && data.productRangeDisplay && { productRangeDisplay: data.productRangeDisplay }),
+    ...(!isPersonal && data.catalog && { catalog: data.catalog }),
+    ...(!isPersonal && data.catalogPDF && { catalogPDF: data.catalogPDF }),
+    ...(!isPersonal && data.productVideo?.url && {
       productVideo: {
         url: data.productVideo.url,
         thumbnail: data.productVideo.thumbnail || "",
@@ -5802,78 +5894,84 @@ const cleanFormData = (data) => {
         uploadType: data.productVideo.uploadType || 'url'
       }
     }),
-    ...(data.virtualNumber && { virtualNumber: data.virtualNumber }),
-    ...(data.individualProductDisplay && { individualProductDisplay: data.individualProductDisplay }),
-    ...(data.businessCardInstagram && { businessCardInstagram: data.businessCardInstagram }),
-    ...(data.textbooks && { textbooks: data.textbooks }),
-    
+    ...(!isPersonal && data.virtualNumber && { virtualNumber: data.virtualNumber }),
+    ...(!isPersonal && data.individualProductDisplay && { individualProductDisplay: data.individualProductDisplay }),
+    ...(!isPersonal && data.businessCardInstagram && { businessCardInstagram: data.businessCardInstagram }),
+    ...(!isPersonal && data.textbooks && { textbooks: data.textbooks }),
+
     // Email addresses array
     emails: data.emails
       ? data.emails.filter(email => email.address && email.address.trim() !== "")
       : [],
-    
-    // Contact Details
-    phones: data.phones.filter(phone => phone.number && phone.number.trim() !== ""),
-    websites: data.websites.filter(website => website.url && website.url.trim() !== ""),
-    
+
+    // Contact Details (B. CONTACT INFO)
+    phones: data.phones ? data.phones.filter(phone => phone.number && phone.number.trim() !== "") : [],
+    websites: data.websites ? data.websites.filter(website => website.url && website.url.trim() !== "") : [],
+
     // Address & Location Fields
     addresses: data.addresses
-      .filter(address => address.street && address.street.trim() !== "")
-      .map(address => ({
-        label: address.label,
-        street: address.street,
-        city: address.city,
-        state: address.state,
-        country: address.country,
-        postalCode: address.postalCode,
-        ...(address.fullAddress && { fullAddress: address.fullAddress }),
-        ...(address.googleMapsLink && { googleMapsLink: address.googleMapsLink }),
-        isPrimary: address.isPrimary
-      })),
-    
-    // Social Media Links
-    socialLinks: data.socialLinks.filter(link => link.url && link.url.trim() !== ""),
-    
+      ? data.addresses
+        .filter(address => address.street && address.street.trim() !== "")
+        .map(address => ({
+          label: address.label,
+          street: address.street,
+          city: address.city,
+          state: address.state,
+          country: address.country,
+          postalCode: address.postalCode,
+          ...(address.fullAddress && { fullAddress: address.fullAddress }),
+          ...(address.googleMapsLink && { googleMapsLink: address.googleMapsLink }),
+          isPrimary: address.isPrimary
+        }))
+      : [],
+
+    // Social Media Links (C. SOCIAL LINKS)
+    socialLinks: data.socialLinks ? data.socialLinks.filter(link => link.url && link.url.trim() !== "") : [],
+
     // Business Hours
-    ...(data.businessHours && { businessHours: data.businessHours }),
-    
+    ...(!isPersonal && data.businessHours && { businessHours: data.businessHours }),
+
     // Services & Products
-    services: data.services
-      .filter(service => service.name && service.name.trim() !== "")
-      .map(service => ({
-        name: service.name,
-        ...(service.description && { description: service.description }),
-        ...(service.price && { price: service.price }),
-        currency: service.currency,
-        ...(service.duration && { duration: service.duration }),
-        ...(service.category && { category: service.category }),
-        ...(service.image && { image: service.image })
-      })),
-    
-    products: data.products
-      .filter(product => product.name && product.name.trim() !== "")
-      .map(product => ({
-        name: product.name,
-        ...(product.description && { description: product.description }),
-        ...(product.price && { price: product.price }),
-        currency: product.currency,
-        ...(product.category && { category: product.category }),
-        inStock: product.inStock,
-        ...(product.image && { image: product.image })
-      })),
-    
+    ...(!isPersonal && {
+      services: (data.services || [])
+        .filter(service => service.name && service.name.trim() !== "")
+        .map(service => ({
+          name: service.name,
+          ...(service.description && { description: service.description }),
+          ...(service.price && { price: service.price }),
+          currency: service.currency,
+          ...(service.duration && { duration: service.duration }),
+          ...(service.category && { category: service.category }),
+          ...(service.image && { image: service.image })
+        })),
+
+      products: (data.products || [])
+        .filter(product => product.name && product.name.trim() !== "")
+        .map(product => ({
+          name: product.name,
+          ...(product.description && { description: product.description }),
+          ...(product.price && { price: product.price }),
+          currency: product.currency,
+          ...(product.category && { category: product.category }),
+          inStock: product.inStock,
+          ...(product.image && { image: product.image })
+        }))
+    }),
+
     // Interactive Elements
-    interactiveElements: data.interactiveElements
-      .filter(element => element.type)
-      .map(element => ({
-        type: element.type,
-        ...(element.config && { config: element.config }),
-        isActive: element.isActive !== undefined ? element.isActive : true,
-        position: element.position || 0
-      })),
-    
+    ...(!isPersonal && (isBusinessPremium || ['Professionals', 'EntrepreneurialsMulti', 'CorporateBusiness', 'MiniWebsite'].includes(data.cardType)) && {
+      interactiveElements: (data.interactiveElements || [])
+        .filter(element => element.type)
+        .map(element => ({
+          type: element.type,
+          ...(element.config && { config: element.config }),
+          isActive: element.isActive !== undefined ? element.isActive : true,
+          position: element.position || 0
+        }))
+    }),
+
     // Premium Features
-    ...(data.testimonials && data.testimonials.length > 0 && {
+    ...(!isPersonal && data.testimonials && data.testimonials.length > 0 && {
       testimonials: data.testimonials
         .filter(testimonial => testimonial.clientName && testimonial.testimonial)
         .map(testimonial => ({
@@ -5885,12 +5983,12 @@ const cleanFormData = (data) => {
           ...(testimonial.position && { position: testimonial.position })
         }))
     }),
-    
-    ...(data.clientList && data.clientList.length > 0 && {
+
+    ...(!isPersonal && data.clientList && data.clientList.length > 0 && {
       clientList: data.clientList.filter(client => client.trim() !== "")
     }),
-    
-    ...(data.gallery && data.gallery.length > 0 && {
+
+    ...(!isPersonal && (data.addons?.gallery || ['BusinessPremium', 'MiniWebsite'].includes(data.cardType)) && data.gallery && data.gallery.length > 0 && {
       gallery: data.gallery
         .filter(item => item.url && item.url.trim() !== "")
         .map(item => ({
@@ -5903,13 +6001,13 @@ const cleanFormData = (data) => {
           ...(item.uploadType && { uploadType: item.uploadType })
         }))
     }),
-    
+
     ...(data.dynamicQRCode?.targetUrl && { dynamicQRCode: data.dynamicQRCode }),
-    
-    ...(data.nfcSettings && { nfcSettings: data.nfcSettings }),
-    
+
+    ...(!isPersonal && data.nfcSettings && { nfcSettings: data.nfcSettings }),
+
     // Downloads with upload type support
-    ...(data.downloads && data.downloads.length > 0 && {
+    ...(!isPersonal && data.downloads && data.downloads.length > 0 && {
       downloads: data.downloads
         .filter(download => download.name && (download.fileUrl || download.fileData))
         .map(download => ({
@@ -5924,7 +6022,7 @@ const cleanFormData = (data) => {
     }),
 
     // Videos with upload type support
-    ...(data.videos && data.videos.length > 0 && {
+    ...(!isPersonal && data.videos && data.videos.length > 0 && {
       videos: data.videos
         .filter(video => video.url && video.url.trim() !== "")
         .map(video => ({
@@ -5939,14 +6037,21 @@ const cleanFormData = (data) => {
     }),
 
     // Chat Features
-    ...(data.chatAssistant && { chatAssistant: data.chatAssistant }),
-    ...(data.liveChat && { liveChat: data.liveChat }),
+    ...(!isPersonal && (isBusinessPremium || ['Professionals', 'MiniWebsite'].includes(data.cardType)) && data.chatAssistant && { chatAssistant: data.chatAssistant }),
+    ...(!isPersonal && (isBusinessPremium || ['Professionals', 'MiniWebsite'].includes(data.cardType)) && data.liveChat && { liveChat: data.liveChat }),
 
     // Contact Management
     enableOneTapCall: data.enableOneTapCall !== undefined ? data.enableOneTapCall : true,
     enableWhatsApp: data.enableWhatsApp !== undefined ? data.enableWhatsApp : true,
     enableEmail: data.enableEmail !== undefined ? data.enableEmail : true,
-    
+
+    // Addons
+    addons: data.addons || {
+      gallery: false,
+      docsBuilder: false,
+      nfcCard: false
+    },
+
     // Design
     design: data.design,
     cardLayout: data.cardLayout
@@ -5954,7 +6059,7 @@ const cleanFormData = (data) => {
 
   console.log(`📤 Final payload size: ${JSON.stringify(optimized).length} bytes`);
   console.log('📤 Final payload structure:', JSON.stringify(optimized, null, 2).substring(0, 500));
-  
+
   return optimized;
 };
 
@@ -5975,7 +6080,7 @@ const designTemplates = [
     preview: "bg-gradient-to-r from-blue-500 to-purple-600"
   },
   {
-    id:"creative",
+    id: "creative",
     name: "Creative",
     gradient: "from-pink-500 to-yellow-500",
     description: "Vibrant and artistic style",
@@ -6102,9 +6207,11 @@ const interactiveElementsConfig = {
 const CreateCard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Get plan from navigation state
+
+  // Get plan and addons from navigation state
   const selectedPlanFromState = location.state?.selectedPlan || 'Personal';
+  const selectedAddonsFromState = location.state?.selectedAddons || [];
+  const addonsObjFromState = location.state?.addonsObject || {};
   const userEmailFromSignIn = location.state?.userEmail || '';
   const editingCard = location.state?.card || null;
   const partnerIdFromState = location.state?.createdBy || '';
@@ -6119,7 +6226,7 @@ const CreateCard = () => {
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [showDesignSelection, setShowDesignSelection] = useState(false);
-  
+
   // URL Slug States
   const [checkingUrl, setCheckingUrl] = useState(false);
   const [urlAvailable, setUrlAvailable] = useState(null);
@@ -6148,8 +6255,12 @@ const CreateCard = () => {
     videos: {} // Store upload type per video item
   });
 
-  // Field visibility based on selected plan
+  // Field visibility based on selected plan and add-ons
   const isFieldVisible = (fieldName) => {
+    // Gallery is an Add-on for plans with gallery addon - only visible if addon was selected/paid
+    if (fieldName === 'gallery' && ['Business', 'Professionals', 'Entrepreneurials', 'CorporateBusiness'].includes(formData?.cardType)) {
+      return !!formData?.addons?.gallery;
+    }
     const allowedPlans = fieldPlanMap[fieldName] || [];
     return allowedPlans.includes(formData.cardType);
   };
@@ -6162,25 +6273,25 @@ const CreateCard = () => {
   // Get available steps based on plan
   const getAvailableSteps = () => {
     const steps = [1]; // Step 1 is always available
-    
+
     // Check Step 2
     const step2Fields = ['companyName', 'department', 'jobTitle', 'bio', 'companyLogo', 'logoSize', 'foundedName', 'organization', 'servicesProducts', 'brandLabel', 'catalog', 'businessHours', 'virtualNumber', 'catalogPDF', 'productVideo'];
     if (isSectionVisible(step2Fields)) {
       steps.push(2);
     }
-    
+
     // Step 3 is always available (has social links)
     steps.push(3);
-    
+
     // Check Step 4
     const step4Fields = ['interactiveElements', 'testimonials', 'gallery', 'dynamicQRCode', 'nfcSettings', 'downloads', 'videos', 'chatAssistant', 'liveChat'];
     if (isSectionVisible(step4Fields)) {
       steps.push(4);
     }
-    
+
     // Step 5 is always DESIGN SELECTION
     steps.push(5);
-    
+
     return steps;
   };
 
@@ -6205,23 +6316,40 @@ const CreateCard = () => {
     lastName: "",
     suffix: "",
     profilePhoto: null,
-    
+
     // Email
     email: userEmailFromSignIn || "",
     emails: [{ label: "work", address: "" }],
-    
+
     // Card Type
     cardType: selectedPlanFromState,
-    
+
+    // Add-on features
+    addons: {
+      gallery: (addonsObjFromState.gallery || selectedAddonsFromState.includes('gallery') || editingCard?.addons?.gallery) ?? false,
+      docsBuilder: (addonsObjFromState.docsBuilder || selectedAddonsFromState.includes('docsBuilder') || editingCard?.addons?.docsBuilder) ?? false,
+      nfcCard: (addonsObjFromState.nfcCard || selectedAddonsFromState.includes('nfcCard') || editingCard?.addons?.nfcCard) ?? false,
+      catalogBuilder: (addonsObjFromState.catalogBuilder || selectedAddonsFromState.includes('catalogBuilder') || editingCard?.addons?.catalogBuilder) ?? false,
+      brochureBuilder: (addonsObjFromState.brochureBuilder || selectedAddonsFromState.includes('brochureBuilder') || editingCard?.addons?.brochureBuilder) ?? false,
+      profileBuilder: (addonsObjFromState.profileBuilder || selectedAddonsFromState.includes('profileBuilder') || editingCard?.addons?.profileBuilder) ?? false,
+      portfolioBuilder: (addonsObjFromState.portfolioBuilder || selectedAddonsFromState.includes('portfolioBuilder') || editingCard?.addons?.portfolioBuilder) ?? false,
+      leadGen: (addonsObjFromState.leadGen || selectedAddonsFromState.includes('leadGen') || editingCard?.addons?.leadGen) ?? false,
+      leadManagement: (addonsObjFromState.leadManagement || selectedAddonsFromState.includes('leadManagement') || editingCard?.addons?.leadManagement) ?? false,
+      appointmentBooking: (addonsObjFromState.appointmentBooking || selectedAddonsFromState.includes('appointmentBooking') || editingCard?.addons?.appointmentBooking) ?? false,
+      whatsappIntegration: (addonsObjFromState.whatsappIntegration || selectedAddonsFromState.includes('whatsappIntegration') || editingCard?.addons?.whatsappIntegration) ?? false,
+      analytics: (addonsObjFromState.analytics || selectedAddonsFromState.includes('analytics') || editingCard?.addons?.analytics) ?? false,
+      docsManager: (addonsObjFromState.docsManager || selectedAddonsFromState.includes('docsManager') || editingCard?.addons?.docsManager) ?? false,
+    },
+
     // Partner ID field
     createdBy: partnerIdFromState || "",
-    
+
     // URL Customization
     customUrl: "",
     urlSlug: "",
     shareableUrl: "",
     isPublic: true,
-    
+
     // Profile Page Fields
     profileVideo: {
       url: "",
@@ -6233,7 +6361,7 @@ const CreateCard = () => {
     aboutText: "",
     foundedName: "",
     organization: "",
-    
+
     // Professional/Personal Details
     companyName: "",
     department: "",
@@ -6256,7 +6384,7 @@ const CreateCard = () => {
     individualProductDisplay: false,
     businessCardInstagram: "",
     textbooks: "",
-    
+
     // Contact Details
     phones: [{ label: "work", number: "" }],
     websites: [{ label: "personal", url: "" }],
@@ -6271,7 +6399,7 @@ const CreateCard = () => {
       googleMapsLink: "",
       isPrimary: true
     }],
-   
+
     businessHours: [
       { day: 'monday', openingTime: '09:00', closingTime: '17:00', isClosed: false },
       { day: 'tuesday', openingTime: '09:00', closingTime: '17:00', isClosed: false },
@@ -6281,7 +6409,7 @@ const CreateCard = () => {
       { day: 'saturday', openingTime: '', closingTime: '', isClosed: true },
       { day: 'sunday', openingTime: '', closingTime: '', isClosed: true }
     ],
-    
+
     // Social Media Links
     socialLinks: [
       { platform: "linkedin", url: "" },
@@ -6294,7 +6422,7 @@ const CreateCard = () => {
       { platform: "telegram", url: "" },
       { platform: "website", url: "" }
     ],
-    
+
     // Services & Products
     services: [{
       name: "",
@@ -6314,10 +6442,10 @@ const CreateCard = () => {
       image: null,
       inStock: true
     }],
-    
+
     // Interactive Elements
     interactiveElements: [],
-    
+
     // Premium Features
     testimonials: [],
     clientList: [],
@@ -6335,7 +6463,7 @@ const CreateCard = () => {
     },
     downloads: [],
     videos: [],
-    
+
     // Chat Features
     chatAssistant: {
       isEnabled: false,
@@ -6352,7 +6480,7 @@ const CreateCard = () => {
     enableOneTapCall: true,
     enableWhatsApp: true,
     enableEmail: true,
-    
+
     // Design
     design: "",
     cardLayout: "standard"
@@ -6367,31 +6495,31 @@ const CreateCard = () => {
   }, []);
 
   // ========== FIXED DESIGN PREVIEW COMPONENT ==========
- const renderDesignPreview = () => {
-  if (!formData.design) {
+  const renderDesignPreview = () => {
+    if (!formData.design) {
+      return (
+        <div className="h-64 flex items-center justify-center border-2 border-dashed rounded-lg text-gray-400">
+          Select a design
+        </div>
+      );
+    }
+
     return (
-      <div className="h-64 flex items-center justify-center border-2 border-dashed rounded-lg text-gray-400">
-        Select a design
+      <div className="scale-90 origin-top">
+        <CardRenderer
+          design={formData.design}
+          isPreview
+          data={{
+            ...formData,
+            firstName: formData.firstName || "",
+            lastName: formData.lastName || "",
+            jobTitle: formData.jobTitle || "",
+            companyName: formData.companyName || "",
+          }}
+        />
       </div>
     );
-  }
-
-  return (
-    <div className="scale-90 origin-top">
-      <CardRenderer
-        design={formData.design}
-        isPreview
-        data={{
-          ...formData,
-          firstName: formData.firstName || "",
-          lastName: formData.lastName || "",
-          jobTitle: formData.jobTitle || "",
-          companyName: formData.companyName || "",
-        }}
-      />
-    </div>
-  );
-};
+  };
   // ========== END FIXED DESIGN PREVIEW COMPONENT ==========
 
   // Handle partner ID change
@@ -6399,10 +6527,10 @@ const CreateCard = () => {
     const value = e.target.value;
     setPartnerId(value);
     const updatedData = { ...formData, createdBy: value };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     autoSaveToLocalStorage(updatedData);
@@ -6443,15 +6571,15 @@ const CreateCard = () => {
   const handleEmailChange = async (e) => {
     const email = e.target.value;
     const updatedData = { ...formData, email };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
     setEmailError("");
-    
+
     if (email && !validateEmail(email)) {
       setEmailError("Please enter a valid email address");
     }
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
     autoSaveToLocalStorage(updatedData);
@@ -6460,11 +6588,11 @@ const CreateCard = () => {
   // ✅ LOCAL STORAGE AUTO-SAVE FUNCTION
   const autoSaveToLocalStorage = useCallback((data) => {
     if (editingCard) return; // Don't auto-save when editing
-    
+
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
     }
-    
+
     autoSaveTimeoutRef.current = setTimeout(() => {
       try {
         const storageData = {
@@ -6499,12 +6627,12 @@ const CreateCard = () => {
           step: currentStep,
           plan: data.cardType
         };
-        
+
         localStorage.setItem(`card_draft_${data.email || 'anonymous'}`, JSON.stringify(storageData));
         localStorage.setItem(`card_draft_form_${data.email || 'anonymous'}`, JSON.stringify(data));
-        
+
         setHasUnsavedChanges(false);
-        
+
         console.log('💾 Auto-saved to localStorage');
       } catch (error) {
         console.error('LocalStorage save error:', error);
@@ -6517,10 +6645,10 @@ const CreateCard = () => {
     try {
       const email = userEmailFromSignIn || formData.email || 'anonymous';
       const savedFormData = localStorage.getItem(`card_draft_form_${email}`);
-      
+
       if (savedFormData) {
         const parsedData = JSON.parse(savedFormData);
-        
+
         setFormData(prev => {
           const merged = {
             ...prev,
@@ -6543,18 +6671,18 @@ const CreateCard = () => {
             profileVideo: parsedData.profileVideo || prev.profileVideo,
             productVideo: parsedData.productVideo || prev.productVideo
           };
-          
+
           formDataRef.current = merged;
           return merged;
         });
-        
+
         const draftInfo = localStorage.getItem(`card_draft_${email}`);
         if (draftInfo) {
           const info = JSON.parse(draftInfo);
           if (info.step) setCurrentStep(info.step);
-          if (info.createdBy) setPartnerId(info.createdBy);   
+          if (info.createdBy) setPartnerId(info.createdBy);
         }
-        
+
         setHasUnsavedChanges(false);
         console.log('✅ Draft loaded from localStorage');
       }
@@ -6587,13 +6715,13 @@ const CreateCard = () => {
   const handleCustomUrlChange = (e) => {
     const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
     const updatedData = { ...formData, customUrl: value, urlSlug: value };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -6631,13 +6759,13 @@ const CreateCard = () => {
               ×
             </button>
           </div>
-          
+
           <div className="text-center py-4">
             <p className="text-slate-700 text-lg leading-relaxed">
               {warningMessage}
             </p>
           </div>
-          
+
           <div className="flex justify-center mt-4">
             <button
               onClick={() => setShowWarning(false)}
@@ -6655,13 +6783,13 @@ const CreateCard = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     const updatedData = { ...formData, [name]: value };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -6670,33 +6798,33 @@ const CreateCard = () => {
     const updatedArray = [...formData[field]];
     updatedArray[index] = { ...updatedArray[index], [subField]: value };
     const updatedData = { ...formData, [field]: updatedArray };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
   // Handle social link change
   const handleSocialLinkChange = (platform, url) => {
-    const updatedSocialLinks = formData.socialLinks.map(link => 
-      link.platform === platform 
+    const updatedSocialLinks = formData.socialLinks.map(link =>
+      link.platform === platform
         ? { ...link, url }
         : link
     );
     const updatedData = { ...formData, socialLinks: updatedSocialLinks };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
-    
+
     setActiveSocialPlatform("");
   };
 
@@ -6706,13 +6834,13 @@ const CreateCard = () => {
       ...formData,
       [field]: [...formData[field], defaultItem]
     };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -6720,13 +6848,13 @@ const CreateCard = () => {
   const removeArrayField = (field, index) => {
     const updatedArray = formData[field].filter((_, i) => i !== index);
     const updatedData = { ...formData, [field]: updatedArray };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -6741,13 +6869,13 @@ const CreateCard = () => {
       const updatedArray = [...formData[field]];
       updatedArray[index] = { ...updatedArray[index], image: base64Image };
       const updatedData = { ...formData, [field]: updatedArray };
-      
+
       setFormData(updatedData);
       formDataRef.current = updatedData;
-      
+
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
-      
+
       autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
@@ -6762,13 +6890,13 @@ const CreateCard = () => {
     reader.onload = (e) => {
       const base64Image = e.target.result;
       const updatedData = { ...formData, [field]: base64Image };
-      
+
       setFormData(updatedData);
       formDataRef.current = updatedData;
-      
+
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
-      
+
       autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
@@ -6783,13 +6911,13 @@ const CreateCard = () => {
     reader.onload = (e) => {
       const base64PDF = e.target.result;
       const updatedData = { ...formData, catalogPDF: base64PDF };
-      
+
       setFormData(updatedData);
       formDataRef.current = updatedData;
-      
+
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
-      
+
       autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
@@ -6800,13 +6928,13 @@ const CreateCard = () => {
     const updatedAddresses = [...formData.addresses];
     updatedAddresses[index] = { ...updatedAddresses[index], [field]: value };
     const updatedData = { ...formData, addresses: updatedAddresses };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -6828,26 +6956,26 @@ const CreateCard = () => {
         }
       ]
     };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
   const removeAddress = (index) => {
     const updatedAddresses = formData.addresses.filter((_, i) => i !== index);
     const updatedData = { ...formData, addresses: updatedAddresses };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -6857,13 +6985,13 @@ const CreateCard = () => {
       isPrimary: i === index
     }));
     const updatedData = { ...formData, addresses: updatedAddresses };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -6876,10 +7004,10 @@ const CreateCard = () => {
       address.postalCode,
       address.country
     ].filter(part => part && part.trim() !== "");
-    
+
     const fullAddress = parts.join(', ');
     handleAddressChange(index, 'fullAddress', fullAddress);
-    
+
     if (address.street && address.city) {
       const mapsQuery = encodeURIComponent(fullAddress);
       handleAddressChange(index, 'googleMapsLink', `https://maps.google.com/?q=${mapsQuery}`);
@@ -6917,7 +7045,7 @@ const CreateCard = () => {
     reader.onload = (e) => {
       const base64Video = e.target.result;
       const thumbnail = generateThumbnailFromVideo(base64Video);
-      
+
       const updatedData = {
         ...formData,
         [field]: {
@@ -6927,13 +7055,13 @@ const CreateCard = () => {
           uploadType: 'upload'
         }
       };
-      
+
       setFormData(updatedData);
       formDataRef.current = updatedData;
-      
+
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
-      
+
       autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
@@ -6960,18 +7088,18 @@ const CreateCard = () => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const base64PDF = e.target.result;
-      const updatedData = { 
-        ...formData, 
+      const updatedData = {
+        ...formData,
         catalog: base64PDF,
-        catalogPDF: base64PDF 
+        catalogPDF: base64PDF
       };
-      
+
       setFormData(updatedData);
       formDataRef.current = updatedData;
-      
+
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
-      
+
       autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
@@ -6985,26 +7113,26 @@ const CreateCard = () => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const fileData = e.target.result;
-      const fileType = file.type.startsWith('image/') ? 'image' : 
-                      file.type.startsWith('video/') ? 'video' : 
-                      file.type === 'application/pdf' ? 'pdf' : 'document';
-      
+      const fileType = file.type.startsWith('image/') ? 'image' :
+        file.type.startsWith('video/') ? 'video' :
+          file.type === 'application/pdf' ? 'pdf' : 'document';
+
       const updatedGallery = [...formData.gallery];
-      updatedGallery[index] = { 
-        ...updatedGallery[index], 
+      updatedGallery[index] = {
+        ...updatedGallery[index],
         type: fileType,
         url: fileData,
         uploadType: 'upload'
       };
-      
+
       const updatedData = { ...formData, gallery: updatedGallery };
-      
+
       setFormData(updatedData);
       formDataRef.current = updatedData;
-      
+
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
-      
+
       autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
@@ -7018,28 +7146,28 @@ const CreateCard = () => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const fileData = e.target.result;
-      const fileType = file.type === 'application/pdf' ? 'pdf' : 
-                      file.type.startsWith('image/') ? 'image' : 
-                      file.type.startsWith('video/') ? 'video' : 
-                      'document';
-      
+      const fileType = file.type === 'application/pdf' ? 'pdf' :
+        file.type.startsWith('image/') ? 'image' :
+          file.type.startsWith('video/') ? 'video' :
+            'document';
+
       const updatedDownloads = [...formData.downloads];
-      updatedDownloads[index] = { 
-        ...updatedDownloads[index], 
+      updatedDownloads[index] = {
+        ...updatedDownloads[index],
         fileType: fileType,
         fileData: fileData,
         fileSize: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
         uploadType: 'upload'
       };
-      
+
       const updatedData = { ...formData, downloads: updatedDownloads };
-      
+
       setFormData(updatedData);
       formDataRef.current = updatedData;
-      
+
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
-      
+
       autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
@@ -7066,24 +7194,24 @@ const CreateCard = () => {
     reader.onload = (e) => {
       const videoData = e.target.result;
       const thumbnail = generateThumbnailFromVideo(videoData);
-      
+
       const updatedVideos = [...formData.videos];
-      updatedVideos[index] = { 
-        ...updatedVideos[index], 
+      updatedVideos[index] = {
+        ...updatedVideos[index],
         type: 'direct',
         url: videoData,
         thumbnail: thumbnail,
         uploadType: 'upload'
       };
-      
+
       const updatedData = { ...formData, videos: updatedVideos };
-      
+
       setFormData(updatedData);
       formDataRef.current = updatedData;
-      
+
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
-      
+
       autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
@@ -7096,13 +7224,13 @@ const CreateCard = () => {
     const updatedTestimonials = [...formData.testimonials];
     updatedTestimonials[index] = { ...updatedTestimonials[index], [field]: value };
     const updatedData = { ...formData, testimonials: updatedTestimonials };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7110,13 +7238,13 @@ const CreateCard = () => {
     const updatedGallery = [...formData.gallery];
     updatedGallery[index] = { ...updatedGallery[index], [field]: value };
     const updatedData = { ...formData, gallery: updatedGallery };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7124,13 +7252,13 @@ const CreateCard = () => {
     const updatedElements = [...formData.interactiveElements];
     updatedElements[index] = { ...updatedElements[index], [field]: value };
     const updatedData = { ...formData, interactiveElements: updatedElements };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7138,26 +7266,26 @@ const CreateCard = () => {
     const updatedDownloads = [...formData.downloads];
     updatedDownloads[index] = { ...updatedDownloads[index], [field]: value };
     const updatedData = { ...formData, downloads: updatedDownloads };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
   // Handle virtual number change
   const handleVirtualNumberChange = (e) => {
     const updatedData = { ...formData, virtualNumber: e.target.value };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7167,13 +7295,13 @@ const CreateCard = () => {
       ...formData,
       productVideo: { ...formData.productVideo, [field]: value }
     };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7182,13 +7310,13 @@ const CreateCard = () => {
     const updatedVideos = [...formData.videos];
     updatedVideos[index] = { ...updatedVideos[index], [field]: value };
     const updatedData = { ...formData, videos: updatedVideos };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7201,13 +7329,13 @@ const CreateCard = () => {
         isEnabled: e.target.checked
       }
     };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7217,32 +7345,32 @@ const CreateCard = () => {
       ...formData,
       liveChat: { ...formData.liveChat, [field]: value }
     };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
   // Handle business hours change
   const handleBusinessHoursChange = (dayIndex, field, value) => {
     const updatedBusinessHours = [...formData.businessHours];
-    updatedBusinessHours[dayIndex] = { 
-      ...updatedBusinessHours[dayIndex], 
-      [field]: field === 'isClosed' ? (value === 'true') : value 
+    updatedBusinessHours[dayIndex] = {
+      ...updatedBusinessHours[dayIndex],
+      [field]: field === 'isClosed' ? (value === 'true') : value
     };
-    
+
     const updatedData = { ...formData, businessHours: updatedBusinessHours };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7262,13 +7390,13 @@ const CreateCard = () => {
         }
       ]
     };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7288,13 +7416,13 @@ const CreateCard = () => {
         }
       ]
     };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7311,13 +7439,13 @@ const CreateCard = () => {
         }
       ]
     };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7336,13 +7464,13 @@ const CreateCard = () => {
         }
       ]
     };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7361,13 +7489,13 @@ const CreateCard = () => {
         }
       ]
     };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7375,65 +7503,65 @@ const CreateCard = () => {
   const removeTestimonial = (index) => {
     const updatedTestimonials = formData.testimonials.filter((_, i) => i !== index);
     const updatedData = { ...formData, testimonials: updatedTestimonials };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
   const removeGalleryItem = (index) => {
     const updatedGallery = formData.gallery.filter((_, i) => i !== index);
     const updatedData = { ...formData, gallery: updatedGallery };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
   const removeInteractiveElement = (index) => {
     const updatedElements = formData.interactiveElements.filter((_, i) => i !== index);
     const updatedData = { ...formData, interactiveElements: updatedElements };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
   const removeDownload = (index) => {
     const updatedDownloads = formData.downloads.filter((_, i) => i !== index);
     const updatedData = { ...formData, downloads: updatedDownloads };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
   const removeVideo = (index) => {
     const updatedVideos = formData.videos.filter((_, i) => i !== index);
     const updatedData = { ...formData, videos: updatedVideos };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7446,7 +7574,7 @@ const CreateCard = () => {
       }
       return true;
     }
-    
+
     switch (currentStep) {
       case 1:
         if (!formData.email?.trim()) {
@@ -7473,14 +7601,14 @@ const CreateCard = () => {
       setShowWarning(true);
       return;
     }
-    
+
     const availableSteps = getAvailableSteps();
     const currentIndex = availableSteps.indexOf(currentStep);
-    
+
     if (currentIndex < availableSteps.length - 1) {
       const nextStepIndex = availableSteps[currentIndex + 1];
       setCurrentStep(nextStepIndex);
-      
+
       if (nextStepIndex === 5) {
         setShowDesignSelection(true);
       }
@@ -7490,11 +7618,11 @@ const CreateCard = () => {
   const prevStep = () => {
     const availableSteps = getAvailableSteps();
     const currentIndex = availableSteps.indexOf(currentStep);
-    
+
     if (currentIndex > 0) {
       const prevStepIndex = availableSteps[currentIndex - 1];
       setCurrentStep(prevStepIndex);
-      
+
       if (currentStep === 5) {
         setShowDesignSelection(false);
       }
@@ -7506,9 +7634,9 @@ const CreateCard = () => {
     try {
       setLoading(true);
       setSaveStatus("Saving card...");
-      
+
       const cleanedData = cleanFormData(cardData);
-      
+
       console.log("📤 Saving card data:", {
         editing: !!editingCard,
         email: cleanedData.email,
@@ -7517,16 +7645,16 @@ const CreateCard = () => {
         createdBy: cleanedData.createdBy,
         urlSlug: cleanedData.urlSlug
       });
-      
+
       // For editing: preserve the existing URL slug
       if (editingCard && editingCard._id) {
         // Keep the original URL slug when editing
         cleanedData.urlSlug = editingCard.urlSlug || cleanedData.urlSlug;
-        
+
         // Use the update endpoint
         const url = `${CARD_URL}/update-card/${editingCard._id}`;
         console.log("🔄 Updating existing card at:", url);
-        
+
         const response = await fetch(url, {
           method: "PUT",
           headers: {
@@ -7534,33 +7662,33 @@ const CreateCard = () => {
           },
           body: JSON.stringify(cleanedData)
         });
-        
+
         const responseText = await response.text();
         console.log("📨 Update response:", responseText.substring(0, 200));
-        
+
         if (!response.ok) {
           console.error('❌ Update error status:', response.status);
-          
+
           if (responseText.includes('duplicate') && responseText.includes('urlSlug')) {
             throw new Error('This URL is already taken by another card.');
           }
-          
+
           if (responseText.includes('Card not found')) {
             throw new Error('Card not found. It may have been deleted.');
           }
-          
+
           throw new Error(`Update failed (${response.status}): ${responseText.substring(0, 100)}`);
         }
-        
+
         const responseData = JSON.parse(responseText);
         setSaveStatus("🎉 Card updated successfully!");
         console.log("✅ Update successful:", responseData);
-        
+
         return responseData.card || responseData;
       } else {
         // For new cards
         console.log("🆕 Creating new card");
-        
+
         const response = await fetch(`${CARD_URL}/create-card`, {
           method: "POST",
           headers: {
@@ -7568,26 +7696,26 @@ const CreateCard = () => {
           },
           body: JSON.stringify(cleanedData)
         });
-        
+
         const responseText = await response.text();
-        
+
         if (!response.ok) {
           console.error('❌ Create error:', response.status, responseText);
-          
+
           if (responseText.includes('Email already has')) {
             throw new Error('A card already exists for this email. Please login to edit your existing card.');
           }
-          
+
           throw new Error(`Creation failed (${response.status}): ${responseText.substring(0, 100)}`);
         }
-        
+
         const responseData = JSON.parse(responseText);
         setSaveStatus("🎉 Card created successfully!");
         console.log("✅ Creation successful:", responseData);
-        
+
         return responseData.card || responseData;
       }
-      
+
     } catch (error) {
       console.error('❌ Error saving card:', error);
       setSaveStatus(`Error: ${error.message}`);
@@ -7599,13 +7727,13 @@ const CreateCard = () => {
 
   const handleDesignSelect = (designId) => {
     const updatedData = { ...formData, design: designId };
-    
+
     setFormData(updatedData);
     formDataRef.current = updatedData;
-    
+
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
-    
+
     autoSaveToLocalStorage(updatedData);
   };
 
@@ -7613,7 +7741,7 @@ const CreateCard = () => {
   const handleFinalSubmit = async () => {
     try {
       setLoading(true);
-      
+
       // Validate design is selected
       if (!formData.design || formData.design.trim() === "") {
         setWarningMessage("Please select a design theme before creating your card!");
@@ -7621,7 +7749,7 @@ const CreateCard = () => {
         setLoading(false);
         return;
       }
-      
+
       // Validate required fields
       if (!formData.email || !validateEmail(formData.email)) {
         setWarningMessage("Please enter a valid email address!");
@@ -7629,37 +7757,37 @@ const CreateCard = () => {
         setLoading(false);
         return;
       }
-      
+
       if (!formData.firstName || formData.firstName.trim() === "") {
         setWarningMessage("Please enter your first name!");
         setShowWarning(true);
         setLoading(false);
         return;
       }
-      
+
       console.log("🚀 Final submit - Editing mode:", !!editingCard);
-      
+
       // Save the card
       const result = await saveCardToBackend(formData);
-      
+
       // Get the URL
       const shareUrl = `${FRONTEND_URL}/preview/${result.urlSlug || formData.urlSlug}`;
-      
+
       // Show success message
       alert(`🎉 Card ${editingCard ? 'updated' : 'created'} successfully!\n\n🔗 Your shareable URL:\n${shareUrl}`);
-      
+
       // Copy to clipboard
       navigator.clipboard.writeText(shareUrl);
-      
+
       // Clear local storage if this was a new card
       if (!editingCard && formData.email) {
         localStorage.removeItem(`card_draft_${formData.email}`);
         localStorage.removeItem(`card_draft_form_${formData.email}`);
       }
-      
+
       // Navigate to preview
       navigate(`/preview/${result.urlSlug || formData.urlSlug}`);
-      
+
     } catch (error) {
       console.error('❌ Final submit error:', error);
       setSaveStatus(`Error: ${error.message}`);
@@ -7691,7 +7819,7 @@ const CreateCard = () => {
   useEffect(() => {
     if (editingCard) {
       console.log("📝 Loading editing card data:", editingCard._id);
-      
+
       // Ensure all fields are properly loaded
       const loadedData = {
         ...initialFormState,
@@ -7728,14 +7856,14 @@ const CreateCard = () => {
           uploadType: editingCard.productVideoUploadType || 'url'
         } : initialFormState.productVideo
       };
-      
+
       setFormData(loadedData);
       formDataRef.current = loadedData;
-      
+
       if (editingCard.urlSlug) {
         setGeneratedSlug(editingCard.urlSlug);
       }
-      
+
       // Always go to design step when editing
       setTimeout(() => {
         const availableSteps = getAvailableSteps();
@@ -7744,7 +7872,7 @@ const CreateCard = () => {
           setShowDesignSelection(true);
         }
       }, 300);
-      
+
       setIsFromLogin(true);
       setHasUnsavedChanges(false);
     }
@@ -7778,11 +7906,11 @@ const CreateCard = () => {
       console.log("Editing mode - skipping draft load");
       return;
     }
-    
+
     const timeoutId = setTimeout(() => {
       loadDraftFromLocalStorage();
     }, 300);
-    
+
     return () => clearTimeout(timeoutId);
   }, [editingCard, loadDraftFromLocalStorage]);
 
@@ -7798,7 +7926,7 @@ const CreateCard = () => {
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
-    
+
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       if (autoSaveTimeoutRef.current) {
@@ -7820,7 +7948,7 @@ const CreateCard = () => {
   const renderProfilePage = () => {
     const profileSectionFields = ['prefix', 'firstName', 'lastName', 'suffix', 'profilePhoto', 'profileVideo', 'tagline', 'aboutText', 'foundedName', 'organization'];
     const urlSectionFields = ['customUrl', 'urlSlug'];
-    
+
     const shouldShowProfileSection = isSectionVisible(profileSectionFields);
     const shouldShowUrlSection = isSectionVisible(urlSectionFields);
 
@@ -7847,7 +7975,7 @@ const CreateCard = () => {
               {formData.profilePhoto ? (
                 <div className="flex flex-col items-center">
                   <img src={formData.profilePhoto} alt="Profile" className="w-24 h-24 rounded-full object-cover mb-2" />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => {
                       const updatedData = { ...formData, profilePhoto: null };
@@ -7865,14 +7993,14 @@ const CreateCard = () => {
               ) : (
                 <>
                   <p className="text-slate-500 mb-2">Drag file here or upload file</p>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
+                  <input
+                    type="file"
+                    accept="image/*"
                     onChange={(e) => handleMainImageUpload("profilePhoto", e)}
-                    className="hidden" 
+                    className="hidden"
                     id="profilePhoto"
                   />
-                  <label 
+                  <label
                     htmlFor="profilePhoto"
                     className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
                   >
@@ -7891,7 +8019,7 @@ const CreateCard = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-slate-700 mb-1">Prefix</label>
-                  <select 
+                  <select
                     name="prefix"
                     value={formData.prefix || ""}
                     onChange={handleChange}
@@ -7904,11 +8032,11 @@ const CreateCard = () => {
                     <option value="Prof.">Prof.</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-slate-700 mb-1">Suffix</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="suffix"
                     placeholder="e.g., Jr., Sr., PhD"
                     value={formData.suffix || ""}
@@ -7923,8 +8051,8 @@ const CreateCard = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-slate-700 mb-1">First Name *</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="firstName"
                     placeholder="First name"
                     value={formData.firstName || ""}
@@ -7933,12 +8061,12 @@ const CreateCard = () => {
                     required
                   />
                 </div>
-                
+
                 {isFieldVisible('lastName') && (
                   <div>
                     <label className="block text-slate-700 mb-1">Last Name</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       name="lastName"
                       placeholder="Last name"
                       value={formData.lastName || ""}
@@ -7955,8 +8083,8 @@ const CreateCard = () => {
         {/* Email Field */}
         <div>
           <label className="block text-slate-700 mb-1">Email Address *</label>
-          <input 
-            type="email" 
+          <input
+            type="email"
             name="email"
             placeholder="your.email@example.com"
             required
@@ -7982,7 +8110,7 @@ const CreateCard = () => {
             </h4>
             {(formData.emails || []).map((email, index) => (
               <div key={index} className="flex gap-2 mb-2">
-                <select 
+                <select
                   value={email.label || "work"}
                   onChange={(e) => handleArrayFieldChange("emails", index, "label", e.target.value)}
                   className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -7997,7 +8125,7 @@ const CreateCard = () => {
                   <option value="support">Support</option>
                   <option value="billing">Billing</option>
                 </select>
-                <input 
+                <input
                   type="email"
                   placeholder="Email address"
                   value={email.address || ""}
@@ -8005,7 +8133,7 @@ const CreateCard = () => {
                   className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
                 {(formData.emails || []).length > 1 && (
-                  <button 
+                  <button
                     type="button"
                     onClick={() => removeArrayField("emails", index)}
                     className="bg-red-500 text-white px-3 rounded hover:bg-red-600 transition-colors"
@@ -8015,7 +8143,7 @@ const CreateCard = () => {
                 )}
               </div>
             ))}
-            <button 
+            <button
               type="button"
               onClick={() => addArrayField("emails", { label: "work", address: "" })}
               className="text-blue-500 text-sm hover:text-blue-700"
@@ -8029,8 +8157,8 @@ const CreateCard = () => {
         {isFieldVisible('tagline') && (
           <div>
             <label className="block text-slate-700 mb-1">Tag Line / Slogan</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="tagline"
               placeholder="e.g., Award-Winning Digital Marketer"
               value={formData.tagline || ""}
@@ -8047,17 +8175,16 @@ const CreateCard = () => {
               <FaVideo className="w-5 h-5 text-blue-500 mr-2" />
               Profile Video
             </h4>
-            
+
             {/* Upload Type Toggle */}
             <div className="flex space-x-4 mb-4">
               <button
                 type="button"
                 onClick={() => toggleUploadType('profileVideo')}
-                className={`flex items-center px-4 py-2 rounded-lg ${
-                  uploadType.profileVideo === 'url' 
-                    ? 'bg-blue-500 text-white' 
+                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.profileVideo === 'url'
+                    ? 'bg-blue-500 text-white'
                     : 'bg-gray-200 text-gray-700'
-                }`}
+                  }`}
               >
                 <FaLink className="w-4 h-4 mr-2" />
                 URL
@@ -8065,28 +8192,27 @@ const CreateCard = () => {
               <button
                 type="button"
                 onClick={() => toggleUploadType('profileVideo')}
-                className={`flex items-center px-4 py-2 rounded-lg ${
-                  uploadType.profileVideo === 'upload' 
-                    ? 'bg-blue-500 text-white' 
+                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.profileVideo === 'upload'
+                    ? 'bg-blue-500 text-white'
                     : 'bg-gray-200 text-gray-700'
-                }`}
+                  }`}
               >
                 <FaUpload className="w-4 h-4 mr-2" />
                 Upload File
               </button>
             </div>
-            
+
             <div className="space-y-4">
               {uploadType.profileVideo === 'url' ? (
                 <div>
                   <label className="block text-slate-700 mb-1">Video URL</label>
-                  <input 
+                  <input
                     type="url"
                     placeholder="https://youtube.com/your-video or direct video link"
                     value={formData.profileVideo?.url || ""}
                     onChange={(e) => {
                       const updatedData = {
-                        ...formData, 
+                        ...formData,
                         profileVideo: { ...formData.profileVideo, url: e.target.value, uploadType: 'url' }
                       };
                       setFormData(updatedData);
@@ -8107,7 +8233,7 @@ const CreateCard = () => {
                       </div>
                       <p className="text-sm text-slate-600 mb-2">Video uploaded</p>
                       <div className="flex space-x-2">
-                        <button 
+                        <button
                           type="button"
                           onClick={() => {
                             const input = document.createElement('input');
@@ -8120,7 +8246,7 @@ const CreateCard = () => {
                         >
                           Change Video
                         </button>
-                        <button 
+                        <button
                           type="button"
                           onClick={() => {
                             const updatedData = {
@@ -8142,14 +8268,14 @@ const CreateCard = () => {
                   ) : (
                     <>
                       <p className="text-slate-500 mb-2">Upload video file (max 50MB)</p>
-                      <input 
-                        type="file" 
-                        accept="video/*" 
+                      <input
+                        type="file"
+                        accept="video/*"
                         onChange={(e) => handleVideoUpload('profileVideo', e)}
-                        className="hidden" 
+                        className="hidden"
                         id="profileVideoUpload"
                       />
-                      <label 
+                      <label
                         htmlFor="profileVideoUpload"
                         className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
                       >
@@ -8159,17 +8285,17 @@ const CreateCard = () => {
                   )}
                 </div>
               )}
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-slate-700 mb-1">Video Title</label>
-                  <input 
+                  <input
                     type="text"
                     placeholder="Introduction Video"
                     value={formData.profileVideo?.title || ""}
                     onChange={(e) => {
                       const updatedData = {
-                        ...formData, 
+                        ...formData,
                         profileVideo: { ...formData.profileVideo, title: e.target.value }
                       };
                       setFormData(updatedData);
@@ -8181,16 +8307,16 @@ const CreateCard = () => {
                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-slate-700 mb-1">Thumbnail URL</label>
-                  <input 
+                  <input
                     type="url"
                     placeholder="https://example.com/thumbnail.jpg"
                     value={formData.profileVideo?.thumbnail || ""}
                     onChange={(e) => {
                       const updatedData = {
-                        ...formData, 
+                        ...formData,
                         profileVideo: { ...formData.profileVideo, thumbnail: e.target.value }
                       };
                       setFormData(updatedData);
@@ -8211,8 +8337,8 @@ const CreateCard = () => {
         {isFieldVisible('foundedName') && (
           <div>
             <label className="block text-slate-700 mb-1">Founded Name</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="foundedName"
               placeholder="Founder's name or founding year"
               value={formData.foundedName || ""}
@@ -8226,8 +8352,8 @@ const CreateCard = () => {
         {isFieldVisible('organization') && (
           <div>
             <label className="block text-slate-700 mb-1">Organization</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="organization"
               placeholder="Organization or association name"
               value={formData.organization || ""}
@@ -8241,7 +8367,7 @@ const CreateCard = () => {
         {isFieldVisible('aboutText') && (
           <div>
             <label className="block text-slate-700 mb-1">About Myself / Company / Organisation</label>
-            <textarea 
+            <textarea
               name="aboutText"
               placeholder="Tell us about yourself, your company, or organization..."
               value={formData.aboutText || ""}
@@ -8256,7 +8382,7 @@ const CreateCard = () => {
         {shouldShowUrlSection && (
           <div className="border-t pt-6 mt-6">
             <h4 className="text-lg font-semibold text-slate-800 mb-4">Your Shareable Card URL</h4>
-            
+
             <div className="space-y-4">
               {(formData.urlSlug || generatedSlug) && (
                 <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
@@ -8284,15 +8410,15 @@ const CreateCard = () => {
               <div>
                 <label className="block text-slate-700 mb-2 font-medium">Custom URL {editingCard ? '(Cannot change when editing)' : '(Optional)'}</label>
                 <p className="text-sm text-slate-600 mb-3">
-                  {editingCard 
-                    ? 'URL cannot be changed after card creation.' 
+                  {editingCard
+                    ? 'URL cannot be changed after card creation.'
                     : 'Customize the last part of your URL. If left empty, it will be generated from your email.'}
                 </p>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span className="text-slate-500">www.reveya.com/preview/</span>
                   </div>
-                  <input 
+                  <input
                     type="text"
                     placeholder={generatedSlug || "your-custom-url"}
                     value={formData.customUrl || ""}
@@ -8310,7 +8436,7 @@ const CreateCard = () => {
                     ) : null}
                   </div>
                 </div>
-                
+
                 {urlAvailable === false && !isFromLogin && (
                   <p className="text-red-600 text-sm mt-2">
                     This URL is already taken. Please choose a different one.
@@ -8321,7 +8447,7 @@ const CreateCard = () => {
                     This URL is available! You can use it for your card.
                   </p>
                 )}
-                
+
                 {!editingCard && (
                   <div className="mt-3 p-3 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-800">
@@ -8344,7 +8470,7 @@ const CreateCard = () => {
       'servicesProducts', 'brandLabel', 'catalog', 'businessHours', 'virtualNumber',
       'productVideo', 'individualProductDisplay', 'businessCardInstagram', 'textbooks'
     ];
-    
+
     const shouldShowProfessionalSection = isSectionVisible(professionalFields);
 
     if (!shouldShowProfessionalSection) {
@@ -8366,8 +8492,8 @@ const CreateCard = () => {
         {isFieldVisible('companyName') && (
           <div>
             <label className="block text-slate-700 mb-1">Company Name / Organisation</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="companyName"
               placeholder="Company name"
               value={formData.companyName || ""}
@@ -8382,8 +8508,8 @@ const CreateCard = () => {
             {isFieldVisible('department') && (
               <div>
                 <label className="block text-slate-700 mb-1">Department</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="department"
                   placeholder="Department"
                   value={formData.department || ""}
@@ -8392,12 +8518,12 @@ const CreateCard = () => {
                 />
               </div>
             )}
-            
+
             {isFieldVisible('jobTitle') && (
               <div>
                 <label className="block text-slate-700 mb-1">Job Title</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="jobTitle"
                   placeholder="Job title"
                   value={formData.jobTitle || ""}
@@ -8412,7 +8538,7 @@ const CreateCard = () => {
         {isFieldVisible('bio') && (
           <div>
             <label className="block text-slate-700 mb-1">Bio</label>
-            <textarea 
+            <textarea
               name="bio"
               placeholder="Professional biography..."
               value={formData.bio || ""}
@@ -8427,7 +8553,7 @@ const CreateCard = () => {
         {isFieldVisible('servicesProducts') && (
           <div>
             <label className="block text-slate-700 mb-1">Brief about Products/Services</label>
-            <textarea 
+            <textarea
               name="servicesProducts"
               placeholder="Brief description of your services and products"
               value={formData.servicesProducts || ""}
@@ -8442,8 +8568,8 @@ const CreateCard = () => {
         {isFieldVisible('brandLabel') && (
           <div>
             <label className="block text-slate-700 mb-1">Brand Label</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="brandLabel"
               placeholder="Bird Label Product/Services"
               value={formData.brandLabel || ""}
@@ -8461,11 +8587,10 @@ const CreateCard = () => {
               <button
                 type="button"
                 onClick={() => setUploadType(prev => ({ ...prev, catalog: 'url' }))}
-                className={`flex items-center px-4 py-2 rounded-lg ${
-                  uploadType.catalog === 'url' 
-                    ? 'bg-blue-500 text-white' 
+                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.catalog === 'url'
+                    ? 'bg-blue-500 text-white'
                     : 'bg-gray-200 text-gray-700'
-                }`}
+                  }`}
               >
                 <FaLink className="w-4 h-4 mr-2" />
                 URL
@@ -8473,20 +8598,19 @@ const CreateCard = () => {
               <button
                 type="button"
                 onClick={() => setUploadType(prev => ({ ...prev, catalog: 'upload' }))}
-                className={`flex items-center px-4 py-2 rounded-lg ${
-                  uploadType.catalog === 'upload' 
-                    ? 'bg-blue-500 text-white' 
+                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.catalog === 'upload'
+                    ? 'bg-blue-500 text-white'
                     : 'bg-gray-200 text-gray-700'
-                }`}
+                  }`}
               >
                 <FaUpload className="w-4 h-4 mr-2" />
                 Upload PDF
               </button>
             </div>
-            
+
             {uploadType.catalog === 'url' ? (
-              <input 
-                type="text" 
+              <input
+                type="text"
                 name="catalog"
                 placeholder="https://example.com/catalog.pdf"
                 value={formData.catalog || ""}
@@ -8500,7 +8624,7 @@ const CreateCard = () => {
                     <FaFilePdf className="w-12 h-12 text-red-500 mb-2" />
                     <p className="text-sm text-slate-600 mb-2">PDF catalog uploaded</p>
                     <div className="flex space-x-2">
-                      <button 
+                      <button
                         type="button"
                         onClick={() => {
                           const input = document.createElement('input');
@@ -8513,13 +8637,13 @@ const CreateCard = () => {
                       >
                         Change PDF
                       </button>
-                      <button 
+                      <button
                         type="button"
                         onClick={() => {
-                          const updatedData = { 
-                            ...formData, 
+                          const updatedData = {
+                            ...formData,
                             catalog: "",
-                            catalogPDF: null 
+                            catalogPDF: null
                           };
                           setFormData(updatedData);
                           formDataRef.current = updatedData;
@@ -8536,14 +8660,14 @@ const CreateCard = () => {
                 ) : (
                   <>
                     <p className="text-slate-500 mb-2">Upload PDF catalog file</p>
-                    <input 
-                      type="file" 
-                      accept=".pdf" 
+                    <input
+                      type="file"
+                      accept=".pdf"
                       onChange={handleCatalogPDFUpload}
-                      className="hidden" 
+                      className="hidden"
                       id="catalogPDFUpload"
                     />
-                    <label 
+                    <label
                       htmlFor="catalogPDFUpload"
                       className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
                     >
@@ -8560,8 +8684,8 @@ const CreateCard = () => {
         {isFieldVisible('virtualNumber') && (
           <div>
             <label className="block text-slate-700 mb-1">Virtual Number (Optional)</label>
-            <input 
-              type="tel" 
+            <input
+              type="tel"
               placeholder="+1 (555) 123-4567"
               value={formData.virtualNumber || ""}
               onChange={handleVirtualNumberChange}
@@ -8579,7 +8703,7 @@ const CreateCard = () => {
               {formData.companyLogo ? (
                 <div className="flex flex-col items-center">
                   <img src={formData.companyLogo} alt="Company Logo" className="max-w-32 max-h-32 object-contain mb-2" />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => {
                       const updatedData = { ...formData, companyLogo: null };
@@ -8597,14 +8721,14 @@ const CreateCard = () => {
               ) : (
                 <>
                   <p className="text-slate-500 mb-2">Drag file here or upload file</p>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
+                  <input
+                    type="file"
+                    accept="image/*"
                     onChange={(e) => handleMainImageUpload("companyLogo", e)}
-                    className="hidden" 
+                    className="hidden"
                     id="companyLogo"
                   />
-                  <label 
+                  <label
                     htmlFor="companyLogo"
                     className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
                   >
@@ -8613,11 +8737,11 @@ const CreateCard = () => {
                 </>
               )}
             </div>
-            
+
             {isFieldVisible('logoSize') && (
               <div className="mt-4">
                 <label className="block text-slate-700 mb-1">Logo Size</label>
-                <select 
+                <select
                   name="logoSize"
                   value={formData.logoSize || "medium"}
                   onChange={handleChange}
@@ -8639,17 +8763,16 @@ const CreateCard = () => {
               <FaVideo className="w-5 h-5 text-red-500 mr-2" />
               Product/Service Video
             </h4>
-            
+
             {/* Upload Type Toggle */}
             <div className="flex space-x-4 mb-4">
               <button
                 type="button"
                 onClick={() => toggleUploadType('productVideo')}
-                className={`flex items-center px-4 py-2 rounded-lg ${
-                  uploadType.productVideo === 'url' 
-                    ? 'bg-blue-500 text-white' 
+                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.productVideo === 'url'
+                    ? 'bg-blue-500 text-white'
                     : 'bg-gray-200 text-gray-700'
-                }`}
+                  }`}
               >
                 <FaLink className="w-4 h-4 mr-2" />
                 URL
@@ -8657,22 +8780,21 @@ const CreateCard = () => {
               <button
                 type="button"
                 onClick={() => toggleUploadType('productVideo')}
-                className={`flex items-center px-4 py-2 rounded-lg ${
-                  uploadType.productVideo === 'upload' 
-                    ? 'bg-blue-500 text-white' 
+                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.productVideo === 'upload'
+                    ? 'bg-blue-500 text-white'
                     : 'bg-gray-200 text-gray-700'
-                }`}
+                  }`}
               >
                 <FaUpload className="w-4 h-4 mr-2" />
                 Upload File
               </button>
             </div>
-            
+
             <div className="space-y-4">
               {uploadType.productVideo === 'url' ? (
                 <div>
                   <label className="block text-slate-700 mb-1">Video URL</label>
-                  <input 
+                  <input
                     type="url"
                     placeholder="https://youtube.com/your-product-video"
                     value={formData.productVideo?.url || ""}
@@ -8689,7 +8811,7 @@ const CreateCard = () => {
                       </div>
                       <p className="text-sm text-slate-600 mb-2">Product video uploaded</p>
                       <div className="flex space-x-2">
-                        <button 
+                        <button
                           type="button"
                           onClick={() => {
                             const input = document.createElement('input');
@@ -8702,7 +8824,7 @@ const CreateCard = () => {
                         >
                           Change Video
                         </button>
-                        <button 
+                        <button
                           type="button"
                           onClick={() => {
                             const updatedData = {
@@ -8724,14 +8846,14 @@ const CreateCard = () => {
                   ) : (
                     <>
                       <p className="text-slate-500 mb-2">Upload product video file (max 50MB)</p>
-                      <input 
-                        type="file" 
-                        accept="video/*" 
+                      <input
+                        type="file"
+                        accept="video/*"
                         onChange={(e) => handleVideoUpload('productVideo', e)}
-                        className="hidden" 
+                        className="hidden"
                         id="productVideoUpload"
                       />
-                      <label 
+                      <label
                         htmlFor="productVideoUpload"
                         className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
                       >
@@ -8741,11 +8863,11 @@ const CreateCard = () => {
                   )}
                 </div>
               )}
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-slate-700 mb-1">Video Title</label>
-                  <input 
+                  <input
                     type="text"
                     placeholder="Product Demonstration"
                     value={formData.productVideo?.title || ""}
@@ -8753,10 +8875,10 @@ const CreateCard = () => {
                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-slate-700 mb-1">Thumbnail URL</label>
-                  <input 
+                  <input
                     type="url"
                     placeholder="https://example.com/thumbnail.jpg"
                     value={formData.productVideo?.thumbnail || ""}
@@ -8776,14 +8898,14 @@ const CreateCard = () => {
               <FaClock className="w-5 h-5 text-blue-500 mr-2" />
               Business Hours
             </h4>
-            
+
             <div className="space-y-4">
               {formData.businessHours.map((day, index) => (
                 <div key={day.day} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                   <span className="font-medium text-slate-700 w-24 capitalize">{day.day}</span>
-                  
+
                   <div className="flex items-center space-x-4">
-                    <select 
+                    <select
                       value={day.isClosed ? 'true' : 'false'}
                       onChange={(e) => handleBusinessHoursChange(index, 'isClosed', e.target.value)}
                       className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -8791,17 +8913,17 @@ const CreateCard = () => {
                       <option value="false">Open</option>
                       <option value="true">Closed</option>
                     </select>
-                    
+
                     {!day.isClosed && (
                       <>
-                        <input 
+                        <input
                           type="time"
                           value={day.openingTime || ''}
                           onChange={(e) => handleBusinessHoursChange(index, 'openingTime', e.target.value)}
                           className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                         <span className="text-slate-500">to</span>
-                        <input 
+                        <input
                           type="time"
                           value={day.closingTime || ''}
                           onChange={(e) => handleBusinessHoursChange(index, 'closingTime', e.target.value)}
@@ -8823,11 +8945,11 @@ const CreateCard = () => {
               <FaShoppingCart className="w-5 h-5 text-green-500 mr-2" />
               Product Display Options
             </h4>
-            
+
             <div className="space-y-4">
               <div className="flex items-center">
                 <label className="flex items-center text-slate-700">
-                  <input 
+                  <input
                     type="checkbox"
                     checked={formData.individualProductDisplay || false}
                     onChange={(e) => {
@@ -8843,11 +8965,11 @@ const CreateCard = () => {
                   Enable Individual Product Display
                 </label>
               </div>
-              
+
               {isFieldVisible('businessCardInstagram') && (
                 <div>
                   <label className="block text-slate-700 mb-1">Business Card Instagram</label>
-                  <input 
+                  <input
                     type="url"
                     placeholder="https://instagram.com/yourbusiness"
                     value={formData.businessCardInstagram || ""}
@@ -8863,11 +8985,11 @@ const CreateCard = () => {
                   />
                 </div>
               )}
-              
+
               {isFieldVisible('textbooks') && (
                 <div>
                   <label className="block text-slate-700 mb-1">Textbooks / Learning Materials</label>
-                  <textarea 
+                  <textarea
                     placeholder="List textbooks or learning materials"
                     value={formData.textbooks || ""}
                     onChange={(e) => {
@@ -8895,7 +9017,7 @@ const CreateCard = () => {
     const contactFields = [
       'enableOneTapCall', 'enableWhatsApp', 'enableEmail', 'phones', 'websites', 'addresses'
     ];
-    
+
     const shouldShowContactSection = isSectionVisible(contactFields);
 
     return (
@@ -8907,7 +9029,7 @@ const CreateCard = () => {
               <FaComments className="w-5 h-5 text-green-500 mr-2" />
               One-Tap Contact
             </h4>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Call */}
               <div className="border border-slate-200 rounded-lg p-4">
@@ -8921,8 +9043,8 @@ const CreateCard = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-500">Status:</span>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       className="sr-only peer"
                       checked={formData.enableOneTapCall || false}
                       onChange={(e) => {
@@ -8951,8 +9073,8 @@ const CreateCard = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-500">Status:</span>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       className="sr-only peer"
                       checked={formData.enableWhatsApp || false}
                       onChange={(e) => {
@@ -8981,8 +9103,8 @@ const CreateCard = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-500">Status:</span>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       className="sr-only peer"
                       checked={formData.enableEmail !== undefined ? formData.enableEmail : true}
                       onChange={(e) => {
@@ -9011,7 +9133,7 @@ const CreateCard = () => {
             </h4>
             {(formData.phones || []).map((phone, index) => (
               <div key={index} className="flex gap-2 mb-2">
-                <select 
+                <select
                   value={phone.label || "work"}
                   onChange={(e) => handleArrayFieldChange("phones", index, "label", e.target.value)}
                   className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -9027,7 +9149,7 @@ const CreateCard = () => {
                   <option value="direct">Direct</option>
                   <option value="main">Main</option>
                 </select>
-                <input 
+                <input
                   type="tel"
                   placeholder="Phone number"
                   value={phone.number || ""}
@@ -9035,7 +9157,7 @@ const CreateCard = () => {
                   className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
                 {(formData.phones || []).length > 1 && (
-                  <button 
+                  <button
                     type="button"
                     onClick={() => removeArrayField("phones", index)}
                     className="bg-red-500 text-white px-3 rounded hover:bg-red-600 transition-colors"
@@ -9045,7 +9167,7 @@ const CreateCard = () => {
                 )}
               </div>
             ))}
-            <button 
+            <button
               type="button"
               onClick={() => addArrayField("phones", { label: "work", number: "" })}
               className="text-blue-500 text-sm hover:text-blue-700"
@@ -9064,7 +9186,7 @@ const CreateCard = () => {
             </h4>
             {(formData.websites || []).map((website, index) => (
               <div key={index} className="flex gap-2 mb-2">
-                <select 
+                <select
                   value={website.label || "personal"}
                   onChange={(e) => handleArrayFieldChange("websites", index, "label", e.target.value)}
                   className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -9080,7 +9202,7 @@ const CreateCard = () => {
                   <option value="support">Support</option>
                   <option value="booking">Booking</option>
                 </select>
-                <input 
+                <input
                   type="url"
                   placeholder="Website URL"
                   value={website.url || ""}
@@ -9088,7 +9210,7 @@ const CreateCard = () => {
                   className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
                 {(formData.websites || []).length > 1 && (
-                  <button 
+                  <button
                     type="button"
                     onClick={() => removeArrayField("websites", index)}
                     className="bg-red-500 text-white px-3 rounded hover:bg-red-600 transition-colors"
@@ -9098,7 +9220,7 @@ const CreateCard = () => {
                 )}
               </div>
             ))}
-            <button 
+            <button
               type="button"
               onClick={() => addArrayField("websites", { label: "personal", url: "" })}
               className="text-blue-500 text-sm hover:text-blue-700"
@@ -9115,7 +9237,7 @@ const CreateCard = () => {
               <FaMapMarkerAlt className="w-5 h-5 text-blue-500 mr-2" />
               Location & Addresses
             </h4>
-            
+
             {(formData.addresses || []).map((address, index) => (
               <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-center mb-4">
@@ -9124,7 +9246,7 @@ const CreateCard = () => {
                   </h5>
                   <div className="flex gap-2">
                     {!address.isPrimary && (
-                      <button 
+                      <button
                         type="button"
                         onClick={() => setPrimaryAddress(index)}
                         className="text-blue-500 hover:text-blue-700 text-sm"
@@ -9133,7 +9255,7 @@ const CreateCard = () => {
                       </button>
                     )}
                     {(formData.addresses || []).length > 1 && (
-                      <button 
+                      <button
                         type="button"
                         onClick={() => removeAddress(index)}
                         className="text-red-500 hover:text-red-700 text-sm"
@@ -9143,11 +9265,11 @@ const CreateCard = () => {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-slate-700 mb-1">Label</label>
-                    <select 
+                    <select
                       value={address.label || "office"}
                       onChange={(e) => handleAddressChange(index, "label", e.target.value)}
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -9162,10 +9284,10 @@ const CreateCard = () => {
                       <option value="factory">Factory</option>
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-slate-700 mb-1">Street Address</label>
-                    <input 
+                    <input
                       type="text"
                       placeholder="123 Main Street"
                       value={address.street || ""}
@@ -9174,11 +9296,11 @@ const CreateCard = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                   <div>
                     <label className="block text-slate-700 mb-1">City</label>
-                    <input 
+                    <input
                       type="text"
                       placeholder="City"
                       value={address.city || ""}
@@ -9186,10 +9308,10 @@ const CreateCard = () => {
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-slate-700 mb-1">State</label>
-                    <input 
+                    <input
                       type="text"
                       placeholder="State"
                       value={address.state || ""}
@@ -9197,10 +9319,10 @@ const CreateCard = () => {
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-slate-700 mb-1">Postal Code</label>
-                    <input 
+                    <input
                       type="text"
                       placeholder="ZIP/Postal Code"
                       value={address.postalCode || ""}
@@ -9208,10 +9330,10 @@ const CreateCard = () => {
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-slate-700 mb-1">Country</label>
-                    <input 
+                    <input
                       type="text"
                       placeholder="Country"
                       value={address.country || ""}
@@ -9220,17 +9342,17 @@ const CreateCard = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="mb-4">
                   <label className="block text-slate-700 mb-1">Full Address (Auto-generated)</label>
-                  <textarea 
+                  <textarea
                     placeholder="Full address will be generated automatically"
                     value={address.fullAddress || ""}
                     onChange={(e) => handleAddressChange(index, 'fullAddress', e.target.value)}
                     rows="2"
                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => generateFullAddress(index)}
                     className="mt-2 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
@@ -9238,10 +9360,10 @@ const CreateCard = () => {
                     Generate Full Address
                   </button>
                 </div>
-                
+
                 <div>
                   <label className="block text-slate-700 mb-1">Google Maps Link</label>
-                  <input 
+                  <input
                     type="url"
                     placeholder="https://maps.google.com/?q=..."
                     value={address.googleMapsLink || ""}
@@ -9251,8 +9373,8 @@ const CreateCard = () => {
                 </div>
               </div>
             ))}
-            
-            <button 
+
+            <button
               type="button"
               onClick={addAddress}
               className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 flex items-center justify-center gap-2"
@@ -9267,12 +9389,12 @@ const CreateCard = () => {
         <div className="border border-slate-200 rounded-lg p-6">
           <h4 className="text-lg font-semibold text-slate-800 mb-4">Social Media Links</h4>
           <p className="text-slate-600 text-sm mb-4">Click on any social media icon to add your profile link</p>
-          
+
           <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
             {Object.entries(socialMediaConfig).map(([platform, config]) => {
               const socialLink = (formData.socialLinks || []).find(link => link.platform === platform);
               const hasUrl = socialLink && socialLink.url;
-              
+
               return (
                 <div key={platform} className="flex flex-col items-center">
                   <button
@@ -9280,13 +9402,11 @@ const CreateCard = () => {
                     onClick={() => {
                       setActiveSocialPlatform(activeSocialPlatform === platform ? "" : platform);
                     }}
-                    className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-110 ${
-                      hasUrl 
-                        ? `${config.color} text-white shadow-md` 
+                    className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-110 ${hasUrl
+                        ? `${config.color} text-white shadow-md`
                         : 'bg-slate-100 text-slate-400 hover:bg-slate-200 border-2 border-dashed border-slate-300'
-                    } ${
-                      activeSocialPlatform === platform ? 'ring-2 ring-blue-500 ring-offset-2' : ''
-                    }`}
+                      } ${activeSocialPlatform === platform ? 'ring-2 ring-blue-500 ring-offset-2' : ''
+                      }`}
                   >
                     {config.icon}
                   </button>
@@ -9300,7 +9420,7 @@ const CreateCard = () => {
               );
             })}
           </div>
-          
+
           {/* Input box that appears under the active social media platform */}
           {activeSocialPlatform && (
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6 animate-fadeIn">
@@ -9346,7 +9466,7 @@ const CreateCard = () => {
               </div>
             </div>
           )}
-          
+
           {/* Show added links */}
           <div className="mt-6">
             {(formData.socialLinks || []).filter(link => link.url).length > 0 && (
@@ -9394,7 +9514,7 @@ const CreateCard = () => {
       'interactiveElements', 'testimonials', 'gallery', 'dynamicQRCode', 'nfcSettings', 'downloads',
       'videos', 'chatAssistant', 'liveChat', 'clientList', 'services', 'products'
     ];
-    
+
     const shouldShowPremiumSection = isSectionVisible(premiumFields);
 
     if (!shouldShowPremiumSection) {
@@ -9418,7 +9538,7 @@ const CreateCard = () => {
             <div className="border border-slate-200 rounded-lg p-6">
               <h4 className="text-lg font-semibold text-slate-800 mb-4">Available Interactive Elements</h4>
               <p className="text-slate-600 text-sm mb-6">Click on any element to add it to your card</p>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 {Object.entries(interactiveElementsConfig).map(([type, config]) => (
                   <div
@@ -9459,7 +9579,7 @@ const CreateCard = () => {
                         </div>
                         <div className="flex items-center space-x-2">
                           <label className="flex items-center text-slate-700 text-sm">
-                            <input 
+                            <input
                               type="checkbox"
                               checked={element.isActive !== undefined ? element.isActive : true}
                               onChange={(e) => handleInteractiveElementChange(index, "isActive", e.target.checked)}
@@ -9467,7 +9587,7 @@ const CreateCard = () => {
                             />
                             Active
                           </label>
-                          <button 
+                          <button
                             type="button"
                             onClick={() => removeInteractiveElement(index)}
                             className="text-red-500 hover:text-red-700 text-sm"
@@ -9476,10 +9596,10 @@ const CreateCard = () => {
                           </button>
                         </div>
                       </div>
-                      
+
                       <div>
                         <label className="block text-slate-700 mb-1">Configuration (JSON)</label>
-                        <textarea 
+                        <textarea
                           placeholder='{"buttonText": "Book Now", "redirectUrl": "https://..."}'
                           value={JSON.stringify(element.config || {}, null, 2)}
                           onChange={(e) => {
@@ -9506,13 +9626,13 @@ const CreateCard = () => {
         {isFieldVisible('services') && (
           <div className="border border-slate-200 rounded-lg p-6">
             <h4 className="text-lg font-semibold text-slate-800 mb-4">Services</h4>
-            
+
             {formData.services.map((service, index) => (
               <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-center mb-4">
                   <h5 className="font-medium text-slate-700">Service {index + 1}</h5>
                   {formData.services.length > 1 && (
-                    <button 
+                    <button
                       type="button"
                       onClick={() => removeArrayField("services", index)}
                       className="text-red-500 hover:text-red-700 text-sm"
@@ -9521,11 +9641,11 @@ const CreateCard = () => {
                     </button>
                   )}
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-slate-700 mb-1">Service Name</label>
-                    <input 
+                    <input
                       type="text"
                       placeholder="Service name"
                       value={service.name || ""}
@@ -9533,10 +9653,10 @@ const CreateCard = () => {
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-slate-700 mb-1">Category</label>
-                    <select 
+                    <select
                       value={service.category || ""}
                       onChange={(e) => handleArrayFieldChange("services", index, "category", e.target.value)}
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -9554,10 +9674,10 @@ const CreateCard = () => {
                     </select>
                   </div>
                 </div>
-                
+
                 <div className="mb-4">
                   <label className="block text-slate-700 mb-1">Description</label>
-                  <textarea 
+                  <textarea
                     placeholder="Service description"
                     value={service.description || ""}
                     onChange={(e) => handleArrayFieldChange("services", index, "description", e.target.value)}
@@ -9565,11 +9685,11 @@ const CreateCard = () => {
                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-slate-700 mb-1">Price</label>
-                    <input 
+                    <input
                       type="number"
                       placeholder="0.00"
                       value={service.price || ""}
@@ -9577,10 +9697,10 @@ const CreateCard = () => {
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-slate-700 mb-1">Currency</label>
-                    <select 
+                    <select
                       value={service.currency || "USD"}
                       onChange={(e) => handleArrayFieldChange("services", index, "currency", e.target.value)}
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -9591,10 +9711,10 @@ const CreateCard = () => {
                       <option value="INR">INR</option>
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-slate-700 mb-1">Duration</label>
-                    <input 
+                    <input
                       type="text"
                       placeholder="e.g., 1 hour, 2 weeks"
                       value={service.duration || ""}
@@ -9603,7 +9723,7 @@ const CreateCard = () => {
                     />
                   </div>
                 </div>
-                
+
                 {/* Service Image Upload */}
                 <div className="mt-4">
                   <label className="block text-slate-700 mb-2">Service Image</label>
@@ -9612,7 +9732,7 @@ const CreateCard = () => {
                       <div className="flex flex-col items-center">
                         <img src={service.image} alt="Service" className="max-w-32 max-h-32 object-contain mb-2 rounded-lg" />
                         <div className="flex space-x-2">
-                          <button 
+                          <button
                             type="button"
                             onClick={() => {
                               const input = document.createElement('input');
@@ -9625,7 +9745,7 @@ const CreateCard = () => {
                           >
                             Change Image
                           </button>
-                          <button 
+                          <button
                             type="button"
                             onClick={() => {
                               const updatedServices = [...formData.services];
@@ -9646,14 +9766,14 @@ const CreateCard = () => {
                     ) : (
                       <>
                         <p className="text-slate-500 mb-2">Upload service image</p>
-                        <input 
-                          type="file" 
-                          accept="image/*" 
+                        <input
+                          type="file"
+                          accept="image/*"
                           onChange={(e) => handleServiceProductImageUpload("services", index, e)}
-                          className="hidden" 
+                          className="hidden"
                           id={`service-image-${index}`}
                         />
-                        <label 
+                        <label
                           htmlFor={`service-image-${index}`}
                           className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
                         >
@@ -9665,8 +9785,8 @@ const CreateCard = () => {
                 </div>
               </div>
             ))}
-            
-            <button 
+
+            <button
               type="button"
               onClick={() => addArrayField("services", {
                 name: "",
@@ -9688,13 +9808,13 @@ const CreateCard = () => {
         {isFieldVisible('products') && (
           <div className="border border-slate-200 rounded-lg p-6">
             <h4 className="text-lg font-semibold text-slate-800 mb-4">Products</h4>
-            
+
             {formData.products.map((product, index) => (
               <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-center mb-4">
                   <h5 className="font-medium text-slate-700">Product {index + 1}</h5>
                   {formData.products.length > 1 && (
-                    <button 
+                    <button
                       type="button"
                       onClick={() => removeArrayField("products", index)}
                       className="text-red-500 hover:text-red-700 text-sm"
@@ -9703,11 +9823,11 @@ const CreateCard = () => {
                     </button>
                   )}
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-slate-700 mb-1">Product Name</label>
-                    <input 
+                    <input
                       type="text"
                       placeholder="Product name"
                       value={product.name || ""}
@@ -9715,10 +9835,10 @@ const CreateCard = () => {
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-slate-700 mb-1">Category</label>
-                    <select 
+                    <select
                       value={product.category || ""}
                       onChange={(e) => handleArrayFieldChange("products", index, "category", e.target.value)}
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -9736,10 +9856,10 @@ const CreateCard = () => {
                     </select>
                   </div>
                 </div>
-                
+
                 <div className="mb-4">
                   <label className="block text-slate-700 mb-1">Description</label>
-                  <textarea 
+                  <textarea
                     placeholder="Product description"
                     value={product.description || ""}
                     onChange={(e) => handleArrayFieldChange("products", index, "description", e.target.value)}
@@ -9747,11 +9867,11 @@ const CreateCard = () => {
                     className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
                     <label className="block text-slate-700 mb-1">Price</label>
-                    <input 
+                    <input
                       type="number"
                       placeholder="0.00"
                       value={product.price || ""}
@@ -9759,10 +9879,10 @@ const CreateCard = () => {
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-slate-700 mb-1">Currency</label>
-                    <select 
+                    <select
                       value={product.currency || "USD"}
                       onChange={(e) => handleArrayFieldChange("products", index, "currency", e.target.value)}
                       className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -9773,10 +9893,10 @@ const CreateCard = () => {
                       <option value="INR">INR</option>
                     </select>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <label className="flex items-center text-slate-700">
-                      <input 
+                      <input
                         type="checkbox"
                         checked={product.inStock !== undefined ? product.inStock : true}
                         onChange={(e) => handleArrayFieldChange("products", index, "inStock", e.target.checked)}
@@ -9786,7 +9906,7 @@ const CreateCard = () => {
                     </label>
                   </div>
                 </div>
-                
+
                 {/* Product Image Upload */}
                 <div className="mt-4">
                   <label className="block text-slate-700 mb-2">Product Image</label>
@@ -9795,7 +9915,7 @@ const CreateCard = () => {
                       <div className="flex flex-col items-center">
                         <img src={product.image} alt="Product" className="max-w-32 max-h-32 object-contain mb-2 rounded-lg" />
                         <div className="flex space-x-2">
-                          <button 
+                          <button
                             type="button"
                             onClick={() => {
                               const input = document.createElement('input');
@@ -9808,7 +9928,7 @@ const CreateCard = () => {
                           >
                             Change Image
                           </button>
-                          <button 
+                          <button
                             type="button"
                             onClick={() => {
                               const updatedProducts = [...formData.products];
@@ -9829,14 +9949,14 @@ const CreateCard = () => {
                     ) : (
                       <>
                         <p className="text-slate-500 mb-2">Upload product image</p>
-                        <input 
-                          type="file" 
-                          accept="image/*" 
+                        <input
+                          type="file"
+                          accept="image/*"
                           onChange={(e) => handleServiceProductImageUpload("products", index, e)}
-                          className="hidden" 
+                          className="hidden"
                           id={`product-image-${index}`}
                         />
-                        <label 
+                        <label
                           htmlFor={`product-image-${index}`}
                           className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
                         >
@@ -9848,8 +9968,8 @@ const CreateCard = () => {
                 </div>
               </div>
             ))}
-            
-            <button 
+
+            <button
               type="button"
               onClick={() => addArrayField("products", {
                 name: "",
@@ -9874,13 +9994,13 @@ const CreateCard = () => {
             {isFieldVisible('testimonials') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Testimonials & Client List</h4>
-                
+
                 {formData.testimonials.map((testimonial, index) => (
                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
                     <div className="flex justify-between items-center mb-4">
                       <h5 className="font-medium text-slate-700">Testimonial {index + 1}</h5>
                       {formData.testimonials.length > 1 && (
-                        <button 
+                        <button
                           type="button"
                           onClick={() => removeTestimonial(index)}
                           className="text-red-500 hover:text-red-700 text-sm"
@@ -9889,11 +10009,11 @@ const CreateCard = () => {
                         </button>
                       )}
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label className="block text-slate-700 mb-1">Client Name</label>
-                        <input 
+                        <input
                           type="text"
                           placeholder="Client Name"
                           value={testimonial.clientName || ""}
@@ -9901,10 +10021,10 @@ const CreateCard = () => {
                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-slate-700 mb-1">Rating</label>
-                        <select 
+                        <select
                           value={testimonial.rating || 5}
                           onChange={(e) => handleTestimonialChange(index, "rating", parseInt(e.target.value))}
                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -9917,11 +10037,11 @@ const CreateCard = () => {
                         </select>
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label className="block text-slate-700 mb-1">Company</label>
-                        <input 
+                        <input
                           type="text"
                           placeholder="Client's company"
                           value={testimonial.company || ""}
@@ -9929,10 +10049,10 @@ const CreateCard = () => {
                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-slate-700 mb-1">Position</label>
-                        <input 
+                        <input
                           type="text"
                           placeholder="Client's position"
                           value={testimonial.position || ""}
@@ -9941,10 +10061,10 @@ const CreateCard = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="mb-4">
                       <label className="block text-slate-700 mb-1">Testimonial</label>
-                      <textarea 
+                      <textarea
                         placeholder="What did the client say?"
                         value={testimonial.testimonial || ""}
                         onChange={(e) => handleTestimonialChange(index, "testimonial", e.target.value)}
@@ -9952,10 +10072,10 @@ const CreateCard = () => {
                         className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-slate-700 mb-1">Date</label>
-                      <input 
+                      <input
                         type="date"
                         value={testimonial.date || ""}
                         onChange={(e) => handleTestimonialChange(index, "date", e.target.value)}
@@ -9964,8 +10084,8 @@ const CreateCard = () => {
                     </div>
                   </div>
                 ))}
-                
-                <button 
+
+                <button
                   type="button"
                   onClick={addTestimonial}
                   className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
@@ -9979,10 +10099,10 @@ const CreateCard = () => {
             {isFieldVisible('clientList') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Client List</h4>
-                
+
                 {formData.clientList.map((client, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg mb-2">
-                    <input 
+                    <input
                       type="text"
                       placeholder="Client name or company"
                       value={client || ""}
@@ -9999,7 +10119,7 @@ const CreateCard = () => {
                       className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                     {formData.clientList.length > 1 && (
-                      <button 
+                      <button
                         type="button"
                         onClick={() => {
                           const updatedClientList = formData.clientList.filter((_, i) => i !== index);
@@ -10017,8 +10137,8 @@ const CreateCard = () => {
                     )}
                   </div>
                 ))}
-                
-                <button 
+
+                <button
                   type="button"
                   onClick={() => {
                     const updatedData = {
@@ -10038,17 +10158,24 @@ const CreateCard = () => {
               </div>
             )}
 
-            {/* Gallery - Updated with upload options */}
+            {/* Gallery - When Add-On Active or Included */}
             {isFieldVisible('gallery') && (
-              <div className="border border-slate-200 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-slate-800 mb-4">Product Gallery & Portfolio</h4>
-                
+              <div className="border border-purple-200 bg-purple-50/20 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                    Product Gallery & Portfolio
+                    <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                      ✓ Add-On Active
+                    </span>
+                  </h4>
+                </div>
+
                 {formData.gallery.map((item, index) => (
                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
                     <div className="flex justify-between items-center mb-4">
                       <h5 className="font-medium text-slate-700">Gallery Item {index + 1}</h5>
                       {formData.gallery.length > 1 && (
-                        <button 
+                        <button
                           type="button"
                           onClick={() => removeGalleryItem(index)}
                           className="text-red-500 hover:text-red-700 text-sm"
@@ -10057,7 +10184,7 @@ const CreateCard = () => {
                         </button>
                       )}
                     </div>
-                    
+
                     {/* Upload Type Toggle */}
                     <div className="flex space-x-4 mb-4">
                       <button
@@ -10072,11 +10199,10 @@ const CreateCard = () => {
                           setChangeCount(prev => prev + 1);
                           autoSaveToLocalStorage(updatedData);
                         }}
-                        className={`flex items-center px-4 py-2 rounded-lg ${
-                          item.uploadType === 'url' 
-                            ? 'bg-blue-500 text-white' 
+                        className={`flex items-center px-4 py-2 rounded-lg ${item.uploadType === 'url'
+                            ? 'bg-blue-500 text-white'
                             : 'bg-gray-200 text-gray-700'
-                        }`}
+                          }`}
                       >
                         <FaLink className="w-4 h-4 mr-2" />
                         URL
@@ -10093,22 +10219,21 @@ const CreateCard = () => {
                           setChangeCount(prev => prev + 1);
                           autoSaveToLocalStorage(updatedData);
                         }}
-                        className={`flex items-center px-4 py-2 rounded-lg ${
-                          item.uploadType === 'upload' 
-                            ? 'bg-blue-500 text-white' 
+                        className={`flex items-center px-4 py-2 rounded-lg ${item.uploadType === 'upload'
+                            ? 'bg-blue-500 text-white'
                             : 'bg-gray-200 text-gray-700'
-                        }`}
+                          }`}
                       >
                         <FaUpload className="w-4 h-4 mr-2" />
                         Upload File
                       </button>
                     </div>
-                    
+
                     {/* Gallery Item Content */}
                     {item.uploadType === 'url' ? (
                       <div className="mb-4">
                         <label className="block text-slate-700 mb-1">File URL</label>
-                        <input 
+                        <input
                           type="url"
                           placeholder="https://example.com/image.jpg"
                           value={item.url || ""}
@@ -10138,7 +10263,7 @@ const CreateCard = () => {
                                 </div>
                               )}
                               <div className="flex space-x-2">
-                                <button 
+                                <button
                                   type="button"
                                   onClick={() => {
                                     const input = document.createElement('input');
@@ -10151,7 +10276,7 @@ const CreateCard = () => {
                                 >
                                   Change File
                                 </button>
-                                <button 
+                                <button
                                   type="button"
                                   onClick={() => handleGalleryChange(index, "url", "")}
                                   className="text-red-500 text-sm hover:text-red-700"
@@ -10163,14 +10288,14 @@ const CreateCard = () => {
                           ) : (
                             <>
                               <p className="text-slate-500 mb-2">Upload image, video, or document</p>
-                              <input 
-                                type="file" 
-                                accept="image/*,video/*,.pdf" 
+                              <input
+                                type="file"
+                                accept="image/*,video/*,.pdf"
                                 onChange={(e) => handleGalleryUpload(index, e)}
-                                className="hidden" 
+                                className="hidden"
                                 id={`gallery-upload-${index}`}
                               />
-                              <label 
+                              <label
                                 htmlFor={`gallery-upload-${index}`}
                                 className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
                               >
@@ -10181,11 +10306,11 @@ const CreateCard = () => {
                         </div>
                       </div>
                     )}
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label className="block text-slate-700 mb-1">Type</label>
-                        <select 
+                        <select
                           value={item.type || "image"}
                           onChange={(e) => handleGalleryChange(index, "type", e.target.value)}
                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -10197,10 +10322,10 @@ const CreateCard = () => {
                           <option value="audio">Audio</option>
                         </select>
                       </div>
-                      
+
                       <div>
                         <label className="block text-slate-700 mb-1">Category</label>
-                        <input 
+                        <input
                           type="text"
                           placeholder="e.g., Portfolio, Products, Team"
                           value={item.category || ""}
@@ -10209,10 +10334,10 @@ const CreateCard = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="mb-4">
                       <label className="block text-slate-700 mb-1">Title</label>
-                      <input 
+                      <input
                         type="text"
                         placeholder="Item title"
                         value={item.title || ""}
@@ -10220,10 +10345,10 @@ const CreateCard = () => {
                         className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-slate-700 mb-1">Description</label>
-                      <textarea 
+                      <textarea
                         placeholder="Item description"
                         value={item.description || ""}
                         onChange={(e) => handleGalleryChange(index, "description", e.target.value)}
@@ -10233,8 +10358,8 @@ const CreateCard = () => {
                     </div>
                   </div>
                 ))}
-                
-                <button 
+
+                <button
                   type="button"
                   onClick={addGalleryItem}
                   className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 flex items-center justify-center gap-2"
@@ -10245,17 +10370,31 @@ const CreateCard = () => {
               </div>
             )}
 
+            {/* Gallery - When Add-On is NOT selected for Business plan */}
+            {formData.cardType === 'Business' && !formData.addons?.gallery && (
+              <div className="border border-dashed border-slate-300 bg-slate-50 dark:bg-slate-800/40 rounded-lg p-5 text-center">
+                <div className="max-w-md mx-auto">
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Photo Gallery & Portfolio (Optional Add-On)
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Not included in your current selection. Available as an add-on (+₹200/mo) in the Business Plan.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Downloads - Updated with upload options */}
             {isFieldVisible('downloads') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Downloads</h4>
-                
+
                 {formData.downloads.map((download, index) => (
                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
                     <div className="flex justify-between items-center mb-4">
                       <h5 className="font-medium text-slate-700">Download {index + 1}</h5>
                       {formData.downloads.length > 1 && (
-                        <button 
+                        <button
                           type="button"
                           onClick={() => removeDownload(index)}
                           className="text-red-500 hover:text-red-700 text-sm"
@@ -10264,7 +10403,7 @@ const CreateCard = () => {
                         </button>
                       )}
                     </div>
-                    
+
                     <div className="flex space-x-4 mb-4">
                       <button
                         type="button"
@@ -10278,11 +10417,10 @@ const CreateCard = () => {
                           setChangeCount(prev => prev + 1);
                           autoSaveToLocalStorage(updatedData);
                         }}
-                        className={`flex items-center px-4 py-2 rounded-lg ${
-                          download.uploadType === 'url' 
-                            ? 'bg-blue-500 text-white' 
+                        className={`flex items-center px-4 py-2 rounded-lg ${download.uploadType === 'url'
+                            ? 'bg-blue-500 text-white'
                             : 'bg-gray-200 text-gray-700'
-                        }`}
+                          }`}
                       >
                         <FaLink className="w-4 h-4 mr-2" />
                         URL
@@ -10299,20 +10437,19 @@ const CreateCard = () => {
                           setChangeCount(prev => prev + 1);
                           autoSaveToLocalStorage(updatedData);
                         }}
-                        className={`flex items-center px-4 py-2 rounded-lg ${
-                          download.uploadType === 'upload' 
-                            ? 'bg-blue-500 text-white' 
+                        className={`flex items-center px-4 py-2 rounded-lg ${download.uploadType === 'upload'
+                            ? 'bg-blue-500 text-white'
                             : 'bg-gray-200 text-gray-700'
-                        }`}
+                          }`}
                       >
                         <FaUpload className="w-4 h-4 mr-2" />
                         Upload File
                       </button>
                     </div>
-                    
+
                     <div className="mb-4">
                       <label className="block text-slate-700 mb-1">File Name</label>
-                      <input 
+                      <input
                         type="text"
                         placeholder="e.g., Company Brochure"
                         value={download.name || ""}
@@ -10320,11 +10457,11 @@ const CreateCard = () => {
                         className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    
+
                     {download.uploadType === 'url' ? (
                       <div className="mb-4">
                         <label className="block text-slate-700 mb-1">File URL</label>
-                        <input 
+                        <input
                           type="url"
                           placeholder="https://example.com/file.pdf"
                           value={download.fileUrl || ""}
@@ -10341,7 +10478,7 @@ const CreateCard = () => {
                               <FaFileAlt className="w-12 h-12 text-blue-500 mb-2" />
                               <p className="text-sm text-slate-600 mb-2">File uploaded</p>
                               <div className="flex space-x-2">
-                                <button 
+                                <button
                                   type="button"
                                   onClick={() => {
                                     const input = document.createElement('input');
@@ -10354,12 +10491,12 @@ const CreateCard = () => {
                                 >
                                   Change File
                                 </button>
-                                <button 
+                                <button
                                   type="button"
                                   onClick={() => {
                                     const updatedDownloads = [...formData.downloads];
-                                    updatedDownloads[index] = { 
-                                      ...updatedDownloads[index], 
+                                    updatedDownloads[index] = {
+                                      ...updatedDownloads[index],
                                       fileData: null,
                                       fileUrl: "",
                                       fileType: "",
@@ -10381,14 +10518,14 @@ const CreateCard = () => {
                           ) : (
                             <>
                               <p className="text-slate-500 mb-2">Upload any file type</p>
-                              <input 
-                                type="file" 
-                                accept="*/*" 
+                              <input
+                                type="file"
+                                accept="*/*"
                                 onChange={(e) => handleDownloadUpload(index, e)}
-                                className="hidden" 
+                                className="hidden"
                                 id={`download-upload-${index}`}
                               />
-                              <label 
+                              <label
                                 htmlFor={`download-upload-${index}`}
                                 className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
                               >
@@ -10399,11 +10536,11 @@ const CreateCard = () => {
                         </div>
                       </div>
                     )}
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-slate-700 mb-1">File Type</label>
-                        <input 
+                        <input
                           type="text"
                           placeholder="e.g., PDF, DOCX, ZIP"
                           value={download.fileType || ""}
@@ -10411,10 +10548,10 @@ const CreateCard = () => {
                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-slate-700 mb-1">File Size</label>
-                        <input 
+                        <input
                           type="text"
                           placeholder="e.g., 2.5 MB"
                           value={download.fileSize || ""}
@@ -10425,8 +10562,8 @@ const CreateCard = () => {
                     </div>
                   </div>
                 ))}
-                
-                <button 
+
+                <button
                   type="button"
                   onClick={addDownload}
                   className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200"
@@ -10440,13 +10577,13 @@ const CreateCard = () => {
             {isFieldVisible('videos') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">Videos</h4>
-                
+
                 {formData.videos.map((video, index) => (
                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
                     <div className="flex justify-between items-center mb-4">
                       <h5 className="font-medium text-slate-700">Video {index + 1}</h5>
                       {formData.videos.length > 1 && (
-                        <button 
+                        <button
                           type="button"
                           onClick={() => removeVideo(index)}
                           className="text-red-500 hover:text-red-700 text-sm"
@@ -10455,7 +10592,7 @@ const CreateCard = () => {
                         </button>
                       )}
                     </div>
-                    
+
                     <div className="flex space-x-4 mb-4">
                       <button
                         type="button"
@@ -10469,11 +10606,10 @@ const CreateCard = () => {
                           setChangeCount(prev => prev + 1);
                           autoSaveToLocalStorage(updatedData);
                         }}
-                        className={`flex items-center px-4 py-2 rounded-lg ${
-                          video.uploadType === 'url' 
-                            ? 'bg-blue-500 text-white' 
+                        className={`flex items-center px-4 py-2 rounded-lg ${video.uploadType === 'url'
+                            ? 'bg-blue-500 text-white'
                             : 'bg-gray-200 text-gray-700'
-                        }`}
+                          }`}
                       >
                         <FaLink className="w-4 h-4 mr-2" />
                         URL
@@ -10490,23 +10626,22 @@ const CreateCard = () => {
                           setChangeCount(prev => prev + 1);
                           autoSaveToLocalStorage(updatedData);
                         }}
-                        className={`flex items-center px-4 py-2 rounded-lg ${
-                          video.uploadType === 'upload' 
-                            ? 'bg-blue-500 text-white' 
+                        className={`flex items-center px-4 py-2 rounded-lg ${video.uploadType === 'upload'
+                            ? 'bg-blue-500 text-white'
                             : 'bg-gray-200 text-gray-700'
-                        }`}
+                          }`}
                       >
                         <FaUpload className="w-4 h-4 mr-2" />
                         Upload File
                       </button>
                     </div>
-                    
+
                     {video.uploadType === 'url' ? (
                       <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           <div>
                             <label className="block text-slate-700 mb-1">Video Type</label>
-                            <select 
+                            <select
                               value={video.type || "youtube"}
                               onChange={(e) => handleVideoChange(index, "type", e.target.value)}
                               className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -10516,10 +10651,10 @@ const CreateCard = () => {
                               <option value="direct">Direct Link</option>
                             </select>
                           </div>
-                          
+
                           <div>
                             <label className="block text-slate-700 mb-1">Video URL</label>
-                            <input 
+                            <input
                               type="url"
                               placeholder="https://youtube.com/watch?v=..."
                               value={video.url || ""}
@@ -10540,7 +10675,7 @@ const CreateCard = () => {
                               </div>
                               <p className="text-sm text-slate-600 mb-2">Video file uploaded</p>
                               <div className="flex space-x-2">
-                                <button 
+                                <button
                                   type="button"
                                   onClick={() => {
                                     const input = document.createElement('input');
@@ -10553,12 +10688,12 @@ const CreateCard = () => {
                                 >
                                   Change Video
                                 </button>
-                                <button 
+                                <button
                                   type="button"
                                   onClick={() => {
                                     const updatedVideos = [...formData.videos];
-                                    updatedVideos[index] = { 
-                                      ...updatedVideos[index], 
+                                    updatedVideos[index] = {
+                                      ...updatedVideos[index],
                                       type: 'direct',
                                       url: "",
                                       thumbnail: "",
@@ -10580,14 +10715,14 @@ const CreateCard = () => {
                           ) : (
                             <>
                               <p className="text-slate-500 mb-2">Upload video file (max 50MB)</p>
-                              <input 
-                                type="file" 
-                                accept="video/*" 
+                              <input
+                                type="file"
+                                accept="video/*"
                                 onChange={(e) => handleVideoSectionUpload(index, e)}
-                                className="hidden" 
+                                className="hidden"
                                 id={`video-upload-${index}`}
                               />
-                              <label 
+                              <label
                                 htmlFor={`video-upload-${index}`}
                                 className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
                               >
@@ -10598,11 +10733,11 @@ const CreateCard = () => {
                         </div>
                       </div>
                     )}
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label className="block text-slate-700 mb-1">Video Title</label>
-                        <input 
+                        <input
                           type="text"
                           placeholder="Video title"
                           value={video.title || ""}
@@ -10610,10 +10745,10 @@ const CreateCard = () => {
                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-slate-700 mb-1">Thumbnail URL</label>
-                        <input 
+                        <input
                           type="url"
                           placeholder="https://example.com/thumbnail.jpg"
                           value={video.thumbnail || ""}
@@ -10622,10 +10757,10 @@ const CreateCard = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className="block text-slate-700 mb-1">Description</label>
-                      <textarea 
+                      <textarea
                         placeholder="Video description"
                         value={video.description || ""}
                         onChange={(e) => handleVideoChange(index, "description", e.target.value)}
@@ -10635,8 +10770,8 @@ const CreateCard = () => {
                     </div>
                   </div>
                 ))}
-                
-                <button 
+
+                <button
                   type="button"
                   onClick={addVideo}
                   className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 flex items-center justify-center gap-2"
@@ -10657,7 +10792,7 @@ const CreateCard = () => {
                 <div className="space-y-4">
                   <div className="flex items-center">
                     <label className="flex items-center text-slate-700">
-                      <input 
+                      <input
                         type="checkbox"
                         checked={formData.chatAssistant?.isEnabled || false}
                         onChange={handleChatAssistantToggle}
@@ -10666,12 +10801,12 @@ const CreateCard = () => {
                       Enable Chat Assistant
                     </label>
                   </div>
-                  
+
                   {formData.chatAssistant?.isEnabled && (
                     <>
                       <div>
                         <label className="block text-slate-700 mb-1">Welcome Message</label>
-                        <textarea 
+                        <textarea
                           placeholder="Hello! How can I help you today?"
                           value={formData.chatAssistant?.welcomeMessage || ""}
                           onChange={(e) => {
@@ -10708,7 +10843,7 @@ const CreateCard = () => {
                 <div className="space-y-4">
                   <div className="flex items-center">
                     <label className="flex items-center text-slate-700">
-                      <input 
+                      <input
                         type="checkbox"
                         checked={formData.liveChat?.isEnabled || false}
                         onChange={(e) => handleLiveChatChange('isEnabled', e.target.checked)}
@@ -10717,12 +10852,12 @@ const CreateCard = () => {
                       Enable Live Chat (WhatsApp/Messages)
                     </label>
                   </div>
-                  
+
                   {formData.liveChat?.isEnabled && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-slate-700 mb-1">Platform</label>
-                        <select 
+                        <select
                           value={formData.liveChat?.platform || "whatsapp"}
                           onChange={(e) => handleLiveChatChange('platform', e.target.value)}
                           className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -10732,10 +10867,10 @@ const CreateCard = () => {
                           <option value="telegram">Telegram</option>
                         </select>
                       </div>
-                      
+
                       <div>
                         <label className="block text-slate-700 mb-1">Phone Number</label>
-                        <input 
+                        <input
                           type="tel"
                           placeholder="+1 (555) 123-4567"
                           value={formData.liveChat?.phoneNumber || ""}
@@ -10759,7 +10894,7 @@ const CreateCard = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-slate-700 mb-1">QR Code Type</label>
-                    <select 
+                    <select
                       value={formData.dynamicQRCode?.type || "dynamic"}
                       onChange={(e) => {
                         const updatedData = {
@@ -10778,10 +10913,10 @@ const CreateCard = () => {
                       <option value="static">Static</option>
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-slate-700 mb-1">Target URL</label>
-                    <input 
+                    <input
                       type="url"
                       placeholder="https://your-card-url.com"
                       value={formData.dynamicQRCode?.targetUrl || ""}
@@ -10813,7 +10948,7 @@ const CreateCard = () => {
                 <div className="space-y-4">
                   <div className="flex items-center">
                     <label className="flex items-center text-slate-700">
-                      <input 
+                      <input
                         type="checkbox"
                         checked={formData.nfcSettings?.isEnabled || false}
                         onChange={(e) => {
@@ -10832,11 +10967,11 @@ const CreateCard = () => {
                       Enable NFC
                     </label>
                   </div>
-                  
+
                   {formData.nfcSettings?.isEnabled && (
                     <div>
                       <label className="block text-slate-700 mb-1">NFC ID</label>
-                      <input 
+                      <input
                         type="text"
                         placeholder="NFC identifier"
                         value={formData.nfcSettings?.nfcId || ""}
@@ -10865,210 +11000,208 @@ const CreateCard = () => {
   };
 
   // Design Selection Component - Updated with preview
-const renderDesignSelection = () => (
-  <div className="space-y-6">
-    <h3 className="text-xl font-semibold text-slate-800 mb-4">Choose Your Card Design</h3>
-    <p className="text-slate-600 mb-6">Select a design template for your digital card. Preview updates in real-time.</p>
-    
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      {/* Left column: Design options - Reduced from col-span-2 to col-span-1 */}
-      <div className="lg:col-span-1 space-y-4">
-        {designTemplates.map((template) => (
-          <div
-            key={template.id}
-            className={`border-2 rounded-lg p-3 cursor-pointer transition-all duration-200 ${
-              formData.design === template.id
-                ? 'border-blue-500 bg-blue-50 shadow-md'
-                : 'border-slate-300 hover:border-slate-400 hover:shadow-md'
-            }`}
-            onClick={() => handleDesignSelect(template.id)}
-          >
-            <div className="space-y-3">
-              <div className={`w-full h-20 rounded-lg ${template.preview} flex items-center justify-center text-white font-bold`}>
-                {template.name}
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <h4 className="font-semibold text-slate-800 text-sm">{template.name}</h4>
-                  <div className={`w-5 h-5 rounded-full border-2 ${
-                    formData.design === template.id
-                      ? 'bg-blue-500 border-blue-500'
-                      : 'border-slate-300'
-                  } flex items-center justify-center`}>
-                    {formData.design === template.id && (
-                      <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    )}
-                  </div>
+  const renderDesignSelection = () => (
+    <div className="space-y-6">
+      <h3 className="text-xl font-semibold text-slate-800 mb-4">Choose Your Card Design</h3>
+      <p className="text-slate-600 mb-6">Select a design template for your digital card. Preview updates in real-time.</p>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Left column: Design options - Reduced from col-span-2 to col-span-1 */}
+        <div className="lg:col-span-1 space-y-4">
+          {designTemplates.map((template) => (
+            <div
+              key={template.id}
+              className={`border-2 rounded-lg p-3 cursor-pointer transition-all duration-200 ${formData.design === template.id
+                  ? 'border-blue-500 bg-blue-50 shadow-md'
+                  : 'border-slate-300 hover:border-slate-400 hover:shadow-md'
+                }`}
+              onClick={() => handleDesignSelect(template.id)}
+            >
+              <div className="space-y-3">
+                <div className={`w-full h-20 rounded-lg ${template.preview} flex items-center justify-center text-white font-bold`}>
+                  {template.name}
                 </div>
-                <p className="text-xs text-slate-600 mb-1">{template.description}</p>
-                <p className="text-xs text-slate-500 font-medium">
-                  Best for: {
-                    template.id === 'default' ? 'All professionals' :
-                    template.id === 'creative' ? 'Executives/managers' :
-                    template.id === 'modern' ? 'Creative fields' :
-                    template.id === 'dark' ? 'Artists/designers' :
-                    'Business/corporate'
-                  }
-                </p>
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="font-semibold text-slate-800 text-sm">{template.name}</h4>
+                    <div className={`w-5 h-5 rounded-full border-2 ${formData.design === template.id
+                        ? 'bg-blue-500 border-blue-500'
+                        : 'border-slate-300'
+                      } flex items-center justify-center`}>
+                      {formData.design === template.id && (
+                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 mb-1">{template.description}</p>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Best for: {
+                      template.id === 'default' ? 'All professionals' :
+                        template.id === 'creative' ? 'Executives/managers' :
+                          template.id === 'modern' ? 'Creative fields' :
+                            template.id === 'dark' ? 'Artists/designers' :
+                              'Business/corporate'
+                    }
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-      
-      {/* Right column: Live preview - Increased from col-span-1 to col-span-3 */}
-      <div className="lg:col-span-3 space-y-6">
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-6">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h4 className="font-semibold text-slate-800 text-lg">Live Preview</h4>
-              <p className="text-slate-600 text-sm mt-1">See how your card will look with the selected design</p>
-            </div>
-            {formData.design && (
-              <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
-                {designTemplates.find(t => t.id === formData.design)?.name} Selected
+          ))}
+        </div>
+
+        {/* Right column: Live preview - Increased from col-span-1 to col-span-3 */}
+        <div className="lg:col-span-3 space-y-6">
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-6">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h4 className="font-semibold text-slate-800 text-lg">Live Preview</h4>
+                <p className="text-slate-600 text-sm mt-1">See how your card will look with the selected design</p>
               </div>
-            )}
-          </div>
-          
-          {/* Preview Card - Now much larger */}
-          <div className="mb-6 flex justify-center">
-            <div className="w-full max-w-xl">
-              {renderDesignPreview()}
+              {formData.design && (
+                <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
+                  {designTemplates.find(t => t.id === formData.design)?.name} Selected
+                </div>
+              )}
             </div>
-          </div>
-          
-          {/* Preview Info - Expanded */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h5 className="font-medium text-slate-700">Preview Content</h5>
-              <ul className="space-y-2">
-                <li className="flex items-start">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
-                  <div>
-                    <span className="text-sm font-medium text-slate-600">Name:</span>
-                    <p className="text-slate-800">
-                      {formData.firstName || "Your"} {formData.lastName || "Name"}
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
-                  <div>
-                    <span className="text-sm font-medium text-slate-600">Title:</span>
-                    <p className="text-slate-800">{formData.jobTitle || "Your title"}</p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
-                  <div>
-                    <span className="text-sm font-medium text-slate-600">Company:</span>
-                    <p className="text-slate-800">{formData.companyName || "Your company"}</p>
-                  </div>
-                </li>
-                {formData.tagline && (
+
+            {/* Preview Card - Now much larger */}
+            <div className="mb-6 flex justify-center">
+              <div className="w-full max-w-xl">
+                {renderDesignPreview()}
+              </div>
+            </div>
+
+            {/* Preview Info - Expanded */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h5 className="font-medium text-slate-700">Preview Content</h5>
+                <ul className="space-y-2">
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
                     <div>
-                      <span className="text-sm font-medium text-slate-600">Tagline:</span>
-                      <p className="text-slate-800 italic">"{formData.tagline}"</p>
+                      <span className="text-sm font-medium text-slate-600">Name:</span>
+                      <p className="text-slate-800">
+                        {formData.firstName || "Your"} {formData.lastName || "Name"}
+                      </p>
                     </div>
                   </li>
-                )}
-              </ul>
-            </div>
-            
-            <div className="space-y-3">
-              <h5 className="font-medium text-slate-700">Card Details</h5>
+                  <li className="flex items-start">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
+                    <div>
+                      <span className="text-sm font-medium text-slate-600">Title:</span>
+                      <p className="text-slate-800">{formData.jobTitle || "Your title"}</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
+                    <div>
+                      <span className="text-sm font-medium text-slate-600">Company:</span>
+                      <p className="text-slate-800">{formData.companyName || "Your company"}</p>
+                    </div>
+                  </li>
+                  {formData.tagline && (
+                    <li className="flex items-start">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
+                      <div>
+                        <span className="text-sm font-medium text-slate-600">Tagline:</span>
+                        <p className="text-slate-800 italic">"{formData.tagline}"</p>
+                      </div>
+                    </li>
+                  )}
+                </ul>
+              </div>
+
               <div className="space-y-3">
-                <div className="bg-white p-3 rounded-lg border border-slate-200">
-                  <p className="text-xs text-slate-500 font-medium mb-1">Current Plan</p>
-                  <p className="font-semibold text-slate-800">{formData.cardType || 'Personal'}</p>
-                </div>
-                <div className="bg-white p-3 rounded-lg border border-slate-200">
-                  <p className="text-xs text-slate-500 font-medium mb-1">Selected Design</p>
-                  <p className="font-semibold text-slate-800">
-                    {formData.design 
-                      ? designTemplates.find(t => t.id === formData.design)?.name 
-                      : 'None selected'}
-                  </p>
-                </div>
-                <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                  <p className="text-xs text-blue-600">
-                    <span className="font-medium">Note:</span> The preview shows your actual card layout with sample content where information is missing.
-                  </p>
+                <h5 className="font-medium text-slate-700">Card Details</h5>
+                <div className="space-y-3">
+                  <div className="bg-white p-3 rounded-lg border border-slate-200">
+                    <p className="text-xs text-slate-500 font-medium mb-1">Current Plan</p>
+                    <p className="font-semibold text-slate-800">{formData.cardType || 'Personal'}</p>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-slate-200">
+                    <p className="text-xs text-slate-500 font-medium mb-1">Selected Design</p>
+                    <p className="font-semibold text-slate-800">
+                      {formData.design
+                        ? designTemplates.find(t => t.id === formData.design)?.name
+                        : 'None selected'}
+                    </p>
+                  </div>
+                  <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                    <p className="text-xs text-blue-600">
+                      <span className="font-medium">Note:</span> The preview shows your actual card layout with sample content where information is missing.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Design Tips - Expanded */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+            <h4 className="font-semibold text-blue-800 text-lg mb-3 flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              Design Selection Tips
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="font-medium text-blue-700 mb-2">Choosing the right design:</p>
+                <ul className="space-y-1.5 text-sm text-blue-600">
+                  <li className="flex items-start">
+                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
+                    <span><strong>Default:</strong> Professional & versatile for all industries</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
+                    <span><strong>Modern:</strong> Clean, centered layout for tech professionals</span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-medium text-blue-700 mb-2">&nbsp;</p>
+                <ul className="space-y-1.5 text-sm text-blue-600">
+                  <li className="flex items-start">
+                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
+                    <span><strong>Dark:</strong> Elegant theme for creative fields</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
+                    <span><strong>Light:</strong> Bright design for business & corporate use</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-blue-200">
+              <p className="text-sm text-blue-700">
+                <span className="font-medium">Pro tip:</span> You can always change your design later without affecting your content.
+              </p>
+            </div>
+          </div>
         </div>
-        
-        {/* Design Tips - Expanded */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-          <h4 className="font-semibold text-blue-800 text-lg mb-3 flex items-center">
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+      </div>
+
+      {!formData.design && (
+        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-600 text-sm flex items-center">
+            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
-            Design Selection Tips
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="font-medium text-blue-700 mb-2">Choosing the right design:</p>
-              <ul className="space-y-1.5 text-sm text-blue-600">
-                <li className="flex items-start">
-                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
-                  <span><strong>Default:</strong> Professional & versatile for all industries</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
-                  <span><strong>Modern:</strong> Clean, centered layout for tech professionals</span>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <p className="font-medium text-blue-700 mb-2">&nbsp;</p>
-              <ul className="space-y-1.5 text-sm text-blue-600">
-                <li className="flex items-start">
-                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
-                  <span><strong>Dark:</strong> Elegant theme for creative fields</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
-                  <span><strong>Light:</strong> Bright design for business & corporate use</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-4 pt-4 border-t border-blue-200">
-            <p className="text-sm text-blue-700">
-              <span className="font-medium">Pro tip:</span> You can always change your design later without affecting your content.
-            </p>
-          </div>
+            ⚠️ Please select a design theme before proceeding
+          </p>
         </div>
-      </div>
+      )}
     </div>
-    
-    {!formData.design && (
-      <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-        <p className="text-red-600 text-sm flex items-center">
-          <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-          ⚠️ Please select a design theme before proceeding
-        </p>
-      </div>
-    )}
-  </div>
-);
+  );
 
   // // Main render function
   // const renderCurrentStep = () => {
   //   if (isDesignStep()) {
   //     return renderDesignSelection();
   //   }
-    
+
   //   switch (currentStep) {
   //     case 1:
   //       return renderProfilePage();
@@ -11088,7 +11221,7 @@ const renderDesignSelection = () => (
     if (isDesignStep()) {
       return renderDesignSelection();
     }
-    
+
     switch (currentStep) {
       case 1:
         return renderProfilePage();
@@ -11108,28 +11241,27 @@ const renderDesignSelection = () => (
     const availableSteps = getAvailableSteps();
     const stepLabels = {
       1: 'PROFILE',
-      2: 'BUSINESS', 
+      2: 'BUSINESS',
       3: 'CONTACT',
       4: 'FEATURES',
       5: 'DESIGN'
     };
-    
+
     return (
       <div className="flex justify-between mb-8 relative">
         <div className="absolute top-1/2 left-0 right=0 h-1 bg-slate-200 -z-10"></div>
-        <div 
+        <div
           className="absolute top-1/2 left-0 h-1 bg-blue-500 -z-10 transition-all duration-300"
           style={{ width: `${((availableSteps.indexOf(currentStep)) / (availableSteps.length - 1)) * 100}%` }}
         ></div>
-        
+
         {availableSteps.map((step, index) => (
           <div key={step} className="flex flex-col items-center">
-            <div 
-              className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
-                currentStep >= step 
-                  ? 'bg-blue-500 text-white shadow-md' 
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${currentStep >= step
+                  ? 'bg-blue-500 text-white shadow-md'
                   : 'bg-slate-200 text-slate-500'
-              } ${currentStep === step ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
+                } ${currentStep === step ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
             >
               {index + 1}
             </div>
@@ -11145,7 +11277,7 @@ const renderDesignSelection = () => (
   return (
     <div className="w-full max-w-8xl mx-auto p-3 md:p-6 pl-2 md:pl-4 ml-2">
       <WarningPopup />
-      
+
       {/* Back to Dashboard Button */}
       <button
         onClick={handleGoBackDashboard}
@@ -11166,7 +11298,7 @@ const renderDesignSelection = () => (
             <div className="flex items-center">
               <FaCheck className="w-5 h-5 text-blue-500 mr-2" />
               <p className="text-blue-700">
-                <strong>Editing Mode:</strong> You are editing an existing card. 
+                <strong>Editing Mode:</strong> You are editing an existing card.
                 {formData.design && " You can change the design or any other details."}
               </p>
             </div>
@@ -11185,20 +11317,18 @@ const renderDesignSelection = () => (
               type="button"
               onClick={prevStep}
               disabled={(currentStep === 1) || loading}
-              className={`px-6 py-3 rounded-lg transition-colors w-full md:w-auto ${
-                (currentStep === 1) 
-                  ? 'bg-slate-300 text-slate-500 cursor-not-allowed' 
+              className={`px-6 py-3 rounded-lg transition-colors w-full md:w-auto ${(currentStep === 1)
+                  ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                   : 'bg-slate-500 text-white hover:bg-slate-600'
-              }`}
+                }`}
             >
               BACK
             </button>
 
-            <div className={`text-sm text-center ${
-              saveStatus.includes("Saving") ? "text-blue-500" : 
-              saveStatus.includes("success") ? "text-green-500" : 
-              saveStatus.includes("Error") ? "text-red-500" : "text-gray-500"
-            }`}>
+            <div className={`text-sm text-center ${saveStatus.includes("Saving") ? "text-blue-500" :
+                saveStatus.includes("success") ? "text-green-500" :
+                  saveStatus.includes("Error") ? "text-red-500" : "text-gray-500"
+              }`}>
               {saveStatus}
             </div>
 

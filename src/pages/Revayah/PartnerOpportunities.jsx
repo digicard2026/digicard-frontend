@@ -338,20 +338,20 @@ const PartnerOpportunities = () => {
                         variants={staggerContainer}
                         className="container max-w-7xl px-4 mx-auto relative z-10 text-center"
                     >
-                        <motion.h5 variants={fadeIn} className="text-rosey-600 dark:text-rose-400 font-bold tracking-widest uppercase mb-4 text-sm">
+                        <motion.h5 variants={fadeIn} className="text-[#3A57E8] dark:text-[#5B78FF] font-bold tracking-widest uppercase mb-4 text-xs">
                             Reva-Yah Partner Program (RPP)
                         </motion.h5>
-                        <motion.h1 variants={fadeIn} className="text-4xl md:text-5xl font-semibold mb-6 leading-tight text-slate-900 dark:text-white">
-                            Partner with the Future of <br/> <span className="text-rosey-600">Digital Identity</span>
+                        <motion.h1 variants={fadeIn} className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight text-slate-900 dark:text-white tracking-tight">
+                            Partner with the Future of <br/> <span className="text-[#3A57E8] dark:text-[#5B78FF]">Digital Identity</span>
                         </motion.h1>
-                        <motion.p variants={fadeIn} className="text-lg text-slate-600 dark:text-slate-300 mb-10 leading-relaxed max-w-3xl mx-auto">
+                        <motion.p variants={fadeIn} className="text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-10 leading-relaxed max-w-3xl mx-auto">
                             Reva-Yah Partnering Program is designed to make more successful & promote Reva-Yah services & products in India. We welcome all the enterprising enthusiasts to grow their business under our single platform.
                         </motion.p>
                         <motion.div variants={fadeIn} className="flex flex-wrap justify-center gap-4">
-                            <button className="py-2 px-6 bg-rosey-600 text-white rounded font-medium hover:bg-rose-700 transition shadow-lg shadow-rose-500/30 active:scale-95">
+                            <button className="py-3 px-7 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold text-sm transition shadow-md active:scale-95">
                                 Apply Now
                             </button>
-                            <button className="py-2 px-6 bg-white text-rosey-600 border border-slate-200 hover:border-rose-200 rounded font-medium hover:bg-slate-50 transition active:scale-95">
+                            <button className="py-3 px-7 bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 rounded-lg font-semibold text-sm transition shadow-sm active:scale-95">
                                 Learn More
                             </button>
                         </motion.div>

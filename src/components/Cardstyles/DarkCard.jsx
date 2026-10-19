@@ -30,7 +30,7 @@ import {
   FaShieldAlt,
   FaBook,
   FaIdCard,
-  FaImages, 
+  FaImages,
   FaImage,
   FaFileAlt,
   FaInfoCircle,
@@ -53,36 +53,36 @@ import { FaXTwitter, FaYoutube } from "react-icons/fa6";
 const VideoPlayer = ({ src, poster, title, className = "" }) => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-  
+
   // Fix S3 video URL for proper playback - THIS IS THE KEY FUNCTION
   const getVideoUrl = (url) => {
     if (!url || typeof url !== 'string') return '';
-    
+
     if (url.includes('amazonaws.com') || url.includes('s3.') || url.includes('.s3.')) {
       const separator = url.includes('?') ? '&' : '?';
       return `${url}${separator}response-content-disposition=inline&response-content-type=video%2Fmp4`;
     }
-    
+
     return url;
   };
-  
+
   const videoSrc = typeof src === 'object' && src !== null && src.url ? src.url : src;
   const videoUrl = getVideoUrl(videoSrc);
-  
+
   const handleError = (e) => {
     console.error('Video playback error:', e);
     setError(true);
     setLoading(false);
   };
-  
+
   const handleLoadStart = () => {
     setLoading(true);
   };
-  
+
   const handleLoadedData = () => {
     setLoading(false);
   };
-  
+
   if (error) {
     return (
       <div className={`flex flex-col items-center justify-center bg-gray-800 rounded-lg ${className}`}>
@@ -92,7 +92,7 @@ const VideoPlayer = ({ src, poster, title, className = "" }) => {
       </div>
     );
   }
-  
+
   if (!videoUrl) {
     return (
       <div className={`flex flex-col items-center justify-center bg-gray-800 rounded-lg ${className}`}>
@@ -102,7 +102,7 @@ const VideoPlayer = ({ src, poster, title, className = "" }) => {
       </div>
     );
   }
-  
+
   return (
     <div className={`relative ${className}`}>
       {loading && (
@@ -110,7 +110,7 @@ const VideoPlayer = ({ src, poster, title, className = "" }) => {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
         </div>
       )}
-      
+
       <video
         src={videoUrl}
         className="w-full h-full object-contain rounded-lg"
@@ -128,7 +128,7 @@ const VideoPlayer = ({ src, poster, title, className = "" }) => {
         <source src={videoUrl} type="video/webm" />
         Your browser does not support the video tag.
       </video>
-      
+
       {title && (
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
           <p className="text-sm text-white">{title}</p>
@@ -142,31 +142,34 @@ const VideoPlayer = ({ src, poster, title, className = "" }) => {
 const cardFieldsConfig = {
   Personal: {
     name: 'Personal',
-    description: 'Basic digital card with essential features',
+    description: 'Basic digital card with essential individual features',
     allowed: [
-      // From Personal column in image
-      'profilePhoto',         // Profile /PC/Logo
-      'firstName',            // Name / source name
-      'lastName',             // Name / source name  
-      'tagline',              // Tag line / Slogan
-      'profileVideo',         // Profile video
-      'aboutText',            // About my self
-      
-      // Contact management section
-      'phones',               // One-tap call, WhatsApp, email
-      'emails',               // One-tap call, WhatsApp, email
-      'websites',             // website/portfolio link
-      'addresses',            // Location [address]
-      
-      // Social & Digital Hub section
-      'socialLinks',          // LinkedIn, Instagram, Facebook, X, YouTube, WhatsApp Business Link, Google Business Page
-      
-      // Utilities section
-      'dynamicQRCode',        // Dynamic QR code
+      // A. DIGITAL IDENTITY
+      'profilePhoto',         // Profile photo
+      'firstName',            // Name
+      'lastName',             // Name
+      'prefix',               // Name prefix
+      'suffix',               // Name suffix
+      'jobTitle',             // Designation/ Title
+      'tagline',              // Tag line
+      'aboutText',            // Short intro
+      'bio',                  // Short intro
+
+      // B. CONTACT INFO
+      'phones',               // Mobile 1, mobile 2
+      'email',                // Email
+      'emails',               // Email
+      'websites',             // Website
+      'addresses',            // Address & Location map
+      'enableOneTapCall',     // Call
+      'enableWhatsApp',       // WhatsApp
+      'enableEmail',          // Email
+
+      // C. SOCIAL LINKS
+      'socialLinks',          // LinkedIn, Facebook, Instagram, X/Twitter, Others
+      'dynamicQRCode',        // QR code
       'shareableUrl',         // Share
-      'nfcSettings',          // NFC card developer with Print
-      'downloads',            // Downloads
-      'videos'                // Videos
+      'shareableLink'         // Share
     ]
   },
 
@@ -191,12 +194,12 @@ const cardFieldsConfig = {
       'nfcSettings',          // NFC card developer with Print
       'downloads',            // Downloads
       'videos',               // Videos
-      
+
       // PLUS Business-only fields from image
       'companyName',          // Company name / Organisation
       'businessHours',        // Business hours
       'virtualNumber',        // Virtual no integration (Optional @m extra cost)
-      
+
       // Professional/Business Details section
       'services',             // Service/Provision
       'servicesProducts',     // Brief about Product/Services (Only Product name display with general briefing)
@@ -237,7 +240,7 @@ const cardFieldsConfig = {
       'catalog',              // Product/Catalog [PDF]
       'productVideo',         // Product video
       'testimonials',         // Testimonials
-      
+
       // PLUS BusinessPremium-only fields from image
       'interactiveElements',       // Interactive Elements: Call-to-Action, Live Chat, Appointment scheduler, Digital Payments, Lead form, Chat assistant
       'individualProductDisplay',  // Individual Product display
@@ -401,7 +404,7 @@ const DarkCard = ({ cardData = {} }) => {
     lastName: cardData?.lastName || "",
     suffix: cardData?.suffix || "",
     name: `${cardData?.prefix || ""} ${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim(),
-    
+
     // Professional Info
     jobTitle: cardData?.jobTitle || "",
     companyName: cardData?.companyName || "",
@@ -409,7 +412,7 @@ const DarkCard = ({ cardData = {} }) => {
     foundedName: cardData?.foundedName || "",
     organization: cardData?.organization || "",
     tagline: cardData?.tagline || "",
-    
+
     // Contact Info
     email: cardData?.email || "",
     emails: cardData?.emails || [{ address: cardData?.email || "", label: "primary", isPrimary: true }],
@@ -417,12 +420,12 @@ const DarkCard = ({ cardData = {} }) => {
     websites: cardData?.websites || [],
     addresses: cardData?.addresses || [],
     virtualNumber: cardData?.virtualNumber || "",
-    
+
     // Profile Content
-    profileVideo: typeof cardData?.profileVideo === 'string' 
+    profileVideo: typeof cardData?.profileVideo === 'string'
       ? { url: cardData.profileVideo, thumbnail: "", title: "", uploadType: 'url' }
       : cardData?.profileVideo || null,
-    
+
     productVideo: cardData?.productVideo || null,
     titleLine: cardData?.titleLine || "",
     aboutText: cardData?.aboutText || "",
@@ -431,22 +434,22 @@ const DarkCard = ({ cardData = {} }) => {
     brandLabel: cardData?.brandLabel || "",
     catalog: cardData?.catalog || cardData?.catalogPDF || "",
     catalogPDF: cardData?.catalogPDF || "",
-    
+
     // Videos array for video slider
     videos: cardData?.videos || [],
-    
+
     // Business Hours - FIXED: Handle different formats
     businessHours: cardData?.businessHours || cardData?.workingHours || [],
-    
+
     // Social & Media
     socialLinks: cardData?.socialLinks || [],
     profilePhoto: cardData?.profilePhoto || "https://images.unsplash.com/photo-1494790108755-2616b786d4d1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
     companyLogo: cardData?.companyLogo,
-    
+
     // Services & Products
     services: cardData?.services || [],
     products: cardData?.products || [],
-    
+
     // Premium Features
     testimonials: cardData?.testimonials || [],
     clientList: cardData?.clientList || [],
@@ -464,19 +467,19 @@ const DarkCard = ({ cardData = {} }) => {
     },
     nfcSettings: cardData?.nfcSettings || { isEnabled: false },
     nfcCard: cardData?.nfcCard || null,
-    
+
     // Shareable URL
     shareableUrl: cardData?.shareableUrl || cardData?.shareUrl || "",
-    
+
     // Product Display
     productRangeDisplay: cardData?.productRangeDisplay || 'grid',
-    
+
     // Plan Info
     cardType: cardData?.cardType || 'Personal',
     design: cardData?.design || 'default',
     cardLayout: cardData?.cardLayout || 'standard',
     logoSize: cardData?.logoSize || 'medium',
-    
+
     // Settings
     enableOneTapCall: cardData?.enableOneTapCall !== undefined ? cardData.enableOneTapCall : true,
     enableWhatsApp: cardData?.enableWhatsApp !== undefined ? cardData.enableWhatsApp : true,
@@ -490,7 +493,7 @@ const DarkCard = ({ cardData = {} }) => {
   const isFieldAllowed = (fieldName) => {
     const planConfig = cardFieldsConfig[currentPlan];
     if (!planConfig) return false;
-    
+
     return planConfig.allowed.includes(fieldName);
   };
 
@@ -635,36 +638,36 @@ const DarkCard = ({ cardData = {} }) => {
   const formatBusinessHours = () => {
     const hours = profileData.businessHours;
     if (!hours || (Array.isArray(hours) && hours.length === 0)) return null;
-    
+
     if (Array.isArray(hours)) {
       const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
       return days.map(day => {
-        const dayData = hours.find(h => 
+        const dayData = hours.find(h =>
           h.day && h.day.toLowerCase() === day
         );
-        
+
         if (!dayData || dayData.isClosed) {
-          return { 
-            day: day.charAt(0).toUpperCase() + day.slice(1), 
+          return {
+            day: day.charAt(0).toUpperCase() + day.slice(1),
             time: 'Closed',
             isClosed: true
           };
         }
-        
+
         // Handle different property names
         const openingTime = dayData.openingTime || dayData.open || dayData.startTime || '';
         const closingTime = dayData.closingTime || dayData.close || dayData.endTime || '';
-        
+
         if (!openingTime && !closingTime) {
-          return { 
-            day: day.charAt(0).toUpperCase() + day.slice(1), 
+          return {
+            day: day.charAt(0).toUpperCase() + day.slice(1),
             time: 'Closed',
             isClosed: true
           };
         }
-        
-        return { 
-          day: day.charAt(0).toUpperCase() + day.slice(1), 
+
+        return {
+          day: day.charAt(0).toUpperCase() + day.slice(1),
           time: `${openingTime} - ${closingTime}`,
           isClosed: false
         };
@@ -675,15 +678,15 @@ const DarkCard = ({ cardData = {} }) => {
       return days.map(day => {
         const dayHours = hours[day];
         if (!dayHours || dayHours.isClosed || !dayHours.open) {
-          return { 
-            day: day.charAt(0).toUpperCase() + day.slice(1), 
+          return {
+            day: day.charAt(0).toUpperCase() + day.slice(1),
             time: 'Closed',
             isClosed: true
           };
         }
-        
-        return { 
-          day: day.charAt(0).toUpperCase() + day.slice(1), 
+
+        return {
+          day: day.charAt(0).toUpperCase() + day.slice(1),
           time: `${dayHours.open} - ${dayHours.close}`,
           isClosed: false
         };
@@ -694,13 +697,13 @@ const DarkCard = ({ cardData = {} }) => {
   // FIXED: QR Code component with proper URL handling
   const renderQRCode = () => {
     if (!isFieldAllowed('dynamicQRCode')) return null;
-    
+
     const qrData = profileData.dynamicQRCode;
     if (!qrData || !qrData.targetUrl) return null;
-    
-    const qrImageUrl = qrData.qrImage || 
+
+    const qrImageUrl = qrData.qrImage ||
       `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData.targetUrl)}`;
-    
+
     return (
       <div className="text-center mt-8 mb-6">
         <h3 className="text-base font-semibold text-white flex justify-center items-center mb-4 font-Zona">
@@ -744,22 +747,22 @@ const DarkCard = ({ cardData = {} }) => {
         {/* Top Wave Pattern */}
         <div className="absolute top-0 left-0 right-0 h-40 opacity-15">
           <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full">
-            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" 
-                  fill="currentColor" className="text-blue-400"></path>
+            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
+              fill="currentColor" className="text-blue-400"></path>
           </svg>
         </div>
 
         {/* Bottom Wave Pattern */}
         <div className="absolute bottom-0 left-0 right-0 h-40 opacity-15">
           <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full">
-            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" 
-                  fill="currentColor" className="text-blue-500"></path>
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+              fill="currentColor" className="text-blue-500"></path>
           </svg>
         </div>
 
         {/* Subtle Pattern Overlay */}
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_20%,_rgba(59,130,246,0.3)_0%,_transparent_50%),_radial-gradient(circle_at_80%_80%,_rgba(37,99,235,0.2)_0%,_transparent_50%)] rounded-[40px]"></div>
-        
+
         {/* Main Content */}
         <div className="relative z-10">
           {/* Company Logo & Name Section */}
@@ -814,7 +817,7 @@ const DarkCard = ({ cardData = {} }) => {
             </div>
 
             {/* Name and Designation */}
-            <h2 className="text-4xl font-medium text-white mt-20 text-center font-orgon break-words w-full mx-auto px-3" style={{maxWidth: '380px'}}>
+            <h2 className="text-4xl font-medium text-white mt-20 text-center font-orgon break-words w-full mx-auto px-3" style={{ maxWidth: '380px' }}>
               {profileData.name}
             </h2>
             <p className="text-lg text-white/90 font-[300] text-center font-orgon break-words w-full px-4 mt-0 mb-2">
@@ -880,13 +883,13 @@ const DarkCard = ({ cardData = {} }) => {
                 <div className="space-y-2 max-w-md mx-auto">
                   {formatBusinessHours()?.map((hour, index) => {
                     const isClosed = hour.isClosed;
-                    
+
                     return (
                       <div
                         key={index}
                         className="flex justify-between items-center p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transform transition-transform duration-300 hover:scale-105"
                         style={{
-                          background: isClosed 
+                          background: isClosed
                             ? 'linear-gradient(135deg, rgba(156, 163, 175, 0.1) 0%, rgba(107, 114, 128, 0.1) 100%)'
                             : 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%)',
                           border: `1px solid ${isClosed ? 'rgba(156, 163, 175, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`
@@ -1066,7 +1069,7 @@ const DarkCard = ({ cardData = {} }) => {
                   <FaVideo className="w-4 h-4 text-blue-400 mr-2" />
                   Videos
                 </h3>
-                
+
                 <div className="relative overflow-hidden max-w-xl mx-auto">
                   <div className="flex flex-col space-y-3">
                     {getCurrentVideoItem() && (
@@ -1080,7 +1083,7 @@ const DarkCard = ({ cardData = {} }) => {
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Video Slide Indicators */}
                   {profileData.videos.length > 1 && (
                     <div className="flex justify-center space-x-1 mt-3">
@@ -1088,9 +1091,8 @@ const DarkCard = ({ cardData = {} }) => {
                         <button
                           key={index}
                           onClick={() => setCurrentVideoSlide(index)}
-                          className={`w-2 h-2 rounded-full transition-all transform duration-300 ${
-                            index === currentVideoSlide ? 'bg-blue-400' : 'bg-gray-400'
-                          }`}
+                          className={`w-2 h-2 rounded-full transition-all transform duration-300 ${index === currentVideoSlide ? 'bg-blue-400' : 'bg-gray-400'
+                            }`}
                         />
                       ))}
                     </div>
@@ -1242,9 +1244,8 @@ const DarkCard = ({ cardData = {} }) => {
                         <button
                           key={index}
                           onClick={() => setCurrentSlide(index)}
-                          className={`w-2 h-2 rounded-full transition-all transform duration-300 hover:scale-110 ${
-                            index === currentSlide ? 'bg-blue-400' : 'bg-gray-400'
-                          }`}
+                          className={`w-2 h-2 rounded-full transition-all transform duration-300 hover:scale-110 ${index === currentSlide ? 'bg-blue-400' : 'bg-gray-400'
+                            }`}
                         />
                       ))}
                     </div>
@@ -1319,9 +1320,8 @@ const DarkCard = ({ cardData = {} }) => {
                       <button
                         key={index}
                         onClick={() => setCurrentServiceSlide(index)}
-                        className={`w-2 h-2 rounded-full transition-all transform duration-300 ${
-                          index === currentServiceSlide ? 'bg-blue-400' : 'bg-gray-400'
-                        }`}
+                        className={`w-2 h-2 rounded-full transition-all transform duration-300 ${index === currentServiceSlide ? 'bg-blue-400' : 'bg-gray-400'
+                          }`}
                       />
                     ))}
                   </div>
@@ -1376,9 +1376,8 @@ const DarkCard = ({ cardData = {} }) => {
                       <button
                         key={index}
                         onClick={() => setCurrentProductSlide(index)}
-                        className={`w-2 h-2 rounded-full transition-all transform duration-300 ${
-                          index === currentProductSlide ? 'bg-blue-400' : 'bg-gray-400'
-                        }`}
+                        className={`w-2 h-2 rounded-full transition-all transform duration-300 ${index === currentProductSlide ? 'bg-blue-400' : 'bg-gray-400'
+                          }`}
                       />
                     ))}
                   </div>
@@ -1425,9 +1424,8 @@ const DarkCard = ({ cardData = {} }) => {
                       <button
                         key={index}
                         onClick={() => setCurrentTestimonialSlide(index)}
-                        className={`w-2 h-2 rounded-full transition-all transform duration-300 ${
-                          index === currentTestimonialSlide ? 'bg-blue-400' : 'bg-gray-400'
-                        }`}
+                        className={`w-2 h-2 rounded-full transition-all transform duration-300 ${index === currentTestimonialSlide ? 'bg-blue-400' : 'bg-gray-400'
+                          }`}
                       />
                     ))}
                   </div>
@@ -1595,7 +1593,7 @@ const DarkCard = ({ cardData = {} }) => {
                     onClick={() => {
                       const shareUrl = profileData.shareableUrl || window.location.href;
                       const shareText = `Check out ${profileData.name}'s digital card`;
-                      
+
                       if (navigator.share) {
                         navigator.share({
                           title: `${profileData.name}'s Digital Card`,

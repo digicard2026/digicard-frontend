@@ -27,27 +27,27 @@ const DigitalCards = () => {
                 {/* --- 1. PRODUCT HERO --- */}
                 <section className="relative py-20 lg:py-32 bg-slate-50 dark:bg-slate-950 overflow-hidden">
                     {/* Background decor */}
-                    <div className="absolute top-0 right-0 w-1/2 h-full bg-rose-50 dark:bg-rose-900/10 rounded-l-full opacity-60 translate-x-1/3"></div>
+                    <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-50/50 dark:bg-blue-900/10 rounded-l-full opacity-60 translate-x-1/3"></div>
 
                     <div className="container max-w-7xl px-4 mx-auto relative z-10">
                         <div className="max-w-3xl">
-                            <h5 className="text-rosey-600 dark:text-rose-400 font-bold tracking-widest uppercase mb-4 text-sm">
+                            <h5 className="text-[#3A57E8] dark:text-[#5B78FF] font-bold tracking-widest uppercase mb-4 text-xs">
                                 Revayah One – Digital Cards 
                             </h5>
-                            <h1 className="text-4xl md:text-5xl font-semibold text-slate-900 dark:text-white mb-6">
+                            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">
                                 Smart Digital Cards for the <br />
-                                <span className="block mt-2 text-rosey-600">
+                                <span className="block mt-2 text-[#3A57E8] dark:text-[#5B78FF]">
                                     Modern World
                                 </span>
                             </h1>
-                            <p className="text-lg text-slate-600 dark:text-slate-300 mb-8 leading-relaxed max-w-2xl">
-                                Revayah One -Digital cards is a unified digital platform designed to simplify how individuals and businesses create, manage, and share their digital identity. 
+                            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-8 leading-relaxed max-w-2xl">
+                                Revayah One - Digital cards is a unified digital platform designed to simplify how individuals and businesses create, manage, and share their digital identity. 
                             </p>
                             <div className="flex flex-wrap gap-4">
-                                <a href="#create-card" className="py-2 px-4 bg-rosey-600 text-white rounded font-medium hover:bg-rose-700 transition shadow-lg shadow-rose-500/30">
+                                <a href="#create-card" className="py-3 px-6 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold text-sm transition shadow-sm">
                                     Create Your Card
                                 </a>
-                                <a href="#view-samples" className="py-2 px-4 bg-white text-rosey-600 border border-dashed border-rose-200 rounded font-medium hover:bg-slate-50 transition">
+                                <a href="#create-card" className="py-3 px-6 bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 rounded-lg font-semibold text-sm transition shadow-sm">
                                     View Samples
                                 </a>
                             </div>
@@ -175,7 +175,7 @@ const DigitalCards = () => {
                         <p className="text-zinc-600 mb-8 text-lg">
                             Our platform replaces traditional paper and plastic formats with a flexible, eco-friendly, and always-updatable digital solution. 
                         </p>
-                        <button className="px-8 py-3 bg-rosey-600 text-white font-bold rounded hover:bg-rose-700 transition">
+                        <button className="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm rounded-lg transition shadow-md">
                             Get Started Now
                         </button>
                     </div>
