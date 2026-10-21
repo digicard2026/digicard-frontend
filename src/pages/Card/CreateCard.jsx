@@ -5670,12 +5670,27 @@ const cardPlans = {
     ],
     price: '₹1500/month'
   },
+  'ProfessionalPro': {
+    name: 'ProfessionalPro',
+    description: 'DI - Professional Pro - Premium Professional Showcase with Certifications',
+    icon: <FaUserTie className="w-5 h-5" />,
+    color: 'sky',
+    features: [
+      'Everything in Professionals, plus:',
+      'Verified Pro Badge & Extended Bio',
+      'Advanced Certifications & Honors Section',
+      'Direct WhatsApp Booking & Calendar Link',
+      'Full Digital Brochure & Catalog Hub'
+    ],
+    price: '₹1800/month'
+  },
   'Entrepreneurials': {
     name: 'Entrepreneurials',
     description: 'DI - Entrepreneurials - Business & Role Showcase',
     icon: <FaBriefcase className="w-5 h-5" />,
     color: 'amber',
     features: [
+      'Everything in Professional Pro, plus:',
       'Personal Details (Profile Photo, Name, Tag line, Contact)',
       'Business Details (Company Name, Designation, Role, Products/Services)',
       'Location, Address, Contact No, Email ID, Website',
@@ -5694,6 +5709,7 @@ const cardPlans = {
     icon: <FaStore className="w-5 h-5" />,
     color: 'indigo',
     features: [
+      'Everything in Entrepreneurials, plus:',
       'Personal Details (Profile Photo, Name, Founder/Entrepreneur, Short Intro)',
       'My Ventures +',
       'My Expertise +',
@@ -5711,6 +5727,7 @@ const cardPlans = {
     icon: <FaBuilding className="w-5 h-5" />,
     color: 'teal',
     features: [
+      'Everything in Multi-Activities, plus:',
       'Company Identity (Logo, Brand Name, Business Name, Tag line, Intro)',
       'About Business (Overview, Products, Services, Docs Upload)',
       'Contact Structure (Multiple locations, Multiple persons, Roles & designation)',
@@ -5722,12 +5739,27 @@ const cardPlans = {
     ],
     price: '₹2500/month'
   },
+  'Team': {
+    name: 'Team',
+    description: 'DI - Team - Organization Multi-Member Directory',
+    icon: <FaUserFriends className="w-5 h-5" />,
+    color: 'violet',
+    features: [
+      'Everything in Corporate Business, plus:',
+      'Multi-Employee Directory & Digital Profiles',
+      'Departmental Routing & Direct Calling',
+      'Centralized Company Brand Assets & Documents',
+      'Dynamic QR Code & Team Hub Sharing'
+    ],
+    price: '₹2800/month'
+  },
   'MiniWebsite': {
     name: 'MiniWebsite',
     description: 'DP - Mini Website - Complete Digital Web & Landing Presence',
     icon: <FaGlobe className="w-5 h-5" />,
     color: 'cyan',
     features: [
+      'Everything in Team, plus:',
       'Company Logo, Brand Name, Business Name, Tag line, Overview',
       'Products & Services Showcase',
       'Photo Gallery & Embedded Video Showcase',
@@ -5746,9 +5778,11 @@ const allPlansList = [
   'Business', 
   'BusinessPremium', 
   'Professionals', 
+  'ProfessionalPro',
   'Entrepreneurials', 
   'EntrepreneurialsMulti', 
   'CorporateBusiness', 
+  'Team',
   'MiniWebsite'
 ];
 
@@ -5756,9 +5790,32 @@ const businessPlansList = [
   'Business', 
   'BusinessPremium', 
   'Professionals', 
+  'ProfessionalPro',
   'Entrepreneurials', 
   'EntrepreneurialsMulti', 
   'CorporateBusiness', 
+  'Team',
+  'MiniWebsite'
+];
+
+const businessPremiumAndAbove = [
+  'BusinessPremium', 
+  'Professionals', 
+  'ProfessionalPro', 
+  'Entrepreneurials', 
+  'EntrepreneurialsMulti', 
+  'CorporateBusiness', 
+  'Team', 
+  'MiniWebsite'
+];
+
+const professionalsAndAbove = [
+  'Professionals', 
+  'ProfessionalPro', 
+  'Entrepreneurials', 
+  'EntrepreneurialsMulti', 
+  'CorporateBusiness', 
+  'Team', 
   'MiniWebsite'
 ];
 
@@ -5803,12 +5860,12 @@ const fieldPlanMap = {
   'productVideo': businessPlansList,
   'testimonials': businessPlansList,
 
-  // Advanced & Interactive fields
-  'interactiveElements': ['BusinessPremium', 'Professionals', 'EntrepreneurialsMulti', 'CorporateBusiness', 'MiniWebsite'],
-  'individualProductDisplay': ['BusinessPremium', 'Professionals', 'CorporateBusiness', 'MiniWebsite'],
-  'clientList': ['BusinessPremium', 'Professionals', 'CorporateBusiness', 'MiniWebsite'],
-  'businessCardInstagram': ['BusinessPremium', 'Professionals', 'CorporateBusiness', 'MiniWebsite'],
-  'textbooks': ['BusinessPremium', 'Professionals'],
+  // Advanced & Interactive fields (Cumulative from BusinessPremium upwards)
+  'interactiveElements': businessPremiumAndAbove,
+  'individualProductDisplay': businessPremiumAndAbove,
+  'clientList': businessPremiumAndAbove,
+  'businessCardInstagram': businessPremiumAndAbove,
+  'textbooks': professionalsAndAbove,
 
   // Additional fields for completeness
   'department': businessPlansList,
@@ -5816,15 +5873,15 @@ const fieldPlanMap = {
   'bio': allPlansList,
   'companyLogo': businessPlansList,
   'logoSize': businessPlansList,
-  'foundedName': ['BusinessPremium', 'Professionals', 'EntrepreneurialsMulti', 'CorporateBusiness', 'MiniWebsite'],
+  'foundedName': businessPremiumAndAbove,
   'organization': businessPlansList,
-  'brandLabel': ['BusinessPremium', 'Professionals', 'CorporateBusiness', 'MiniWebsite'],
-  'productRangeDisplay': ['BusinessPremium', 'Professionals', 'CorporateBusiness', 'MiniWebsite'],
+  'brandLabel': businessPremiumAndAbove,
+  'productRangeDisplay': businessPremiumAndAbove,
   'catalogPDF': businessPlansList,
 
   // Chat & Assistant Fields
-  'chatAssistant': ['BusinessPremium', 'Professionals', 'MiniWebsite'],
-  'liveChat': ['BusinessPremium', 'Professionals', 'MiniWebsite'],
+  'chatAssistant': businessPremiumAndAbove,
+  'liveChat': businessPremiumAndAbove,
 
   // Contact Management Fields
   'enableOneTapCall': allPlansList,
@@ -6208,11 +6265,26 @@ const CreateCard = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get plan and addons from navigation state
-  const selectedPlanFromState = location.state?.selectedPlan || 'Personal';
-  const selectedAddonsFromState = location.state?.selectedAddons || [];
-  const addonsObjFromState = location.state?.addonsObject || {};
-  const userEmailFromSignIn = location.state?.userEmail || '';
+  // Get plan and addons from navigation state with localStorage fallback
+  const selectedPlanFromState = location.state?.selectedPlan || localStorage.getItem('selected_plan') || 'Personal';
+  let selectedAddonsFromState = location.state?.selectedAddons || [];
+  let addonsObjFromState = location.state?.addonsObject || {};
+
+  if ((!selectedAddonsFromState || selectedAddonsFromState.length === 0) && localStorage.getItem('selected_addons')) {
+    try {
+      const stored = JSON.parse(localStorage.getItem('selected_addons'));
+      if (Array.isArray(stored)) {
+        selectedAddonsFromState = stored;
+      } else if (typeof stored === 'object' && stored !== null) {
+        addonsObjFromState = stored;
+        selectedAddonsFromState = Object.keys(stored).filter(k => stored[k]);
+      }
+    } catch (e) {
+      console.warn("Could not parse selected_addons from localStorage", e);
+    }
+  }
+
+  const userEmailFromSignIn = location.state?.userEmail || localStorage.getItem('user_email') || '';
   const editingCard = location.state?.card || null;
   const partnerIdFromState = location.state?.createdBy || '';
 
@@ -6255,12 +6327,41 @@ const CreateCard = () => {
     videos: {} // Store upload type per video item
   });
 
+  // Helper to check if an addon is active in formData.addons
+  const hasActiveAddon = (key) => {
+    if (!formData?.addons) return false;
+    const lk = key.toLowerCase();
+    for (const [k, v] of Object.entries(formData.addons)) {
+      if (k.toLowerCase() === lk && !!v) return true;
+    }
+    return false;
+  };
+
   // Field visibility based on selected plan and add-ons
   const isFieldVisible = (fieldName) => {
-    // Gallery is an Add-on for plans with gallery addon - only visible if addon was selected/paid
-    if (fieldName === 'gallery' && ['Business', 'Professionals', 'Entrepreneurials', 'CorporateBusiness'].includes(formData?.cardType)) {
-      return !!formData?.addons?.gallery;
+    // 1. Unlocked by active add-ons:
+    if (fieldName === 'gallery' && (hasActiveAddon('gallery') || hasActiveAddon('photogallery'))) return true;
+    if ((fieldName === 'catalog' || fieldName === 'catalogPDF' || fieldName === 'downloads') && 
+        (hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder') || hasActiveAddon('brochurebuilder') || hasActiveAddon('docsmanager'))) return true;
+    if (fieldName === 'nfcSettings' && (hasActiveAddon('nfccard') || hasActiveAddon('nfc'))) return true;
+    if (fieldName === 'interactiveElements' && (hasActiveAddon('leadgen') || hasActiveAddon('interactiveelements') || hasActiveAddon('appointmentbooking'))) return true;
+    if (fieldName === 'clientList' && (hasActiveAddon('leadmanagement') || hasActiveAddon('leadgen'))) return true;
+    if (fieldName === 'businessHours' && hasActiveAddon('appointmentbooking')) return true;
+    if ((fieldName === 'liveChat' || fieldName === 'enableWhatsApp') && hasActiveAddon('whatsappintegration')) return true;
+    if ((fieldName === 'servicesProducts' || fieldName === 'services' || fieldName === 'catalog') && 
+        (hasActiveAddon('catalogbuilder') || hasActiveAddon('portfoliobuilder'))) return true;
+    if ((fieldName === 'testimonials' || fieldName === 'productVideo') && hasActiveAddon('portfoliobuilder')) return true;
+    if ((fieldName === 'profileVideo' || fieldName === 'organization') && hasActiveAddon('profilebuilder')) return true;
+
+    // 2. Plans where gallery is included out of the box:
+    if (fieldName === 'gallery' && formData?.cardType === 'MiniWebsite') return true;
+
+    // 3. Plans where gallery is an Add-on (only visible if addon selected):
+    if (fieldName === 'gallery' && ['Business', 'BusinessPremium', 'Professionals', 'ProfessionalPro', 'Entrepreneurials', 'EntrepreneurialsMulti', 'CorporateBusiness', 'Team'].includes(formData?.cardType)) {
+      return hasActiveAddon('gallery') || hasActiveAddon('photogallery');
     }
+
+    // 4. Default plan permission check:
     const allowedPlans = fieldPlanMap[fieldName] || [];
     return allowedPlans.includes(formData.cardType);
   };
@@ -6324,21 +6425,21 @@ const CreateCard = () => {
     // Card Type
     cardType: selectedPlanFromState,
 
-    // Add-on features
+    // Add-on features (case-insensitive detection from state, props, or editingCard)
     addons: {
-      gallery: (addonsObjFromState.gallery || selectedAddonsFromState.includes('gallery') || editingCard?.addons?.gallery) ?? false,
-      docsBuilder: (addonsObjFromState.docsBuilder || selectedAddonsFromState.includes('docsBuilder') || editingCard?.addons?.docsBuilder) ?? false,
-      nfcCard: (addonsObjFromState.nfcCard || selectedAddonsFromState.includes('nfcCard') || editingCard?.addons?.nfcCard) ?? false,
-      catalogBuilder: (addonsObjFromState.catalogBuilder || selectedAddonsFromState.includes('catalogBuilder') || editingCard?.addons?.catalogBuilder) ?? false,
-      brochureBuilder: (addonsObjFromState.brochureBuilder || selectedAddonsFromState.includes('brochureBuilder') || editingCard?.addons?.brochureBuilder) ?? false,
-      profileBuilder: (addonsObjFromState.profileBuilder || selectedAddonsFromState.includes('profileBuilder') || editingCard?.addons?.profileBuilder) ?? false,
-      portfolioBuilder: (addonsObjFromState.portfolioBuilder || selectedAddonsFromState.includes('portfolioBuilder') || editingCard?.addons?.portfolioBuilder) ?? false,
-      leadGen: (addonsObjFromState.leadGen || selectedAddonsFromState.includes('leadGen') || editingCard?.addons?.leadGen) ?? false,
-      leadManagement: (addonsObjFromState.leadManagement || selectedAddonsFromState.includes('leadManagement') || editingCard?.addons?.leadManagement) ?? false,
-      appointmentBooking: (addonsObjFromState.appointmentBooking || selectedAddonsFromState.includes('appointmentBooking') || editingCard?.addons?.appointmentBooking) ?? false,
-      whatsappIntegration: (addonsObjFromState.whatsappIntegration || selectedAddonsFromState.includes('whatsappIntegration') || editingCard?.addons?.whatsappIntegration) ?? false,
-      analytics: (addonsObjFromState.analytics || selectedAddonsFromState.includes('analytics') || editingCard?.addons?.analytics) ?? false,
-      docsManager: (addonsObjFromState.docsManager || selectedAddonsFromState.includes('docsManager') || editingCard?.addons?.docsManager) ?? false,
+      gallery: !!(addonsObjFromState.gallery || addonsObjFromState.photogallery || selectedAddonsFromState.some(a => ['gallery', 'photogallery'].includes(String(a).toLowerCase())) || editingCard?.addons?.gallery),
+      docsBuilder: !!(addonsObjFromState.docsBuilder || addonsObjFromState.docsbuilder || selectedAddonsFromState.some(a => ['docsbuilder', 'docs'].includes(String(a).toLowerCase())) || editingCard?.addons?.docsBuilder),
+      nfcCard: !!(addonsObjFromState.nfcCard || addonsObjFromState.nfccard || selectedAddonsFromState.some(a => ['nfccard', 'nfc'].includes(String(a).toLowerCase())) || editingCard?.addons?.nfcCard),
+      catalogBuilder: !!(addonsObjFromState.catalogBuilder || addonsObjFromState.catalogbuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'catalogbuilder') || editingCard?.addons?.catalogBuilder),
+      brochureBuilder: !!(addonsObjFromState.brochureBuilder || addonsObjFromState.brochurebuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'brochurebuilder') || editingCard?.addons?.brochureBuilder),
+      profileBuilder: !!(addonsObjFromState.profileBuilder || addonsObjFromState.profilebuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'profilebuilder') || editingCard?.addons?.profileBuilder),
+      portfolioBuilder: !!(addonsObjFromState.portfolioBuilder || addonsObjFromState.portfoliobuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'portfoliobuilder') || editingCard?.addons?.portfolioBuilder),
+      leadGen: !!(addonsObjFromState.leadGen || addonsObjFromState.leadgen || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'leadgen') || editingCard?.addons?.leadGen),
+      leadManagement: !!(addonsObjFromState.leadManagement || addonsObjFromState.leadmanagement || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'leadmanagement') || editingCard?.addons?.leadManagement),
+      appointmentBooking: !!(addonsObjFromState.appointmentBooking || addonsObjFromState.appointmentbooking || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'appointmentbooking') || editingCard?.addons?.appointmentBooking),
+      whatsappIntegration: !!(addonsObjFromState.whatsappIntegration || addonsObjFromState.whatsappintegration || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'whatsappintegration') || editingCard?.addons?.whatsappIntegration),
+      analytics: !!(addonsObjFromState.analytics || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'analytics') || editingCard?.addons?.analytics),
+      docsManager: !!(addonsObjFromState.docsManager || addonsObjFromState.docsmanager || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'docsmanager') || editingCard?.addons?.docsManager),
     },
 
     // Partner ID field
@@ -6550,16 +6651,32 @@ const CreateCard = () => {
     }
   };
 
-  // Ensure cardType is set from navigation state
+  // Ensure cardType and active addons are set from navigation/localStorage state
   useEffect(() => {
     if (selectedPlanFromState && !editingCard) {
       setFormData(prev => ({
         ...prev,
         cardType: selectedPlanFromState,
-        createdBy: partnerIdFromState || ""
+        createdBy: partnerIdFromState || "",
+        addons: {
+          ...prev.addons,
+          gallery: !!(addonsObjFromState.gallery || addonsObjFromState.photogallery || selectedAddonsFromState.some(a => ['gallery', 'photogallery'].includes(String(a).toLowerCase())) || prev.addons?.gallery),
+          docsBuilder: !!(addonsObjFromState.docsBuilder || addonsObjFromState.docsbuilder || selectedAddonsFromState.some(a => ['docsbuilder', 'docs'].includes(String(a).toLowerCase())) || prev.addons?.docsBuilder),
+          nfcCard: !!(addonsObjFromState.nfcCard || addonsObjFromState.nfccard || selectedAddonsFromState.some(a => ['nfccard', 'nfc'].includes(String(a).toLowerCase())) || prev.addons?.nfcCard),
+          catalogBuilder: !!(addonsObjFromState.catalogBuilder || addonsObjFromState.catalogbuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'catalogbuilder') || prev.addons?.catalogBuilder),
+          brochureBuilder: !!(addonsObjFromState.brochureBuilder || addonsObjFromState.brochurebuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'brochurebuilder') || prev.addons?.brochureBuilder),
+          profileBuilder: !!(addonsObjFromState.profileBuilder || addonsObjFromState.profilebuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'profilebuilder') || prev.addons?.profileBuilder),
+          portfolioBuilder: !!(addonsObjFromState.portfolioBuilder || addonsObjFromState.portfoliobuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'portfoliobuilder') || prev.addons?.portfolioBuilder),
+          leadGen: !!(addonsObjFromState.leadGen || addonsObjFromState.leadgen || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'leadgen') || prev.addons?.leadGen),
+          leadManagement: !!(addonsObjFromState.leadManagement || addonsObjFromState.leadmanagement || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'leadmanagement') || prev.addons?.leadManagement),
+          appointmentBooking: !!(addonsObjFromState.appointmentBooking || addonsObjFromState.appointmentbooking || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'appointmentbooking') || prev.addons?.appointmentBooking),
+          whatsappIntegration: !!(addonsObjFromState.whatsappIntegration || addonsObjFromState.whatsappintegration || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'whatsappintegration') || prev.addons?.whatsappIntegration),
+          analytics: !!(addonsObjFromState.analytics || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'analytics') || prev.addons?.analytics),
+          docsManager: !!(addonsObjFromState.docsManager || addonsObjFromState.docsmanager || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'docsmanager') || prev.addons?.docsManager),
+        }
       }));
     }
-  }, [selectedPlanFromState, editingCard, partnerIdFromState]);
+  }, [selectedPlanFromState, editingCard, partnerIdFromState, selectedAddonsFromState, addonsObjFromState]);
 
   // Email validation function
   const validateEmail = (email) => {
@@ -10371,7 +10488,7 @@ const CreateCard = () => {
             )}
 
             {/* Gallery - When Add-On is NOT selected for Business plan */}
-            {formData.cardType === 'Business' && !formData.addons?.gallery && (
+            {formData.cardType === 'Business' && !hasActiveAddon('gallery') && !hasActiveAddon('photogallery') && (
               <div className="border border-dashed border-slate-300 bg-slate-50 dark:bg-slate-800/40 rounded-lg p-5 text-center">
                 <div className="max-w-md mx-auto">
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">

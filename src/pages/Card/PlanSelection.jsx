@@ -14,6 +14,53 @@ import {
   FaArrowRight
 } from "react-icons/fa";
 
+// Base Personal Allowed Fields (Tier 1)
+const personalAllowed = [
+  'profilePhoto', 'firstName', 'lastName', 'prefix', 'suffix',
+  'jobTitle', 'tagline', 'aboutText', 'bio', 'phones',
+  'email', 'emails', 'websites', 'addresses', 'enableOneTapCall',
+  'enableWhatsApp', 'enableEmail', 'socialLinks', 'dynamicQRCode',
+  'shareableUrl', 'shareableLink'
+];
+
+// Business Allowed Fields (Tier 2: Personal + Business)
+const businessAllowed = [
+  ...personalAllowed,
+  'companyName', 'companyLogo', 'logoSize', 'department', 'organization',
+  'businessHours', 'virtualNumber', 'profileVideo', 'services', 'servicesProducts',
+  'gallery', 'catalog', 'catalogPDF', 'productVideo', 'testimonials',
+  'nfcSettings', 'downloads', 'videos'
+];
+
+// BusinessPremium Allowed Fields (Tier 3: Business + Inquiries & Displays)
+const businessPremiumAllowed = [
+  ...businessAllowed,
+  'interactiveElements', 'individualProductDisplay', 'clientList',
+  'businessCardInstagram', 'textbooks', 'chatAssistant', 'liveChat',
+  'foundedName', 'brandLabel', 'productRangeDisplay'
+];
+
+// Professionals Allowed Fields (Tier 4)
+const professionalsAllowed = [...businessPremiumAllowed];
+
+// ProfessionalPro Allowed Fields (Tier 5)
+const professionalProAllowed = [...professionalsAllowed];
+
+// Entrepreneurials Allowed Fields (Tier 6)
+const entrepreneurialsAllowed = [...professionalProAllowed];
+
+// EntrepreneurialsMulti Allowed Fields (Tier 7)
+const entrepreneurialsMultiAllowed = [...entrepreneurialsAllowed];
+
+// CorporateBusiness Allowed Fields (Tier 8)
+const corporateBusinessAllowed = [...entrepreneurialsMultiAllowed];
+
+// Team Allowed Fields (Tier 9)
+const teamAllowed = [...corporateBusinessAllowed];
+
+// MiniWebsite Allowed Fields (Tier 10)
+const miniWebsiteAllowed = [...teamAllowed];
+
 const cardFieldsConfig = {
   Personal: {
     name: 'Personal',
@@ -21,22 +68,14 @@ const cardFieldsConfig = {
     category: 'individual',
     badge: null,
     description: 'Essential digital identity for individuals, freelancers & consultants',
-    allowed: [
-      'profilePhoto', 'firstName', 'lastName', 'prefix', 'suffix',
-      'jobTitle', 'tagline', 'aboutText', 'bio', 'phones',
-      'email', 'emails', 'websites', 'addresses', 'enableOneTapCall',
-      'enableWhatsApp', 'enableEmail', 'socialLinks', 'dynamicQRCode',
-      'shareableUrl', 'shareableLink'
-    ],
+    allowed: personalAllowed,
     features: [
-      'Profile photo & Full Name',
-      'Designation / Title & Tag line',
-      'Short introduction & Location map',
-      'Mobile 1 & Mobile 2 contacts',
-      'WhatsApp & Email one-tap connect',
-      'Website & Address display',
-      'Social Links (LinkedIn, FB, Insta, X)',
-      'Dynamic QR Code & Quick Share'
+      'Profile photo, Name, Designation / Title',
+      'Tag line, Short intro & Location map',
+      'Mobile 1, Mobile 2 & WhatsApp direct connect',
+      'Email, Website, Address & Location map',
+      'Social Links (LinkedIn, FB, Insta, X/Twitter)',
+      'Dynamic QR Code & Instant Contact Share'
     ]
   },
 
@@ -46,20 +85,14 @@ const cardFieldsConfig = {
     category: 'individual',
     badge: 'Most Popular',
     description: 'Corporate role presence with company identity & service showcase',
-    allowed: [
-      'profilePhoto', 'companyLogo', 'jobTitle', 'tagline', 'organization',
-      'bio', 'profileVideo', 'emails', 'phones', 'whatsapp',
-      'websites', 'address', 'virtualNumber', 'businessHours',
-      'socialLinks', 'servicesProducts', 'gallery', 'catalogPDF',
-      'productVideo', 'testimonials', 'dynamicQRCode', 'nfcCard',
-      'downloads', 'videos'
-    ],
+    allowed: businessAllowed,
     features: [
-      'Personal Details (Photo, Name, Tag line)',
-      'Employment Details (Company, Designation)',
-      'Office Address, Contact No, Email, Web',
-      'Mobile 1 & 2, WhatsApp, Portfolio Link',
-      'Social Media Suite & Dynamic QR Code'
+      'Everything in Personal plan, plus:',
+      'Employment Details (Company, Designation, Role)',
+      'Company Logo, Office Address & Virtual Number',
+      'Products / Services Showcase & Portfolio Gallery',
+      'Business Hours, Product Video & Testimonials',
+      'Downloadable Catalog [PDF] & Documents'
     ]
   },
 
@@ -69,22 +102,14 @@ const cardFieldsConfig = {
     category: 'individual',
     badge: 'Best for Services',
     description: 'Service providers & freelancers with customer inquiries & booking slots',
-    allowed: [
-      'profilePhoto', 'companyLogo', 'jobTitle', 'tagline', 'organization',
-      'bio', 'profileVideo', 'emails', 'phones', 'whatsapp',
-      'websites', 'address', 'virtualNumber', 'businessHours',
-      'socialLinks', 'servicesProducts', 'gallery', 'catalogPDF',
-      'productVideo', 'testimonials', 'clientList', 'interactiveElements',
-      'dynamicQRCode', 'nfcCard', 'downloads', 'videos'
-    ],
+    allowed: businessPremiumAllowed,
     features: [
-      'Name, Photo, Service & Profession Overview',
-      'Service Area, Location & Google Map',
-      'Mobile, WhatsApp & Email Contacts',
-      'Services & Provisions Catalog',
-      'Availability (Working Days & Hours)',
-      'Customer Inquire (Date, Time, Contact)',
-      'Photo Gallery Included by Default'
+      'Everything in Working Professional plan, plus:',
+      'Dedicated Service Provider Profile & Service Areas',
+      'Google Maps Service Location & Operating Hours',
+      'Customer Inquiries (Service, Preferred Date, Time, Contact)',
+      'Services Catalog & Availability Schedule (Days & Hours)',
+      'Direct Action CTA & Digital Payments'
     ]
   },
 
@@ -92,24 +117,33 @@ const cardFieldsConfig = {
     name: 'Professionals',
     subtitle: 'DI - Professionals',
     category: 'individual',
-    badge: 'All-Inclusive Pro',
+    badge: 'Executive',
     description: 'Comprehensive executive profile with credentials, portfolio & rich add-ons',
-    allowed: [
-      'profilePhoto', 'companyLogo', 'jobTitle', 'tagline', 'organization',
-      'bio', 'profileVideo', 'emails', 'phones', 'whatsapp',
-      'websites', 'address', 'virtualNumber', 'businessHours',
-      'socialLinks', 'servicesProducts', 'gallery', 'catalogPDF',
-      'productVideo', 'testimonials', 'clientList', 'interactiveElements',
-      'dynamicQRCode', 'nfcCard', 'downloads', 'videos'
-    ],
+    allowed: professionalsAllowed,
     features: [
-      'Personal Details & Professional Contacts',
-      'Company Name, Designation & Address',
-      'Executive Summary, Expertise & Services',
-      'Certifications & Memberships Display',
-      'Portfolio Link & Client Testimonials',
-      'Docs Upload & Product Video Showcase',
-      'Dynamic QR Code & Direct Call-to-Action'
+      'Everything in Service Providers plan, plus:',
+      'Executive Profile with Certifications & Memberships',
+      'Professional Summary (About, Expertise, Services)',
+      'Portfolio Link, Client Testimonials & Videos',
+      'Document Uploads & Direct Action CTA',
+      'Expanded Add-on Suite (Catalog, Brochure & Portfolio Builders)'
+    ]
+  },
+
+  ProfessionalPro: {
+    name: 'ProfessionalPro',
+    subtitle: 'DI - Professional Pro',
+    category: 'individual',
+    badge: 'Specialized',
+    description: 'Industry specific customized profiles for certified specialists & consultants',
+    allowed: professionalProAllowed,
+    features: [
+      'Everything in Professionals plan, plus:',
+      'Industry Specific Custom Layouts & Styling',
+      'Specialized Credentials, Certifications & Licenses Display',
+      'Advanced Professional Portfolio & Case Studies',
+      'Executive Summary & Priority Consultation Booking',
+      'Direct WhatsApp, One-Tap Call & Email Action'
     ]
   },
 
@@ -119,20 +153,13 @@ const cardFieldsConfig = {
     category: 'business',
     badge: null,
     description: 'Entrepreneurs & business operators with company role & product suite',
-    allowed: [
-      'profilePhoto', 'companyLogo', 'jobTitle', 'tagline', 'organization',
-      'bio', 'profileVideo', 'emails', 'phones', 'whatsapp',
-      'websites', 'address', 'virtualNumber', 'businessHours',
-      'socialLinks', 'servicesProducts', 'gallery', 'catalogPDF',
-      'productVideo', 'testimonials', 'dynamicQRCode', 'nfcCard',
-      'downloads', 'videos'
-    ],
+    allowed: entrepreneurialsAllowed,
     features: [
-      'Personal Details (Photo, Name, Contact)',
-      'Business Details (Company, Role, Services)',
-      'Location, Address, Contact No, Email, Web',
-      'Mobile 1/2, WhatsApp, Web Portfolio Link',
-      'Dynamic QR Code, Share & Action CTA'
+      'Everything in Professional Pro plan, plus:',
+      'Comprehensive Business & Role Showcase',
+      'Business Details (Company, Designation, Role, Services)',
+      'Location, Address, Contact No, Email ID, Website Hub',
+      'Dedicated Social Media Hub & Direct Action CTA'
     ]
   },
 
@@ -142,23 +169,14 @@ const cardFieldsConfig = {
     category: 'business',
     badge: 'Multi-Venture',
     description: 'Multi-venture founders showcasing ventures, expertise & direct booking',
-    allowed: [
-      'profilePhoto', 'firstName', 'lastName', 'prefix', 'suffix',
-      'jobTitle', 'tagline', 'aboutText', 'bio', 'phones',
-      'email', 'emails', 'websites', 'addresses', 'enableOneTapCall',
-      'enableWhatsApp', 'enableEmail', 'socialLinks', 'dynamicQRCode',
-      'shareableUrl', 'shareableLink', 'companyName', 'companyLogo',
-      'services', 'servicesProducts', 'gallery', 'productVideo',
-      'testimonials', 'downloads', 'videos', 'interactiveElements'
-    ],
+    allowed: entrepreneurialsMultiAllowed,
     features: [
-      'Founder Profile (Photo, Name, Intro)',
-      'My Ventures + Showcase',
-      'My Expertise + Competencies',
-      'My Projects + Portfolio',
-      'My Services + & Products + Hub',
-      'WhatsApp Me Direct Action',
-      'Book Me Direct Scheduler Action'
+      'Everything in Entrepreneurials plan, plus:',
+      'Multi-Venture & Multi-Brand Showcase (My Ventures +)',
+      'Competencies & Expertise Hub (My Expertise +)',
+      'Projects & Dynamic Portfolio (My Projects +)',
+      'My Services + & My Products + Central Hub',
+      'Direct "WhatsApp Me" & "Book Me Direct" Action'
     ]
   },
 
@@ -168,20 +186,32 @@ const cardFieldsConfig = {
     category: 'business',
     badge: 'Enterprise',
     description: 'Corporate entities with multi-location branches & multi-person team directory',
-    allowed: [
-      'profilePhoto', 'companyLogo', 'jobTitle', 'tagline', 'organization',
-      'bio', 'profileVideo', 'emails', 'phones', 'whatsapp',
-      'websites', 'address', 'virtualNumber', 'businessHours',
-      'socialLinks', 'servicesProducts', 'gallery', 'catalogPDF',
-      'productVideo', 'testimonials', 'clientList', 'interactiveElements',
-      'dynamicQRCode', 'nfcCard', 'downloads', 'videos'
-    ],
+    allowed: corporateBusinessAllowed,
     features: [
-      'Corporate Identity (Logo, Brand Name, Intro)',
-      'About Business (Overview, Products, Docs)',
-      'Multiple Branch Locations Directory',
-      'Multiple Contact Persons & Designations',
-      'Social Media Hub & Direct Inquiry Funnel'
+      'Everything in Multi-Activities plan, plus:',
+      'Corporate Identity (Logo, Brand Name, Tag line & Intro)',
+      'About Business (Overview, Products, Services, Docs Upload)',
+      'Multiple Branch Locations & Google Maps Directory',
+      'Multiple Contact Persons, Roles & Designations',
+      'Corporate Social Media Hub & Direct Inquiry Funnel'
+    ]
+  },
+
+  Team: {
+    name: 'Team',
+    subtitle: 'DI - Team',
+    category: 'business',
+    badge: 'Multi-User',
+    description: 'Centralized team organization with sub-cards, brand control & team management',
+    allowed: teamAllowed,
+    features: [
+      'Everything in Corporate Business plan, plus:',
+      'Multi-Member Team Directory & Organization Hierarchy',
+      'Unified Corporate Branding & Theme Control',
+      'Individual Team Member Cards with Dedicated URLs',
+      'Central Admin Dashboard & Permission Controls',
+      'Centralized Lead Capture & Shared Analytics',
+      'Bulk Contact Sharing & Corporate QR Codes'
     ]
   },
 
@@ -191,23 +221,16 @@ const cardFieldsConfig = {
     category: 'business',
     badge: 'Complete Suite',
     description: 'Full-featured interactive digital mini website with forms, map & analytics',
-    allowed: [
-      'profilePhoto', 'companyLogo', 'jobTitle', 'tagline', 'organization',
-      'bio', 'profileVideo', 'emails', 'phones', 'whatsapp',
-      'websites', 'address', 'virtualNumber', 'businessHours',
-      'socialLinks', 'servicesProducts', 'gallery', 'catalogPDF',
-      'productVideo', 'testimonials', 'clientList', 'interactiveElements',
-      'dynamicQRCode', 'nfcCard', 'downloads', 'videos', 'chatAssistant', 'liveChat'
-    ],
+    allowed: miniWebsiteAllowed,
     features: [
-      'Brand Identity, Business Name & Overview',
-      'Products & Services Interactive Showcase',
+      'Everything in Team plan, plus:',
+      'Full-Featured Digital Mini Website & Landing Presence',
+      'Interactive Products & Services Catalog Showcase',
       'Built-in Photo Gallery & Video Streams',
-      'Digital Brochure & PDF Downloads',
-      'Client Testimonials & Google Ratings',
-      'Google Maps Location & Operating Hours',
-      'Lead Generation & Inquiry Webform',
-      'Custom URL & Profile Performance Analytics'
+      'Digital Brochures & Document PDF Downloads',
+      'Client Testimonials, Google Ratings & Operating Hours',
+      'Lead Generation & Interactive Inquiry Webform',
+      'Custom Domain/URL & Performance Analytics'
     ]
   }
 };
@@ -243,17 +266,28 @@ const entrepreneurialsAddonList = [
   { key: 'nfcCard', name: 'NFC Smart Card', desc: 'Contactless physical card', price: '+₹499 (one-time)' }
 ];
 
+const businessPremiumAddonList = [
+  { key: 'gallery', name: 'Photo Gallery', desc: 'High-res image gallery showcase', price: '+₹200/mo' },
+  { key: 'docsBuilder', name: 'Docs Builder', desc: 'Upload brochures & PDF documents', price: '+₹150/mo' },
+  { key: 'nfcCard', name: 'NFC Smart Card', desc: 'Custom printed contactless card', price: '+₹499 (one-time)' }
+];
+
 const corporateBusinessAddonList = [
-  { key: 'gallery', name: 'Photo Gallery', desc: 'Corporate gallery & facility photos', price: '+₹200/mo' },
-  { key: 'docsBuilder', name: 'Docs Builder', desc: 'Corporate brochures & compliance PDFs', price: '+₹150/mo' },
-  { key: 'nfcCard', name: 'NFC Smart Card', desc: 'Custom company branded NFC cards', price: '+₹499 (one-time)' }
+  { key: 'gallery', name: 'Photo Gallery', desc: 'Corporate portfolio & visual showcase', price: '+₹200/mo' },
+  { key: 'docsBuilder', name: 'Docs Builder', desc: 'Upload corporate brochures & company decks', price: '+₹150/mo' },
+  { key: 'nfcCard', name: 'NFC Smart Card', desc: 'Contactless executive smart card', price: '+₹499 (one-time)' }
 ];
 
 const planAddonsMap = {
   Business: { list: businessAddonList, basePrice: 800, color: 'purple' },
+  BusinessPremium: { list: businessPremiumAddonList, basePrice: 1200, color: 'gold' },
   Professionals: { list: professionalsAddonList, basePrice: 1500, color: 'emerald' },
+  ProfessionalPro: { list: businessAddonList, basePrice: 1800, color: 'indigo' },
   Entrepreneurials: { list: entrepreneurialsAddonList, basePrice: 1800, color: 'amber' },
-  CorporateBusiness: { list: corporateBusinessAddonList, basePrice: 2500, color: 'teal' }
+  EntrepreneurialsMulti: { list: businessPremiumAddonList, basePrice: 2200, color: 'indigo' },
+  CorporateBusiness: { list: corporateBusinessAddonList, basePrice: 2500, color: 'teal' },
+  Team: { list: corporateBusinessAddonList, basePrice: 2800, color: 'purple' },
+  MiniWebsite: { list: businessPremiumAddonList, basePrice: 3000, color: 'cyan' }
 };
 
 const addonPrices = {
@@ -277,9 +311,11 @@ const planPrices = {
   'Business': '₹800/month',
   'BusinessPremium': '₹1200/month',
   'Professionals': '₹1500/month',
+  'ProfessionalPro': '₹1800/month',
   'Entrepreneurials': '₹1800/month',
   'EntrepreneurialsMulti': '₹2200/month',
   'CorporateBusiness': '₹2500/month',
+  'Team': '₹2800/month',
   'MiniWebsite': '₹3000/month'
 };
 
@@ -288,9 +324,11 @@ const planColors = {
   'Business': 'purple',
   'BusinessPremium': 'gold',
   'Professionals': 'emerald',
+  'ProfessionalPro': 'indigo',
   'Entrepreneurials': 'amber',
   'EntrepreneurialsMulti': 'indigo',
   'CorporateBusiness': 'teal',
+  'Team': 'purple',
   'MiniWebsite': 'cyan'
 };
 
@@ -299,9 +337,11 @@ const planIcons = {
   'Business': <FaBriefcase className="w-7 h-7" />,
   'BusinessPremium': <FaCrown className="w-7 h-7" />,
   'Professionals': <FaUserTie className="w-7 h-7" />,
-  'Entrepreneurials': <FaGem className="w-7 h-7" />,
+  'ProfessionalPro': <FaGem className="w-7 h-7" />,
+  'Entrepreneurials': <FaStore className="w-7 h-7" />,
   'EntrepreneurialsMulti': <FaStore className="w-7 h-7" />,
   'CorporateBusiness': <FaBuilding className="w-7 h-7" />,
+  'Team': <FaBriefcase className="w-7 h-7" />,
   'MiniWebsite': <FaGlobe className="w-7 h-7" />
 };
 
@@ -423,7 +463,7 @@ const planColorStyles = {
 const PlanSelection = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedPlan, setSelectedPlan] = useState('Personal');
+  const [selectedPlan, setSelectedPlan] = useState(location.state?.selectedPlan || null);
   const [activeCategory, setActiveCategory] = useState('all');
 
   const [selectedAddons, setSelectedAddons] = useState({
@@ -478,6 +518,7 @@ const PlanSelection = () => {
   };
 
   const handleContinue = () => {
+    if (!selectedPlan) return;
     const hasAddons = !!planAddonsMap[selectedPlan];
     const relevantAddons = hasAddons ? planAddonsMap[selectedPlan].list.map(a => a.key) : [];
     const activeAddonsList = relevantAddons.filter(k => selectedAddons[k]);
@@ -486,14 +527,25 @@ const PlanSelection = () => {
       ? planAddonsMap[selectedPlan].basePrice 
       : (parseInt((planPrices[selectedPlan] || '1200').replace(/[^0-9]/g, '')) || 1200);
 
+    const totalPrice = basePrice + addonTotal;
+    const userEmail = localStorage.getItem('user_email') || '';
+
+    // Persist in localStorage
+    localStorage.setItem('selected_plan', selectedPlan);
+    localStorage.setItem('selected_addons', JSON.stringify(activeAddonsList));
+    localStorage.setItem('selected_plan_price', totalPrice);
+
+    // Navigate to Signup page like the previous flow
     navigate('/signup', {
       state: {
         selectedPlan,
-        selectedAddons: hasAddons ? activeAddonsList : (selectedPlan === 'BusinessPremium' ? ['gallery', 'docsBuilder', 'nfcCard'] : []),
-        addonsObject: hasAddons ? selectedAddons : (selectedPlan === 'BusinessPremium' ? { gallery: true, docsBuilder: true, nfcCard: true } : {}),
-        totalPrice: basePrice + addonTotal,
+        selectedAddons: activeAddonsList,
+        addonsObject: selectedAddons,
+        totalPrice: totalPrice,
+        userEmail,
         createdBy: location.state?.createdBy,
-        fromPartnerDashboard: location.state?.fromPartnerDashboard
+        fromPartnerDashboard: location.state?.fromPartnerDashboard,
+        billingCycle: 'monthly'
       }
     });
   };
@@ -509,9 +561,9 @@ const PlanSelection = () => {
     return plan.category === activeCategory;
   });
 
-  const selectedPlanInfo = cardFieldsConfig[selectedPlan] || cardFieldsConfig.Personal;
-  const selectedPlanAddonsTotal = getPlanAddonTotal(selectedPlan);
-  const selectedPlanTotalNumber = getPlanTotalPriceNumber(selectedPlan);
+  const selectedPlanInfo = selectedPlan ? (cardFieldsConfig[selectedPlan] || null) : null;
+  const selectedPlanAddonsTotal = selectedPlan ? getPlanAddonTotal(selectedPlan) : 0;
+  const selectedPlanTotalNumber = selectedPlan ? getPlanTotalPriceNumber(selectedPlan) : 0;
 
   return (
     <div className="min-h-screen bg-slate-50/60 py-12 px-4 sm:px-6 lg:px-8 font-sans" id="plan">
@@ -558,7 +610,7 @@ const PlanSelection = () => {
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              All Plans (8)
+              All Plans ({Object.keys(cardFieldsConfig).length})
             </button>
             <button
               onClick={() => setActiveCategory('individual')}
@@ -568,7 +620,7 @@ const PlanSelection = () => {
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              Individuals & Pros (4)
+              Individuals & Pros ({Object.values(cardFieldsConfig).filter(p => p.category === 'individual').length})
             </button>
             <button
               onClick={() => setActiveCategory('business')}
@@ -578,7 +630,7 @@ const PlanSelection = () => {
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              Business & Ventures (4)
+              Business & Ventures ({Object.values(cardFieldsConfig).filter(p => p.category === 'business').length})
             </button>
           </div>
         </div>
@@ -763,13 +815,21 @@ const PlanSelection = () => {
                 <div className="pt-2 mt-auto">
                   <button
                     type="button"
-                    className={`w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm ${
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isSelected) {
+                        handleContinue();
+                      } else {
+                        handlePlanSelect(key);
+                      }
+                    }}
+                    className={`w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm cursor-pointer ${
                       isSelected
                         ? `${style.btn} ring-2 ring-offset-2 ring-slate-900`
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    {isSelected ? '✓ Plan Selected' : 'Select This Plan'}
+                    {isSelected ? 'Continue with Plan →' : 'Select This Plan'}
                   </button>
                   <p className="text-[10px] text-slate-400 text-center mt-2 font-medium">
                     14-Day Trial • Cancel Anytime
@@ -875,44 +935,46 @@ const PlanSelection = () => {
         </div>
       </div>
 
-      {/* Floating Bottom Sticky Action Bar */}
-      <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-2xl py-3.5 px-4 z-50">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-              (planColorStyles[planColors[selectedPlan]] || planColorStyles.blue).iconBg
-            }`}>
-              {planIcons[selectedPlan]}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-slate-900">
-                  {selectedPlanInfo.name} Plan
-                </span>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                  {selectedPlanInfo.subtitle}
-                </span>
-                {selectedPlanAddonsTotal > 0 && (
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-                    +₹{selectedPlanAddonsTotal} Add-ons
-                  </span>
-                )}
+      {/* Floating Bottom Sticky Action Bar - only shown when any plan is selected */}
+      {selectedPlan && selectedPlanInfo && (
+        <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-2xl py-3.5 px-4 z-50 animate-in fade-in slide-in-from-bottom duration-300">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                (planColorStyles[planColors[selectedPlan]] || planColorStyles.blue).iconBg
+              }`}>
+                {planIcons[selectedPlan]}
               </div>
-              <p className="text-xs text-slate-500 font-medium">
-                Total: <strong className="text-slate-900 font-bold">₹{selectedPlanTotalNumber}/month</strong> • 14-day free trial included
-              </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-black text-slate-900">
+                    {selectedPlanInfo.name} Plan
+                  </span>
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                    {selectedPlanInfo.subtitle}
+                  </span>
+                  {selectedPlanAddonsTotal > 0 && (
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                      +₹{selectedPlanAddonsTotal} Add-ons
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 font-medium">
+                  Total: <strong className="text-slate-900 font-bold">₹{selectedPlanTotalNumber}/month</strong> • 14-day free trial included
+                </p>
+              </div>
             </div>
-          </div>
 
-          <button
-            onClick={handleContinue}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm sm:text-base font-bold text-white bg-gradient-to-r from-rose-500 via-rose-600 to-pink-600 hover:from-rose-600 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all cursor-pointer"
-          >
-            <span>Continue with {selectedPlanInfo.name} (₹{selectedPlanTotalNumber}/mo)</span>
-            <FaArrowRight className="w-4 h-4" />
-          </button>
+            <button
+              onClick={handleContinue}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm sm:text-base font-bold text-white bg-gradient-to-r from-rose-500 via-rose-600 to-pink-600 hover:from-rose-600 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all cursor-pointer"
+            >
+              <span>Continue with {selectedPlanInfo.name} (₹{selectedPlanTotalNumber}/mo)</span>
+              <FaArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
