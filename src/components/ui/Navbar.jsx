@@ -65,9 +65,8 @@ const Navbar = () => {
 
         {/* Menu links */}
         <ul
-          className={`absolute md:static top-16 left-0 w-full md:w-auto bg-white dark:bg-zinc-800 md:bg-transparent md:flex md:items-center gap-2 lg:gap-4 px-7 py-5 md:py-0 md:px-0 shadow-md md:shadow-none transition-all duration-300 ease-in-out ${
-            isToggle ? "block" : "hidden md:flex"
-          }`}
+          className={`absolute md:static top-16 left-0 w-full md:w-auto bg-white dark:bg-zinc-800 md:bg-transparent md:flex md:items-center gap-2 lg:gap-4 px-7 py-5 md:py-0 md:px-0 shadow-md md:shadow-none transition-all duration-300 ease-in-out ${isToggle ? "block" : "hidden md:flex"
+            }`}
         >
           {links.map((item) => (
             <li key={item.path}>

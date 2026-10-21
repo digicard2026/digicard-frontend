@@ -4,7 +4,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import logoDark from "../../assets/images/logo-dark.png";
 import logoLight from "../../assets/images/logo-light.png";
-import revayahone from "../../assets/images/revayah-logo.png";
+import revayahone from "../../assets/images/reveyah-one.png";
 
 const Footer = () => {
   useEffect(() => {
@@ -16,7 +16,7 @@ const Footer = () => {
       <footer className="relative pt-20 pb-12 border-t border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
         <div className="absolute left-0 size-64 bg-pink-600 -top-16 opacity-10 blur-3xl"></div>
         <div className="container 2xl:max-w-[87.5rem] px-4 mx-auto">
-          
+
           {/* TOP NEWSLETTER SECTION */}
           <div className="relative z-10 grid grid-cols-12 gap-8 mb-16 pb-16 border-b border-slate-200 dark:border-zinc-800">
             <div className="col-span-12 lg:col-span-6" data-aos="fade-right">
@@ -27,7 +27,7 @@ const Footer = () => {
                 Tell us which describes you, and we'll get in touch with next steps.
               </p>
             </div>
-            
+
             <div className="col-span-12 lg:col-span-6" data-aos="fade-left">
               <form className="flex flex-col sm:flex-row gap-3">
                 <input
@@ -52,8 +52,8 @@ const Footer = () => {
             <div className="col-span-12 lg:col-span-4" data-aos="fade-up">
               <div className="mb-4">
                 <a href="https://revayahone.com" >
-                  <img src={revayahone} alt="" className="hidden h-8 dark:block" />
-                  <img src={revayahone} alt="" className="block h-8 dark:hidden" />
+                  <img src={revayahone} alt="Reva-Yah One" className="hidden h-8 dark:block brightness-0 invert" />
+                  <img src={revayahone} alt="Reva-Yah One" className="block h-8 dark:hidden" />
                 </a>
               </div>
               <p className="mb-6 text-slate-500 dark:text-zinc-400 text-sm leading-relaxed">
@@ -61,7 +61,7 @@ const Footer = () => {
                 industry, and we're ready to help you find the perfect one!
                 Just pick your industry or enter a keyword below.
               </p>
-              
+
               <ul className="flex items-center gap-3">
                 <li>
                   <a href="#" className="flex items-center justify-center size-10 transition-all duration-200 ease-linear border rounded-full text-slate-500 border-slate-200 dark:text-zinc-400 dark:border-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 hover:border-pink-600 dark:hover:border-pink-400">

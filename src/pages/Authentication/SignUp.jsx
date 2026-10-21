@@ -75,8 +75,10 @@ const Signup = () => {
           email: values.email,
           password: values.password,
           confirmPassword: values.confirmPassword,
-          createdBy: franchiseContext?.createdBy,
+          createdBy: franchiseContext?.createdBy || location.state?.createdBy,
           selectedPlan: location.state?.selectedPlan,
+          selectedAddons: location.state?.selectedAddons || [],
+          billingCycle: location.state?.billingCycle || 'monthly',
         }),
       });
 
@@ -106,7 +108,7 @@ const Signup = () => {
 
   const handleResendEmail = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/v1/user/resend-verification`, {
+      const res = await fetch(`${API_URL}/api/v1/user/resend-verification-email`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: userEmail }),
@@ -130,6 +132,9 @@ const Signup = () => {
       navigate("/create", {
         state: {
           selectedPlan: location.state.selectedPlan,
+          selectedAddons: location.state?.selectedAddons || [],
+          addonsObject: location.state?.addonsObject || {},
+          totalPrice: location.state?.totalPrice || null,
           userEmail,
           createdBy: location.state?.createdBy || "",
           fromPartnerDashboard: location.state?.fromPartnerDashboard || false,
