@@ -21,6 +21,29 @@ const ADDON_CATALOG = {
   docsmanager: { key: 'docsmanager', name: 'Docs Manager', monthlyPrice: 150, yearlyPrice: 1350, isOneTime: false }
 };
 
+// Helper to safely resolve addon object from either code ('gallery') or display name ('Photo Gallery')
+const getAddonInfo = (rawKey) => {
+  if (!rawKey) return null;
+  if (ADDON_CATALOG[rawKey]) return ADDON_CATALOG[rawKey];
+  const cleaned = String(rawKey).toLowerCase().replace(/[\s\-_/]/g, '');
+  if (ADDON_CATALOG[cleaned]) return ADDON_CATALOG[cleaned];
+  if (cleaned.includes('gallery') || cleaned.includes('photo')) return ADDON_CATALOG.gallery;
+  if (cleaned.includes('nfc')) return ADDON_CATALOG.nfccard;
+  if (cleaned.includes('docsbuilder') || cleaned.includes('docsbuild')) return ADDON_CATALOG.docsbuilder;
+  if (cleaned.includes('profile') && cleaned.includes('portfolio')) return ADDON_CATALOG.portfoliobuilder;
+  if (cleaned.includes('profilebuilder') || cleaned.includes('profile')) return ADDON_CATALOG.profilebuilder;
+  if (cleaned.includes('portfoliobuilder') || cleaned.includes('portfolio')) return ADDON_CATALOG.portfoliobuilder;
+  if (cleaned.includes('catalogbuilder') || cleaned.includes('catalog')) return ADDON_CATALOG.catalogbuilder;
+  if (cleaned.includes('brochurebuilder') || cleaned.includes('brochure')) return ADDON_CATALOG.brochurebuilder;
+  if (cleaned.includes('leadmanagement')) return ADDON_CATALOG.leadmanagement;
+  if (cleaned.includes('leadgen') || cleaned.includes('lead')) return ADDON_CATALOG.leadgen;
+  if (cleaned.includes('appointment')) return ADDON_CATALOG.appointmentbooking;
+  if (cleaned.includes('whatsapp')) return ADDON_CATALOG.whatsappintegration;
+  if (cleaned.includes('analytics')) return ADDON_CATALOG.analytics;
+  if (cleaned.includes('docsmanager')) return ADDON_CATALOG.docsmanager;
+  return null;
+};
+
 // Complete catalog of 10 plans matching the table image with cumulative feature inheritance
 const ALL_IMAGE_PLANS = [
   {
@@ -258,7 +281,7 @@ const SubscriptionPlans = () => {
     let total = 0;
     Object.keys(activeForPlan).forEach((key) => {
       if (activeForPlan[key]) {
-        const addon = ADDON_CATALOG[key];
+        const addon = getAddonInfo(key) || ADDON_CATALOG[key];
         if (addon) {
           total += billingCycle === 'yearly' ? addon.yearlyPrice : addon.monthlyPrice;
         }
@@ -317,6 +340,16 @@ const SubscriptionPlans = () => {
 
         const basePrice = billingCycle === 'yearly' ? staticPlan.yearlyPrice : staticPlan.monthlyPrice;
 
+        // Resolve add-ons: preserve all static plan addons, plus any custom ones from API
+        const apiAddonKeys = (matchedApi?.availableAddons && matchedApi.availableAddons.length > 0)
+          ? matchedApi.availableAddons.map(a => getAddonInfo(a)?.key || a)
+          : [];
+
+        const combinedAddons = Array.from(new Set([
+          ...(staticPlan.supportedAddonKeys || []),
+          ...apiAddonKeys
+        ]));
+
         return {
           _id: matchedApi?._id || `plan_${staticPlan.name}_${billingCycle}_${idx}`,
           name: staticPlan.name,
@@ -329,10 +362,35 @@ const SubscriptionPlans = () => {
           price: matchedApi?.price || basePrice,
           monthlyPrice: staticPlan.monthlyPrice,
           yearlyPrice: staticPlan.yearlyPrice,
-          features: staticPlan.features,
-          supportedAddonKeys: staticPlan.supportedAddonKeys
+          features: (matchedApi?.features && matchedApi.features.length > 0) ? matchedApi.features : staticPlan.features,
+          supportedAddonKeys: combinedAddons
         };
       });
+
+      // Include any additional dynamic plans from API that aren't in the static 10
+      if (Array.isArray(apiPlans)) {
+        apiPlans.forEach((ap, idx) => {
+          const alreadyIncluded = mergedPlans.some(p => p.name.toLowerCase() === (ap.name || '').toLowerCase());
+          if (!alreadyIncluded && ap.name) {
+            const dynamicAddons = (ap.availableAddons || []).map(a => getAddonInfo(a)?.key || a);
+            mergedPlans.push({
+              _id: ap._id || `plan_api_${idx}`,
+              name: ap.name,
+              displayName: ap.displayName || ap.name,
+              category: ap.category || 'individual',
+              categoryGroup: ap.categoryGroup || 'individual',
+              badge: ap.badge || null,
+              duration: ap.duration || billingCycle,
+              durationDays: ap.durationDays || (billingCycle === 'yearly' ? 365 : 30),
+              price: ap.price || ap.monthlyPrice || 1000,
+              monthlyPrice: ap.monthlyPrice || ap.price || 1000,
+              yearlyPrice: ap.yearlyPrice || (ap.price ? ap.price * 9 : 9000),
+              features: ap.features || [],
+              supportedAddonKeys: dynamicAddons
+            });
+          }
+        });
+      }
 
       setPlans(mergedPlans);
       setFilteredPlans(mergedPlans);
@@ -390,6 +448,30 @@ const SubscriptionPlans = () => {
     localStorage.setItem('selected_addons', JSON.stringify(selectedAddons));
     localStorage.setItem('selected_plan_price', finalPrice);
     localStorage.setItem('billing_cycle', billingCycle);
+
+    // Sync selected plan with backend immediately so dashboard reflects it
+    try {
+      const storedUserId = localStorage.getItem('user_id');
+      fetch(`${CHECK_URL}/update-user-plan`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          userId: storedUserId,
+          email: userEmail,
+          planName: plan.name,
+          planCategory: plan.category || plan.categoryGroup,
+          billingCycle,
+          price: finalPrice,
+          selectedAddons
+        })
+      }).catch(e => console.warn("Plan sync notice:", e));
+    } catch (e) {
+      console.warn("Plan sync notice:", e);
+    }
 
     // If Razorpay gateway is present and configured, initiate payment
     if (window.Razorpay && RAZORPAY_KEY_ID) {
@@ -469,7 +551,7 @@ const SubscriptionPlans = () => {
                   console.warn("Verification notice:", e);
                 } finally {
                   setIsProcessing(false);
-                  navigate('/create', {
+                  navigate('/card-dashbord', {
                     state: {
                       selectedPlan: plan.name,
                       selectedAddons,
@@ -501,8 +583,8 @@ const SubscriptionPlans = () => {
       }
     }
 
-    // Direct transition to Card Filling Area with plan & active add-ons enabled
-    navigate('/create', {
+    // Direct transition to dashboard with plan & active add-ons enabled
+    navigate('/card-dashbord', {
       state: {
         selectedPlan: plan.name,
         selectedAddons,
@@ -636,7 +718,7 @@ const SubscriptionPlans = () => {
       `}</style>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Top Navigation */}
         <div className="mb-6 flex items-center justify-between">
           <button
@@ -671,27 +753,24 @@ const SubscriptionPlans = () => {
               <button
                 type="button"
                 onClick={() => setBillingCycle('monthly')}
-                className={`py-2 px-5 text-xs font-semibold rounded-lg transition-all duration-200 ${
-                  billingCycle === 'monthly'
+                className={`py-2 px-5 text-xs font-semibold rounded-lg transition-all duration-200 ${billingCycle === 'monthly'
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
-                }`}
+                  }`}
               >
                 Monthly Billing
               </button>
               <button
                 type="button"
                 onClick={() => setBillingCycle('yearly')}
-                className={`py-2 px-5 text-xs font-semibold rounded-lg transition-all duration-200 flex items-center gap-1.5 ${
-                  billingCycle === 'yearly'
+                className={`py-2 px-5 text-xs font-semibold rounded-lg transition-all duration-200 flex items-center gap-1.5 ${billingCycle === 'yearly'
                     ? 'bg-blue-600 text-white shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
-                }`}
+                  }`}
               >
                 <span>Yearly Billing</span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                  billingCycle === 'yearly' ? 'bg-white text-blue-700' : 'bg-emerald-100 text-emerald-800'
-                }`}>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${billingCycle === 'yearly' ? 'bg-white text-blue-700' : 'bg-emerald-100 text-emerald-800'
+                  }`}>
                   Save ~25%
                 </span>
               </button>
@@ -705,11 +784,10 @@ const SubscriptionPlans = () => {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
-                    selectedCategory === cat.id
+                  className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${selectedCategory === cat.id
                       ? 'bg-blue-600 text-white shadow-sm'
                       : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
+                    }`}
                 >
                   {cat.label}
                 </button>
@@ -791,7 +869,7 @@ const SubscriptionPlans = () => {
 
                 {/* Card Body - SCROLLABLE CONTENT (Features + Selectable Addons) */}
                 <div className="px-6 py-4 flex-1 overflow-y-auto custom-card-scrollbar">
-                  
+
                   {/* Features List */}
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2.5">
                     Features Included:
@@ -828,24 +906,24 @@ const SubscriptionPlans = () => {
                       </div>
 
                       <div className="space-y-1.5">
-                        {plan.supportedAddonKeys.map((addonKey) => {
-                          const addon = ADDON_CATALOG[addonKey];
+                        {plan.supportedAddonKeys.map((rawKey) => {
+                          const addon = getAddonInfo(rawKey) || ADDON_CATALOG[rawKey];
                           if (!addon) return null;
+                          const addonKey = addon.key;
                           const isChecked = !!(selectedAddonsMap[plan.name]?.[addonKey]);
                           const costLabel = addon.isOneTime
                             ? `+₹${addon.monthlyPrice} one-time`
                             : billingCycle === 'yearly'
-                            ? `+₹${addon.yearlyPrice}/yr`
-                            : `+₹${addon.monthlyPrice}/mo`;
+                              ? `+₹${addon.yearlyPrice}/yr`
+                              : `+₹${addon.monthlyPrice}/mo`;
 
                           return (
                             <label
                               key={addonKey}
-                              className={`flex items-center justify-between p-2 rounded-lg border text-xs cursor-pointer transition-all ${
-                                isChecked
+                              className={`flex items-center justify-between p-2 rounded-lg border text-xs cursor-pointer transition-all ${isChecked
                                   ? 'bg-blue-50/80 border-blue-300 text-blue-900 font-medium'
                                   : 'bg-gray-50/60 border-gray-200 text-gray-700 hover:bg-gray-100'
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center gap-2">
                                 <input

@@ -4,11 +4,12 @@ import { DigitalCardPreview, Card, CardType } from "./DigitalCardPreview";
 import { SubscriptionBanner } from "./SubscriptionBanner";
 import { CreateCardButton } from "./CreateCardButton";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { CARD_URL, CHECK_URL } from "../../../utility/constants";
- 
+
 const Indexs = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState<string>("User");
@@ -21,97 +22,152 @@ const Indexs = () => {
     totalShares: 0,
     newContacts: 0,
   });
- 
+
   // ✅ GET USER INFO
   const getUserInfo = () => {
     const storedEmail = localStorage.getItem("user_email");
     const storedName = localStorage.getItem("user_name");
     const storedUserId = localStorage.getItem("user_id");
- 
+
     const userInfo = {
       email: storedEmail || null,
       name: storedName || storedEmail?.split("@")[0] || "User",
       userId: storedUserId || storedEmail,
       identifier: storedUserId || storedEmail || "unknown",
     };
- 
+
     setUserName(userInfo.name);
     return userInfo;
   };
- 
+
   // ✅ FETCH SUBSCRIPTION STATUS
   const fetchSubscriptionStatus = async () => {
     try {
+      const token = localStorage.getItem("token") || "";
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${CHECK_URL}/status`, {
         method: "GET",
+        headers,
         credentials: "include", // 🔥 Important: cookie-based auth
       });
- 
+
       const data = await response.json();
- 
+
       if (!response.ok) {
         throw new Error(data.message || "Subscription check failed");
       }
- 
+
+      const resolvedPlan = extractPlanType(data.data);
       const enhancedData = {
         ...data.data,
-        planType: extractPlanType(data.data),
-        price: data.data.price || getDefaultPriceForPlan(extractPlanType(data.data)),
-        maxCards: getMaxCardsForPlan(extractPlanType(data.data)),
+        planType: resolvedPlan,
+        price: data.data.price || getDefaultPriceForPlan(resolvedPlan),
+        maxCards: getMaxCardsForPlan(resolvedPlan),
       };
- 
+
       setSubscriptionData(enhancedData);
- 
+
       if (enhancedData.status === "expired" || enhancedData.daysLeft <= 0) {
         setShowSubscriptionModal(true);
       }
- 
+
       return enhancedData;
     } catch (error) {
-      console.error("Error fetching subscription status:", error);
+      console.warn("Could not fetch remote subscription status, checking local plan:", error);
+      
+      const storedPlan = localStorage.getItem("selected_plan");
+      const storedPrice = localStorage.getItem("selected_plan_price");
+      const resolvedPlan = storedPlan ? normalizePlanKey(storedPlan) : "Personal";
+
       const fallback = {
-        hasSubscription: false,
-        status: "inactive",
-        daysLeft: 0,
-        planType: "free",
-        maxCards: 5,
+        hasSubscription: Boolean(storedPlan),
+        status: "active",
+        daysLeft: 7,
+        planType: resolvedPlan,
+        planName: storedPlan || "Personal",
+        price: storedPrice ? `₹${storedPrice}/mo` : getDefaultPriceForPlan(resolvedPlan),
+        maxCards: getMaxCardsForPlan(resolvedPlan),
       };
       setSubscriptionData(fallback);
       return fallback;
     }
   };
- 
+
   // ✅ HELPER FUNCTIONS
-  const extractPlanType = (data: any): "free" | "Personal" | "Business" | "Business Premium" => {
-    if (!data || !data.hasSubscription || data.status === "expired" || data.status === "inactive") return "free";
-    if (data.planType) return data.planType;
-    if (data.planName) {
-      if (data.planName.includes("Business Premium")) return "Business Premium";
-      if (data.planName.includes("Business")) return "Business";
-      if (data.planName.includes("Personal")) return "Personal";
-      if (data.planName.includes("free")) return "free";
+  const normalizePlanKey = (raw: string = "") => {
+    if (!raw) return "Personal";
+    const cleaned = raw.replace(/[\s\-_]/g, '').toLowerCase();
+    if (cleaned === "free") return "free";
+    if (cleaned.includes("miniwebsite") || cleaned.includes("website")) return "MiniWebsite";
+    if (cleaned.includes("team")) return "Team";
+    if (cleaned.includes("corporate")) return "CorporateBusiness";
+    if (cleaned.includes("multiactivit") || cleaned.includes("multi")) return "EntrepreneurialsMulti";
+    if (cleaned.includes("entrepreneur")) return "Entrepreneurials";
+    if (cleaned.includes("professionalpro")) return "ProfessionalPro";
+    if (cleaned.includes("professional")) return "Professionals";
+    if (cleaned.includes("serviceprovider") || cleaned.includes("businesspremium") || cleaned.includes("premium")) return "BusinessPremium";
+    if (cleaned.includes("business")) return "Business";
+    if (cleaned.includes("personal") || cleaned.includes("individual")) return "Personal";
+    return "Personal";
+  };
+
+  const extractPlanType = (data: any): string => {
+    if (location.state?.selectedPlan) {
+      return normalizePlanKey(location.state.selectedPlan);
     }
+    if (!data) {
+      const stored = localStorage.getItem("selected_plan");
+      return stored ? normalizePlanKey(stored) : "Personal";
+    }
+    if (data.status === "expired") return "free";
+    if (data.planType && data.planType !== "free") return normalizePlanKey(data.planType);
+    if (data.planName && data.planName !== "free") return normalizePlanKey(data.planName);
+    if (data.planCategory && data.planCategory !== "free") return normalizePlanKey(data.planCategory);
+
+    const stored = localStorage.getItem("selected_plan");
+    if (stored && stored !== "free") return normalizePlanKey(stored);
+
     return data.hasSubscription ? "Personal" : "free";
   };
- 
+
   const getMaxCardsForPlan = (planType: string) => {
-    switch (planType) {
+    const key = normalizePlanKey(planType);
+    switch (key) {
       case "Personal": return 10;
       case "Business": return 50;
-      case "Business Premium": return 999;
+      case "BusinessPremium": return 100;
+      case "Professionals": return 150;
+      case "ProfessionalPro": return 200;
+      case "Entrepreneurials": return 250;
+      case "EntrepreneurialsMulti": return 300;
+      case "CorporateBusiness": return 500;
+      case "Team": return 999;
+      case "MiniWebsite": return 999;
       default: return 5;
     }
   };
- 
+
   const getDefaultPriceForPlan = (planType: string) => {
-    switch (planType) {
-      case "Personal": return "";
-      case "Business": return "";
-      case "Business Premium": return "";
+    const key = normalizePlanKey(planType);
+    switch (key) {
+      case "Personal": return "₹500/mo";
+      case "Business": return "₹800/mo";
+      case "BusinessPremium": return "₹1,200/mo";
+      case "Professionals": return "₹1,500/mo";
+      case "ProfessionalPro": return "₹1,800/mo";
+      case "Entrepreneurials": return "₹1,800/mo";
+      case "EntrepreneurialsMulti": return "₹2,200/mo";
+      case "CorporateBusiness": return "₹2,500/mo";
+      case "Team": return "₹2,800/mo";
+      case "MiniWebsite": return "₹3,000/mo";
       default: return "Free";
     }
   };
- 
+
   const getRemainingDays = () => {
     if (!subscriptionData?.endDate) return subscriptionData?.daysLeft || 0;
     const endDate = new Date(subscriptionData.endDate);
@@ -119,21 +175,29 @@ const Indexs = () => {
     const diffDays = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     return diffDays > 0 ? diffDays : 0;
   };
- 
+
   const isSubscriptionExpired = subscriptionData?.status === "expired" || subscriptionData?.daysLeft <= 0;
   const maxCards = subscriptionData?.maxCards || 5;
   const canCreateMoreCards = () => !isSubscriptionExpired && cards.length < maxCards;
   const isCardLocked = (cardIndex: number) => cardIndex >= maxCards;
- 
+
   const getGradientFromCardType = (cardType: CardType): Card["gradient"] => {
-    switch (cardType) {
-      case "Business Premium": return "purple";
+    const key = normalizePlanKey(String(cardType || ""));
+    switch (key) {
+      case "MiniWebsite": return "purple";
+      case "Team": return "purple";
+      case "CorporateBusiness": return "dark";
+      case "EntrepreneurialsMulti": return "coral";
+      case "Entrepreneurials": return "teal";
+      case "ProfessionalPro": return "coral";
+      case "Professionals": return "purple";
+      case "BusinessPremium": return "coral";
       case "Business": return "teal";
       case "Personal": return "blue";
-      default: return "teal";
+      default: return "blue";
     }
   };
- 
+
   // ✅ FETCH CARDS
   useEffect(() => {
     const fetchUserData = async () => {
@@ -142,16 +206,16 @@ const Indexs = () => {
         setLoading(false);
         return;
       }
- 
+
       try {
         setLoading(true);
         const subscription = await fetchSubscriptionStatus();
- 
+
         const response = await fetch(
           `${CARD_URL}/email/${encodeURIComponent(userInfo.email)}`,
           { method: "GET", credentials: "include" }
         );
- 
+
         if (!response.ok) {
           if (response.status === 404) {
             setCards([]);
@@ -159,28 +223,26 @@ const Indexs = () => {
           }
           throw new Error("Failed to fetch cards");
         }
- 
+
         const data = await response.json();
         const cardsArray = Array.isArray(data.cards) ? data.cards : data.data || [];
- 
+
         const userCards = cardsArray.filter((c: any) => (c.email || c.userEmail) === userInfo.email);
         setRawCardsArray(userCards);
- 
+
         const limitedCards = userCards.slice(0, subscription?.maxCards || 5);
- 
+
         const transformedCards: Card[] = limitedCards.map((card: any, index: number) => {
           const firstName = card.firstName || card.name?.split(" ")[0] || "";
           const lastName = card.lastName || card.name?.split(" ").slice(1).join(" ") || "";
           const fullName = `${firstName} ${lastName}`.trim() || "Unnamed Card";
- 
+
           const urlSlug = card.urlSlug || card.slug || card.customUrl || card.publicUrl || card._id || "";
- 
-          const cardType: CardType = card.cardType === "Business Premium"
-            ? "Business Premium"
-            : card.cardType === "Business"
-            ? "Business"
-            : "Personal";
- 
+
+          const cardType: CardType = card.cardType
+            ? normalizePlanKey(card.cardType)
+            : (subscription?.planType || "Personal");
+
           return {
             id: card._id || card.id || `card-${index}`,
             name: fullName,
@@ -198,9 +260,9 @@ const Indexs = () => {
             cardData: card,
           };
         });
- 
+
         setCards(transformedCards);
- 
+
         setStats({
           totalCards: transformedCards.length,
           totalViews: transformedCards.reduce((sum, c) => sum + c.views, 0),
@@ -214,10 +276,10 @@ const Indexs = () => {
         setLoading(false);
       }
     };
- 
+
     fetchUserData();
   }, []);
- 
+
   // ✅ HANDLERS
   const handleViewCard = (card: Card) => {
     if (isSubscriptionExpired) {
@@ -227,7 +289,7 @@ const Indexs = () => {
     if (card.urlSlug) window.open(`/preview/${card.urlSlug}`, "_blank");
     else alert("This card does not have a shareable URL yet.");
   };
- 
+
   const handleEditCard = (card: Card, index: number) => {
     if (isSubscriptionExpired || isCardLocked(index)) {
       setShowSubscriptionModal(true);
@@ -236,7 +298,7 @@ const Indexs = () => {
     const userEmail = localStorage.getItem("user_email");
     navigate("/create", { state: { userEmail, card: card.cardData } });
   };
- 
+
   const handleShareCard = (card: Card, index: number) => {
     if (isSubscriptionExpired || isCardLocked(index)) {
       setShowSubscriptionModal(true);
@@ -247,7 +309,7 @@ const Indexs = () => {
       navigator.clipboard.writeText(shareUrl).then(() => alert("Shareable URL copied!"));
     } else alert("This card does not have a shareable URL yet.");
   };
- 
+
   const handleCreateNew = () => {
     if (!canCreateMoreCards()) {
       setShowSubscriptionModal(true);
@@ -257,7 +319,7 @@ const Indexs = () => {
     const selectedPlan = subscriptionData?.planType || "free";
     navigate("/create", { state: { userEmail, selectedPlan } });
   };
- 
+
   const handleUpgradeSubscription = () => {
     setShowSubscriptionModal(false);
     navigate("/pricing", {
@@ -268,7 +330,7 @@ const Indexs = () => {
       },
     });
   };
- 
+
   // ✅ AUTH CHECK
   if (!loading && !localStorage.getItem("user_email")) {
     return (
@@ -289,7 +351,7 @@ const Indexs = () => {
       </div>
     );
   }
- 
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -305,7 +367,7 @@ const Indexs = () => {
       </div>
     );
   }
- 
+
   // ✅ RENDER DASHBOARD
   return (
     <div className="min-h-screen bg-background">
@@ -342,7 +404,7 @@ const Indexs = () => {
           </div>
         </div>
       )}
- 
+
       <main className="ml-2 p-8">
         {/* Welcome Message */}
         <header className="mb-8 animate-fade-in">
@@ -351,7 +413,7 @@ const Indexs = () => {
             Manage your digital business cards and track your networking success.
           </p>
         </header>
- 
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[
@@ -364,7 +426,7 @@ const Indexs = () => {
             </div>
           ))}
         </div>
- 
+
         {/* Subscription Banner */}
         <SubscriptionBanner
           subscriptionData={subscriptionData}
@@ -373,18 +435,18 @@ const Indexs = () => {
           userCards={rawCardsArray}
           onUpgrade={handleUpgradeSubscription}
         />
- 
+
         {/* Cards Section */}
         <section className={`${isSubscriptionExpired ? "opacity-50 pointer-events-none relative" : ""}`}>
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-bold text-foreground">Your Cards</h2>
               <p className="text-sm text-muted-foreground">
-                {/* {cards.length} of {maxCards} cards used • {subscriptionData?.planType || "Free"} Plan */}
+                {cards.length} of {maxCards} cards used • {subscriptionData?.planType || "Personal"} Plan
               </p>
             </div>
           </div>
- 
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <CreateCardButton
               onClick={handleCreateNew}
@@ -393,11 +455,11 @@ const Indexs = () => {
                 isSubscriptionExpired
                   ? "Upgrade to Create Card"
                   : !canCreateMoreCards()
-                  ? "Plan Limit Reached"
-                  : "Create New Card"
+                    ? "Plan Limit Reached"
+                    : "Create New Card"
               }
             />
- 
+
             {cards.map((card, index) => (
               <div key={card.id}>
                 {isCardLocked(index) ? (
@@ -406,7 +468,7 @@ const Indexs = () => {
                       <Lock className="w-5 h-5 text-red-500 mb-2" />
                       <p className="text-sm text-gray-700 text-center">Upgrade to unlock</p>
                     </div>
-                    <DigitalCardPreview card={card} onView={() => {}} onEdit={() => {}} onShare={() => {}} />
+                    <DigitalCardPreview card={card} onView={() => { }} onEdit={() => { }} onShare={() => { }} />
                   </div>
                 ) : (
                   <DigitalCardPreview
