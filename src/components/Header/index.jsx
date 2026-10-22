@@ -14,6 +14,11 @@ const Header = (props) => {
     if (path === '/franchise/dashboard') return 'Franchise Dashboard';
     if (path === '/partner/dashboard') return 'Partner Dashboard';
     if (path === '/card-dashbord') return 'Digital Cards';
+    if (path === '/cards') return 'My Cards';
+    if (path === '/analytics') return 'Analytics & Telemetry';
+    if (path === '/profile') return 'Account Profile';
+    if (path === '/settings') return 'Settings & Preferences';
+    if (path === '/support') return 'Help & Support';
     if (path.startsWith('/admin')) {
       const sub = path.replace('/admin-', '').replace('/', '');
       return sub.charAt(0).toUpperCase() + sub.slice(1);

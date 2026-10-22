@@ -76,6 +76,7 @@ import AdminDashBoard from './pages/Dashboard/AdminDashBoard';
 import AdminSignin from './pages/Authentication/AdminSignin';
 import ResumeBuilder from './pages/Revayah/ResumeBuilder';
 import PartnerOpportunities from './pages/Revayah/PartnerOpportunities';
+import ComingSoon from './pages/ComingSoon';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -625,6 +626,68 @@ function App() {
         />
         <Route path="/admin-dashbord" element={<Navigate to="/admin-dashboard" replace />} />
        <Route path="/signin/admin" element={<AdminSignin />} />
+
+        {/* Sidebar Navigation Coming Soon Pages */}
+        <Route
+          path="/cards"
+          element={
+            <DefaultLayout>
+              <PageTitle title="My Cards | DigiCard" />
+              <ComingSoon
+                feature="My Cards"
+                description="Manage, customize, and publish your digital business cards with QR code generators and NFC pairing."
+              />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <DefaultLayout>
+              <PageTitle title="Analytics | DigiCard" />
+              <ComingSoon
+                feature="Analytics & Performance"
+                description="Real-time telemetry, engagement metrics, contact downloads, and link interaction tracking."
+              />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <DefaultLayout>
+              <PageTitle title="Profile | DigiCard" />
+              <ComingSoon
+                feature="Account Profile"
+                description="Manage your personal profile, credentials, contact details, and security preferences."
+              />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <DefaultLayout>
+              <PageTitle title="Settings | DigiCard" />
+              <ComingSoon
+                feature="Settings & Preferences"
+                description="Configure notifications, team permissions, regional parameters, and API integrations."
+              />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <DefaultLayout>
+              <PageTitle title="Help & Support | DigiCard" />
+              <ComingSoon
+                feature="Help & Support"
+                description="Browse documentation, submit support tickets, and connect with priority customer assistance."
+              />
+            </DefaultLayout>
+          }
+        />
 
     </Routes>
 
