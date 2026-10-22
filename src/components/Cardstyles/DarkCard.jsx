@@ -214,39 +214,103 @@ const cardFieldsConfig = {
     name: 'BusinessPremium',
     description: 'Advanced features with interactive elements',
     allowed: [
-      // ALL Business fields (which includes all Personal fields)
-      'profilePhoto',         // Profile /PC/Logo
-      'firstName',            // Name / source name
-      'lastName',             // Name / source name  
-      'tagline',              // Tag line / Slogan
-      'profileVideo',         // Profile video
-      'aboutText',            // About my self/company/organisation
-      'phones',               // One-tap call, WhatsApp, email
-      'emails',               // One-tap call, WhatsApp, email
-      'websites',             // website/portfolio link
-      'addresses',            // Location [address]
-      'socialLinks',          // Social & Digital Hub
-      'dynamicQRCode',        // Dynamic QR code
-      'shareableUrl',         // Share
-      'nfcSettings',          // NFC card developer with Print
-      'downloads',            // Downloads
-      'videos',               // Videos
-      'companyName',          // Company name / Organisation
-      'businessHours',        // Business hours
-      'virtualNumber',        // Virtual no integration (Optional @m extra cost)
-      'services',             // Service/Provision
-      'servicesProducts',     // Brief about Product/Services (Individual Product display along with official)
-      'gallery',              // Product show case / Gallery/Portfolio
-      'catalog',              // Product/Catalog [PDF]
-      'productVideo',         // Product video
-      'testimonials',         // Testimonials
+      'profilePhoto', 'firstName', 'lastName', 'tagline', 'profileVideo', 'aboutText',
+      'phones', 'emails', 'websites', 'addresses', 'socialLinks', 'dynamicQRCode',
+      'shareableUrl', 'nfcSettings', 'downloads', 'videos', 'companyName', 'businessHours',
+      'virtualNumber', 'services', 'servicesProducts', 'gallery', 'catalog', 'productVideo',
+      'testimonials', 'interactiveElements', 'individualProductDisplay', 'clientList',
+      'businessCardInstagram', 'textbooks'
+    ]
+  },
 
-      // PLUS BusinessPremium-only fields from image
-      'interactiveElements',       // Interactive Elements: Call-to-Action, Live Chat, Appointment scheduler, Digital Payments, Lead form, Chat assistant
-      'individualProductDisplay',  // Individual Product display
-      'clientList',                // Testimonials / Client list
-      'businessCardInstagram',     // Business card/Instagram
-      'textbooks'                  // Textbooks
+  Professionals: {
+    name: 'Professionals',
+    description: 'Executive profile with credentials & rich add-on suite',
+    allowed: [
+      'profilePhoto', 'firstName', 'lastName', 'tagline', 'profileVideo', 'aboutText',
+      'phones', 'emails', 'websites', 'addresses', 'socialLinks', 'dynamicQRCode',
+      'shareableUrl', 'nfcSettings', 'downloads', 'videos', 'companyName', 'businessHours',
+      'virtualNumber', 'services', 'servicesProducts', 'gallery', 'catalog', 'productVideo',
+      'testimonials', 'interactiveElements', 'individualProductDisplay', 'clientList',
+      'businessCardInstagram', 'textbooks'
+    ]
+  },
+
+  ProfessionalPro: {
+    name: 'ProfessionalPro',
+    description: 'Specialized profile with certifications & consultation booking',
+    allowed: [
+      'profilePhoto', 'firstName', 'lastName', 'tagline', 'profileVideo', 'aboutText',
+      'phones', 'emails', 'websites', 'addresses', 'socialLinks', 'dynamicQRCode',
+      'shareableUrl', 'nfcSettings', 'downloads', 'videos', 'companyName', 'businessHours',
+      'virtualNumber', 'services', 'servicesProducts', 'gallery', 'catalog', 'productVideo',
+      'testimonials', 'interactiveElements', 'individualProductDisplay', 'clientList',
+      'businessCardInstagram', 'textbooks'
+    ]
+  },
+
+  Entrepreneurials: {
+    name: 'Entrepreneurials',
+    description: 'Entrepreneurs showcasing business details & services',
+    allowed: [
+      'profilePhoto', 'firstName', 'lastName', 'tagline', 'profileVideo', 'aboutText',
+      'phones', 'emails', 'websites', 'addresses', 'socialLinks', 'dynamicQRCode',
+      'shareableUrl', 'nfcSettings', 'downloads', 'videos', 'companyName', 'businessHours',
+      'virtualNumber', 'services', 'servicesProducts', 'gallery', 'catalog', 'productVideo',
+      'testimonials', 'interactiveElements', 'individualProductDisplay', 'clientList',
+      'businessCardInstagram', 'textbooks'
+    ]
+  },
+
+  EntrepreneurialsMulti: {
+    name: 'EntrepreneurialsMulti',
+    description: 'Multi-venture founders showcasing multiple companies & booking',
+    allowed: [
+      'profilePhoto', 'firstName', 'lastName', 'tagline', 'profileVideo', 'aboutText',
+      'phones', 'emails', 'websites', 'addresses', 'socialLinks', 'dynamicQRCode',
+      'shareableUrl', 'nfcSettings', 'downloads', 'videos', 'companyName', 'businessHours',
+      'virtualNumber', 'services', 'servicesProducts', 'gallery', 'catalog', 'productVideo',
+      'testimonials', 'interactiveElements', 'individualProductDisplay', 'clientList',
+      'businessCardInstagram', 'textbooks'
+    ]
+  },
+
+  CorporateBusiness: {
+    name: 'CorporateBusiness',
+    description: 'Corporate business presence with multi-location branches & directory',
+    allowed: [
+      'profilePhoto', 'firstName', 'lastName', 'tagline', 'profileVideo', 'aboutText',
+      'phones', 'emails', 'websites', 'addresses', 'socialLinks', 'dynamicQRCode',
+      'shareableUrl', 'nfcSettings', 'downloads', 'videos', 'companyName', 'businessHours',
+      'virtualNumber', 'services', 'servicesProducts', 'gallery', 'catalog', 'productVideo',
+      'testimonials', 'interactiveElements', 'individualProductDisplay', 'clientList',
+      'businessCardInstagram', 'textbooks'
+    ]
+  },
+
+  Team: {
+    name: 'Team',
+    description: 'Centralized team organization with sub-cards & team management',
+    allowed: [
+      'profilePhoto', 'firstName', 'lastName', 'tagline', 'profileVideo', 'aboutText',
+      'phones', 'emails', 'websites', 'addresses', 'socialLinks', 'dynamicQRCode',
+      'shareableUrl', 'nfcSettings', 'downloads', 'videos', 'companyName', 'businessHours',
+      'virtualNumber', 'services', 'servicesProducts', 'gallery', 'catalog', 'productVideo',
+      'testimonials', 'interactiveElements', 'individualProductDisplay', 'clientList',
+      'businessCardInstagram', 'textbooks'
+    ]
+  },
+
+  MiniWebsite: {
+    name: 'MiniWebsite',
+    description: 'Full-featured digital mini website with interactive catalogs & maps',
+    allowed: [
+      'profilePhoto', 'firstName', 'lastName', 'tagline', 'profileVideo', 'aboutText',
+      'phones', 'emails', 'websites', 'addresses', 'socialLinks', 'dynamicQRCode',
+      'shareableUrl', 'nfcSettings', 'downloads', 'videos', 'companyName', 'businessHours',
+      'virtualNumber', 'services', 'servicesProducts', 'gallery', 'catalog', 'productVideo',
+      'testimonials', 'interactiveElements', 'individualProductDisplay', 'clientList',
+      'businessCardInstagram', 'textbooks'
     ]
   }
 };
@@ -486,13 +550,23 @@ const DarkCard = ({ cardData = {} }) => {
     enableEmail: cardData?.enableEmail !== undefined ? cardData.enableEmail : true
   };
 
-  // Get current plan
-  const currentPlan = profileData.cardType || 'Personal';
+  // Get current plan with canonical resolution
+  const normalizePlanKey = (raw) => {
+    if (!raw) return 'Personal';
+    if (cardFieldsConfig[raw]) return raw;
+    const cleaned = String(raw).replace(/[\s\-_]/g, '').toLowerCase();
+    for (const key of Object.keys(cardFieldsConfig)) {
+      if (key.toLowerCase() === cleaned) return key;
+    }
+    return 'BusinessPremium';
+  };
+
+  const currentPlan = normalizePlanKey(profileData.cardType);
 
   // Helper to check if a field/feature is allowed for current plan
   const isFieldAllowed = (fieldName) => {
-    const planConfig = cardFieldsConfig[currentPlan];
-    if (!planConfig) return false;
+    const planConfig = cardFieldsConfig[currentPlan] || cardFieldsConfig['BusinessPremium'] || cardFieldsConfig['Personal'];
+    if (!planConfig) return true;
 
     return planConfig.allowed.includes(fieldName);
   };

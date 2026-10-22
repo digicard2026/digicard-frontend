@@ -224,10 +224,97 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
       showBusinessCardInstagram: true,
       showTextbooks: true,
       showChatAssistant: true
+    },
+    'Professionals': {
+      showBasicInfo: true, showAbout: true, showSocial: true, showContactIcons: true,
+      showEmail: true, showAddress: true, showWebsite: true, showTagline: true,
+      showCheckUsOut: true, showBrandLabel: true, showVideo: true, showGallery: true,
+      showServices: true, showTestimonials: true, showTeam: true, showBusinessHours: true,
+      showVirtualNumber: true, showCatalogPDF: true, showProductVideo: true, showVideos: true,
+      showMultipleEmails: true, showNFCCard: true, showDownloads: true, showInteractive: true,
+      showCustomFields: true, showQRCode: true, showOrganization: true, showServicesProducts: true,
+      showShareableUrl: true, showProductRangeDisplay: true, showBusinessCardInstagram: true,
+      showTextbooks: true, showChatAssistant: true
+    },
+    'ProfessionalPro': {
+      showBasicInfo: true, showAbout: true, showSocial: true, showContactIcons: true,
+      showEmail: true, showAddress: true, showWebsite: true, showTagline: true,
+      showCheckUsOut: true, showBrandLabel: true, showVideo: true, showGallery: true,
+      showServices: true, showTestimonials: true, showTeam: true, showBusinessHours: true,
+      showVirtualNumber: true, showCatalogPDF: true, showProductVideo: true, showVideos: true,
+      showMultipleEmails: true, showNFCCard: true, showDownloads: true, showInteractive: true,
+      showCustomFields: true, showQRCode: true, showOrganization: true, showServicesProducts: true,
+      showShareableUrl: true, showProductRangeDisplay: true, showBusinessCardInstagram: true,
+      showTextbooks: true, showChatAssistant: true
+    },
+    'Entrepreneurials': {
+      showBasicInfo: true, showAbout: true, showSocial: true, showContactIcons: true,
+      showEmail: true, showAddress: true, showWebsite: true, showTagline: true,
+      showCheckUsOut: true, showBrandLabel: true, showVideo: true, showGallery: true,
+      showServices: true, showTestimonials: true, showTeam: true, showBusinessHours: true,
+      showVirtualNumber: true, showCatalogPDF: true, showProductVideo: true, showVideos: true,
+      showMultipleEmails: true, showNFCCard: true, showDownloads: true, showInteractive: true,
+      showCustomFields: true, showQRCode: true, showOrganization: true, showServicesProducts: true,
+      showShareableUrl: true, showProductRangeDisplay: true, showBusinessCardInstagram: true,
+      showTextbooks: true, showChatAssistant: true
+    },
+    'EntrepreneurialsMulti': {
+      showBasicInfo: true, showAbout: true, showSocial: true, showContactIcons: true,
+      showEmail: true, showAddress: true, showWebsite: true, showTagline: true,
+      showCheckUsOut: true, showBrandLabel: true, showVideo: true, showGallery: true,
+      showServices: true, showTestimonials: true, showTeam: true, showBusinessHours: true,
+      showVirtualNumber: true, showCatalogPDF: true, showProductVideo: true, showVideos: true,
+      showMultipleEmails: true, showNFCCard: true, showDownloads: true, showInteractive: true,
+      showCustomFields: true, showQRCode: true, showOrganization: true, showServicesProducts: true,
+      showShareableUrl: true, showProductRangeDisplay: true, showBusinessCardInstagram: true,
+      showTextbooks: true, showChatAssistant: true
+    },
+    'CorporateBusiness': {
+      showBasicInfo: true, showAbout: true, showSocial: true, showContactIcons: true,
+      showEmail: true, showAddress: true, showWebsite: true, showTagline: true,
+      showCheckUsOut: true, showBrandLabel: true, showVideo: true, showGallery: true,
+      showServices: true, showTestimonials: true, showTeam: true, showBusinessHours: true,
+      showVirtualNumber: true, showCatalogPDF: true, showProductVideo: true, showVideos: true,
+      showMultipleEmails: true, showNFCCard: true, showDownloads: true, showInteractive: true,
+      showCustomFields: true, showQRCode: true, showOrganization: true, showServicesProducts: true,
+      showShareableUrl: true, showProductRangeDisplay: true, showBusinessCardInstagram: true,
+      showTextbooks: true, showChatAssistant: true
+    },
+    'Team': {
+      showBasicInfo: true, showAbout: true, showSocial: true, showContactIcons: true,
+      showEmail: true, showAddress: true, showWebsite: true, showTagline: true,
+      showCheckUsOut: true, showBrandLabel: true, showVideo: true, showGallery: true,
+      showServices: true, showTestimonials: true, showTeam: true, showBusinessHours: true,
+      showVirtualNumber: true, showCatalogPDF: true, showProductVideo: true, showVideos: true,
+      showMultipleEmails: true, showNFCCard: true, showDownloads: true, showInteractive: true,
+      showCustomFields: true, showQRCode: true, showOrganization: true, showServicesProducts: true,
+      showShareableUrl: true, showProductRangeDisplay: true, showBusinessCardInstagram: true,
+      showTextbooks: true, showChatAssistant: true
+    },
+    'MiniWebsite': {
+      showBasicInfo: true, showAbout: true, showSocial: true, showContactIcons: true,
+      showEmail: true, showAddress: true, showWebsite: true, showTagline: true,
+      showCheckUsOut: true, showBrandLabel: true, showVideo: true, showGallery: true,
+      showServices: true, showTestimonials: true, showTeam: true, showBusinessHours: true,
+      showVirtualNumber: true, showCatalogPDF: true, showProductVideo: true, showVideos: true,
+      showMultipleEmails: true, showNFCCard: true, showDownloads: true, showInteractive: true,
+      showCustomFields: true, showQRCode: true, showOrganization: true, showServicesProducts: true,
+      showShareableUrl: true, showProductRangeDisplay: true, showBusinessCardInstagram: true,
+      showTextbooks: true, showChatAssistant: true
     }
   };
   
-  const currentPlan = planConfig[plan] || planConfig['BusinessPremium'];
+  const normalizePlanKey = (raw) => {
+    if (!raw) return 'BusinessPremium';
+    if (planConfig[raw]) return raw;
+    const cleaned = String(raw).replace(/[\s\-_]/g, '').toLowerCase();
+    for (const key of Object.keys(planConfig)) {
+      if (key.toLowerCase() === cleaned) return key;
+    }
+    return 'BusinessPremium';
+  };
+
+  const currentPlan = planConfig[normalizePlanKey(plan)] || planConfig['BusinessPremium'];
   
   // Build profileData from cardData
   const profileData = {

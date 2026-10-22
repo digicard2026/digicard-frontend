@@ -69,6 +69,9 @@ const SignIn = () => {
         localStorage.setItem('user_id', data.user_id);
         localStorage.setItem('user_email', loginData.email);
         localStorage.setItem('user_role', data.role);
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
         
         // Navigate based on role
         setTimeout(() => {

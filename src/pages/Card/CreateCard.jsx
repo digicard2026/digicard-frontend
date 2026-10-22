@@ -6427,19 +6427,19 @@ const CreateCard = () => {
 
     // Add-on features (case-insensitive detection from state, props, or editingCard)
     addons: {
-      gallery: !!(addonsObjFromState.gallery || addonsObjFromState.photogallery || selectedAddonsFromState.some(a => ['gallery', 'photogallery'].includes(String(a).toLowerCase())) || editingCard?.addons?.gallery),
-      docsBuilder: !!(addonsObjFromState.docsBuilder || addonsObjFromState.docsbuilder || selectedAddonsFromState.some(a => ['docsbuilder', 'docs'].includes(String(a).toLowerCase())) || editingCard?.addons?.docsBuilder),
-      nfcCard: !!(addonsObjFromState.nfcCard || addonsObjFromState.nfccard || selectedAddonsFromState.some(a => ['nfccard', 'nfc'].includes(String(a).toLowerCase())) || editingCard?.addons?.nfcCard),
-      catalogBuilder: !!(addonsObjFromState.catalogBuilder || addonsObjFromState.catalogbuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'catalogbuilder') || editingCard?.addons?.catalogBuilder),
-      brochureBuilder: !!(addonsObjFromState.brochureBuilder || addonsObjFromState.brochurebuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'brochurebuilder') || editingCard?.addons?.brochureBuilder),
-      profileBuilder: !!(addonsObjFromState.profileBuilder || addonsObjFromState.profilebuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'profilebuilder') || editingCard?.addons?.profileBuilder),
-      portfolioBuilder: !!(addonsObjFromState.portfolioBuilder || addonsObjFromState.portfoliobuilder || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'portfoliobuilder') || editingCard?.addons?.portfolioBuilder),
-      leadGen: !!(addonsObjFromState.leadGen || addonsObjFromState.leadgen || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'leadgen') || editingCard?.addons?.leadGen),
-      leadManagement: !!(addonsObjFromState.leadManagement || addonsObjFromState.leadmanagement || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'leadmanagement') || editingCard?.addons?.leadManagement),
-      appointmentBooking: !!(addonsObjFromState.appointmentBooking || addonsObjFromState.appointmentbooking || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'appointmentbooking') || editingCard?.addons?.appointmentBooking),
-      whatsappIntegration: !!(addonsObjFromState.whatsappIntegration || addonsObjFromState.whatsappintegration || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'whatsappintegration') || editingCard?.addons?.whatsappIntegration),
-      analytics: !!(addonsObjFromState.analytics || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'analytics') || editingCard?.addons?.analytics),
-      docsManager: !!(addonsObjFromState.docsManager || addonsObjFromState.docsmanager || selectedAddonsFromState.some(a => String(a).toLowerCase() === 'docsmanager') || editingCard?.addons?.docsManager),
+      gallery: !!(addonsObjFromState.gallery || addonsObjFromState.photogallery || selectedAddonsFromState.some(a => ['gallery', 'photogallery'].includes(String(a).toLowerCase().replace(/[\s\-_]/g, ''))) || editingCard?.addons?.gallery),
+      docsBuilder: !!(addonsObjFromState.docsBuilder || addonsObjFromState.docsbuilder || selectedAddonsFromState.some(a => ['docsbuilder', 'docs', 'docsmanager'].includes(String(a).toLowerCase().replace(/[\s\-_]/g, ''))) || editingCard?.addons?.docsBuilder),
+      nfcCard: !!(addonsObjFromState.nfcCard || addonsObjFromState.nfccard || selectedAddonsFromState.some(a => ['nfccard', 'nfc', 'nfcsmartcard'].includes(String(a).toLowerCase().replace(/[\s\-_]/g, ''))) || editingCard?.addons?.nfcCard),
+      catalogBuilder: !!(addonsObjFromState.catalogBuilder || addonsObjFromState.catalogbuilder || selectedAddonsFromState.some(a => String(a).toLowerCase().replace(/[\s\-_]/g, '') === 'catalogbuilder') || editingCard?.addons?.catalogBuilder),
+      brochureBuilder: !!(addonsObjFromState.brochureBuilder || addonsObjFromState.brochurebuilder || selectedAddonsFromState.some(a => String(a).toLowerCase().replace(/[\s\-_]/g, '') === 'brochurebuilder') || editingCard?.addons?.brochureBuilder),
+      profileBuilder: !!(addonsObjFromState.profileBuilder || addonsObjFromState.profilebuilder || selectedAddonsFromState.some(a => String(a).toLowerCase().replace(/[\s\-_]/g, '') === 'profilebuilder') || editingCard?.addons?.profileBuilder),
+      portfolioBuilder: !!(addonsObjFromState.portfolioBuilder || addonsObjFromState.portfoliobuilder || selectedAddonsFromState.some(a => String(a).toLowerCase().replace(/[\s\-_]/g, '') === 'portfoliobuilder') || editingCard?.addons?.portfolioBuilder),
+      leadGen: !!(addonsObjFromState.leadGen || addonsObjFromState.leadgen || selectedAddonsFromState.some(a => String(a).toLowerCase().replace(/[\s\-_]/g, '') === 'leadgen') || editingCard?.addons?.leadGen),
+      leadManagement: !!(addonsObjFromState.leadManagement || addonsObjFromState.leadmanagement || selectedAddonsFromState.some(a => String(a).toLowerCase().replace(/[\s\-_]/g, '') === 'leadmanagement') || editingCard?.addons?.leadManagement),
+      appointmentBooking: !!(addonsObjFromState.appointmentBooking || addonsObjFromState.appointmentbooking || selectedAddonsFromState.some(a => String(a).toLowerCase().replace(/[\s\-_]/g, '') === 'appointmentbooking') || editingCard?.addons?.appointmentBooking),
+      whatsappIntegration: !!(addonsObjFromState.whatsappIntegration || addonsObjFromState.whatsappintegration || selectedAddonsFromState.some(a => String(a).toLowerCase().replace(/[\s\-_]/g, '') === 'whatsappintegration') || editingCard?.addons?.whatsappIntegration),
+      analytics: !!(addonsObjFromState.analytics || selectedAddonsFromState.some(a => String(a).toLowerCase().replace(/[\s\-_]/g, '') === 'analytics') || editingCard?.addons?.analytics),
+      docsManager: !!(addonsObjFromState.docsManager || addonsObjFromState.docsmanager || selectedAddonsFromState.some(a => String(a).toLowerCase().replace(/[\s\-_]/g, '') === 'docsmanager') || editingCard?.addons?.docsManager),
     },
 
     // Partner ID field
@@ -6857,44 +6857,58 @@ const CreateCard = () => {
     return `${FRONTEND_URL}/preview/${slug}`;
   };
 
-  // Warning Popup Component
-  const WarningPopup = () => {
-    if (!showWarning) return null;
+  // Close warning popup handler and focus back to the target field
+  const handleCloseWarning = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const currentMsg = (warningMessage || "").toLowerCase();
+    setShowWarning(false);
 
-    return (
-      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70 backdrop-blur-md">
-        <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center">
-              <span className="text-2xl mr-2">⚠️</span>
-              <h3 className="text-lg font-semibold text-slate-800">Required Field</h3>
-            </div>
-            <button
-              onClick={() => setShowWarning(false)}
-              className="text-slate-500 hover:text-slate-700 transition-colors duration-200 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100"
-            >
-              ×
-            </button>
-          </div>
+    // Switch to step 1 if the error is about profile fields
+    if (currentMsg.includes('first name') || currentMsg.includes('email') || currentMsg.includes('last name')) {
+      if (currentStep !== 1) {
+        setCurrentStep(1);
+      }
+    } else if (currentMsg.includes('design')) {
+      if (currentStep !== 5) {
+        setCurrentStep(5);
+      }
+    }
 
-          <div className="text-center py-4">
-            <p className="text-slate-700 text-lg leading-relaxed">
-              {warningMessage}
-            </p>
-          </div>
+    // Scroll and focus directly to the target input field
+    setTimeout(() => {
+      let targetInput = null;
+      if (currentMsg.includes('first name')) {
+        targetInput = document.querySelector('input[name="firstName"]');
+      } else if (currentMsg.includes('email')) {
+        targetInput = document.querySelector('input[name="email"]') || document.querySelector('input[type="email"]');
+      } else if (currentMsg.includes('last name')) {
+        targetInput = document.querySelector('input[name="lastName"]');
+      } else if (currentMsg.includes('design')) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
 
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={() => setShowWarning(false)}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 shadow-md"
-            >
-              I Understand
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+      if (targetInput) {
+        targetInput.focus();
+        targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 120);
   };
+
+  // Close warning popup on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && showWarning) {
+        handleCloseWarning(e);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showWarning, warningMessage, currentStep]);
+
 
   // Handle change for basic fields
   const handleChange = (e) => {
@@ -8287,10 +8301,15 @@ const CreateCard = () => {
 
         {/* Profile Video - Updated with upload options */}
         {isFieldVisible('profileVideo') && (
-          <div className="border border-slate-200 rounded-lg p-4">
-            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
-              <FaVideo className="w-5 h-5 text-blue-500 mr-2" />
+          <div className={`border rounded-lg p-4 ${hasActiveAddon('profilebuilder') ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200'}`}>
+            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+              <FaVideo className="w-5 h-5 text-blue-500 mr-1" />
               Profile Video
+              {hasActiveAddon('profilebuilder') && (
+                <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                  ✓ Profile Builder Add-On Active
+                </span>
+              )}
             </h4>
 
             {/* Upload Type Toggle */}
@@ -8668,8 +8687,15 @@ const CreateCard = () => {
 
         {/* Services & Products Overview */}
         {isFieldVisible('servicesProducts') && (
-          <div>
-            <label className="block text-slate-700 mb-1">Brief about Products/Services</label>
+          <div className={hasActiveAddon('portfoliobuilder') ? 'border border-purple-200 bg-purple-50/20 rounded-lg p-4' : ''}>
+            <div className="flex items-center gap-2 mb-1">
+              <label className="block text-slate-700 font-medium">Brief about Products/Services</label>
+              {hasActiveAddon('portfoliobuilder') && (
+                <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                  ✓ Portfolio Builder Add-On Active
+                </span>
+              )}
+            </div>
             <textarea
               name="servicesProducts"
               placeholder="Brief description of your services and products"
@@ -8698,8 +8724,15 @@ const CreateCard = () => {
 
         {/* Catalog - Updated with upload options */}
         {isFieldVisible('catalog') && (
-          <div>
-            <label className="block text-slate-700 mb-1">Product Catalog</label>
+          <div className={(hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder')) ? 'border border-purple-200 bg-purple-50/20 rounded-lg p-4' : ''}>
+            <div className="flex items-center gap-2 mb-2">
+              <label className="block text-slate-700 font-medium">Product Catalog & PDF</label>
+              {(hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder')) && (
+                <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                  ✓ Docs Builder Add-On Active
+                </span>
+              )}
+            </div>
             <div className="flex space-x-4 mb-4">
               <button
                 type="button"
@@ -8875,10 +8908,15 @@ const CreateCard = () => {
 
         {/* Product Video - Updated with upload options */}
         {isFieldVisible('productVideo') && (
-          <div className="border border-slate-200 rounded-lg p-4">
-            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
-              <FaVideo className="w-5 h-5 text-red-500 mr-2" />
+          <div className={`border rounded-lg p-4 ${hasActiveAddon('portfoliobuilder') ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200'}`}>
+            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+              <FaVideo className="w-5 h-5 text-red-500 mr-1" />
               Product/Service Video
+              {hasActiveAddon('portfoliobuilder') && (
+                <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                  ✓ Portfolio Builder Add-On Active
+                </span>
+              )}
             </h4>
 
             {/* Upload Type Toggle */}
@@ -10109,8 +10147,15 @@ const CreateCard = () => {
           <>
             {/* Testimonials */}
             {isFieldVisible('testimonials') && (
-              <div className="border border-slate-200 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-slate-800 mb-4">Testimonials & Client List</h4>
+              <div className={`border rounded-lg p-6 ${hasActiveAddon('portfoliobuilder') ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200'}`}>
+                <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                  Testimonials & Client List
+                  {hasActiveAddon('portfoliobuilder') && (
+                    <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                      ✓ Portfolio Builder Add-On Active
+                    </span>
+                  )}
+                </h4>
 
                 {formData.testimonials.map((testimonial, index) => (
                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
@@ -10503,8 +10548,15 @@ const CreateCard = () => {
 
             {/* Downloads - Updated with upload options */}
             {isFieldVisible('downloads') && (
-              <div className="border border-slate-200 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-slate-800 mb-4">Downloads</h4>
+              <div className={`border rounded-lg p-6 ${(hasActiveAddon('docsbuilder') || hasActiveAddon('docsmanager') || hasActiveAddon('catalogbuilder')) ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200'}`}>
+                <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                  Downloads & Document Center
+                  {(hasActiveAddon('docsbuilder') || hasActiveAddon('docsmanager') || hasActiveAddon('catalogbuilder')) && (
+                    <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                      ✓ Docs Builder Add-On Active
+                    </span>
+                  )}
+                </h4>
 
                 {formData.downloads.map((download, index) => (
                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
@@ -10692,8 +10744,15 @@ const CreateCard = () => {
 
             {/* Videos Section - Updated with upload options */}
             {isFieldVisible('videos') && (
-              <div className="border border-slate-200 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-slate-800 mb-4">Videos</h4>
+              <div className={`border rounded-lg p-6 ${hasActiveAddon('portfoliobuilder') ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200'}`}>
+                <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                  Videos Showcase
+                  {hasActiveAddon('portfoliobuilder') && (
+                    <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                      ✓ Portfolio Builder Add-On Active
+                    </span>
+                  )}
+                </h4>
 
                 {formData.videos.map((video, index) => (
                   <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
@@ -11057,10 +11116,15 @@ const CreateCard = () => {
 
             {/* NFC Settings */}
             {isFieldVisible('nfcSettings') && (
-              <div className="border border-slate-200 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                  <FaShieldAlt className="w-5 h-5 text-blue-500 mr-2" />
-                  NFC Settings
+              <div className={`border rounded-lg p-6 ${(hasActiveAddon('nfccard') || hasActiveAddon('nfc')) ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200'}`}>
+                <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                  <FaShieldAlt className="w-5 h-5 text-blue-500 mr-1" />
+                  NFC Smart Card Settings
+                  {(hasActiveAddon('nfccard') || hasActiveAddon('nfc')) && (
+                    <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                      ✓ NFC Smart Card Add-On Active
+                    </span>
+                  )}
                 </h4>
                 <div className="space-y-4">
                   <div className="flex items-center">
@@ -11393,7 +11457,50 @@ const CreateCard = () => {
 
   return (
     <div className="w-full max-w-8xl mx-auto p-3 md:p-6 pl-2 md:pl-4 ml-2">
-      <WarningPopup />
+      {/* Required Field Alert Modal (Rendered inline for reliable click handling) */}
+      {showWarning && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-md"
+          style={{ zIndex: 999999 }}
+          onClick={handleCloseWarning}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-100"
+            style={{ zIndex: 1000000 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center">
+                <span className="text-2xl mr-2">⚠️</span>
+                <h3 className="text-lg font-semibold text-slate-800">Required Field</h3>
+              </div>
+              <button
+                type="button"
+                onClick={handleCloseWarning}
+                className="text-slate-500 hover:text-slate-700 transition-colors duration-200 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="text-center py-4">
+              <p className="text-slate-700 text-lg leading-relaxed">
+                {warningMessage}
+              </p>
+            </div>
+
+            <div className="flex justify-center mt-4">
+              <button
+                type="button"
+                onClick={handleCloseWarning}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 shadow-md cursor-pointer"
+              >
+                I Understand
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Back to Dashboard Button */}
       <button
@@ -11423,6 +11530,62 @@ const CreateCard = () => {
         )}
 
         <ProgressSteps />
+
+        {/* Unlocked Add-ons Banner */}
+        {Object.values(formData?.addons || {}).some(Boolean) && (
+          <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 border border-purple-200 rounded-xl shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-purple-600 animate-pulse"></span>
+                <span className="text-sm font-semibold text-purple-900">
+                  Active Add-Ons Unlocked for your {formData.cardType} Plan:
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {(hasActiveAddon('gallery') || hasActiveAddon('photogallery')) && (
+                  <span className="text-xs bg-white text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200 shadow-xs flex items-center gap-1.5">
+                    <span>📸</span> Photo Gallery
+                  </span>
+                )}
+                {(hasActiveAddon('docsbuilder') || hasActiveAddon('docsmanager') || hasActiveAddon('catalogbuilder')) && (
+                  <span className="text-xs bg-white text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200 shadow-xs flex items-center gap-1.5">
+                    <span>📄</span> Docs Builder
+                  </span>
+                )}
+                {hasActiveAddon('profilebuilder') && (
+                  <span className="text-xs bg-white text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200 shadow-xs flex items-center gap-1.5">
+                    <span>👤</span> Profile Builder
+                  </span>
+                )}
+                {hasActiveAddon('portfoliobuilder') && (
+                  <span className="text-xs bg-white text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200 shadow-xs flex items-center gap-1.5">
+                    <span>💼</span> Portfolio Builder
+                  </span>
+                )}
+                {(hasActiveAddon('nfccard') || hasActiveAddon('nfc')) && (
+                  <span className="text-xs bg-white text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200 shadow-xs flex items-center gap-1.5">
+                    <span>💳</span> NFC Smart Card
+                  </span>
+                )}
+                {hasActiveAddon('whatsappintegration') && (
+                  <span className="text-xs bg-white text-green-700 font-semibold px-3 py-1 rounded-full border border-green-200 shadow-xs flex items-center gap-1.5">
+                    <span>💬</span> WhatsApp Live Chat
+                  </span>
+                )}
+                {hasActiveAddon('leadgen') && (
+                  <span className="text-xs bg-white text-blue-700 font-semibold px-3 py-1 rounded-full border border-blue-200 shadow-xs flex items-center gap-1.5">
+                    <span>🎯</span> Lead Generation
+                  </span>
+                )}
+                {hasActiveAddon('appointmentbooking') && (
+                  <span className="text-xs bg-white text-blue-700 font-semibold px-3 py-1 rounded-full border border-blue-200 shadow-xs flex items-center gap-1.5">
+                    <span>📅</span> Appointment Booking
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="mb-8 min-h-[400px]">
