@@ -897,32 +897,28 @@ const FranchiseDashboard = () => {
       )}
 
       {/* Top Header & Context */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-              <Sparkles className="w-3 h-3 text-blue-500" />
-              Regional Franchise Cockpit
-            </span>
-            <span className="text-xs text-slate-400">•</span>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              {franchiseInfo.businessType}
+          <div className="flex items-center gap-2.5 mb-1">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Franchise Dashboard
+            </h1>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800">
+              <Building className="w-3.5 h-3.5 text-blue-500" />
+              {franchiseInfo.PersonalName}
             </span>
           </div>
-          <h1 className="text-2xl lg:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            {franchiseInfo.PersonalName}
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-            Manage channel partners, monitor client acquisitions, and track regional operations.
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {franchiseInfo.businessType || 'Regional Operations'} • Member since {franchiseInfo.joinDate}
           </p>
         </div>
 
         {/* Action Center */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={fetchFranchiseData}
             title="Refresh dashboard data"
-            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-xs"
+            className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -931,11 +927,11 @@ const FranchiseDashboard = () => {
           <div className="relative">
             <button
               onClick={() => setShowAddDropdown(!showAddDropdown)}
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md"
+              className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 px-3.5 rounded-lg transition-all shadow-2xs hover:shadow-xs"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
               <span>Add New</span>
-              <ChevronDown className="w-4 h-4 ml-0.5 opacity-80" />
+              <ChevronDown className="w-3.5 h-3.5 opacity-80" />
             </button>
 
             {showAddDropdown && (
@@ -944,13 +940,13 @@ const FranchiseDashboard = () => {
                   className="fixed inset-0 z-10"
                   onClick={() => setShowAddDropdown(false)}
                 />
-                <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 z-20 py-1.5 animate-in fade-in slide-in-from-top-2">
+                <div className="absolute right-0 mt-1.5 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 z-20 py-1 animate-in fade-in slide-in-from-top-2">
                   <button
                     onClick={() => {
                       setShowAddDropdown(false);
                       setShowSignupModal(true);
                     }}
-                    className="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-3 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors"
+                    className="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors"
                   >
                     <UserPlus className="w-4 h-4 text-blue-600" />
                     <div>
@@ -963,7 +959,7 @@ const FranchiseDashboard = () => {
                       setShowAddDropdown(false);
                       setShowCustomerModal(true);
                     }}
-                    className="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-3 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors border-t border-slate-100 dark:border-slate-800"
+                    className="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2.5 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors border-t border-slate-100 dark:border-slate-800"
                   >
                     <UserCircle className="w-4 h-4 text-emerald-600" />
                     <div>
@@ -978,70 +974,69 @@ const FranchiseDashboard = () => {
         </div>
       </div>
 
-      {/* Franchise Identifier & Partner Recruitment Banner */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-        
-        {/* Franchise ID Card */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 lg:p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
-          <div className="min-w-0">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              Franchise ID
-            </span>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="font-mono text-sm lg:text-base font-bold text-slate-900 dark:text-white truncate">
-                {franchiseInfo.franchiseId || 'Not available'}
-              </span>
+      {/* Franchise Identifier & Partner Recruitment Card */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-2xs mb-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          
+          {/* Franchise Identifier */}
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <Building className="w-4 h-4" />
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">
-              Active since {franchiseInfo.joinDate}
-            </p>
-          </div>
-          <button
-            onClick={handleCopyFranchiseId}
-            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors shrink-0"
-            title="Copy Franchise User ID"
-          >
-            <Copy className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Quick Recruitment / Referral Link Card */}
-        <div className="lg:col-span-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 lg:p-5 text-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white">
-                Partner Recruitment
-              </span>
-              <span className="text-xs text-blue-100">Direct Invitation Link</span>
+            <div>
+              <div className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                Franchise Code
+              </div>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                  {franchiseInfo.franchiseId ? `FR-${franchiseInfo.franchiseId.slice(-8).toUpperCase()}` : 'N/A'}
+                </span>
+                <button
+                  onClick={handleCopyFranchiseId}
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  title="Copy full Franchise User ID"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
-            <p className="text-sm font-semibold text-white mt-1">
-              Invite prospective channel partners with automatic franchise attribution.
-            </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={handleCopyReferralLink}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-white text-blue-600 rounded-xl text-xs font-bold hover:bg-blue-50 transition-colors shadow-xs"
-            >
-              <Copy className="w-3.5 h-3.5" />
-              <span>Copy Invite</span>
-            </button>
-            <button
-              onClick={handleShareWhatsApp}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-500 text-white rounded-xl text-xs font-bold hover:bg-emerald-600 transition-colors shadow-xs"
-              title="Share on WhatsApp"
-            >
-              <Share2 className="w-3.5 h-3.5" />
-              <span>WhatsApp</span>
-            </button>
+          {/* Referral Link & Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 lg:border-l lg:border-slate-200/80 lg:dark:border-slate-800 lg:pl-6">
+            <div className="min-w-0">
+              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                Partner Invitation Link
+              </div>
+              <div className="font-mono text-xs text-slate-600 dark:text-slate-400 truncate max-w-sm mt-0.5">
+                {window.location.origin}/signup/partner?ref={franchiseInfo.franchiseId || ''}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={handleCopyReferralLink}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                <Copy className="w-3.5 h-3.5 text-slate-400" />
+                <span>Copy Link</span>
+              </button>
+              <button
+                onClick={handleShareWhatsApp}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors shadow-2xs"
+                title="Share on WhatsApp"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                <span>WhatsApp</span>
+              </button>
+            </div>
           </div>
+
         </div>
-
       </div>
 
       {/* KPI Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
           {
             title: "Total Channel Partners",
@@ -1049,23 +1044,23 @@ const FranchiseDashboard = () => {
             subtext: "Registered under franchise",
             icon: Users,
             color: "blue",
-            trend: "+2 this month"
+            badge: totalPartners > 0 ? `${totalPartners} partners` : "No partners yet"
           },
           {
             title: "Active Network",
             value: activePartners,
-            subtext: `${totalPartners ? Math.round((activePartners / totalPartners) * 100) : 0}% network activity`,
+            subtext: totalPartners > 0 ? `${Math.round((activePartners / totalPartners) * 100)}% activity` : "Network idle",
             icon: CheckCircle,
             color: "emerald",
-            trend: "Operational"
+            badge: activePartners > 0 ? "Operational" : "0 active"
           },
           {
             title: "Pending KYC / Approval",
             value: pendingPartners,
-            subtext: "Awaiting activation",
+            subtext: pendingPartners > 0 ? "Action required" : "All partners verified",
             icon: Clock,
             color: "amber",
-            trend: "Action needed"
+            badge: pendingPartners > 0 ? `${pendingPartners} pending` : "Clear"
           },
           {
             title: "Direct Customers",
@@ -1073,20 +1068,20 @@ const FranchiseDashboard = () => {
             subtext: "Digital card accounts",
             icon: ShoppingBag,
             color: "violet",
-            trend: "Attributed"
+            badge: totalCustomers > 0 ? `${totalCustomers} clients` : "0 clients"
           }
         ].map((stat, i) => {
           const Icon = stat.icon;
           return (
             <div
               key={i}
-              className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md transition-all duration-200"
+              className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-2xs hover:shadow-xs transition-all duration-200"
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   {stat.title}
                 </span>
-                <div className={`p-2 rounded-xl ${
+                <div className={`p-1.5 rounded-lg ${
                   stat.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400' :
                   stat.color === 'emerald' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400' :
                   stat.color === 'amber' ? 'bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400' :
@@ -1097,20 +1092,15 @@ const FranchiseDashboard = () => {
               </div>
 
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl lg:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                   {stat.value}
                 </span>
-                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                  stat.color === 'blue' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' :
-                  stat.color === 'emerald' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' :
-                  stat.color === 'amber' ? 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300' :
-                  'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-300'
-                }`}>
-                  {stat.trend}
+                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  {stat.badge}
                 </span>
               </div>
 
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                 {stat.subtext}
               </p>
             </div>
@@ -1119,28 +1109,30 @@ const FranchiseDashboard = () => {
       </div>
 
       {/* Tabs and Management Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs overflow-hidden">
         
         {/* Tab Header & Global Actions */}
-        <div className="px-6 pt-5 pb-4 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="px-5 pt-4 pb-3 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           
-          {/* Tab Navigation */}
-          <div className="flex items-center space-x-2">
+          {/* Underline Tabs */}
+          <div className="flex items-center space-x-6">
             <button
               onClick={() => {
                 setActiveTab('partners');
                 setStatusFilter('all');
               }}
-              className={`flex items-center gap-2 py-2 px-3.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 pb-2.5 text-xs font-semibold border-b-2 transition-all ${
                 activeTab === 'partners'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
               <span>Channel Partners</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                activeTab === 'partners' ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${
+                activeTab === 'partners'
+                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
+                  : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
               }`}>
                 {partners.length}
               </span>
@@ -1151,16 +1143,18 @@ const FranchiseDashboard = () => {
                 setActiveTab('customers');
                 setStatusFilter('all');
               }}
-              className={`flex items-center gap-2 py-2 px-3.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 pb-2.5 text-xs font-semibold border-b-2 transition-all ${
                 activeTab === 'customers'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
               }`}
             >
               <ShoppingBag className="w-3.5 h-3.5" />
-              <span>Customers</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                activeTab === 'customers' ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+              <span>Direct Customers</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${
+                activeTab === 'customers'
+                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
+                  : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
               }`}>
                 {customers.length}
               </span>
@@ -1168,7 +1162,7 @@ const FranchiseDashboard = () => {
           </div>
 
           {/* Table Tools: Search, Filter Pills & CSV Export */}
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
             
             {/* Search Input */}
             <div className="relative">
@@ -1178,7 +1172,7 @@ const FranchiseDashboard = () => {
                 placeholder={activeTab === 'partners' ? "Search partners..." : "Search customers..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 w-44 lg:w-56"
+                className="pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 w-44 lg:w-52"
               />
               {searchQuery && (
                 <button
@@ -1192,14 +1186,14 @@ const FranchiseDashboard = () => {
 
             {/* Status Filter Pills (Only for Partners tab) */}
             {activeTab === 'partners' && (
-              <div className="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+              <div className="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg">
                 {['all', 'active', 'pending'].map((s) => (
                   <button
                     key={s}
                     onClick={() => setStatusFilter(s)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold capitalize transition-colors ${
+                    className={`px-2 py-1 rounded-md text-[11px] font-semibold capitalize transition-colors ${
                       statusFilter === s
-                        ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                        ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
                         : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
                     }`}
                   >
@@ -1212,7 +1206,7 @@ const FranchiseDashboard = () => {
             {/* Export CSV Button */}
             <button
               onClick={handleExportCSV}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
               title="Download CSV report"
             >
               <Download className="w-3.5 h-3.5 text-slate-500" />

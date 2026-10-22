@@ -11,6 +11,9 @@ const Header = (props) => {
   const getBreadcrumbTitle = () => {
     const path = location.pathname;
     if (path === '/admin-dashboard') return 'Platform Dashboard';
+    if (path === '/franchise/dashboard') return 'Franchise Dashboard';
+    if (path === '/partner/dashboard') return 'Partner Dashboard';
+    if (path === '/card-dashbord') return 'Digital Cards';
     if (path.startsWith('/admin')) {
       const sub = path.replace('/admin-', '').replace('/', '');
       return sub.charAt(0).toUpperCase() + sub.slice(1);
