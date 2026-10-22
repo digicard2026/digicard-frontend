@@ -515,22 +515,29 @@ const AdminSignin = () => {
 
       localStorage.setItem('user_id', data.user_id);
       localStorage.setItem('user_email', values.email);
-      localStorage.setItem('token', data.token || '');
+      localStorage.setItem('user_role', data.role || '');
+      localStorage.setItem('role', data.role || '');
+      localStorage.setItem('user', JSON.stringify({ id: data.user_id, email: values.email, role: data.role }));
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
 
       dispatch(setRole(data.role || ''));
       setCookie('user_id', data.user_id, 7);
 
       setTimeout(() => {
-        if (data.registrationComplete) {
-          if (data.role === 'admin') {
-            navigate('/admin-dashboard');   // ✅ Admin redirect
-          } else {
-            navigate('/dashboard');
-          }
+        if (data.role === 'admin') {
+          navigate('/admin-dashboard');   // ✅ Admin redirect
+        } else if (data.role === 'franchise') {
+          navigate('/franchise/dashboard');
+        } else if (data.role === 'partner') {
+          navigate('/partner/dashboard');
+        } else if (data.registrationComplete) {
+          navigate('/card-dashbord');
         } else {
           navigate('/register');
         }
-      }, 1000);
+      }, 500);
 
     } else {
       setMessage({

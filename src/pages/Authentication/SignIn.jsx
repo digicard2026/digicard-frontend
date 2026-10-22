@@ -12,6 +12,7 @@ import Modern from "../../assets/images/tailwickComp/Modern";
 // Your blue services and utilities
 import { verifyUser, resendVerificationEmail } from "../../service/userApi";
 import { setRole } from "../../store/RoleStore/roleSlice";
+import { setCookie } from "../../utility/cookies";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -64,30 +65,43 @@ const SignIn = () => {
           successAlert.classList.remove('hidden');
         }
         
-        dispatch(setRole(data.role));
+        dispatch(setRole(data.role || ''));
         // Store user info in localStorage
         localStorage.setItem('user_id', data.user_id);
         localStorage.setItem('user_email', loginData.email);
-        localStorage.setItem('user_role', data.role);
+        localStorage.setItem('user_role', data.role || '');
+        localStorage.setItem('role', data.role || '');
+        localStorage.setItem('user', JSON.stringify({ id: data.user_id, email: loginData.email, role: data.role }));
         if (data.token) {
           localStorage.setItem('token', data.token);
+        }
+        setCookie('user_id', data.user_id, 7);
+
+        if (data.role === 'franchise') {
+          localStorage.setItem('franchise_user_id', data.user_id);
+        } else if (data.role === 'partner') {
+          localStorage.setItem('partner_user_id', data.user_id);
         }
         
         // Navigate based on role
         setTimeout(() => {
-          if (data.role === 'customer') {
+          if (data.role === 'franchise') {
+            navigate('/franchise/dashboard');
+          } else if (data.role === 'partner') {
+            navigate('/partner/dashboard');
+          } else if (data.role === 'admin') {
+            navigate('/admin-dashboard');
+          } else if (data.role === 'customer') {
             navigate('/card-dashbord', { 
               state: { 
                 userEmail: loginData.email
               } 
             });
-          } else if (data.role === 'admin') {
-            navigate('/admin-dashboard');
           } else {
             // Default navigation if role not specified
             navigate('/card-dashbord');
           }
-        }, 1000);
+        }, 500);
         
       } else {
         // Always show resend button on login failure

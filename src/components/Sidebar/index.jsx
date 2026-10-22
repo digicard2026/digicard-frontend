@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink as RouterNavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { CreditCard, Home, Settings, User, Zap, HelpCircle, Menu, X } from "lucide-react";
 
 // Tailwind CSS utility function
@@ -22,15 +23,6 @@ const NavLink = ({ to, className, activeClassName, pendingClassName, children, .
   );
 };
 
-// Navigation items
-const navItems = [
-  { title: "Dashboard", url: "/card-dashbord", icon: Home },
-  { title: "My Cards", url: "/cards", icon: CreditCard },
-  { title: "Analytics", url: "/analytics", icon: Zap },
-  { title: "Profile", url: "/profile", icon: User },
-  { title: "Settings", url: "/settings", icon: Settings },
-];
-
 const bottomItems = [
   { title: "Help & Support", url: "/support", icon: HelpCircle },
 ];
@@ -41,6 +33,30 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const { pathname } = location;
   const trigger = useRef(null);
   const sidebar = useRef(null);
+
+  const reduxRole = useSelector((state) => state.role?.role);
+  const userRole = reduxRole || localStorage.getItem('role') || localStorage.getItem('user_role') || '';
+
+  const getDashboardUrl = () => {
+    switch (userRole) {
+      case 'franchise':
+        return '/franchise/dashboard';
+      case 'partner':
+        return '/partner/dashboard';
+      case 'admin':
+        return '/admin-dashboard';
+      default:
+        return '/card-dashbord';
+    }
+  };
+
+  const navItems = [
+    { title: "Dashboard", url: getDashboardUrl(), icon: Home },
+    { title: "My Cards", url: "/cards", icon: CreditCard },
+    { title: "Analytics", url: "/analytics", icon: Zap },
+    { title: "Profile", url: "/profile", icon: User },
+    { title: "Settings", url: "/settings", icon: Settings },
+  ];
 
   // Toggle state
   const showText = Boolean(sidebarOpen);

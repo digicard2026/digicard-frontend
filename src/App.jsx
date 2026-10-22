@@ -572,24 +572,20 @@ function App() {
       <Route
         path="/franchise/dashboard"
         element={
-          <>
-            <PageTitle title="Dashboard" />
-            
-             <DefaultLayout><FranchiseDashboard/></DefaultLayout>
-
-          </>
+          <ProtectedRoute allowedRoles={['franchise', 'admin']}>
+            <PageTitle title="Franchise Dashboard | DigiCard" />
+            <DefaultLayout><FranchiseDashboard /></DefaultLayout>
+          </ProtectedRoute>
         }
       />
 
-        <Route
+      <Route
         path="/partner/dashboard"
         element={
-          <>
-            <PageTitle title="Dashboard" />
-            
-             <DefaultLayout><PartnerDashboard/></DefaultLayout>
-
-          </>
+          <ProtectedRoute allowedRoles={['partner', 'franchise', 'admin']}>
+            <PageTitle title="Partner Dashboard | DigiCard" />
+            <DefaultLayout><PartnerDashboard /></DefaultLayout>
+          </ProtectedRoute>
         }
       />
 
@@ -602,7 +598,15 @@ function App() {
     </>
   }
 />
-      <Route path="/card-dashbord" element={ <DefaultLayout> <CardDashbord /> </DefaultLayout> } />
+      <Route
+        path="/card-dashbord"
+        element={
+          <DefaultLayout>
+            <PageTitle title="Dashboard | DigiCard" />
+            <CardDashbord />
+          </DefaultLayout>
+        }
+      />
 
         <Route path="/pricing" element={ <DefaultLayout>  <SubscriptionPlans /> </DefaultLayout> } />
         <Route path="/signup/partner" element={<><PageTitle title="SignUp page" /><PartnerSignUp/> </> } />

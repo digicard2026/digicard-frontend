@@ -39,6 +39,15 @@ const PartnerDashboard = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
 
+  // Auth headers helper
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+  };
+
   // Fetch partner profile and customers
   const fetchPartnerAndCustomers = async () => {
     try {
@@ -50,10 +59,11 @@ const PartnerDashboard = () => {
         return;
       }
 
-      // Fetch partner profile by userId (adjust endpoint if your backend differs)
-      const partnerRes = await fetch(`${API_URL}/api/v1/franchise-partner/profile/${userId}`
-
-      );
+      // Fetch partner profile by userId
+      const partnerRes = await fetch(`${API_URL}/api/v1/franchise-partner/profile/${userId}`, {
+        credentials: 'include',
+        headers: getAuthHeaders()
+      });
       if (!partnerRes.ok) {
         throw new Error(`Partner profile fetch failed: ${partnerRes.status}`);
       }
@@ -80,8 +90,10 @@ const PartnerDashboard = () => {
       // Try fetch customers list using partner user id endpoint or fallback to partner.customers
       let customersList = [];
       // Preferred endpoint: returns { success, data: { customers: [...], total } }
-      const customersRes = await fetch(`${API_URL}/api/v1/franchise-partner/${partnerUserId}/customers`
-      );
+      const customersRes = await fetch(`${API_URL}/api/v1/franchise-partner/${partnerUserId}/customers`, {
+        credentials: 'include',
+        headers: getAuthHeaders()
+      });
       if (customersRes.ok) {
         const customersJson = await customersRes.json();
         customersList =
