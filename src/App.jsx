@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -608,7 +608,18 @@ function App() {
         <Route path="/signup/partner" element={<><PageTitle title="SignUp page" /><PartnerSignUp/> </> } />
            <Route path="/partner-registration" element={<PartnerRegistrationPage />} />
             <Route path="/franchise/signup" element={<SignupForm />} />
-       <Route path="/admin-dashbord" element={ <DefaultLayout> <AdminDashBoard /> </DefaultLayout> } />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <PageTitle title="Admin Dashboard | DigiCard" />
+              <DefaultLayout>
+                <AdminDashBoard />
+              </DefaultLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/admin-dashbord" element={<Navigate to="/admin-dashboard" replace />} />
        <Route path="/signin/admin" element={<AdminSignin />} />
 
     </Routes>

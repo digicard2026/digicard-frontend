@@ -523,7 +523,7 @@ const AdminSignin = () => {
       setTimeout(() => {
         if (data.registrationComplete) {
           if (data.role === 'admin') {
-            navigate('/admin-dashbord');   // ✅ Admin redirect
+            navigate('/admin-dashboard');   // ✅ Admin redirect
           } else {
             navigate('/dashboard');
           }

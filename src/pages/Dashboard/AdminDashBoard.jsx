@@ -2327,33 +2327,56 @@ const AdminDashboard = () => {
   // const API_BASE_URL = 'http://localhost:3000/api/v1/admin';
 
   // API Functions using fetch
+  const getAdminAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+  };
+
   const adminApi = {
     getDashboardStats: async () => {
-      const response = await fetch(`${ADMIN_URL}/dashboard-stats`);
+      const response = await fetch(`${ADMIN_URL}/dashboard-stats`, {
+        credentials: 'include',
+        headers: getAdminAuthHeaders()
+      });
       if (!response.ok) throw new Error('Failed to fetch dashboard stats');
       return response.json();
     },
 
     getFranchises: async () => {
-      const response = await fetch(`${ADMIN_URL}/franchises`);
+      const response = await fetch(`${ADMIN_URL}/franchises`, {
+        credentials: 'include',
+        headers: getAdminAuthHeaders()
+      });
       if (!response.ok) throw new Error('Failed to fetch franchises');
       return response.json();
     },
 
     getPartners: async () => {
-      const response = await fetch(`${ADMIN_URL}/partners`);
+      const response = await fetch(`${ADMIN_URL}/partners`, {
+        credentials: 'include',
+        headers: getAdminAuthHeaders()
+      });
       if (!response.ok) throw new Error('Failed to fetch partners');
       return response.json();
     },
 
     getCustomers: async () => {
-      const response = await fetch(`${ADMIN_URL}/customers`);
+      const response = await fetch(`${ADMIN_URL}/customers`, {
+        credentials: 'include',
+        headers: getAdminAuthHeaders()
+      });
       if (!response.ok) throw new Error('Failed to fetch customers');
       return response.json();
     },
 
     getRecentActivity: async () => {
-      const response = await fetch(`${ADMIN_URL}/recent-activity`);
+      const response = await fetch(`${ADMIN_URL}/recent-activity`, {
+        credentials: 'include',
+        headers: getAdminAuthHeaders()
+      });
       if (!response.ok) throw new Error('Failed to fetch recent activity');
       return response.json();
     },
