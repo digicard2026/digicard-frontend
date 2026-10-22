@@ -521,8 +521,8 @@ function App() {
         <Route path="/preview/:urlSlug" element={<PreviewCard />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/choose-plan" element={<PlanSelection />} />
-        {/* <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} /> */}
         <Route path="/signin/partner" element={<FranchiseSignIn />} />
+        <Route path="/signin/franchise" element={<FranchiseSignIn />} />
 
       {/* <Route path="/ui" element={<HHome/>} /> */}
      
