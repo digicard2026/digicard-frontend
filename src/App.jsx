@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -76,6 +76,7 @@ import AdminDashBoard from './pages/Dashboard/AdminDashBoard';
 import AdminSignin from './pages/Authentication/AdminSignin';
 import ResumeBuilder from './pages/Revayah/ResumeBuilder';
 import PartnerOpportunities from './pages/Revayah/PartnerOpportunities';
+import ComingSoon from './pages/ComingSoon';
 function App() {
   const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
@@ -520,8 +521,8 @@ function App() {
         <Route path="/preview/:urlSlug" element={<PreviewCard />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/choose-plan" element={<PlanSelection />} />
-        {/* <Route path="/card-dashbord" element={<DefaultLayout>< CardDashbord/></DefaultLayout>} /> */}
         <Route path="/signin/partner" element={<FranchiseSignIn />} />
+        <Route path="/signin/franchise" element={<FranchiseSignIn />} />
 
       {/* <Route path="/ui" element={<HHome/>} /> */}
      
@@ -572,24 +573,20 @@ function App() {
       <Route
         path="/franchise/dashboard"
         element={
-          <>
-            <PageTitle title="Dashboard" />
-            
-             <DefaultLayout><FranchiseDashboard/></DefaultLayout>
-
-          </>
+          <ProtectedRoute allowedRoles={['franchise', 'admin']}>
+            <PageTitle title="Franchise Dashboard | DigiCard" />
+            <DefaultLayout><FranchiseDashboard /></DefaultLayout>
+          </ProtectedRoute>
         }
       />
 
-        <Route
+      <Route
         path="/partner/dashboard"
         element={
-          <>
-            <PageTitle title="Dashboard" />
-            
-             <DefaultLayout><PartnerDashboard/></DefaultLayout>
-
-          </>
+          <ProtectedRoute allowedRoles={['partner', 'franchise', 'admin']}>
+            <PageTitle title="Partner Dashboard | DigiCard" />
+            <DefaultLayout><PartnerDashboard /></DefaultLayout>
+          </ProtectedRoute>
         }
       />
 
@@ -602,14 +599,95 @@ function App() {
     </>
   }
 />
-      <Route path="/card-dashbord" element={ <DefaultLayout> <CardDashbord /> </DefaultLayout> } />
+      <Route
+        path="/card-dashbord"
+        element={
+          <DefaultLayout>
+            <PageTitle title="Dashboard | DigiCard" />
+            <CardDashbord />
+          </DefaultLayout>
+        }
+      />
 
         <Route path="/pricing" element={ <DefaultLayout>  <SubscriptionPlans /> </DefaultLayout> } />
         <Route path="/signup/partner" element={<><PageTitle title="SignUp page" /><PartnerSignUp/> </> } />
            <Route path="/partner-registration" element={<PartnerRegistrationPage />} />
             <Route path="/franchise/signup" element={<SignupForm />} />
-       <Route path="/admin-dashbord" element={ <DefaultLayout> <AdminDashBoard /> </DefaultLayout> } />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <PageTitle title="Admin Dashboard | DigiCard" />
+              <DefaultLayout>
+                <AdminDashBoard />
+              </DefaultLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/admin-dashbord" element={<Navigate to="/admin-dashboard" replace />} />
        <Route path="/signin/admin" element={<AdminSignin />} />
+
+        {/* Sidebar Navigation Coming Soon Pages */}
+        <Route
+          path="/cards"
+          element={
+            <DefaultLayout>
+              <PageTitle title="My Cards | DigiCard" />
+              <ComingSoon
+                feature="My Cards"
+                description="Manage, customize, and publish your digital business cards with QR code generators and NFC pairing."
+              />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <DefaultLayout>
+              <PageTitle title="Analytics | DigiCard" />
+              <ComingSoon
+                feature="Analytics & Performance"
+                description="Real-time telemetry, engagement metrics, contact downloads, and link interaction tracking."
+              />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <DefaultLayout>
+              <PageTitle title="Profile | DigiCard" />
+              <ComingSoon
+                feature="Account Profile"
+                description="Manage your personal profile, credentials, contact details, and security preferences."
+              />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <DefaultLayout>
+              <PageTitle title="Settings | DigiCard" />
+              <ComingSoon
+                feature="Settings & Preferences"
+                description="Configure notifications, team permissions, regional parameters, and API integrations."
+              />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <DefaultLayout>
+              <PageTitle title="Help & Support | DigiCard" />
+              <ComingSoon
+                feature="Help & Support"
+                description="Browse documentation, submit support tickets, and connect with priority customer assistance."
+              />
+            </DefaultLayout>
+          }
+        />
 
     </Routes>
 

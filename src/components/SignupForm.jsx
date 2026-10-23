@@ -1817,19 +1817,20 @@ const SignupForm = ({
 
         const data = await res.json();
 
-        if (res.ok && data.success) {
+        if (res.ok && (data.success !== false)) {
           console.log('✅ Signup successful:', data);
+          const userObj = data.data || data.user || data;
           setUserEmail(values.email);
           setUserPassword(values.password); // Store password for display
           setSignupSuccess(true);
           setMessage({ 
-            text: 'User registered successfully. Please check your email to verify your account.', 
+            text: data.message || 'User registered successfully. Please check your email to verify your account.', 
             type: 'success' 
           });
           
           // Store user data temporarily for partner registration
-          if (data.data?._id) {
-            localStorage.setItem('pending_user_id', data.data._id);
+          if (userObj?._id) {
+            localStorage.setItem('pending_user_id', userObj._id);
             localStorage.setItem('pending_user_email', values.email);
             
             if (createdBy) {
@@ -1837,7 +1838,7 @@ const SignupForm = ({
             }
           }
           
-          if (onSuccess) onSuccess(data.data);
+          if (onSuccess) onSuccess(userObj);
           
         } else {
           setError(data.error || data.message || 'Failed to create account');

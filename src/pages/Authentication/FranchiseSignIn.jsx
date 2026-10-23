@@ -515,24 +515,35 @@ const FranchiseSignIn = () => {
 
           localStorage.setItem('user_id', data.user_id);
           localStorage.setItem('user_email', values.email);
-          localStorage.setItem('token', data.token || '');
-
-          dispatch(setRole(data.role || ''));
+          localStorage.setItem('user_role', data.role || '');
+          localStorage.setItem('role', data.role || '');
+          localStorage.setItem('user', JSON.stringify({ id: data.user_id, email: values.email, role: data.role }));
+          if (data.token) {
+            localStorage.setItem('token', data.token);
+          }
           setCookie('user_id', data.user_id, 7);
 
+          if (data.role === 'franchise') {
+            localStorage.setItem('franchise_user_id', data.user_id);
+          } else if (data.role === 'partner') {
+            localStorage.setItem('partner_user_id', data.user_id);
+          }
+
+          dispatch(setRole(data.role || ''));
+
           setTimeout(() => {
-            if (data.registrationComplete) {
-              if (data.role === 'franchise') {
-                navigate('/franchise/dashboard');
-              } else if (data.role === 'partner') {
-                navigate('/partner/dashboard');
-              } else {
-                navigate('/dashboard');
-              }
+            if (data.role === 'franchise') {
+              navigate('/franchise/dashboard');
+            } else if (data.role === 'partner') {
+              navigate('/partner/dashboard');
+            } else if (data.role === 'admin') {
+              navigate('/admin-dashboard');
+            } else if (data.registrationComplete) {
+              navigate('/card-dashbord');
             } else {
               navigate('/register');
             }
-          }, 1000);
+          }, 500);
 
         } else {
           // ❗ Always show resend button on login failure

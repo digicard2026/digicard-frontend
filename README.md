@@ -1,7 +1,20 @@
-# TailAdmin React - Free React Tailwind Admin Dashboard Template
+# DigiCard Frontend Web Application
 
-TailAdmin is a free and open-source admin dashboard template built on **React and Tailwind CSS**, providing developers with everything they need to create a comprehensive, data-driven back-end, 
-dashboard, or admin panel solution for upcoming web projects.
+Digital business card creation platform, franchise partner operations, and administrative dashboards built with React, Vite, Redux Toolkit, and Tailwind CSS.
+
+---
+
+## 🔑 Test Credentials & Role Portals
+
+| Role | Email | Password | Login Portal | Landing Dashboard | Description |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Admin** | `revayahone.admin@gmail.com` | `Admin@123` | [`/signin/admin`](http://localhost:5173/signin/admin) or [`/signin`](http://localhost:5173/signin) | [`/admin-dashboard`](http://localhost:5173/admin-dashboard) | Full platform administration, KYC verification, franchise management |
+| **Franchise** | `soumya123@gmail.com` | `Soumya123@` | [`/signin`](http://localhost:5173/signin) or [`/signin/partner`](http://localhost:5173/signin/partner) | [`/franchise/dashboard`](http://localhost:5173/franchise/dashboard) | Franchise dashboard, partner management, commission tracking |
+| **Franchise (Alt)** | `rahul123@gmail.com` | `Rahul123@` | [`/signin`](http://localhost:5173/signin) or [`/signin/partner`](http://localhost:5173/signin/partner) | [`/franchise/dashboard`](http://localhost:5173/franchise/dashboard) | Alternative active franchise account |
+| **Channel Partner** | `chiku123@gmail.com` | `Chiku123@` | [`/signin`](http://localhost:5173/signin) or [`/signin/partner`](http://localhost:5173/signin/partner) | [`/partner/dashboard`](http://localhost:5173/partner/dashboard) | Partner dashboard, customer attribution, referral tracking |
+| **Customer** | `raman123@gmail.com` | `Raman123@` | [`/signin`](http://localhost:5173/signin) | [`/card-dashbord`](http://localhost:5173/card-dashbord) | Digital card creator, analytics, subscriber dashboard |
+
+---
 
 [![tailwind react admin template](https://ucarecdn.com/d2a6daed-eb9c-4c2f-8a95-4419c450e23a/tailadminreact.jpg)](https://react-demo.tailadmin.com/)
 
