@@ -293,11 +293,13 @@ const PreviewCard = () => {
       <div className="hidden sm:block relative z-10 mt-6 text-center text-xs text-slate-500">
         <a
           href="/"
-          className="inline-flex items-center gap-1.5 hover:text-slate-300 transition-colors"
+          className="inline-flex items-center gap-2 hover:text-slate-300 transition-colors"
         >
           <span>Powered by</span>
           <strong className="text-slate-400 font-semibold">Revayah One</strong>
-          <span>• Smart Digital Identity Platform</span>
+          <span className="text-slate-600">•</span>
+          <span>Smart Digital Identity Platform</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-slate-400">v1.2</span>
         </a>
       </div>
 
