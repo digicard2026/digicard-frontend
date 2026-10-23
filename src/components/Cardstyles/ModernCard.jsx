@@ -189,7 +189,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
       showChatAssistant: false // Business Premium only
     },
     'BusinessPremium': {
-      // All features
+      // Basic & Service Provider features
       showBasicInfo: true,
       showAbout: true,
       showSocial: true,
@@ -200,30 +200,30 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
       showTagline: true,
       
       showCheckUsOut: true,
-      showBrandLabel: true,
-      showVideo: true,
-      showGallery: true,
+      showBrandLabel: false,
+      showVideo: false,
+      showGallery: Boolean(cardData?.addons?.gallery || cardData?.addons?.photogallery),
       showServices: true,
-      showTestimonials: true,
-      showTeam: true,
-      showBusinessHours: true, // BusinessPremium gets business hours
+      showTestimonials: false, // Plan 4 Professionals
+      showTeam: false, // Plan 9 Team
+      showBusinessHours: true, // Service hours
       showVirtualNumber: true,
-      showCatalogPDF: true,
-      showProductVideo: true,
-      showVideos: true,
+      showCatalogPDF: Boolean(cardData?.addons?.docsbuilder || cardData?.addons?.catalogbuilder || cardData?.addons?.brochurebuilder || cardData?.addons?.docsmanager),
+      showProductVideo: false,
+      showVideos: false, // Plan 4 Professionals
       showMultipleEmails: true,
-      showNFCCard: true,
-      showDownloads: true,
+      showNFCCard: Boolean(cardData?.addons?.nfccard || cardData?.addons?.nfc),
+      showDownloads: Boolean(cardData?.addons?.docsbuilder || cardData?.addons?.catalogbuilder || cardData?.addons?.brochurebuilder || cardData?.addons?.docsmanager),
       showInteractive: true,
       showCustomFields: true,
       showQRCode: true,
-      showOrganization: true,
+      showOrganization: false,
       showServicesProducts: true,
       showShareableUrl: true,
       showProductRangeDisplay: true,
-      showBusinessCardInstagram: true,
-      showTextbooks: true,
-      showChatAssistant: true
+      showBusinessCardInstagram: false,
+      showTextbooks: false,
+      showChatAssistant: false
     },
     'Professionals': {
       showBasicInfo: true, showAbout: true, showSocial: true, showContactIcons: true,
@@ -328,6 +328,9 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
     jobTitle: cardData?.jobTitle || "",
     companyName: cardData?.companyName || "",
     department: cardData?.department || "",
+    serviceArea: cardData?.serviceArea || "",
+    serviceAvailability: cardData?.serviceAvailability || "",
+    customerInquiry: cardData?.customerInquiry || { isEnabled: true, title: 'Request Service / Inquiry' },
     foundedName: cardData?.foundedName || "",
     organization: cardData?.organization || "",
     
@@ -1485,13 +1488,23 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                 >
                   {profileData.jobTitle}
                 </p>
-                {(profileData.companyName || profileData.department) && (
+                {profileData.serviceArea ? (
+                  <p className="mb-3 px-2 text-blue-600 font-medium text-xs tracking-wide flex items-center justify-center gap-1 flex-wrap">
+                    <FaMapMarkerAlt className="w-3 h-3 text-rose-500 shrink-0" />
+                    <span>Serving: {profileData.serviceArea}</span>
+                    {profileData.serviceAvailability && (
+                      <span className="ml-1 px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] border border-blue-200">
+                        {profileData.serviceAvailability}
+                      </span>
+                    )}
+                  </p>
+                ) : (profileData.companyName || profileData.department) ? (
                   <p 
                     className="mb-3 px-2 text-blue-600 font-medium text-xs tracking-wide"
                   >
                     {[profileData.department, profileData.companyName].filter(Boolean).join(" • ")}
                   </p>
-                )}
+                ) : null}
                 
                 {/* Location */}
                 {primaryAddress && primaryAddress.fullAddress && currentPlan.showAddress && (
@@ -2000,11 +2013,21 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                 <p style={{ fontSize: '16px', marginBottom: '4px', fontWeight: 400, letterSpacing: '0.1px', color: '#000000' }}>
                   {profileData.jobTitle}
                 </p>
-                {(profileData.companyName || profileData.department) && (
+                {profileData.serviceArea ? (
+                  <p className="mb-4 px-2 text-blue-600 font-medium text-xs tracking-wide flex items-center justify-center gap-1 flex-wrap">
+                    <FaMapMarkerAlt className="w-3 h-3 text-rose-500 shrink-0" />
+                    <span>Serving: {profileData.serviceArea}</span>
+                    {profileData.serviceAvailability && (
+                      <span className="ml-1 px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] border border-blue-200">
+                        {profileData.serviceAvailability}
+                      </span>
+                    )}
+                  </p>
+                ) : (profileData.companyName || profileData.department) ? (
                   <p className="mb-4 px-2 text-blue-600 font-medium text-xs tracking-wide">
                     {[profileData.department, profileData.companyName].filter(Boolean).join(" • ")}
                   </p>
-                )}
+                ) : null}
                 
                 {primaryAddress && primaryAddress.fullAddress && currentPlan.showAddress && (
                   <div className="flex items-center justify-center text-gray-500 mb-12 px-2" style={{ fontSize: '14px', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>

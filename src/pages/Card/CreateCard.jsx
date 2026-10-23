@@ -5860,6 +5860,11 @@ const fieldPlanMap = {
   'productVideo': professionalsAndAbove,
   'testimonials': professionalsAndAbove,
 
+  // Service Provider Fields (Plan 3 BusinessPremium and above)
+  'serviceArea': businessPremiumAndAbove,
+  'serviceAvailability': businessPremiumAndAbove,
+  'customerInquiry': businessPremiumAndAbove,
+
   // Advanced & Interactive fields (Cumulative from BusinessPremium upwards)
   'interactiveElements': businessPremiumAndAbove,
   'individualProductDisplay': businessPremiumAndAbove,
@@ -5939,6 +5944,9 @@ const cleanFormData = (data) => {
     ...(!isPersonal && data.companyLogo && { companyLogo: data.companyLogo }),
     ...(!isPersonal && data.logoSize && { logoSize: data.logoSize }),
     ...(!isPersonal && data.servicesProducts && { servicesProducts: data.servicesProducts }),
+    ...(!isPersonal && data.serviceArea && { serviceArea: data.serviceArea }),
+    ...(!isPersonal && data.serviceAvailability && { serviceAvailability: data.serviceAvailability }),
+    ...(!isPersonal && data.customerInquiry && { customerInquiry: data.customerInquiry }),
     ...(!isPersonal && data.brandLabel && { brandLabel: data.brandLabel }),
     ...(!isPersonal && data.productRangeDisplay && { productRangeDisplay: data.productRangeDisplay }),
     ...(!isPersonal && data.catalog && { catalog: data.catalog }),
@@ -6383,8 +6391,8 @@ const CreateCard = () => {
       return hasActiveAddon('gallery') || hasActiveAddon('photogallery');
     }
 
-    // 4. Plans where catalog/PDF/downloads is an Add-on for Personal and Business (only visible if Docs Builder addon selected):
-    if ((fieldName === 'catalog' || fieldName === 'catalogPDF' || fieldName === 'downloads') && ['Personal', 'Business'].includes(formData?.cardType)) {
+    // 4. Plans where catalog/PDF/downloads is an Add-on for Personal, Business, and BusinessPremium (only visible if Docs Builder addon selected):
+    if ((fieldName === 'catalog' || fieldName === 'catalogPDF' || fieldName === 'downloads') && ['Personal', 'Business', 'BusinessPremium'].includes(formData?.cardType)) {
       return hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder') || hasActiveAddon('brochurebuilder') || hasActiveAddon('docsmanager');
     }
 
@@ -6416,8 +6424,8 @@ const CreateCard = () => {
 
     const steps = [1]; // Step 1 is always available
 
-    // Check Step 2 (Employment Details for Business/Working Professionals)
-    const step2Fields = ['companyName', 'department', 'jobTitle', 'bio', 'companyLogo', 'logoSize', 'foundedName', 'organization', 'servicesProducts', 'brandLabel', 'catalog', 'businessHours', 'virtualNumber', 'catalogPDF'];
+    // Check Step 2 (Employment / Service Details)
+    const step2Fields = ['companyName', 'department', 'jobTitle', 'bio', 'companyLogo', 'logoSize', 'foundedName', 'organization', 'servicesProducts', 'serviceArea', 'serviceAvailability', 'brandLabel', 'catalog', 'businessHours', 'virtualNumber', 'catalogPDF'];
     if (isSectionVisible(step2Fields)) {
       steps.push(2);
     }
@@ -6425,8 +6433,8 @@ const CreateCard = () => {
     // Step 3 is always available (Contact details & Social Hub)
     steps.push(3);
 
-    // Check Step 4 (Features & Add-Ons - only shown if interactive/addon features are active)
-    const step4Fields = ['interactiveElements', 'testimonials', 'gallery', 'nfcSettings', 'downloads', 'videos', 'chatAssistant', 'liveChat'];
+    // Check Step 4 (Features & Add-Ons - only shown if interactive/addon/inquiry features are active)
+    const step4Fields = ['interactiveElements', 'customerInquiry', 'testimonials', 'gallery', 'nfcSettings', 'downloads', 'videos', 'chatAssistant', 'liveChat'];
     if (isSectionVisible(step4Fields)) {
       steps.push(4);
     }
@@ -6512,6 +6520,12 @@ const CreateCard = () => {
     companyLogo: null,
     logoSize: "medium",
     servicesProducts: "",
+    serviceArea: "",
+    serviceAvailability: "",
+    customerInquiry: {
+      isEnabled: true,
+      title: "Request a Service / Inquiry"
+    },
     brandLabel: "",
     productRangeDisplay: "grid",
     catalog: "",
@@ -7996,7 +8010,9 @@ const CreateCard = () => {
         interactiveElements: editingCard.interactiveElements || initialFormState.interactiveElements,
         downloads: editingCard.downloads || initialFormState.downloads,
         videos: editingCard.videos || initialFormState.videos,
-        businessHours: editingCard.businessHours || initialFormState.businessHours,
+        serviceArea: editingCard.serviceArea || initialFormState.serviceArea,
+        serviceAvailability: editingCard.serviceAvailability || initialFormState.serviceAvailability,
+        customerInquiry: editingCard.customerInquiry || initialFormState.customerInquiry,
         // Ensure design is set
         design: editingCard.design || "",
         // Ensure createdBy is set
@@ -8261,22 +8277,26 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Designation / Title for Personal (DI - INDIVIDUALS matches PDF A. DIGITAL IDENTITY) */}
-        {formData.cardType === 'Personal' && isFieldVisible('jobTitle') && (
+        {/* Designation / Title for Personal & Service Providers */}
+        {['Personal', 'BusinessPremium'].includes(formData.cardType) && isFieldVisible('jobTitle') && (
           <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-3 shadow-2xs">
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Designation / Professional Title
+              {formData.cardType === 'BusinessPremium' ? 'Service / Profession Title' : 'Designation / Professional Title'}
             </label>
             <input
               type="text"
               name="jobTitle"
-              placeholder="e.g. Software Engineer, Financial Consultant, Interior Designer"
+              placeholder={formData.cardType === 'BusinessPremium'
+                ? "e.g. Electrician, Wellness Consultant, Fitness Trainer, Home Care Specialist"
+                : "e.g. Software Engineer, Financial Consultant, Interior Designer"}
               value={formData.jobTitle || ""}
               onChange={handleChange}
               className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
             <p className="text-[11px] text-slate-400 dark:text-slate-500">
-              Appears prominently right beneath your name on your digital business card.
+              {formData.cardType === 'BusinessPremium'
+                ? 'Your core service trade or profession displayed prominently at the top of your card.'
+                : 'Appears prominently right beneath your name on your digital business card.'}
             </p>
           </div>
         )}
@@ -8510,15 +8530,23 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* About Text / Short Intro */}
+        {/* About Text / Short Intro / About The Services */}
         {isFieldVisible('aboutText') && (
           <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              {formData.cardType === 'Personal' ? 'Short Intro' : 'About Myself / Company / Organisation'}
+              {formData.cardType === 'Personal' 
+                ? 'Short Intro' 
+                : formData.cardType === 'BusinessPremium'
+                ? 'About The Services'
+                : 'About Myself / Company / Organisation'}
             </label>
             <textarea
               name="aboutText"
-              placeholder={formData.cardType === 'Personal' ? "Brief intro about yourself, your skills, or background..." : "Tell us about yourself, your company, or organization..."}
+              placeholder={formData.cardType === 'Personal' 
+                ? "Brief intro about yourself, your skills, or background..." 
+                : formData.cardType === 'BusinessPremium'
+                ? "Describe the core services you provide, your expertise, service guarantee, and client commitment..."
+                : "Tell us about yourself, your company, or organization..."}
               value={formData.aboutText || ""}
               onChange={(e) => {
                 const val = e.target.value;
@@ -8663,16 +8691,89 @@ const CreateCard = () => {
 
     return (
       <div className="space-y-6">
+        {/* Service Area (Plan 3: DI - Service Providers) */}
+        {isFieldVisible('serviceArea') && (
+          <div className="p-5 md:p-6 rounded-2xl border border-blue-200/70 dark:border-blue-900/40 bg-blue-50/20 dark:bg-blue-950/10 space-y-2 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                Service Area / Coverage Locations
+              </label>
+              <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-semibold px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
+                Plan 3 Feature
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              Areas, neighborhoods, or cities where you deliver your services.
+            </p>
+            <input
+              type="text"
+              name="serviceArea"
+              placeholder="e.g. South Mumbai & Bandra, Greater London, Pan-India (Remote)"
+              value={formData.serviceArea || ""}
+              onChange={handleChange}
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            />
+          </div>
+        )}
+
+        {/* Service Availability Mode (Plan 3: DI - Service Providers) */}
+        {isFieldVisible('serviceAvailability') && (
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-3 shadow-2xs">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+              Service Availability Mode
+            </label>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              Select how clients can access or book your service:
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { label: 'On-Site / Doorstep', value: 'On-Site' },
+                { label: 'In-Office / Shop', value: 'In-Office' },
+                { label: 'Remote / Online', value: 'Remote' },
+                { label: 'Emergency 24x7', value: '24x7 Emergency' }
+              ].map(mode => {
+                const isSelected = formData.serviceAvailability === mode.value;
+                return (
+                  <button
+                    key={mode.value}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, serviceAvailability: mode.value }))}
+                    className={`px-3 py-2 rounded-xl text-xs font-medium border text-center transition-all ${
+                      isSelected
+                        ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-xs'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 bg-white dark:bg-slate-900'
+                    }`}
+                  >
+                    {mode.label}
+                  </button>
+                );
+              })}
+            </div>
+            <input
+              type="text"
+              name="serviceAvailability"
+              placeholder="Or enter custom availability: e.g. By Prior Appointment Only"
+              value={formData.serviceAvailability || ""}
+              onChange={handleChange}
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all mt-1"
+            />
+          </div>
+        )}
+
         {/* Company Details */}
         {isFieldVisible('companyName') && (
           <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              {formData.cardType === 'Business' ? 'Name of the Company / Organisation' : 'Company Name / Organisation'}
+              {formData.cardType === 'Business' 
+                ? 'Name of the Company / Organisation' 
+                : formData.cardType === 'BusinessPremium'
+                ? 'Practice / Studio / Business Name (Optional)'
+                : 'Company Name / Organisation'}
             </label>
             <input
               type="text"
               name="companyName"
-              placeholder="e.g. Acme Corporation"
+              placeholder={formData.cardType === 'BusinessPremium' ? "e.g. Apex Wellness Studio, Elite Repairs" : "e.g. Acme Corporation"}
               value={formData.companyName || ""}
               onChange={handleChange}
               className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
@@ -9556,6 +9657,78 @@ const CreateCard = () => {
 
     return (
       <div className="space-y-6">
+        {/* Customer Inquiry Form Configuration (Plan 3: DI - Service Providers) */}
+        {isFieldVisible('customerInquiry') && (
+          <div className="p-5 md:p-6 rounded-2xl border border-blue-200/80 dark:border-blue-900/40 bg-blue-50/20 dark:bg-blue-950/10 space-y-4 shadow-2xs">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-sm">
+                  📋
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Customer Inquiry Form (Lead Funnel)
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Allows visitors on your card to select required service, preferred date & time, and send inquiry directly to your WhatsApp.
+                  </p>
+                </div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="customerInquiryEnabled"
+                  checked={formData.customerInquiry?.isEnabled !== false}
+                  onChange={(e) => {
+                    const updated = {
+                      ...formData,
+                      customerInquiry: {
+                        ...(formData.customerInquiry || {}),
+                        isEnabled: e.target.checked,
+                        title: formData.customerInquiry?.title || 'Request a Service / Inquiry'
+                      }
+                    };
+                    setFormData(updated);
+                    formDataRef.current = updated;
+                    setHasUnsavedChanges(true);
+                    setChangeCount(prev => prev + 1);
+                    autoSaveToLocalStorage(updated);
+                  }}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+
+            {formData.customerInquiry?.isEnabled !== false && (
+              <div className="pt-2 border-t border-blue-100 dark:border-blue-900/30">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Inquiry Button Title
+                </label>
+                <input
+                  type="text"
+                  value={formData.customerInquiry?.title || "Request a Service / Inquiry"}
+                  onChange={(e) => {
+                    const updated = {
+                      ...formData,
+                      customerInquiry: {
+                        ...(formData.customerInquiry || {}),
+                        title: e.target.value
+                      }
+                    };
+                    setFormData(updated);
+                    formDataRef.current = updated;
+                    setHasUnsavedChanges(true);
+                    setChangeCount(prev => prev + 1);
+                    autoSaveToLocalStorage(updated);
+                  }}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  placeholder="e.g. Book Service Now / Request a Quote"
+                />
+              </div>
+            )}
+          </div>
+        )}
         {/* Interactive Elements Section */}
         {isFieldVisible('interactiveElements') && (
           <>
@@ -11237,6 +11410,7 @@ const CreateCard = () => {
     const availableSteps = getAvailableSteps();
     const isPersonal = (formData?.cardType || 'Personal') === 'Personal';
     const isBusiness = formData?.cardType === 'Business';
+    const isServiceProviders = formData?.cardType === 'BusinessPremium';
     const stepLabels = isPersonal ? {
       1: 'DIGITAL IDENTITY',
       3: 'CONTACT & SOCIAL',
@@ -11246,6 +11420,12 @@ const CreateCard = () => {
       2: 'EMPLOYMENT',
       3: 'CONTACT & SOCIAL',
       4: 'ADD-ONS',
+      5: 'DESIGN'
+    } : isServiceProviders ? {
+      1: 'IDENTITY & PROFESSION',
+      2: 'SERVICES & AVAILABILITY',
+      3: 'CONTACT & LOCATION',
+      4: 'INQUIRY & ADD-ONS',
       5: 'DESIGN'
     } : {
       1: 'PROFILE',
@@ -11340,6 +11520,8 @@ const CreateCard = () => {
               ? 'DI - Individuals Plan' 
               : formData.cardType === 'Business' 
               ? 'DI - Working Professionals Plan' 
+              : formData.cardType === 'BusinessPremium'
+              ? 'DI - Service Providers Plan'
               : `${formData.cardType || 'Personal'} Plan`}
           </span>
           {editingCard && (

@@ -215,14 +215,14 @@ const cardFieldsConfig = {
 
   BusinessPremium: {
     name: 'BusinessPremium',
-    description: 'Advanced features with interactive elements',
+    description: 'DI - Service Providers (Individual / Trade practitioners)',
     allowed: [
-      'profilePhoto', 'firstName', 'lastName', 'tagline', 'profileVideo', 'aboutText',
+      'profilePhoto', 'firstName', 'lastName', 'prefix', 'suffix', 'jobTitle', 'tagline', 'aboutText',
       'phones', 'emails', 'websites', 'addresses', 'socialLinks', 'dynamicQRCode',
-      'shareableUrl', 'nfcSettings', 'downloads', 'videos', 'companyName', 'businessHours',
-      'virtualNumber', 'services', 'servicesProducts', 'gallery', 'catalog', 'productVideo',
-      'testimonials', 'interactiveElements', 'individualProductDisplay', 'clientList',
-      'businessCardInstagram', 'textbooks'
+      'shareableUrl', 'shareableLink', 'enableOneTapCall', 'enableWhatsApp', 'enableEmail',
+      'companyName', 'businessHours', 'virtualNumber', 'services', 'servicesProducts',
+      'serviceArea', 'serviceAvailability', 'customerInquiry',
+      'individualProductDisplay', 'brandLabel', 'productRangeDisplay'
     ]
   },
 
@@ -325,6 +325,13 @@ const DarkCard = ({ cardData = {} }) => {
   const [currentProductSlide, setCurrentProductSlide] = useState(0);
   const [currentTestimonialSlide, setCurrentTestimonialSlide] = useState(0);
   const [currentVideoSlide, setCurrentVideoSlide] = useState(0);
+  const [inquiryData, setInquiryData] = useState({
+    service: "",
+    date: "",
+    time: "",
+    contact: "",
+    submitted: false
+  });
 
   // 🔹 Scoped typography and container styling for DarkCard
   useEffect(() => {
@@ -432,6 +439,9 @@ const DarkCard = ({ cardData = {} }) => {
     jobTitle: cardData?.jobTitle || "",
     companyName: cardData?.companyName || "",
     department: cardData?.department || "",
+    serviceArea: cardData?.serviceArea || "",
+    serviceAvailability: cardData?.serviceAvailability || "",
+    customerInquiry: cardData?.customerInquiry || { isEnabled: true, title: 'Request Service / Inquiry' },
     foundedName: cardData?.foundedName || "",
     organization: cardData?.organization || "",
     tagline: cardData?.tagline || "",
@@ -867,11 +877,21 @@ const DarkCard = ({ cardData = {} }) => {
             <p className="text-lg text-white/90 font-[300] text-center font-orgon break-words w-full px-4 mt-0 mb-1">
               {profileData.jobTitle}
             </p>
-            {(profileData.companyName || profileData.department) && (
+            {profileData.serviceArea ? (
+              <p className="text-xs text-blue-300 font-[400] text-center font-ZonaPro break-words w-full px-4 mb-2 flex items-center justify-center gap-1.5 flex-wrap">
+                <FaMapMarkerAlt className="w-3 h-3 text-rose-400 shrink-0" />
+                <span>Serving: {profileData.serviceArea}</span>
+                {profileData.serviceAvailability && (
+                  <span className="ml-1 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-200 text-[10px] border border-blue-400/30">
+                    {profileData.serviceAvailability}
+                  </span>
+                )}
+              </p>
+            ) : (profileData.companyName || profileData.department) ? (
               <p className="text-sm text-blue-200/80 font-[400] text-center font-ZonaPro break-words w-full px-4 mb-2">
                 {[profileData.department, profileData.companyName].filter(Boolean).join(" • ")}
               </p>
-            )}
+            ) : null}
           </div>
 
           {/* Main Content Area - Reduced bottom padding */}
@@ -907,12 +927,16 @@ const DarkCard = ({ cardData = {} }) => {
               </div>
             )}
 
-            {/* About / Short Intro Section */}
+            {/* About / Short Intro / About The Services */}
             {profileData.aboutText && isFieldAllowed('aboutText') && (
               <div className="text-center mt-1">
                 <h3 className="text-base font-semibold text-white flex justify-center items-center mb-2 font-Zona">
                   <FaUserFriends className="w-4 h-4 text-blue-400 mr-2" />
-                  {profileData.cardType === 'Personal' ? 'Short Intro' : 'About'}
+                  {profileData.cardType === 'Personal' 
+                    ? 'Short Intro' 
+                    : profileData.cardType === 'BusinessPremium' 
+                    ? 'About The Services' 
+                    : 'About'}
                 </h3>
                 <p className="text-white/90 text-sm leading-relaxed mb-4 font-ZonaPro">
                   {profileData.aboutText}
@@ -1111,6 +1135,121 @@ const DarkCard = ({ cardData = {} }) => {
                       {getSocialIcon(social.platform)}
                     </div>
                   ))}
+              </div>
+            )}
+
+            {/* Plan 3: Customer Inquiry Lead Funnel (CUSTOMER INQUIRE) */}
+            {isFieldAllowed('customerInquiry') && profileData.customerInquiry?.isEnabled !== false && (
+              <div className="mt-4 mb-4 p-4 rounded-2xl bg-gradient-to-br from-blue-950/70 via-slate-900/90 to-blue-950/70 border border-blue-500/30 shadow-lg backdrop-blur-md">
+                <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                      <FaClipboardList className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-semibold text-white font-Zona tracking-wide">
+                        {profileData.customerInquiry?.title || "Request a Service"}
+                      </h4>
+                      <p className="text-[10px] text-white/60 font-ZonaPro">
+                        Direct Customer Inquiry
+                      </p>
+                    </div>
+                  </div>
+                  {profileData.serviceAvailability && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 font-medium">
+                      {profileData.serviceAvailability}
+                    </span>
+                  )}
+                </div>
+
+                {inquiryData.submitted ? (
+                  <div className="p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/30 text-center space-y-1">
+                    <p className="text-xs text-emerald-300 font-semibold">✓ Inquiry Transmitted</p>
+                    <p className="text-[11px] text-white/70">Connecting with {profileData.name} on WhatsApp...</p>
+                    <button
+                      type="button"
+                      onClick={() => setInquiryData(prev => ({ ...prev, submitted: false }))}
+                      className="text-[11px] text-blue-400 underline pt-1 block mx-auto"
+                    >
+                      Send another request
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5 text-left">
+                    <div>
+                      <label className="block text-[10px] font-medium text-white/70 mb-1 font-ZonaPro uppercase tracking-wider">
+                        Service Require <span className="text-rose-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={inquiryData.service}
+                        onChange={(e) => setInquiryData(prev => ({ ...prev, service: e.target.value }))}
+                        placeholder={profileData.jobTitle ? `e.g. Inquire about ${profileData.jobTitle}` : "e.g. Electrical Repair / Home Consultation"}
+                        className="w-full px-3 py-2 rounded-xl text-xs bg-black/40 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:border-blue-400"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-medium text-white/70 mb-1 font-ZonaPro uppercase tracking-wider">
+                          Preferred Date
+                        </label>
+                        <input
+                          type="date"
+                          value={inquiryData.date}
+                          onChange={(e) => setInquiryData(prev => ({ ...prev, date: e.target.value }))}
+                          className="w-full px-3 py-2 rounded-xl text-xs bg-black/40 border border-white/20 text-white focus:outline-none focus:border-blue-400"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-medium text-white/70 mb-1 font-ZonaPro uppercase tracking-wider">
+                          Preferred Time
+                        </label>
+                        <input
+                          type="time"
+                          value={inquiryData.time}
+                          onChange={(e) => setInquiryData(prev => ({ ...prev, time: e.target.value }))}
+                          className="w-full px-3 py-2 rounded-xl text-xs bg-black/40 border border-white/20 text-white focus:outline-none focus:border-blue-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-medium text-white/70 mb-1 font-ZonaPro uppercase tracking-wider">
+                        Customer Contact No <span className="text-rose-400">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        value={inquiryData.contact}
+                        onChange={(e) => setInquiryData(prev => ({ ...prev, contact: e.target.value }))}
+                        placeholder="Your mobile phone or WhatsApp number"
+                        className="w-full px-3 py-2 rounded-xl text-xs bg-black/40 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:border-blue-400"
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!inquiryData.service || !inquiryData.contact) {
+                          alert("Please fill in the required service and your contact phone number.");
+                          return;
+                        }
+                        const phone = (primaryPhone?.number || "").replace(/\D/g, "");
+                        const text = `Hello ${profileData.name}! I would like to request a service through your digital card:\n- Service: ${inquiryData.service}\n- Preferred Date: ${inquiryData.date || 'Flexible'}\n- Preferred Time: ${inquiryData.time || 'Flexible'}\n- Customer Contact: ${inquiryData.contact}`;
+                        setInquiryData(prev => ({ ...prev, submitted: true }));
+                        if (phone) {
+                          window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+                        } else if (profileData.email) {
+                          window.open(`mailto:${profileData.email}?subject=${encodeURIComponent(`Service Inquiry: ${inquiryData.service}`)}&body=${encodeURIComponent(text)}`);
+                        }
+                      }}
+                      className="w-full mt-2 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <FaWhatsapp className="w-4 h-4 text-emerald-300" />
+                      <span>Send Customer Inquiry</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
