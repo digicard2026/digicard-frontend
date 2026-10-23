@@ -260,18 +260,22 @@ const ModernCard2 = ({ cardData = {}, data = {} }) => {
             )}
 
             {/* Bio */}
-            {profile.bio && (
+            {profile.bio && (profile.cardType !== 'Personal' || !profile.aboutText) && profile.bio !== profile.aboutText && (
               <div className="mb-6 p-6 bg-gradient-to-r from-yellow-50 to-pink-50 rounded-2xl border-2 border-dashed border-pink-300 relative">
                  <div className="absolute -top-3 left-6 bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-xs font-bold">Bio</div>
                  <p className="text-slate-700 text-sm leading-relaxed text-center">{profile.bio}</p>
               </div>
             )}
 
-            {/* === ABOUT COMPANY === */}
+            {/* === ABOUT / SHORT INTRO === */}
             {profile.aboutText && (
                <div className="mb-8">
                  <h3 className="text-center text-sm font-bold text-slate-700 mb-4 flex items-center justify-center gap-2">
-                   <Building2 className="w-4 h-4 text-purple-500" /> About Company
+                   {profile.cardType === 'Personal' ? (
+                     <>About</>
+                   ) : (
+                     <><Building2 className="w-4 h-4 text-purple-500" /> About Company</>
+                   )}
                  </h3>
                  <div className="p-5 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border border-indigo-100">
                     <p className="text-slate-700 text-sm leading-relaxed text-center italic">"{profile.aboutText}"</p>

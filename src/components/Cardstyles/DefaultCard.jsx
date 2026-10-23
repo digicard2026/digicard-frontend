@@ -1076,8 +1076,8 @@ const DefaultCard = ({ cardData = {} }) => {
             </p>
           )}
 
-          {/* Bio - Only show if exists */}
-          {profileData.bio && (
+          {/* Bio - Only show if distinct and not a Personal card */}
+          {profileData.bio && profileData.cardType !== 'Personal' && profileData.bio !== profileData.aboutText && (
             <p className="text-gray-600 text-sm mt-4 leading-relaxed">
               {profileData.bio}
             </p>

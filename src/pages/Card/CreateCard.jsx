@@ -5927,7 +5927,7 @@ const cleanFormData = (data) => {
       }
     }),
     ...(data.tagline && { tagline: data.tagline }),
-    ...(data.aboutText && { aboutText: data.aboutText }),
+    ...((data.aboutText || (isPersonal && data.bio)) && { aboutText: data.aboutText || data.bio }),
     ...(!isPersonal && data.foundedName && { foundedName: data.foundedName }),
     ...(!isPersonal && data.organization && { organization: data.organization }),
 
@@ -5935,7 +5935,7 @@ const cleanFormData = (data) => {
     ...(!isPersonal && data.companyName && { companyName: data.companyName }),
     ...(!isPersonal && data.department && { department: data.department }),
     ...(data.jobTitle && { jobTitle: data.jobTitle }),
-    ...(data.bio && { bio: data.bio }),
+    ...((data.bio || (isPersonal && data.aboutText)) && { bio: data.bio || data.aboutText }),
     ...(!isPersonal && data.companyLogo && { companyLogo: data.companyLogo }),
     ...(!isPersonal && data.logoSize && { logoSize: data.logoSize }),
     ...(!isPersonal && data.servicesProducts && { servicesProducts: data.servicesProducts }),
@@ -6395,6 +6395,15 @@ const CreateCard = () => {
 
   // Get available steps based on plan
   const getAvailableSteps = () => {
+    const isPersonal = (formData?.cardType || 'Personal') === 'Personal';
+    if (isPersonal) {
+      // Plan 1: DI - INDIVIDUALS (Personal)
+      // Step 1: DIGITAL IDENTITY (Profile, Name, Designation/Title, Tagline, Short Intro, URL)
+      // Step 3: CONTACT & SOCIAL (One-Tap, Phones, Emails, Websites, Address, Map, Social Links, Dynamic QR)
+      // Step 5: DESIGN (Card Design & Live Preview)
+      return [1, 3, 5];
+    }
+
     const steps = [1]; // Step 1 is always available
 
     // Check Step 2
@@ -6818,7 +6827,8 @@ const CreateCard = () => {
         const draftInfo = localStorage.getItem(`card_draft_${email}`);
         if (draftInfo) {
           const info = JSON.parse(draftInfo);
-          if (info.step) setCurrentStep(info.step);
+          const availableSteps = getAvailableSteps();
+          if (info.step && availableSteps.includes(info.step)) setCurrentStep(info.step);
           if (info.createdBy) setPartnerId(info.createdBy);
         }
 
@@ -8108,12 +8118,19 @@ const CreateCard = () => {
       <div className="space-y-6">
         {/* Profile Photo */}
         {isFieldVisible('profilePhoto') && (
-          <div className="mb-6">
-            <label className="block font-semibold text-slate-700 mb-2">Profile Photo</label>
-            <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+          <div className="p-5 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-slate-50/50 dark:bg-slate-900/40">
+            <label className="block text-sm font-semibold text-slate-800 dark:text-white mb-1.5">
+              Profile Photo
+            </label>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+              Upload a professional portrait or logo for your digital card.
+            </p>
+            <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors bg-white dark:bg-boxdark">
               {formData.profilePhoto ? (
                 <div className="flex flex-col items-center">
-                  <img src={formData.profilePhoto} alt="Profile" className="w-24 h-24 rounded-full object-cover mb-2" />
+                  <div className="relative group">
+                    <img src={formData.profilePhoto} alt="Profile" className="w-24 h-24 rounded-full object-cover shadow-md ring-4 ring-blue-500/20" />
+                  </div>
                   <button
                     type="button"
                     onClick={() => {
@@ -8124,14 +8141,21 @@ const CreateCard = () => {
                       setChangeCount(prev => prev + 1);
                       autoSaveToLocalStorage(updatedData);
                     }}
-                    className="text-red-500 text-sm hover:text-red-700"
+                    className="mt-3 text-rose-500 hover:text-rose-700 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
                   >
+                    <FaTrash className="w-3 h-3" />
                     Remove Photo
                   </button>
                 </div>
               ) : (
-                <>
-                  <p className="text-slate-500 mb-2">Drag file here or upload file</p>
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
+                    <FaCloudUploadAlt className="w-6 h-6" />
+                  </div>
+                  <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    Click to upload or drag & drop photo
+                  </p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mb-3">PNG, JPG, WEBP up to 5MB</p>
                   <input
                     type="file"
                     accept="image/*"
@@ -8141,87 +8165,117 @@ const CreateCard = () => {
                   />
                   <label
                     htmlFor="profilePhoto"
-                    className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl cursor-pointer shadow-xs transition-colors"
                   >
-                    Upload Photo
+                    Select Photo
                   </label>
-                </>
+                </div>
               )}
             </div>
           </div>
         )}
 
-        {/* Personal Info */}
+        {/* Personal Information Card */}
         {(isFieldVisible('prefix') || isFieldVisible('firstName') || isFieldVisible('lastName') || isFieldVisible('suffix')) && (
-          <>
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <span className="w-1.5 h-3.5 bg-blue-600 rounded-full"></span>
+              Personal Information
+            </h4>
+
             {isFieldVisible('prefix') && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 mb-1">Prefix</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Prefix / Title</label>
                   <select
                     name="prefix"
                     value={formData.prefix || ""}
                     onChange={handleChange}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   >
-                    <option value="">Select</option>
+                    <option value="">None / Select</option>
                     <option value="Mr.">Mr.</option>
                     <option value="Ms.">Ms.</option>
+                    <option value="Mrs.">Mrs.</option>
                     <option value="Dr.">Dr.</option>
                     <option value="Prof.">Prof.</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 mb-1">Suffix</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Suffix</label>
                   <input
                     type="text"
                     name="suffix"
-                    placeholder="e.g., Jr., Sr., PhD"
+                    placeholder="e.g., Jr., PhD, MBA"
                     value={formData.suffix || ""}
                     onChange={handleChange}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
                 </div>
               </div>
             )}
 
             {isFieldVisible('firstName') && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 mb-1">First Name *</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    First Name <span className="text-rose-500">*</span>
+                  </label>
                   <input
                     type="text"
                     name="firstName"
-                    placeholder="First name"
+                    placeholder="e.g. John"
                     value={formData.firstName || ""}
                     onChange={handleChange}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     required
                   />
                 </div>
 
                 {isFieldVisible('lastName') && (
                   <div>
-                    <label className="block text-slate-700 mb-1">Last Name</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Last Name</label>
                     <input
                       type="text"
                       name="lastName"
-                      placeholder="Last name"
+                      placeholder="e.g. Doe"
                       value={formData.lastName || ""}
                       onChange={handleChange}
-                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     />
                   </div>
                 )}
               </div>
             )}
-          </>
+          </div>
         )}
 
-        {/* Email Field */}
-        <div>
-          <label className="block text-slate-700 mb-1">Email Address *</label>
+        {/* Designation / Title for Personal (DI - INDIVIDUALS matches PDF A. DIGITAL IDENTITY) */}
+        {formData.cardType === 'Personal' && isFieldVisible('jobTitle') && (
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-3 shadow-2xs">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Designation / Professional Title
+            </label>
+            <input
+              type="text"
+              name="jobTitle"
+              placeholder="e.g. Software Engineer, Financial Consultant, Interior Designer"
+              value={formData.jobTitle || ""}
+              onChange={handleChange}
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            />
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">
+              Appears prominently right beneath your name on your digital business card.
+            </p>
+          </div>
+        )}
+
+        {/* Email Field Card */}
+        <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-3 shadow-2xs">
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            Primary Email Address <span className="text-rose-500">*</span>
+          </label>
           <input
             type="email"
             name="email"
@@ -8229,55 +8283,53 @@ const CreateCard = () => {
             required
             value={formData.email || ""}
             onChange={handleEmailChange}
-            className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-gray-50"
-            readOnly={editingCard} // Make email read-only when editing
+            className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-slate-50 dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-not-allowed"
+            readOnly={editingCard}
           />
           {userEmailFromSignIn && (
-            <p className="text-green-600 text-sm mt-1">✓ Email auto-filled from your account</p>
+            <p className="text-emerald-600 dark:text-emerald-400 text-xs flex items-center gap-1">
+              <FaCheck className="w-3 h-3" /> Auto-filled from your authenticated account
+            </p>
           )}
           {editingCard && (
-            <p className="text-blue-600 text-sm mt-1">Email cannot be changed when editing</p>
+            <p className="text-blue-600 dark:text-blue-400 text-xs">Primary email is tied to card ownership and cannot be changed.</p>
           )}
         </div>
 
         {/* Additional Emails */}
         {isFieldVisible('emails') && (
-          <div className="border border-slate-200 rounded-lg p-4">
-            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
-              <FaEnvelope className="w-5 h-5 text-blue-500 mr-2" />
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <FaEnvelope className="w-4 h-4 text-blue-500" />
               Additional Email Addresses
             </h4>
             {(formData.emails || []).map((email, index) => (
-              <div key={index} className="flex gap-2 mb-2">
+              <div key={index} className="flex gap-2">
                 <select
                   value={email.label || "work"}
                   onChange={(e) => handleArrayFieldChange("emails", index, "label", e.target.value)}
-                  className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
                   <option value="work">Work</option>
                   <option value="personal">Personal</option>
                   <option value="other">Other</option>
-                  <option value="executive">Executive</option>
-                  <option value="primary">Primary</option>
-                  <option value="secondary">Secondary</option>
                   <option value="sales">Sales</option>
                   <option value="support">Support</option>
-                  <option value="billing">Billing</option>
                 </select>
                 <input
                   type="email"
-                  placeholder="Email address"
+                  placeholder="Additional email address"
                   value={email.address || ""}
                   onChange={(e) => handleArrayFieldChange("emails", index, "address", e.target.value)}
-                  className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="flex-1 px-3.5 py-2 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 />
                 {(formData.emails || []).length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeArrayField("emails", index)}
-                    className="bg-red-500 text-white px-3 rounded hover:bg-red-600 transition-colors"
+                    className="p-2.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors"
                   >
-                    ×
+                    <FaTrash className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
@@ -8285,63 +8337,64 @@ const CreateCard = () => {
             <button
               type="button"
               onClick={() => addArrayField("emails", { label: "work", address: "" })}
-              className="text-blue-500 text-sm hover:text-blue-700"
+              className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 text-xs font-semibold hover:underline"
             >
-              + Add Email Address
+              <FaPlus className="w-3 h-3" />
+              Add Another Email
             </button>
           </div>
         )}
 
         {/* Tag Line */}
         {isFieldVisible('tagline') && (
-          <div>
-            <label className="block text-slate-700 mb-1">Tag Line / Slogan</label>
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Tagline / Slogan</label>
             <input
               type="text"
               name="tagline"
-              placeholder="e.g., Award-Winning Digital Marketer"
+              placeholder="e.g., Empowering Businesses Through Innovative Cloud Architecture"
               value={formData.tagline || ""}
               onChange={handleChange}
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         )}
 
-        {/* Profile Video - Updated with upload options */}
+        {/* Profile Video */}
         {isFieldVisible('profileVideo') && (
-          <div className={`border rounded-lg p-4 ${hasActiveAddon('profilebuilder') ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200'}`}>
-            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
-              <FaVideo className="w-5 h-5 text-blue-500 mr-1" />
+          <div className={`p-5 md:p-6 rounded-2xl border ${hasActiveAddon('profilebuilder') ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark'} space-y-4 shadow-2xs`}>
+            <h4 className="text-sm font-semibold text-slate-800 dark:text-white flex items-center gap-2">
+              <FaVideo className="w-4 h-4 text-blue-500" />
               Profile Video
               {hasActiveAddon('profilebuilder') && (
-                <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                <span className="text-[10px] bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded-full border border-purple-200">
                   ✓ Profile Builder Add-On Active
                 </span>
               )}
             </h4>
 
             {/* Upload Type Toggle */}
-            <div className="flex space-x-4 mb-4">
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => toggleUploadType('profileVideo')}
-                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.profileVideo === 'url'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-700'
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${uploadType.profileVideo === 'url'
+                    ? 'bg-blue-600 text-white shadow-2xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}
               >
-                <FaLink className="w-4 h-4 mr-2" />
-                URL
+                <FaLink className="w-3.5 h-3.5" />
+                Embed URL
               </button>
               <button
                 type="button"
                 onClick={() => toggleUploadType('profileVideo')}
-                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.profileVideo === 'upload'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-700'
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${uploadType.profileVideo === 'upload'
+                    ? 'bg-blue-600 text-white shadow-2xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}
               >
-                <FaUpload className="w-4 h-4 mr-2" />
+                <FaUpload className="w-3.5 h-3.5" />
                 Upload File
               </button>
             </div>
@@ -8349,10 +8402,10 @@ const CreateCard = () => {
             <div className="space-y-4">
               {uploadType.profileVideo === 'url' ? (
                 <div>
-                  <label className="block text-slate-700 mb-1">Video URL</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Video URL</label>
                   <input
                     type="url"
-                    placeholder="https://youtube.com/your-video or direct video link"
+                    placeholder="https://youtube.com/watch?v=... or Vimeo / direct mp4 link"
                     value={formData.profileVideo?.url || ""}
                     onChange={(e) => {
                       const updatedData = {
@@ -8365,53 +8418,38 @@ const CreateCard = () => {
                       setChangeCount(prev => prev + 1);
                       autoSaveToLocalStorage(updatedData);
                     }}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 text-center">
                   {formData.profileVideo?.url && formData.profileVideo?.uploadType === 'upload' ? (
                     <div className="flex flex-col items-center">
-                      <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-                        <FaVideo className="w-12 h-12 text-blue-500" />
+                      <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-2">
+                        <FaVideo className="w-8 h-8" />
                       </div>
-                      <p className="text-sm text-slate-600 mb-2">Video uploaded</p>
-                      <div className="flex space-x-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const input = document.createElement('input');
-                            input.type = 'file';
-                            input.accept = 'video/*';
-                            input.onchange = (e) => handleVideoUpload('profileVideo', e);
-                            input.click();
-                          }}
-                          className="text-blue-500 text-sm hover:text-blue-700"
-                        >
-                          Change Video
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updatedData = {
-                              ...formData,
-                              profileVideo: { url: "", thumbnail: "", title: "", uploadType: 'url' }
-                            };
-                            setFormData(updatedData);
-                            formDataRef.current = updatedData;
-                            setHasUnsavedChanges(true);
-                            setChangeCount(prev => prev + 1);
-                            autoSaveToLocalStorage(updatedData);
-                          }}
-                          className="text-red-500 text-sm hover:text-red-700"
-                        >
-                          Remove Video
-                        </button>
-                      </div>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 font-medium mb-2">Video attached successfully</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedData = {
+                            ...formData,
+                            profileVideo: { url: "", thumbnail: "", title: "", uploadType: 'url' }
+                          };
+                          setFormData(updatedData);
+                          formDataRef.current = updatedData;
+                          setHasUnsavedChanges(true);
+                          setChangeCount(prev => prev + 1);
+                          autoSaveToLocalStorage(updatedData);
+                        }}
+                        className="text-rose-500 text-xs font-semibold hover:underline"
+                      >
+                        Remove Video
+                      </button>
                     </div>
                   ) : (
                     <>
-                      <p className="text-slate-500 mb-2">Upload video file (max 50MB)</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Upload video file (MP4, WebM up to 50MB)</p>
                       <input
                         type="file"
                         accept="video/*"
@@ -8421,183 +8459,166 @@ const CreateCard = () => {
                       />
                       <label
                         htmlFor="profileVideoUpload"
-                        className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl cursor-pointer shadow-xs transition-colors"
                       >
-                        Upload Video
+                        Choose Video File
                       </label>
                     </>
                   )}
                 </div>
               )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-700 mb-1">Video Title</label>
-                  <input
-                    type="text"
-                    placeholder="Introduction Video"
-                    value={formData.profileVideo?.title || ""}
-                    onChange={(e) => {
-                      const updatedData = {
-                        ...formData,
-                        profileVideo: { ...formData.profileVideo, title: e.target.value }
-                      };
-                      setFormData(updatedData);
-                      formDataRef.current = updatedData;
-                      setHasUnsavedChanges(true);
-                      setChangeCount(prev => prev + 1);
-                      autoSaveToLocalStorage(updatedData);
-                    }}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 mb-1">Thumbnail URL</label>
-                  <input
-                    type="url"
-                    placeholder="https://example.com/thumbnail.jpg"
-                    value={formData.profileVideo?.thumbnail || ""}
-                    onChange={(e) => {
-                      const updatedData = {
-                        ...formData,
-                        profileVideo: { ...formData.profileVideo, thumbnail: e.target.value }
-                      };
-                      setFormData(updatedData);
-                      formDataRef.current = updatedData;
-                      setHasUnsavedChanges(true);
-                      setChangeCount(prev => prev + 1);
-                      autoSaveToLocalStorage(updatedData);
-                    }}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
             </div>
           </div>
         )}
 
-        {/* Founded Name */}
+        {/* Founded Name & Organization */}
         {isFieldVisible('foundedName') && (
-          <div>
-            <label className="block text-slate-700 mb-1">Founded Name</label>
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Founded Name</label>
             <input
               type="text"
               name="foundedName"
               placeholder="Founder's name or founding year"
               value={formData.foundedName || ""}
               onChange={handleChange}
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         )}
 
-        {/* Organization */}
         {isFieldVisible('organization') && (
-          <div>
-            <label className="block text-slate-700 mb-1">Organization</label>
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Organization</label>
             <input
               type="text"
               name="organization"
               placeholder="Organization or association name"
               value={formData.organization || ""}
               onChange={handleChange}
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         )}
 
-        {/* About Text */}
+        {/* About Text / Short Intro */}
         {isFieldVisible('aboutText') && (
-          <div>
-            <label className="block text-slate-700 mb-1">About Myself / Company / Organisation</label>
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              {formData.cardType === 'Personal' ? 'Short Intro' : 'About Myself / Company / Organisation'}
+            </label>
             <textarea
               name="aboutText"
-              placeholder="Tell us about yourself, your company, or organization..."
+              placeholder={formData.cardType === 'Personal' ? "Brief intro about yourself, your skills, or background..." : "Tell us about yourself, your company, or organization..."}
               value={formData.aboutText || ""}
-              onChange={handleChange}
+              onChange={(e) => {
+                const val = e.target.value;
+                const updated = {
+                  ...formData,
+                  aboutText: val,
+                  ...(formData.cardType === 'Personal' && { bio: val })
+                };
+                setFormData(updated);
+                formDataRef.current = updated;
+                setHasUnsavedChanges(true);
+                setChangeCount(prev => prev + 1);
+                autoSaveToLocalStorage(updated);
+              }}
               rows="4"
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         )}
 
         {/* URL Customization Section */}
         {shouldShowUrlSection && (
-          <div className="border-t pt-6 mt-6">
-            <h4 className="text-lg font-semibold text-slate-800 mb-4">Your Shareable Card URL</h4>
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <FaGlobe className="w-4 h-4 text-blue-500" />
+              Your Shareable Card URL
+            </h4>
 
             <div className="space-y-4">
               {(formData.urlSlug || generatedSlug) && (
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <label className="block text-slate-700 mb-2 font-medium">Your Card URL:</label>
-                  <div className="flex items-center space-x-2">
-                    <code className="flex-1 bg-white border border-slate-300 rounded px-3 py-2 text-sm font-mono text-slate-800">
+                <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-strokedark rounded-xl p-4">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                    Permanent Shareable URL
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 bg-white dark:bg-boxdark border border-slate-200 dark:border-strokedark rounded-xl px-3.5 py-2 text-xs sm:text-sm font-mono text-blue-600 dark:text-blue-400 overflow-x-auto truncate">
                       {getShareableUrl()}
                     </code>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(getShareableUrl())}
-                      className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+                      className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors flex-shrink-0"
                       title="Copy to clipboard"
                     >
-                      {copied ? <FaCheck className="w-4 h-4" /> : <FaCopy className="w-4 h-4" />}
+                      {copied ? (
+                        <>
+                          <FaCheck className="w-3.5 h-3.5 text-emerald-300" />
+                          <span>Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <FaCopy className="w-3.5 h-3.5" />
+                          <span>Copy</span>
+                        </>
+                      )}
                     </button>
                   </div>
-                  <p className="text-xs text-slate-500 mt-2">
-                    Share this URL to let people view your digital card
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">
+                    Anyone with this link can view your digital card directly in their browser.
                   </p>
                 </div>
               )}
 
-              {/* Custom URL Input - Disabled when editing */}
+              {/* Custom URL Input */}
               <div>
-                <label className="block text-slate-700 mb-2 font-medium">Custom URL {editingCard ? '(Cannot change when editing)' : '(Optional)'}</label>
-                <p className="text-sm text-slate-600 mb-3">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Custom Card Slug {editingCard ? '(Locked in edit mode)' : '(Optional)'}
+                </label>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-2.5">
                   {editingCard
-                    ? 'URL cannot be changed after card creation.'
-                    : 'Customize the last part of your URL. If left empty, it will be generated from your email.'}
+                    ? 'Card URL slug cannot be altered after creation to preserve shared links.'
+                    : 'Personalize the link path for your card. Letters, numbers, and hyphens only.'}
                 </p>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-slate-500">www.reveya.com/preview/</span>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder={generatedSlug || "your-custom-url"}
-                    value={formData.customUrl || ""}
-                    onChange={handleCustomUrlChange}
-                    className="w-full pl-64 pr-24 py-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    disabled={editingCard} // Disable when editing
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                    {checkingUrl ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                    ) : urlAvailable === true ? (
-                      <span className="text-green-600 text-sm font-medium">✓ Available</span>
-                    ) : urlAvailable === false ? (
-                      <span className="text-red-600 text-sm font-medium">✗ Taken</span>
-                    ) : null}
+
+                <div className="flex flex-col sm:flex-row items-stretch rounded-xl border border-slate-200 dark:border-strokedark overflow-hidden bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
+                  <span className="inline-flex items-center px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-mono border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-strokedark select-none whitespace-nowrap">
+                    reveya.com/preview/
+                  </span>
+                  <div className="relative flex-1 flex items-center">
+                    <input
+                      type="text"
+                      placeholder={generatedSlug || "your-custom-name"}
+                      value={formData.customUrl || ""}
+                      onChange={handleCustomUrlChange}
+                      className="w-full px-3.5 py-2.5 text-sm bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
+                      disabled={editingCard}
+                    />
+                    <div className="pr-3 flex items-center">
+                      {checkingUrl ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
+                      ) : urlAvailable === true ? (
+                        <span className="text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center gap-1">
+                          <FaCheck className="w-3 h-3" /> Available
+                        </span>
+                      ) : urlAvailable === false ? (
+                        <span className="text-rose-600 dark:text-rose-400 text-xs font-semibold">✗ Taken</span>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
 
                 {urlAvailable === false && !isFromLogin && (
-                  <p className="text-red-600 text-sm mt-2">
-                    This URL is already taken. Please choose a different one.
+                  <p className="text-rose-500 text-xs mt-1.5">
+                    This URL is already taken. Please choose a different handle.
                   </p>
                 )}
                 {urlAvailable === true && (
-                  <p className="text-green-600 text-sm mt-2">
-                    This URL is available! You can use it for your card.
+                  <p className="text-emerald-600 dark:text-emerald-400 text-xs mt-1.5">
+                    ✓ This handle is available for your digital card!
                   </p>
-                )}
-
-                {!editingCard && (
-                  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                    <p className="text-sm text-blue-800">
-                      <strong>Tips:</strong> Use letters, numbers, and hyphens only. No spaces or special characters.
-                    </p>
-                  </div>
                 )}
               </div>
             </div>
@@ -8634,134 +8655,137 @@ const CreateCard = () => {
       <div className="space-y-6">
         {/* Company Details */}
         {isFieldVisible('companyName') && (
-          <div>
-            <label className="block text-slate-700 mb-1">Company Name / Organisation</label>
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Company Name / Organisation</label>
             <input
               type="text"
               name="companyName"
-              placeholder="Company name"
+              placeholder="e.g. Acme Corporation"
               value={formData.companyName || ""}
               onChange={handleChange}
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         )}
 
-        {(isFieldVisible('department') || isFieldVisible('jobTitle')) && (
-          <div className="grid grid-cols-2 gap-4">
-            {isFieldVisible('department') && (
-              <div>
-                <label className="block text-slate-700 mb-1">Department</label>
-                <input
-                  type="text"
-                  name="department"
-                  placeholder="Department"
-                  value={formData.department || ""}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-            )}
+        {formData.cardType !== 'Personal' && (isFieldVisible('department') || isFieldVisible('jobTitle')) && (
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Role & Department</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {isFieldVisible('department') && (
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Department</label>
+                  <input
+                    type="text"
+                    name="department"
+                    placeholder="e.g. Engineering, Sales, Marketing"
+                    value={formData.department || ""}
+                    onChange={handleChange}
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  />
+                </div>
+              )}
 
-            {isFieldVisible('jobTitle') && (
-              <div>
-                <label className="block text-slate-700 mb-1">Job Title</label>
-                <input
-                  type="text"
-                  name="jobTitle"
-                  placeholder="Job title"
-                  value={formData.jobTitle || ""}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-            )}
+              {isFieldVisible('jobTitle') && (
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Job Title</label>
+                  <input
+                    type="text"
+                    name="jobTitle"
+                    placeholder="e.g. Senior Product Manager"
+                    value={formData.jobTitle || ""}
+                    onChange={handleChange}
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         )}
 
-        {isFieldVisible('bio') && (
-          <div>
-            <label className="block text-slate-700 mb-1">Bio</label>
+        {formData.cardType !== 'Personal' && isFieldVisible('bio') && (
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Professional Bio</label>
             <textarea
               name="bio"
-              placeholder="Professional biography..."
+              placeholder="Detailed professional biography, career achievements, or background..."
               value={formData.bio || ""}
               onChange={handleChange}
               rows="4"
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         )}
 
         {/* Services & Products Overview */}
         {isFieldVisible('servicesProducts') && (
-          <div className={hasActiveAddon('portfoliobuilder') ? 'border border-purple-200 bg-purple-50/20 rounded-lg p-4' : ''}>
-            <div className="flex items-center gap-2 mb-1">
-              <label className="block text-slate-700 font-medium">Brief about Products/Services</label>
+          <div className={`p-5 md:p-6 rounded-2xl border ${hasActiveAddon('portfoliobuilder') ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark'} space-y-3 shadow-2xs`}>
+            <div className="flex items-center gap-2">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Brief about Products & Services</label>
               {hasActiveAddon('portfoliobuilder') && (
-                <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                <span className="text-[10px] bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded-full border border-purple-200">
                   ✓ Portfolio Builder Add-On Active
                 </span>
               )}
             </div>
             <textarea
               name="servicesProducts"
-              placeholder="Brief description of your services and products"
+              placeholder="Brief overview of services and products your organization provides..."
               value={formData.servicesProducts || ""}
               onChange={handleChange}
               rows="3"
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         )}
 
         {/* Brand Label */}
         {isFieldVisible('brandLabel') && (
-          <div>
-            <label className="block text-slate-700 mb-1">Brand Label</label>
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Brand Label</label>
             <input
               type="text"
               name="brandLabel"
-              placeholder="Bird Label Product/Services"
+              placeholder="e.g. Registered Trademark, Division Name"
               value={formData.brandLabel || ""}
               onChange={handleChange}
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         )}
 
-        {/* Catalog - Updated with upload options */}
+        {/* Catalog */}
         {isFieldVisible('catalog') && (
-          <div className={(hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder')) ? 'border border-purple-200 bg-purple-50/20 rounded-lg p-4' : ''}>
-            <div className="flex items-center gap-2 mb-2">
-              <label className="block text-slate-700 font-medium">Product Catalog & PDF</label>
+          <div className={`p-5 md:p-6 rounded-2xl border ${(hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder')) ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark'} space-y-4 shadow-2xs`}>
+            <div className="flex items-center gap-2">
+              <label className="block text-sm font-semibold text-slate-800 dark:text-white">Product Catalog & PDF</label>
               {(hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder')) && (
-                <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                <span className="text-[10px] bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded-full border border-purple-200">
                   ✓ Docs Builder Add-On Active
                 </span>
               )}
             </div>
-            <div className="flex space-x-4 mb-4">
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setUploadType(prev => ({ ...prev, catalog: 'url' }))}
-                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.catalog === 'url'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-700'
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${uploadType.catalog === 'url'
+                    ? 'bg-blue-600 text-white shadow-2xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}
               >
-                <FaLink className="w-4 h-4 mr-2" />
-                URL
+                <FaLink className="w-3.5 h-3.5" />
+                URL Link
               </button>
               <button
                 type="button"
                 onClick={() => setUploadType(prev => ({ ...prev, catalog: 'upload' }))}
-                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.catalog === 'upload'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-700'
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${uploadType.catalog === 'upload'
+                    ? 'bg-blue-600 text-white shadow-2xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}
               >
-                <FaUpload className="w-4 h-4 mr-2" />
+                <FaUpload className="w-3.5 h-3.5" />
                 Upload PDF
               </button>
             </div>
@@ -8773,15 +8797,15 @@ const CreateCard = () => {
                 placeholder="https://example.com/catalog.pdf"
                 value={formData.catalog || ""}
                 onChange={handleChange}
-                className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
             ) : (
-              <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+              <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 text-center">
                 {formData.catalogPDF ? (
                   <div className="flex flex-col items-center">
-                    <FaFilePdf className="w-12 h-12 text-red-500 mb-2" />
-                    <p className="text-sm text-slate-600 mb-2">PDF catalog uploaded</p>
-                    <div className="flex space-x-2">
+                    <FaFilePdf className="w-12 h-12 text-rose-500 mb-2" />
+                    <p className="text-xs text-slate-700 dark:text-slate-300 font-medium mb-2">PDF catalog attached</p>
+                    <div className="flex gap-3">
                       <button
                         type="button"
                         onClick={() => {
@@ -8791,7 +8815,7 @@ const CreateCard = () => {
                           input.onchange = handleCatalogPDFUpload;
                           input.click();
                         }}
-                        className="text-blue-500 text-sm hover:text-blue-700"
+                        className="text-blue-600 dark:text-blue-400 text-xs font-semibold hover:underline"
                       >
                         Change PDF
                       </button>
@@ -8809,7 +8833,7 @@ const CreateCard = () => {
                           setChangeCount(prev => prev + 1);
                           autoSaveToLocalStorage(updatedData);
                         }}
-                        className="text-red-500 text-sm hover:text-red-700"
+                        className="text-rose-500 text-xs font-semibold hover:underline"
                       >
                         Remove PDF
                       </button>
@@ -8817,7 +8841,7 @@ const CreateCard = () => {
                   </div>
                 ) : (
                   <>
-                    <p className="text-slate-500 mb-2">Upload PDF catalog file</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Upload your brochure or catalog (PDF up to 20MB)</p>
                     <input
                       type="file"
                       accept=".pdf"
@@ -8827,9 +8851,9 @@ const CreateCard = () => {
                     />
                     <label
                       htmlFor="catalogPDFUpload"
-                      className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl cursor-pointer shadow-xs transition-colors"
                     >
-                      Upload PDF
+                      Select PDF
                     </label>
                   </>
                 )}
@@ -8838,29 +8862,14 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* Virtual Number */}
-        {isFieldVisible('virtualNumber') && (
-          <div>
-            <label className="block text-slate-700 mb-1">Virtual Number (Optional)</label>
-            <input
-              type="tel"
-              placeholder="+1 (555) 123-4567"
-              value={formData.virtualNumber || ""}
-              onChange={handleVirtualNumberChange}
-              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
-            <p className="text-sm text-slate-500 mt-1">Optional virtual number at extra cost</p>
-          </div>
-        )}
-
         {/* Company Logo */}
         {isFieldVisible('companyLogo') && (
-          <div>
-            <label className="block font-semibold text-slate-700 mb-2">Company Logo</label>
-            <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Company Logo</label>
+            <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 text-center">
               {formData.companyLogo ? (
                 <div className="flex flex-col items-center">
-                  <img src={formData.companyLogo} alt="Company Logo" className="max-w-32 max-h-32 object-contain mb-2" />
+                  <img src={formData.companyLogo} alt="Company Logo" className="max-w-32 max-h-24 object-contain mb-2 p-2 bg-slate-50 dark:bg-slate-900 rounded-xl" />
                   <button
                     type="button"
                     onClick={() => {
@@ -8871,14 +8880,14 @@ const CreateCard = () => {
                       setChangeCount(prev => prev + 1);
                       autoSaveToLocalStorage(updatedData);
                     }}
-                    className="text-red-500 text-sm hover:text-red-700"
+                    className="text-rose-500 hover:text-rose-700 text-xs font-semibold mt-2"
                   >
                     Remove Logo
                   </button>
                 </div>
               ) : (
-                <>
-                  <p className="text-slate-500 mb-2">Drag file here or upload file</p>
+                <div className="flex flex-col items-center">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Upload your company or brand logo (PNG, SVG, JPG)</p>
                   <input
                     type="file"
                     accept="image/*"
@@ -8888,286 +8897,75 @@ const CreateCard = () => {
                   />
                   <label
                     htmlFor="companyLogo"
-                    className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl cursor-pointer shadow-xs transition-colors"
                   >
                     Upload Logo
                   </label>
-                </>
+                </div>
               )}
             </div>
 
             {isFieldVisible('logoSize') && (
               <div className="mt-4">
-                <label className="block text-slate-700 mb-1">Logo Size</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Display Size</label>
                 <select
                   name="logoSize"
                   value={formData.logoSize || "medium"}
                   onChange={handleChange}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
-                  <option value="small">Small</option>
-                  <option value="medium">Medium</option>
-                  <option value="large">Large</option>
+                  <option value="small">Small (Compact)</option>
+                  <option value="medium">Medium (Standard)</option>
+                  <option value="large">Large (Prominent)</option>
                 </select>
               </div>
             )}
           </div>
         )}
 
-        {/* Product Video - Updated with upload options */}
-        {isFieldVisible('productVideo') && (
-          <div className={`border rounded-lg p-4 ${hasActiveAddon('portfoliobuilder') ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200'}`}>
-            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
-              <FaVideo className="w-5 h-5 text-red-500 mr-1" />
-              Product/Service Video
-              {hasActiveAddon('portfoliobuilder') && (
-                <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
-                  ✓ Portfolio Builder Add-On Active
-                </span>
-              )}
-            </h4>
-
-            {/* Upload Type Toggle */}
-            <div className="flex space-x-4 mb-4">
-              <button
-                type="button"
-                onClick={() => toggleUploadType('productVideo')}
-                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.productVideo === 'url'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-700'
-                  }`}
-              >
-                <FaLink className="w-4 h-4 mr-2" />
-                URL
-              </button>
-              <button
-                type="button"
-                onClick={() => toggleUploadType('productVideo')}
-                className={`flex items-center px-4 py-2 rounded-lg ${uploadType.productVideo === 'upload'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-700'
-                  }`}
-              >
-                <FaUpload className="w-4 h-4 mr-2" />
-                Upload File
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {uploadType.productVideo === 'url' ? (
-                <div>
-                  <label className="block text-slate-700 mb-1">Video URL</label>
-                  <input
-                    type="url"
-                    placeholder="https://youtube.com/your-product-video"
-                    value={formData.productVideo?.url || ""}
-                    onChange={(e) => handleProductVideoChange('url', e.target.value)}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              ) : (
-                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                  {formData.productVideo?.url && formData.productVideo?.uploadType === 'upload' ? (
-                    <div className="flex flex-col items-center">
-                      <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-                        <FaVideo className="w-12 h-12 text-red-500" />
-                      </div>
-                      <p className="text-sm text-slate-600 mb-2">Product video uploaded</p>
-                      <div className="flex space-x-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const input = document.createElement('input');
-                            input.type = 'file';
-                            input.accept = 'video/*';
-                            input.onchange = (e) => handleVideoUpload('productVideo', e);
-                            input.click();
-                          }}
-                          className="text-blue-500 text-sm hover:text-blue-700"
-                        >
-                          Change Video
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updatedData = {
-                              ...formData,
-                              productVideo: { url: "", thumbnail: "", title: "", uploadType: 'url' }
-                            };
-                            setFormData(updatedData);
-                            formDataRef.current = updatedData;
-                            setHasUnsavedChanges(true);
-                            setChangeCount(prev => prev + 1);
-                            autoSaveToLocalStorage(updatedData);
-                          }}
-                          className="text-red-500 text-sm hover:text-red-700"
-                        >
-                          Remove Video
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <p className="text-slate-500 mb-2">Upload product video file (max 50MB)</p>
-                      <input
-                        type="file"
-                        accept="video/*"
-                        onChange={(e) => handleVideoUpload('productVideo', e)}
-                        className="hidden"
-                        id="productVideoUpload"
-                      />
-                      <label
-                        htmlFor="productVideoUpload"
-                        className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors"
-                      >
-                        Upload Video
-                      </label>
-                    </>
-                  )}
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-700 mb-1">Video Title</label>
-                  <input
-                    type="text"
-                    placeholder="Product Demonstration"
-                    value={formData.productVideo?.title || ""}
-                    onChange={(e) => handleProductVideoChange('title', e.target.value)}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 mb-1">Thumbnail URL</label>
-                  <input
-                    type="url"
-                    placeholder="https://example.com/thumbnail.jpg"
-                    value={formData.productVideo?.thumbnail || ""}
-                    onChange={(e) => handleProductVideoChange('thumbnail', e.target.value)}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Business Hours */}
         {isFieldVisible('businessHours') && (
-          <div className="border border-slate-200 rounded-lg p-6">
-            <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-              <FaClock className="w-5 h-5 text-blue-500 mr-2" />
-              Business Hours
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <FaClock className="w-3.5 h-3.5 text-blue-500" />
+              Business Operating Hours
             </h4>
 
-            <div className="space-y-4">
-              {formData.businessHours.map((day, index) => (
-                <div key={day.day} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <span className="font-medium text-slate-700 w-24 capitalize">{day.day}</span>
+            <div className="space-y-2.5">
+              {(formData.businessHours || []).map((day, index) => (
+                <div key={day.day} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800 rounded-xl gap-2">
+                  <span className="font-semibold text-xs text-slate-800 dark:text-white w-28 capitalize">{day.day}</span>
 
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <select
                       value={day.isClosed ? 'true' : 'false'}
                       onChange={(e) => handleBusinessHoursChange(index, 'isClosed', e.target.value)}
-                      className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:outline-none"
                     >
                       <option value="false">Open</option>
                       <option value="true">Closed</option>
                     </select>
 
                     {!day.isClosed && (
-                      <>
+                      <div className="flex items-center gap-1.5 text-xs">
                         <input
                           type="time"
                           value={day.openingTime || ''}
                           onChange={(e) => handleBusinessHoursChange(index, 'openingTime', e.target.value)}
-                          className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                          className="px-2 py-1 text-xs rounded-lg border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-800 text-slate-800 dark:text-white"
                         />
-                        <span className="text-slate-500">to</span>
+                        <span className="text-slate-400">to</span>
                         <input
                           type="time"
                           value={day.closingTime || ''}
                           onChange={(e) => handleBusinessHoursChange(index, 'closingTime', e.target.value)}
-                          className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                          className="px-2 py-1 text-xs rounded-lg border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-800 text-slate-800 dark:text-white"
                         />
-                      </>
+                      </div>
                     )}
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* BusinessPremium-only fields */}
-        {isFieldVisible('individualProductDisplay') && (
-          <div className="border border-slate-200 rounded-lg p-4">
-            <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
-              <FaShoppingCart className="w-5 h-5 text-green-500 mr-2" />
-              Product Display Options
-            </h4>
-
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <label className="flex items-center text-slate-700">
-                  <input
-                    type="checkbox"
-                    checked={formData.individualProductDisplay || false}
-                    onChange={(e) => {
-                      const updatedData = { ...formData, individualProductDisplay: e.target.checked };
-                      setFormData(updatedData);
-                      formDataRef.current = updatedData;
-                      setHasUnsavedChanges(true);
-                      setChangeCount(prev => prev + 1);
-                      autoSaveToLocalStorage(updatedData);
-                    }}
-                    className="mr-2"
-                  />
-                  Enable Individual Product Display
-                </label>
-              </div>
-
-              {isFieldVisible('businessCardInstagram') && (
-                <div>
-                  <label className="block text-slate-700 mb-1">Business Card Instagram</label>
-                  <input
-                    type="url"
-                    placeholder="https://instagram.com/yourbusiness"
-                    value={formData.businessCardInstagram || ""}
-                    onChange={(e) => {
-                      const updatedData = { ...formData, businessCardInstagram: e.target.value };
-                      setFormData(updatedData);
-                      formDataRef.current = updatedData;
-                      setHasUnsavedChanges(true);
-                      setChangeCount(prev => prev + 1);
-                      autoSaveToLocalStorage(updatedData);
-                    }}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              )}
-
-              {isFieldVisible('textbooks') && (
-                <div>
-                  <label className="block text-slate-700 mb-1">Textbooks / Learning Materials</label>
-                  <textarea
-                    placeholder="List textbooks or learning materials"
-                    value={formData.textbooks || ""}
-                    onChange={(e) => {
-                      const updatedData = { ...formData, textbooks: e.target.value };
-                      setFormData(updatedData);
-                      formDataRef.current = updatedData;
-                      setHasUnsavedChanges(true);
-                      setChangeCount(prev => prev + 1);
-                      autoSaveToLocalStorage(updatedData);
-                    }}
-                    rows="3"
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              )}
             </div>
           </div>
         )}
@@ -9187,24 +8985,24 @@ const CreateCard = () => {
       <div className="space-y-6">
         {/* Contact Management Section */}
         {isFieldVisible('enableOneTapCall') && (
-          <div className="border border-slate-200 rounded-lg p-6">
-            <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-              <FaComments className="w-5 h-5 text-green-500 mr-2" />
-              One-Tap Contact
-            </h4>
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-5 shadow-2xs">
+            <div>
+              <h4 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                <FaComments className="w-4 h-4 text-emerald-500" />
+                One-Tap Quick Contact
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Toggle quick action buttons that appear at the top of your digital card.
+              </p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Call */}
-              <div className="border border-slate-200 rounded-lg p-4">
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 mr-3">
-                    <FaPhone className="w-5 h-5" />
+              <div className={`p-4 rounded-xl border transition-all ${formData.enableOneTapCall ? 'border-emerald-500/50 bg-emerald-50/30 dark:bg-emerald-950/20' : 'border-slate-200 dark:border-strokedark bg-slate-50/50 dark:bg-slate-900/40'}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <FaPhone className="w-4 h-4" />
                   </div>
-                  <h5 className="font-semibold text-slate-800">Call</h5>
-                </div>
-                <p className="text-sm text-slate-600 mb-3">Enable one-tap calling</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Status:</span>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -9219,22 +9017,19 @@ const CreateCard = () => {
                         autoSaveToLocalStorage(updatedData);
                       }}
                     />
-                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                    <div className="w-10 h-5 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
                   </label>
                 </div>
+                <h5 className="font-semibold text-xs sm:text-sm text-slate-800 dark:text-white">One-Tap Call</h5>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Direct phone call dialer</p>
               </div>
 
               {/* WhatsApp */}
-              <div className="border border-slate-200 rounded-lg p-4">
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 mr-3">
-                    <FaWhatsapp className="w-5 h-5" />
+              <div className={`p-4 rounded-xl border transition-all ${formData.enableWhatsApp ? 'border-emerald-500/50 bg-emerald-50/30 dark:bg-emerald-950/20' : 'border-slate-200 dark:border-strokedark bg-slate-50/50 dark:bg-slate-900/40'}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <FaWhatsapp className="w-4 h-4" />
                   </div>
-                  <h5 className="font-semibold text-slate-800">WhatsApp</h5>
-                </div>
-                <p className="text-sm text-slate-600 mb-3">Enable WhatsApp chat</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Status:</span>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -9249,22 +9044,19 @@ const CreateCard = () => {
                         autoSaveToLocalStorage(updatedData);
                       }}
                     />
-                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                    <div className="w-10 h-5 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
                   </label>
                 </div>
+                <h5 className="font-semibold text-xs sm:text-sm text-slate-800 dark:text-white">WhatsApp Chat</h5>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Instant message chat</p>
               </div>
 
               {/* Email */}
-              <div className="border border-slate-200 rounded-lg p-4">
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mr-3">
-                    <FaEnvelope className="w-5 h-5" />
+              <div className={`p-4 rounded-xl border transition-all ${formData.enableEmail ? 'border-blue-500/50 bg-blue-50/30 dark:bg-blue-950/20' : 'border-slate-200 dark:border-strokedark bg-slate-50/50 dark:bg-slate-900/40'}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                    <FaEnvelope className="w-4 h-4" />
                   </div>
-                  <h5 className="font-semibold text-slate-800">Email</h5>
-                </div>
-                <p className="text-sm text-slate-600 mb-3">Enable email contact</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Status:</span>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -9279,53 +9071,65 @@ const CreateCard = () => {
                         autoSaveToLocalStorage(updatedData);
                       }}
                     />
-                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                    <div className="w-10 h-5 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
                   </label>
                 </div>
+                <h5 className="font-semibold text-xs sm:text-sm text-slate-800 dark:text-white">Email Button</h5>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Compose email trigger</p>
               </div>
             </div>
+
+            {/* Phone Warning if One-Tap Call or WhatsApp is enabled but no phone exists */}
+            {(formData.enableOneTapCall || formData.enableWhatsApp) && 
+             (!formData.phones || formData.phones.filter(p => p.number && p.number.trim()).length === 0) && (
+              <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-xl text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5">
+                <span className="text-amber-500 font-bold text-sm leading-none mt-0.5">⚠️</span>
+                <div>
+                  <p className="font-bold">Phone number required for One-Tap Call & WhatsApp</p>
+                  <p className="text-amber-700 dark:text-amber-400 mt-0.5">
+                    You have enabled One-Tap Call or WhatsApp, but haven't added a phone number yet. Please enter your phone number below so visitors can contact you directly.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
         {/* Phones */}
         {isFieldVisible('phones') && (
-          <div className="border border-slate-200 rounded-lg p-6">
-            <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-              <FaPhone className="w-5 h-5 text-blue-500 mr-2" />
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <FaPhone className="w-3.5 h-3.5 text-blue-500" />
               Phone Numbers
             </h4>
             {(formData.phones || []).map((phone, index) => (
-              <div key={index} className="flex gap-2 mb-2">
+              <div key={index} className="flex gap-2">
                 <select
                   value={phone.label || "work"}
                   onChange={(e) => handleArrayFieldChange("phones", index, "label", e.target.value)}
-                  className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
                   <option value="work">Work</option>
                   <option value="personal">Personal</option>
                   <option value="mobile">Mobile</option>
-                  <option value="other">Other</option>
-                  <option value="assistant">Assistant</option>
-                  <option value="fax">Fax</option>
-                  <option value="home">Home</option>
                   <option value="office">Office</option>
                   <option value="direct">Direct</option>
-                  <option value="main">Main</option>
+                  <option value="other">Other</option>
                 </select>
                 <input
                   type="tel"
-                  placeholder="Phone number"
+                  placeholder="e.g. +1 (555) 000-0000"
                   value={phone.number || ""}
                   onChange={(e) => handleArrayFieldChange("phones", index, "number", e.target.value)}
-                  className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="flex-1 px-3.5 py-2 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 />
                 {(formData.phones || []).length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeArrayField("phones", index)}
-                    className="bg-red-500 text-white px-3 rounded hover:bg-red-600 transition-colors"
+                    className="p-2.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors"
                   >
-                    ×
+                    <FaTrash className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
@@ -9333,52 +9137,49 @@ const CreateCard = () => {
             <button
               type="button"
               onClick={() => addArrayField("phones", { label: "work", number: "" })}
-              className="text-blue-500 text-sm hover:text-blue-700"
+              className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 text-xs font-semibold hover:underline"
             >
-              + Add Phone Number
+              <FaPlus className="w-3 h-3" />
+              Add Another Phone Number
             </button>
           </div>
         )}
 
         {/* Websites */}
         {isFieldVisible('websites') && (
-          <div className="border border-slate-200 rounded-lg p-6">
-            <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-              <FaGlobe className="w-5 h-5 text-blue-500 mr-2" />
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <FaGlobe className="w-3.5 h-3.5 text-blue-500" />
               Websites & Portfolio Links
             </h4>
             {(formData.websites || []).map((website, index) => (
-              <div key={index} className="flex gap-2 mb-2">
+              <div key={index} className="flex gap-2">
                 <select
                   value={website.label || "personal"}
                   onChange={(e) => handleArrayFieldChange("websites", index, "label", e.target.value)}
-                  className="p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
                   <option value="personal">Personal</option>
                   <option value="work">Work</option>
                   <option value="portfolio">Portfolio</option>
-                  <option value="other">Other</option>
                   <option value="company">Company</option>
                   <option value="blog">Blog</option>
                   <option value="shop">Shop</option>
-                  <option value="documentation">Documentation</option>
-                  <option value="support">Support</option>
-                  <option value="booking">Booking</option>
                 </select>
                 <input
                   type="url"
-                  placeholder="Website URL"
+                  placeholder="https://yourwebsite.com"
                   value={website.url || ""}
                   onChange={(e) => handleArrayFieldChange("websites", index, "url", e.target.value)}
-                  className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="flex-1 px-3.5 py-2 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 />
                 {(formData.websites || []).length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeArrayField("websites", index)}
-                    className="bg-red-500 text-white px-3 rounded hover:bg-red-600 transition-colors"
+                    className="p-2.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors"
                   >
-                    ×
+                    <FaTrash className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
@@ -9386,25 +9187,26 @@ const CreateCard = () => {
             <button
               type="button"
               onClick={() => addArrayField("websites", { label: "personal", url: "" })}
-              className="text-blue-500 text-sm hover:text-blue-700"
+              className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 text-xs font-semibold hover:underline"
             >
-              + Add Website
+              <FaPlus className="w-3 h-3" />
+              Add Another Website
             </button>
           </div>
         )}
 
         {/* Address Section */}
         {isFieldVisible('addresses') && (
-          <div className="border border-slate-200 rounded-lg p-6">
-            <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-              <FaMapMarkerAlt className="w-5 h-5 text-blue-500 mr-2" />
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <FaMapMarkerAlt className="w-3.5 h-3.5 text-blue-500" />
               Location & Addresses
             </h4>
 
             {(formData.addresses || []).map((address, index) => (
-              <div key={index} className="border border-slate-200 rounded-lg p-4 mb-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h5 className="font-medium text-slate-700">
+              <div key={index} className="border border-slate-200 dark:border-strokedark rounded-xl p-4 space-y-3 bg-slate-50/50 dark:bg-slate-900/30">
+                <div className="flex justify-between items-center">
+                  <h5 className="font-semibold text-xs text-slate-800 dark:text-white">
                     {address.isPrimary ? "📍 Primary Address" : `Address ${index + 1}`}
                   </h5>
                   <div className="flex gap-2">
@@ -9412,7 +9214,7 @@ const CreateCard = () => {
                       <button
                         type="button"
                         onClick={() => setPrimaryAddress(index)}
-                        className="text-blue-500 hover:text-blue-700 text-sm"
+                        className="text-blue-600 dark:text-blue-400 hover:underline text-xs font-medium"
                       >
                         Set Primary
                       </button>
@@ -9421,7 +9223,7 @@ const CreateCard = () => {
                       <button
                         type="button"
                         onClick={() => removeAddress(index)}
-                        className="text-red-500 hover:text-red-700 text-sm"
+                        className="text-rose-500 hover:underline text-xs font-medium"
                       >
                         Remove
                       </button>
@@ -9429,109 +9231,88 @@ const CreateCard = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-700 mb-1">Label</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Label</label>
                     <select
                       value={address.label || "office"}
                       onChange={(e) => handleAddressChange(index, "label", e.target.value)}
-                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none"
                     >
                       <option value="office">Office</option>
                       <option value="home">Home</option>
                       <option value="headquarters">Headquarters</option>
                       <option value="branch">Branch</option>
                       <option value="other">Other</option>
-                      <option value="warehouse">Warehouse</option>
-                      <option value="store">Store</option>
-                      <option value="factory">Factory</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 mb-1">Street Address</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Street Address</label>
                     <input
                       type="text"
                       placeholder="123 Main Street"
                       value={address.street || ""}
                       onChange={(e) => handleAddressChange(index, "street", e.target.value)}
-                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div>
-                    <label className="block text-slate-700 mb-1">City</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">City</label>
                     <input
                       type="text"
                       placeholder="City"
                       value={address.city || ""}
                       onChange={(e) => handleAddressChange(index, "city", e.target.value)}
-                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 mb-1">State</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">State</label>
                     <input
                       type="text"
                       placeholder="State"
                       value={address.state || ""}
                       onChange={(e) => handleAddressChange(index, "state", e.target.value)}
-                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 mb-1">Postal Code</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">ZIP / Postal Code</label>
                     <input
                       type="text"
-                      placeholder="ZIP/Postal Code"
+                      placeholder="Postal Code"
                       value={address.postalCode || ""}
                       onChange={(e) => handleAddressChange(index, "postalCode", e.target.value)}
-                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 mb-1">Country</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Country</label>
                     <input
                       type="text"
                       placeholder="Country"
                       value={address.country || ""}
                       onChange={(e) => handleAddressChange(index, "country", e.target.value)}
-                      className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <label className="block text-slate-700 mb-1">Full Address (Auto-generated)</label>
-                  <textarea
-                    placeholder="Full address will be generated automatically"
-                    value={address.fullAddress || ""}
-                    onChange={(e) => handleAddressChange(index, 'fullAddress', e.target.value)}
-                    rows="2"
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => generateFullAddress(index)}
-                    className="mt-2 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
-                  >
-                    Generate Full Address
-                  </button>
-                </div>
-
                 <div>
-                  <label className="block text-slate-700 mb-1">Google Maps Link</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Google Maps Link</label>
                   <input
                     type="url"
                     placeholder="https://maps.google.com/?q=..."
                     value={address.googleMapsLink || ""}
                     onChange={(e) => handleAddressChange(index, "googleMapsLink", e.target.value)}
-                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none"
                   />
                 </div>
               </div>
@@ -9540,23 +9321,26 @@ const CreateCard = () => {
             <button
               type="button"
               onClick={addAddress}
-              className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 flex items-center justify-center gap-2"
+              className="w-full border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600 transition-colors text-xs font-semibold flex items-center justify-center gap-2"
             >
-              <FaMapMarkerAlt className="w-4 h-4" />
-              + Add Another Address
+              <FaMapMarkerAlt className="w-3.5 h-3.5" />
+              + Add Address Location
             </button>
           </div>
         )}
 
-        {/* Social & Digital Hub Section */}
-        <div className="border border-slate-200 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-slate-800 mb-4">Social Media Links</h4>
-          <p className="text-slate-600 text-sm mb-4">Click on any social media icon to add your profile link</p>
+        {/* Social Media Links Section */}
+        <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+          <div>
+            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Social Media Links</h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Click on any social media icon below to add or edit your profile handle.</p>
+          </div>
 
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
             {Object.entries(socialMediaConfig).map(([platform, config]) => {
               const socialLink = (formData.socialLinks || []).find(link => link.platform === platform);
               const hasUrl = socialLink && socialLink.url;
+              const isSelected = activeSocialPlatform === platform;
 
               return (
                 <div key={platform} className="flex flex-col items-center">
@@ -9565,51 +9349,52 @@ const CreateCard = () => {
                     onClick={() => {
                       setActiveSocialPlatform(activeSocialPlatform === platform ? "" : platform);
                     }}
-                    className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-110 ${hasUrl
-                        ? `${config.color} text-white shadow-md`
-                        : 'bg-slate-100 text-slate-400 hover:bg-slate-200 border-2 border-dashed border-slate-300'
-                      } ${activeSocialPlatform === platform ? 'ring-2 ring-blue-500 ring-offset-2' : ''
+                    className={`w-13 h-13 rounded-2xl flex items-center justify-center transition-all duration-200 hover:scale-105 relative ${hasUrl
+                        ? `${config.color} text-white shadow-sm`
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                      } ${isSelected ? 'ring-4 ring-blue-500/30 border-blue-500' : ''
                       }`}
                   >
                     {config.icon}
+                    {hasUrl && (
+                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-boxdark"></span>
+                    )}
                   </button>
-                  <span className="mt-2 text-xs text-slate-600 font-medium">
+                  <span className="mt-1.5 text-[11px] text-slate-600 dark:text-slate-400 font-medium">
                     {config.name}
                   </span>
-                  {hasUrl && (
-                    <div className="mt-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                  )}
                 </div>
               );
             })}
           </div>
 
-          {/* Input box that appears under the active social media platform */}
+          {/* Social Platform Input Drawer */}
           {activeSocialPlatform && (
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6 animate-fadeIn">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white ${socialMediaConfig[activeSocialPlatform].color}`}>
+            <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-strokedark rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-white ${socialMediaConfig[activeSocialPlatform].color}`}>
                     {socialMediaConfig[activeSocialPlatform].icon}
                   </div>
-                  <span className="font-semibold text-slate-800">
+                  <span className="text-xs font-bold text-slate-800 dark:text-white">
                     Add {socialMediaConfig[activeSocialPlatform].name} Link
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setActiveSocialPlatform("")}
-                  className="text-slate-500 hover:text-slate-700"
+                  className="text-slate-400 hover:text-slate-600 text-sm font-bold"
                 >
-                  ×
+                  ✕
                 </button>
               </div>
-              <div className="flex space-x-2">
+
+              <div className="flex gap-2">
                 <input
                   type="url"
                   placeholder={socialMediaConfig[activeSocialPlatform].placeholder}
                   defaultValue={(formData.socialLinks || []).find(link => link.platform === activeSocialPlatform)?.url || ""}
-                  className="flex-1 p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="flex-1 px-3.5 py-2 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
                       handleSocialLinkChange(activeSocialPlatform, e.target.value);
@@ -9622,51 +9407,99 @@ const CreateCard = () => {
                     const input = e.target.previousElementSibling;
                     handleSocialLinkChange(activeSocialPlatform, input.value);
                   }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-2xs transition-colors"
                 >
-                  Save
+                  Save Link
                 </button>
               </div>
             </div>
           )}
 
-          {/* Show added links */}
-          <div className="mt-6">
-            {(formData.socialLinks || []).filter(link => link.url).length > 0 && (
-              <>
-                <h4 className="font-semibold text-slate-700 mb-3">Added Social Links:</h4>
-                <div className="space-y-2">
-                  {(formData.socialLinks || [])
-                    .filter(link => link.url)
-                    .map((link) => (
-                      <div key={link.platform} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white ${socialMediaConfig[link.platform].color}`}>
-                            {socialMediaConfig[link.platform].icon}
-                          </div>
-                          <span className="font-medium text-slate-700">
-                            {socialMediaConfig[link.platform].name}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm text-slate-500 truncate max-w-40">
-                            {link.url}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleSocialLinkChange(link.platform, "")}
-                            className="text-red-500 hover:text-red-700 text-sm"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </>
-            )}
-          </div>
+          {/* Added Social Links Pills */}
+          {(formData.socialLinks || []).filter(link => link.url).length > 0 && (
+            <div className="pt-3 border-t border-slate-200/80 dark:border-strokedark space-y-2">
+              <h5 className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Configured Links ({(formData.socialLinks || []).filter(link => link.url).length}):
+              </h5>
+              <div className="flex flex-wrap gap-2">
+                {(formData.socialLinks || [])
+                  .filter(link => link.url)
+                  .map((link) => (
+                    <div key={link.platform} className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-strokedark rounded-xl text-xs">
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">
+                        {socialMediaConfig[link.platform]?.name || link.platform}:
+                      </span>
+                      <span className="text-slate-400 max-w-32 truncate font-mono text-[11px]">
+                        {link.url}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleSocialLinkChange(link.platform, "")}
+                        className="text-rose-500 hover:text-rose-700 ml-1"
+                        title="Remove link"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Dynamic QR Code for Personal Cards */}
+        {formData.cardType === 'Personal' && isFieldVisible('dynamicQRCode') && (
+          <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-4 shadow-2xs">
+            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <FaQrcode className="w-3.5 h-3.5 text-blue-500" />
+              Dynamic QR Code Settings
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">QR Code Type</label>
+                <select
+                  value={formData.dynamicQRCode?.type || "dynamic"}
+                  onChange={(e) => {
+                    const updatedData = {
+                      ...formData,
+                      dynamicQRCode: { ...formData.dynamicQRCode, type: e.target.value }
+                    };
+                    setFormData(updatedData);
+                    formDataRef.current = updatedData;
+                    setHasUnsavedChanges(true);
+                    setChangeCount(prev => prev + 1);
+                    autoSaveToLocalStorage(updatedData);
+                  }}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none"
+                >
+                  <option value="dynamic">Dynamic (Editable URL destination)</option>
+                  <option value="static">Static (Direct link)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Target URL (Optional - defaults to card link)</label>
+                <input
+                  type="url"
+                  placeholder="https://your-custom-destination.com"
+                  value={formData.dynamicQRCode?.targetUrl || ""}
+                  onChange={(e) => {
+                    const updatedData = {
+                      ...formData,
+                      dynamicQRCode: { ...formData.dynamicQRCode, targetUrl: e.target.value }
+                    };
+                    setFormData(updatedData);
+                    formDataRef.current = updatedData;
+                    setHasUnsavedChanges(true);
+                    setChangeCount(prev => prev + 1);
+                    autoSaveToLocalStorage(updatedData);
+                  }}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-strokedark bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -9682,12 +9515,15 @@ const CreateCard = () => {
 
     if (!shouldShowPremiumSection) {
       return (
-        <div className="text-center py-12">
-          <p className="text-slate-500 text-lg">
-            No premium features available for your current plan ({formData.cardType}).
-          </p>
-          <p className="text-slate-400 text-sm mt-2">
-            Upgrade to Business or BusinessPremium plan for premium features.
+        <div className="text-center py-16 px-4 bg-slate-50/50 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl shadow-2xs">
+            ✨
+          </div>
+          <h4 className="text-base font-semibold text-slate-800 dark:text-white">
+            No interactive features configured for your current plan
+          </h4>
+          <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1.5 max-w-md mx-auto">
+            Your current plan is <span className="font-semibold text-blue-600 dark:text-blue-400">{formData.cardType || 'Personal'}</span>. Additional add-ons or higher-tier plans unlock interactive widgets, appointment booking, document managers, and live chat.
           </p>
         </div>
       );
@@ -11069,7 +10905,7 @@ const CreateCard = () => {
             )}
 
             {/* QR Code Settings */}
-            {isFieldVisible('dynamicQRCode') && (
+            {formData.cardType !== 'Personal' && isFieldVisible('dynamicQRCode') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
                   <FaQrcode className="w-5 h-5 text-blue-500 mr-2" />
@@ -11191,194 +11027,140 @@ const CreateCard = () => {
   // Design Selection Component - Updated with preview
   const renderDesignSelection = () => (
     <div className="space-y-6">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4">Choose Your Card Design</h3>
-      <p className="text-slate-600 mb-6">Select a design template for your digital card. Preview updates in real-time.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200/80 dark:border-strokedark">
+        <div>
+          <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Choose Your Card Design</h3>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+            Select a theme for your digital card. Live preview updates immediately below.
+          </p>
+        </div>
+        {formData.design && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 w-fit">
+            <FaCheck className="w-3 h-3 text-emerald-500" />
+            {designTemplates.find(t => t.id === formData.design)?.name} Theme Active
+          </span>
+        )}
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Left column: Design options - Reduced from col-span-2 to col-span-1 */}
-        <div className="lg:col-span-1 space-y-4">
-          {designTemplates.map((template) => (
-            <div
-              key={template.id}
-              className={`border-2 rounded-lg p-3 cursor-pointer transition-all duration-200 ${formData.design === template.id
-                  ? 'border-blue-500 bg-blue-50 shadow-md'
-                  : 'border-slate-300 hover:border-slate-400 hover:shadow-md'
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left column: Design options */}
+        <div className="lg:col-span-4 space-y-3">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+            Available Templates ({designTemplates.length})
+          </p>
+          {designTemplates.map((template) => {
+            const isSelected = formData.design === template.id;
+            return (
+              <div
+                key={template.id}
+                className={`relative rounded-2xl p-3.5 cursor-pointer transition-all duration-200 border ${
+                  isSelected
+                    ? 'border-blue-600 dark:border-blue-500 bg-blue-50/60 dark:bg-blue-950/30 shadow-md ring-2 ring-blue-500/20'
+                    : 'border-slate-200 dark:border-strokedark bg-white dark:bg-boxdark hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-xs'
                 }`}
-              onClick={() => handleDesignSelect(template.id)}
-            >
-              <div className="space-y-3">
-                <div className={`w-full h-20 rounded-lg ${template.preview} flex items-center justify-center text-white font-bold`}>
-                  {template.name}
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-semibold text-slate-800 text-sm">{template.name}</h4>
-                    <div className={`w-5 h-5 rounded-full border-2 ${formData.design === template.id
-                        ? 'bg-blue-500 border-blue-500'
-                        : 'border-slate-300'
-                      } flex items-center justify-center`}>
-                      {formData.design === template.id && (
-                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
+                onClick={() => handleDesignSelect(template.id)}
+              >
+                <div className="flex items-center gap-3">
+                  {/* Theme Gradient Swatch */}
+                  <div className={`w-14 h-14 rounded-xl ${template.preview} flex items-center justify-center text-white font-bold text-xs shadow-inner flex-shrink-0`}>
+                    Aa
                   </div>
-                  <p className="text-xs text-slate-600 mb-1">{template.description}</p>
-                  <p className="text-xs text-slate-500 font-medium">
-                    Best for: {
-                      template.id === 'default' ? 'All professionals' :
-                        template.id === 'creative' ? 'Executives/managers' :
-                          template.id === 'modern' ? 'Creative fields' :
-                            template.id === 'dark' ? 'Artists/designers' :
-                              'Business/corporate'
-                    }
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1 mb-0.5">
+                      <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                        {template.name}
+                      </h4>
+                      <div
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
+                          isSelected
+                            ? 'bg-blue-600 border-blue-600 text-white'
+                            : 'border-slate-300 dark:border-slate-600 bg-transparent'
+                        }`}
+                      >
+                        {isSelected && <FaCheck className="w-2.5 h-2.5 text-white" />}
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mb-1">
+                      {template.description}
+                    </p>
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
+                      Best for: {
+                        template.id === 'default' ? 'All professionals' :
+                        template.id === 'creative' ? 'Creative & Portfolios' :
+                        template.id === 'modern' ? 'Tech & Startup' :
+                        template.id === 'dark' ? 'Modern Dark Mode' :
+                        'Corporate & Business'
+                      }
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Right column: Live preview */}
+        <div className="lg:col-span-8 space-y-6">
+          <div className="bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-strokedark rounded-2xl p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <h4 className="font-bold text-slate-900 dark:text-white text-base">Interactive Live Preview</h4>
+              </div>
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Mobile Mockup View
+              </span>
+            </div>
+
+            {/* Smartphone Device Frame Preview */}
+            <div className="mb-6 flex justify-center">
+              <div className="w-full max-w-sm sm:max-w-md bg-slate-900 rounded-[2.5rem] p-3 shadow-2xl border-4 border-slate-800 dark:border-slate-700 relative">
+                {/* Phone Notch/Island */}
+                <div className="w-24 h-4 bg-slate-800 rounded-full mx-auto mb-2 flex items-center justify-center">
+                  <div className="w-2.5 h-2.5 rounded-full bg-slate-900"></div>
+                </div>
+                {/* Screen Container */}
+                <div className="bg-white dark:bg-boxdark rounded-[2rem] overflow-hidden min-h-[460px] max-h-[620px] overflow-y-auto">
+                  {renderDesignPreview()}
+                </div>
+              </div>
+            </div>
+
+            {/* Preview Content Details Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-6 border-t border-slate-200/80 dark:border-strokedark">
+              <div className="bg-white dark:bg-boxdark rounded-xl p-4 border border-slate-200/80 dark:border-strokedark space-y-2">
+                <h5 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Preview Identity
+                </h5>
+                <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                  <p><strong className="text-slate-900 dark:text-white">Name:</strong> {formData.firstName || "Your"} {formData.lastName || "Name"}</p>
+                  <p><strong className="text-slate-900 dark:text-white">Title:</strong> {formData.jobTitle || "Your Designation"}</p>
+                  {formData.companyName && <p><strong className="text-slate-900 dark:text-white">Company:</strong> {formData.companyName}</p>}
+                  {formData.tagline && <p><strong className="text-slate-900 dark:text-white">Tagline:</strong> "{formData.tagline}"</p>}
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-boxdark rounded-xl p-4 border border-slate-200/80 dark:border-strokedark space-y-2">
+                <h5 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Plan & Design Configuration
+                </h5>
+                <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                  <p><strong className="text-slate-900 dark:text-white">Plan:</strong> {formData.cardType || 'Personal'}</p>
+                  <p><strong className="text-slate-900 dark:text-white">Design:</strong> {formData.design ? designTemplates.find(t => t.id === formData.design)?.name : 'None selected'}</p>
+                  <p className="text-[11px] text-blue-600 dark:text-blue-400 pt-1">
+                    ℹ️ You can change your theme anytime after publishing without losing data.
                   </p>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Right column: Live preview - Increased from col-span-1 to col-span-3 */}
-        <div className="lg:col-span-3 space-y-6">
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-6">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h4 className="font-semibold text-slate-800 text-lg">Live Preview</h4>
-                <p className="text-slate-600 text-sm mt-1">See how your card will look with the selected design</p>
-              </div>
-              {formData.design && (
-                <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
-                  {designTemplates.find(t => t.id === formData.design)?.name} Selected
-                </div>
-              )}
-            </div>
-
-            {/* Preview Card - Now much larger */}
-            <div className="mb-6 flex justify-center">
-              <div className="w-full max-w-xl">
-                {renderDesignPreview()}
-              </div>
-            </div>
-
-            {/* Preview Info - Expanded */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <h5 className="font-medium text-slate-700">Preview Content</h5>
-                <ul className="space-y-2">
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
-                    <div>
-                      <span className="text-sm font-medium text-slate-600">Name:</span>
-                      <p className="text-slate-800">
-                        {formData.firstName || "Your"} {formData.lastName || "Name"}
-                      </p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
-                    <div>
-                      <span className="text-sm font-medium text-slate-600">Title:</span>
-                      <p className="text-slate-800">{formData.jobTitle || "Your title"}</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
-                    <div>
-                      <span className="text-sm font-medium text-slate-600">Company:</span>
-                      <p className="text-slate-800">{formData.companyName || "Your company"}</p>
-                    </div>
-                  </li>
-                  {formData.tagline && (
-                    <li className="flex items-start">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></div>
-                      <div>
-                        <span className="text-sm font-medium text-slate-600">Tagline:</span>
-                        <p className="text-slate-800 italic">"{formData.tagline}"</p>
-                      </div>
-                    </li>
-                  )}
-                </ul>
-              </div>
-
-              <div className="space-y-3">
-                <h5 className="font-medium text-slate-700">Card Details</h5>
-                <div className="space-y-3">
-                  <div className="bg-white p-3 rounded-lg border border-slate-200">
-                    <p className="text-xs text-slate-500 font-medium mb-1">Current Plan</p>
-                    <p className="font-semibold text-slate-800">{formData.cardType || 'Personal'}</p>
-                  </div>
-                  <div className="bg-white p-3 rounded-lg border border-slate-200">
-                    <p className="text-xs text-slate-500 font-medium mb-1">Selected Design</p>
-                    <p className="font-semibold text-slate-800">
-                      {formData.design
-                        ? designTemplates.find(t => t.id === formData.design)?.name
-                        : 'None selected'}
-                    </p>
-                  </div>
-                  <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                    <p className="text-xs text-blue-600">
-                      <span className="font-medium">Note:</span> The preview shows your actual card layout with sample content where information is missing.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Design Tips - Expanded */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-            <h4 className="font-semibold text-blue-800 text-lg mb-3 flex items-center">
-              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-              Design Selection Tips
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="font-medium text-blue-700 mb-2">Choosing the right design:</p>
-                <ul className="space-y-1.5 text-sm text-blue-600">
-                  <li className="flex items-start">
-                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
-                    <span><strong>Default:</strong> Professional & versatile for all industries</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
-                    <span><strong>Modern:</strong> Clean, centered layout for tech professionals</span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <p className="font-medium text-blue-700 mb-2">&nbsp;</p>
-                <ul className="space-y-1.5 text-sm text-blue-600">
-                  <li className="flex items-start">
-                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
-                    <span><strong>Dark:</strong> Elegant theme for creative fields</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 mr-2 flex-shrink-0"></div>
-                    <span><strong>Light:</strong> Bright design for business & corporate use</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div className="mt-4 pt-4 border-t border-blue-200">
-              <p className="text-sm text-blue-700">
-                <span className="font-medium">Pro tip:</span> You can always change your design later without affecting your content.
-              </p>
             </div>
           </div>
         </div>
       </div>
 
       {!formData.design && (
-        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-600 text-sm flex items-center">
-            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-            ⚠️ Please select a design theme before proceeding
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-xl">
+          <p className="text-amber-800 dark:text-amber-300 text-sm font-semibold flex items-center gap-2">
+            <span>⚠️</span> Please select a design theme above before finalizing your card.
           </p>
         </div>
       )}
@@ -11428,7 +11210,12 @@ const CreateCard = () => {
   // Progress Steps Component
   const ProgressSteps = () => {
     const availableSteps = getAvailableSteps();
-    const stepLabels = {
+    const isPersonal = (formData?.cardType || 'Personal') === 'Personal';
+    const stepLabels = isPersonal ? {
+      1: 'DIGITAL IDENTITY',
+      3: 'CONTACT & SOCIAL',
+      5: 'DESIGN'
+    } : {
       1: 'PROFILE',
       2: 'BUSINESS',
       3: 'CONTACT',
@@ -11436,114 +11223,194 @@ const CreateCard = () => {
       5: 'DESIGN'
     };
 
-    return (
-      <div className="flex justify-between mb-8 relative">
-        <div className="absolute top-1/2 left-0 right=0 h-1 bg-slate-200 -z-10"></div>
-        <div
-          className="absolute top-1/2 left-0 h-1 bg-blue-500 -z-10 transition-all duration-300"
-          style={{ width: `${((availableSteps.indexOf(currentStep)) / (availableSteps.length - 1)) * 100}%` }}
-        ></div>
+    const currentIndex = availableSteps.indexOf(currentStep);
+    const progressPercent = availableSteps.length > 1 ? (currentIndex / (availableSteps.length - 1)) * 100 : 0;
 
-        {availableSteps.map((step, index) => (
-          <div key={step} className="flex flex-col items-center">
-            <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${currentStep >= step
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'bg-slate-200 text-slate-500'
-                } ${currentStep === step ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
-            >
-              {index + 1}
-            </div>
-            <span className="mt-2 text-sm font-medium text-slate-700">
-              {stepLabels[step]}
-            </span>
-          </div>
-        ))}
+    return (
+      <div className="w-full max-w-3xl mx-auto mb-10 px-2 sm:px-6">
+        <div className="relative flex items-center justify-between">
+          {/* Background Track */}
+          <div className="absolute top-1/2 left-0 right-0 h-1 -translate-y-1/2 bg-slate-200 dark:bg-slate-700 rounded-full z-0"></div>
+          {/* Active Progress Fill */}
+          <div
+            className="absolute top-1/2 left-0 h-1 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full z-0 transition-all duration-500 ease-out"
+            style={{ width: `${progressPercent}%` }}
+          ></div>
+
+          {availableSteps.map((step, index) => {
+            const isCompleted = currentStep > step;
+            const isActive = currentStep === step;
+
+            return (
+              <div key={step} className="relative z-10 flex flex-col items-center group">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (step <= currentStep) {
+                      setCurrentStep(step);
+                    }
+                  }}
+                  disabled={step > currentStep}
+                  className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-sm transition-all duration-300 ${
+                    isActive
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 ring-4 ring-blue-500/20 scale-110'
+                      : isCompleted
+                      ? 'bg-emerald-500 text-white shadow-sm hover:scale-105 cursor-pointer'
+                      : 'bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                  }`}
+                  title={isCompleted ? `Go back to step ${index + 1}` : undefined}
+                >
+                  {isCompleted ? (
+                    <FaCheck className="w-4 h-4 text-white" />
+                  ) : (
+                    <span>{index + 1}</span>
+                  )}
+                </button>
+                <span
+                  className={`mt-2.5 text-[11px] sm:text-xs font-semibold tracking-wider text-center transition-colors uppercase ${
+                    isActive
+                      ? 'text-blue-600 dark:text-blue-400 font-bold'
+                      : isCompleted
+                      ? 'text-slate-700 dark:text-slate-300'
+                      : 'text-slate-400 dark:text-slate-500'
+                  }`}
+                >
+                  {stepLabels[step]}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   };
 
   return (
-    <div className="w-full max-w-8xl mx-auto p-3 md:p-6 pl-2 md:pl-4 ml-2">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 py-6 space-y-6">
       <WarningPopup />
 
-      {/* Back to Dashboard Button */}
-      <button
-        onClick={handleGoBackDashboard}
-        className="mb-6 flex items-center text-blue-600 hover:text-blue-800 transition-colors"
-        title="Go back to dashboard"
-      >
-        <FaArrowLeft className="w-4 h-4 mr-2" />
-        <span className="font-medium">Back to Dashboard</span>
-      </button>
+      {/* Top Navigation Bar: Back & Quick Info */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <button
+          onClick={handleGoBackDashboard}
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-boxdark border border-slate-200/80 dark:border-strokedark rounded-xl shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-all w-fit"
+          title="Return to your cards dashboard"
+        >
+          <FaArrowLeft className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+          <span>Back to Dashboard</span>
+        </button>
 
-      <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 w-full">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-slate-800 text-center">
-          {editingCard ? "Edit Your Card" : "Create Your Card"}
-        </h2>
+        {/* Plan & Status Pill */}
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
+            {formData.cardType || 'Personal'} Plan
+          </span>
+          {editingCard && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
+              Editing Existing Card
+            </span>
+          )}
+        </div>
+      </div>
 
+      {/* Main Wizard Card Container */}
+      <div className="bg-white dark:bg-boxdark rounded-2xl border border-slate-200/80 dark:border-strokedark shadow-xs p-4 sm:p-6 md:p-8 w-full relative">
+        {/* Title Header */}
+        <div className="text-center max-w-xl mx-auto mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            {editingCard ? "Edit Your Digital Card" : "Create Your Digital Card"}
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+            {editingCard 
+              ? "Update your information, change design themes, or customize contact links."
+              : "Set up your digital identity in easy steps and publish your shareable card."}
+          </p>
+        </div>
+
+        {/* Stepper */}
+        <ProgressSteps />
+
+        {/* Editing Mode Banner */}
         {editingCard && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center">
-              <FaCheck className="w-5 h-5 text-blue-500 mr-2" />
-              <p className="text-blue-700">
-                <strong>Editing Mode:</strong> You are editing an existing card.
-                {formData.design && " You can change the design or any other details."}
-              </p>
+          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50/50 dark:from-blue-950/20 dark:to-indigo-950/20 border border-blue-200 dark:border-blue-800/60 rounded-xl">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
+                  <FaCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-white">
+                    Editing Card: <span className="text-blue-600 dark:text-blue-400">{formData.firstName} {formData.lastName}</span>
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Changes will update your live card at its permanent URL.
+                  </p>
+                </div>
+              </div>
+              {formData.urlSlug && (
+                <a
+                  href={`/preview/${formData.urlSlug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 shadow-2xs hover:bg-blue-50 transition-colors"
+                >
+                  <FaGlobe className="w-3.5 h-3.5" />
+                  View Live Card
+                </a>
+              )}
             </div>
           </div>
         )}
 
-        <ProgressSteps />
-
         {/* Unlocked Add-ons Banner */}
         {Object.values(formData?.addons || {}).some(Boolean) && (
-          <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 border border-purple-200 rounded-xl shadow-xs">
+          <div className="mb-6 p-4 bg-gradient-to-r from-purple-50/70 via-indigo-50/50 to-blue-50/70 dark:from-purple-950/20 dark:via-indigo-950/20 dark:to-blue-950/20 border border-purple-200/80 dark:border-purple-800/50 rounded-xl shadow-2xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-purple-600 animate-pulse"></span>
-                <span className="text-sm font-semibold text-purple-900">
+                <span className="text-xs sm:text-sm font-semibold text-purple-900 dark:text-purple-300">
                   Active Add-Ons Unlocked for your {formData.cardType} Plan:
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {(hasActiveAddon('gallery') || hasActiveAddon('photogallery')) && (
-                  <span className="text-xs bg-white text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200 shadow-xs flex items-center gap-1.5">
+                  <span className="text-xs bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 font-semibold px-3 py-1 rounded-full border border-purple-200 dark:border-purple-800 shadow-2xs flex items-center gap-1.5">
                     <span>📸</span> Photo Gallery
                   </span>
                 )}
                 {(hasActiveAddon('docsbuilder') || hasActiveAddon('docsmanager') || hasActiveAddon('catalogbuilder')) && (
-                  <span className="text-xs bg-white text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200 shadow-xs flex items-center gap-1.5">
+                  <span className="text-xs bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 font-semibold px-3 py-1 rounded-full border border-purple-200 dark:border-purple-800 shadow-2xs flex items-center gap-1.5">
                     <span>📄</span> Docs Builder
                   </span>
                 )}
                 {hasActiveAddon('profilebuilder') && (
-                  <span className="text-xs bg-white text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200 shadow-xs flex items-center gap-1.5">
+                  <span className="text-xs bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 font-semibold px-3 py-1 rounded-full border border-purple-200 dark:border-purple-800 shadow-2xs flex items-center gap-1.5">
                     <span>👤</span> Profile Builder
                   </span>
                 )}
                 {hasActiveAddon('portfoliobuilder') && (
-                  <span className="text-xs bg-white text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200 shadow-xs flex items-center gap-1.5">
+                  <span className="text-xs bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 font-semibold px-3 py-1 rounded-full border border-purple-200 dark:border-purple-800 shadow-2xs flex items-center gap-1.5">
                     <span>💼</span> Portfolio Builder
                   </span>
                 )}
                 {(hasActiveAddon('nfccard') || hasActiveAddon('nfc')) && (
-                  <span className="text-xs bg-white text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200 shadow-xs flex items-center gap-1.5">
+                  <span className="text-xs bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 font-semibold px-3 py-1 rounded-full border border-purple-200 dark:border-purple-800 shadow-2xs flex items-center gap-1.5">
                     <span>💳</span> NFC Smart Card
                   </span>
                 )}
                 {hasActiveAddon('whatsappintegration') && (
-                  <span className="text-xs bg-white text-green-700 font-semibold px-3 py-1 rounded-full border border-green-200 shadow-xs flex items-center gap-1.5">
+                  <span className="text-xs bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-300 font-semibold px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800 shadow-2xs flex items-center gap-1.5">
                     <span>💬</span> WhatsApp Live Chat
                   </span>
                 )}
                 {hasActiveAddon('leadgen') && (
-                  <span className="text-xs bg-white text-blue-700 font-semibold px-3 py-1 rounded-full border border-blue-200 shadow-xs flex items-center gap-1.5">
+                  <span className="text-xs bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-300 font-semibold px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800 shadow-2xs flex items-center gap-1.5">
                     <span>🎯</span> Lead Generation
                   </span>
                 )}
                 {hasActiveAddon('appointmentbooking') && (
-                  <span className="text-xs bg-white text-blue-700 font-semibold px-3 py-1 rounded-full border border-blue-200 shadow-xs flex items-center gap-1.5">
+                  <span className="text-xs bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-300 font-semibold px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800 shadow-2xs flex items-center gap-1.5">
                     <span>📅</span> Appointment Booking
                   </span>
                 )}
@@ -11552,48 +11419,75 @@ const CreateCard = () => {
           </div>
         )}
 
+        {/* Main Content Form */}
         <form onSubmit={(e) => e.preventDefault()}>
-          <div className="mb-8 min-h-[400px]">
+          <div className="mb-10 min-h-[420px]">
             {renderCurrentStep()}
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          {/* Sticky Bottom Navigation Bar */}
+          <div className="sticky bottom-0 z-30 -mx-4 sm:-mx-6 md:-mx-8 -mb-4 sm:-mb-6 md:-mb-8 p-4 sm:p-5 md:px-8 bg-white/95 dark:bg-boxdark/95 backdrop-blur-md border-t border-slate-200/80 dark:border-strokedark rounded-b-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3">
+            {/* Back Button */}
             <button
               type="button"
               onClick={prevStep}
               disabled={(currentStep === 1) || loading}
-              className={`px-6 py-3 rounded-lg transition-colors w-full md:w-auto ${(currentStep === 1)
-                  ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                  : 'bg-slate-500 text-white hover:bg-slate-600'
+              className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all w-full sm:w-auto ${(currentStep === 1)
+                  ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/60 dark:border-slate-800'
+                  : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-strokedark hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs'
                 }`}
             >
-              BACK
+              <FaArrowLeft className="w-3.5 h-3.5" />
+              <span>Back</span>
             </button>
 
-            <div className={`text-sm text-center ${saveStatus.includes("Saving") ? "text-blue-500" :
-                saveStatus.includes("success") ? "text-green-500" :
-                  saveStatus.includes("Error") ? "text-red-500" : "text-gray-500"
-              }`}>
-              {saveStatus}
+            {/* Auto-save Status */}
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+              {saveStatus.includes("Saving") ? (
+                <>
+                  <div className="w-3.5 h-3.5 rounded-full border-2 border-blue-500 border-t-transparent animate-spin"></div>
+                  <span className="text-blue-600 dark:text-blue-400 font-medium">Auto-saving...</span>
+                </>
+              ) : saveStatus.includes("success") || saveStatus.includes("Saved") ? (
+                <>
+                  <FaCheck className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">{saveStatus || "All changes saved"}</span>
+                </>
+              ) : saveStatus.includes("Error") ? (
+                <span className="text-rose-500 font-medium">{saveStatus}</span>
+              ) : (
+                <span>{saveStatus}</span>
+              )}
             </div>
 
+            {/* Next / Submit CTA */}
             {isDesignStep() ? (
               <button
                 type="button"
                 onClick={handleFinalSubmit}
                 disabled={loading || !formData.design}
-                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 disabled:from-blue-300 disabled:to-purple-400 transition-colors w-full md:w-auto"
+                className="inline-flex items-center justify-center gap-2 px-7 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl text-sm font-semibold shadow-md shadow-blue-500/25 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all w-full sm:w-auto active:scale-[0.99]"
               >
-                {loading ? (editingCard ? "Updating..." : "Creating...") : `${editingCard ? 'Update' : 'Create'} Card`}
+                {loading ? (
+                  <>
+                    <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+                    <span>{editingCard ? "Updating Card..." : "Creating Card..."}</span>
+                  </>
+                ) : (
+                  <>
+                    <FaCheck className="w-4 h-4" />
+                    <span>{editingCard ? 'Save & Update Card' : 'Publish My Digital Card'}</span>
+                  </>
+                )}
               </button>
             ) : (
               <button
                 type="button"
                 onClick={nextStep}
                 disabled={loading}
-                className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300 transition-colors w-full md:w-auto"
+                className="inline-flex items-center justify-center gap-2 px-7 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-blue-500/25 transition-all w-full sm:w-auto active:scale-[0.99] disabled:opacity-50"
               >
-                {isLastContentStep() ? "CHOOSE DESIGN" : "NEXT"}
+                <span>{isLastContentStep() ? "Proceed to Design Selection →" : "Next Step →"}</span>
               </button>
             )}
           </div>
