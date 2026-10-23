@@ -12,6 +12,7 @@ import Modern from "../../assets/images/tailwickComp/Modern";
 // Your blue services and utilities
 import { verifyUser, resendVerificationEmail } from "../../service/userApi";
 import { setRole } from "../../store/RoleStore/roleSlice";
+import { CHECK_URL } from "../../utility/constants";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -72,6 +73,35 @@ const SignIn = () => {
         if (data.token) {
           localStorage.setItem('token', data.token);
         }
+
+        // Fetch user active subscription and purchased add-ons so logout/login restores them!
+        try {
+          const statusRes = await fetch(`${CHECK_URL}/status`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(data.token ? { 'Authorization': `Bearer ${data.token}` } : {})
+            },
+            credentials: 'include'
+          });
+          if (statusRes.ok) {
+            const statusData = await statusRes.json();
+            if (statusData.success && statusData.data) {
+              const sub = statusData.data;
+              if (sub.planType || sub.planName) {
+                localStorage.setItem('selected_plan', sub.planType || sub.planName);
+              }
+              if (Array.isArray(sub.purchasedAddons) && sub.purchasedAddons.length > 0) {
+                localStorage.setItem('selected_addons', JSON.stringify(sub.purchasedAddons));
+              }
+              if (sub.price || sub.amountPaid) {
+                localStorage.setItem('selected_plan_price', String(sub.price || sub.amountPaid));
+              }
+            }
+          }
+        } catch (subErr) {
+          console.warn("Could not sync subscription on sign in:", subErr);
+        }
         
         // Navigate based on role
         setTimeout(() => {
@@ -87,7 +117,7 @@ const SignIn = () => {
             // Default navigation if role not specified
             navigate('/card-dashbord');
           }
-        }, 1000);
+        }, 800);
         
       } else {
         // Always show resend button on login failure

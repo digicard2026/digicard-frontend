@@ -124,7 +124,8 @@ const ALL_IMAGE_PLANS = [
     supportedAddonKeys: [
       'gallery', 'catalogbuilder', 'brochurebuilder', 'profilebuilder',
       'portfoliobuilder', 'docsbuilder', 'nfccard', 'leadgen',
-      'leadmanagement', 'appointmentbooking'
+      'leadmanagement', 'appointmentbooking', 'whatsappintegration',
+      'analytics', 'docsmanager'
     ]
   },
   {
@@ -416,15 +417,66 @@ const SubscriptionPlans = () => {
     }
   };
 
+  // Pre-populate active add-ons from localStorage if available
+  useEffect(() => {
+    try {
+      const storedPlan = localStorage.getItem('selected_plan') || 'Business';
+      const storedAddons = localStorage.getItem('selected_addons');
+      if (storedAddons) {
+        const parsed = JSON.parse(storedAddons);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setSelectedAddonsMap((prev) => {
+            const current = { ...(prev[storedPlan] || {}) };
+            parsed.forEach((raw) => {
+              const info = getAddonInfo(raw);
+              const canonical = info ? info.key : String(raw).toLowerCase().trim();
+              current[canonical] = true;
+            });
+            return {
+              ...prev,
+              [storedPlan]: current
+            };
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Could not parse initial addons from localStorage", e);
+    }
+  }, []);
+
   const checkUserSubscription = async () => {
     try {
+      const token = localStorage.getItem('token') || '';
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const response = await fetch(`${CHECK_URL}/status`, {
+        headers,
         credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.data?.hasSubscription) {
-          setActiveSubscription(data.data);
+          const sub = data.data;
+          setActiveSubscription(sub);
+
+          const planKey = sub.planType || sub.planName || 'Business';
+          const purchased = Array.isArray(sub.purchasedAddons) ? sub.purchasedAddons : [];
+
+          if (purchased.length > 0) {
+            setSelectedAddonsMap((prev) => {
+              const current = { ...(prev[planKey] || {}) };
+              purchased.forEach((raw) => {
+                const info = getAddonInfo(raw);
+                const canonical = info ? info.key : String(raw).toLowerCase().trim();
+                current[canonical] = true;
+              });
+              return {
+                ...prev,
+                [planKey]: current
+              };
+            });
+          }
         } else {
           setActiveSubscription(null);
         }
