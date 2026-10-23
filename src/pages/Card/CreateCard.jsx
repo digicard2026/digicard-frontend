@@ -6265,8 +6265,28 @@ const CreateCard = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Helper to ensure canonical plan key matching fieldPlanMap
+  const normalizePlanKey = (raw = "") => {
+    if (!raw) return "Personal";
+    const cleaned = String(raw).replace(/[\s\-_]/g, '').toLowerCase();
+    if (cleaned === "free") return "free";
+    if (cleaned.includes("miniwebsite") || cleaned.includes("website")) return "MiniWebsite";
+    if (cleaned.includes("team")) return "Team";
+    if (cleaned.includes("corporate")) return "CorporateBusiness";
+    if (cleaned.includes("multiactivit") || cleaned.includes("multi")) return "EntrepreneurialsMulti";
+    if (cleaned.includes("entrepreneur")) return "Entrepreneurials";
+    if (cleaned.includes("professionalpro")) return "ProfessionalPro";
+    if (cleaned.includes("workingprofessional") || cleaned.includes("working")) return "Business";
+    if (cleaned.includes("professional")) return "Professionals";
+    if (cleaned.includes("serviceprovider") || cleaned.includes("businesspremium") || cleaned.includes("premium")) return "BusinessPremium";
+    if (cleaned.includes("business")) return "Business";
+    if (cleaned.includes("personal") || cleaned.includes("individual")) return "Personal";
+    return "Personal";
+  };
+
   // Get plan and addons from navigation state with localStorage fallback
-  const selectedPlanFromState = location.state?.selectedPlan || localStorage.getItem('selected_plan') || 'Personal';
+  const rawPlanFromState = location.state?.selectedPlan || localStorage.getItem('selected_plan') || 'Personal';
+  const selectedPlanFromState = normalizePlanKey(rawPlanFromState);
   let selectedAddonsFromState = location.state?.selectedAddons || [];
   let addonsObjFromState = location.state?.addonsObject || {};
 
@@ -6339,12 +6359,14 @@ const CreateCard = () => {
 
   // Field visibility based on selected plan and add-ons
   const isFieldVisible = (fieldName) => {
+    // Hidden fields (kept in codebase, but hidden from UI)
+    if (fieldName === 'interactiveElements') return false;
+
     // 1. Unlocked by active add-ons:
     if (fieldName === 'gallery' && (hasActiveAddon('gallery') || hasActiveAddon('photogallery'))) return true;
     if ((fieldName === 'catalog' || fieldName === 'catalogPDF' || fieldName === 'downloads') && 
         (hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder') || hasActiveAddon('brochurebuilder') || hasActiveAddon('docsmanager'))) return true;
     if (fieldName === 'nfcSettings' && (hasActiveAddon('nfccard') || hasActiveAddon('nfc'))) return true;
-    if (fieldName === 'interactiveElements' && (hasActiveAddon('leadgen') || hasActiveAddon('interactiveelements') || hasActiveAddon('appointmentbooking'))) return true;
     if (fieldName === 'clientList' && (hasActiveAddon('leadmanagement') || hasActiveAddon('leadgen'))) return true;
     if (fieldName === 'businessHours' && hasActiveAddon('appointmentbooking')) return true;
     if ((fieldName === 'liveChat' || fieldName === 'enableWhatsApp') && hasActiveAddon('whatsappintegration')) return true;
@@ -6857,58 +6879,44 @@ const CreateCard = () => {
     return `${FRONTEND_URL}/preview/${slug}`;
   };
 
-  // Close warning popup handler and focus back to the target field
-  const handleCloseWarning = (e) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    const currentMsg = (warningMessage || "").toLowerCase();
-    setShowWarning(false);
+  // Warning Popup Component
+  const WarningPopup = () => {
+    if (!showWarning) return null;
 
-    // Switch to step 1 if the error is about profile fields
-    if (currentMsg.includes('first name') || currentMsg.includes('email') || currentMsg.includes('last name')) {
-      if (currentStep !== 1) {
-        setCurrentStep(1);
-      }
-    } else if (currentMsg.includes('design')) {
-      if (currentStep !== 5) {
-        setCurrentStep(5);
-      }
-    }
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70 backdrop-blur-md">
+        <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center">
+              <span className="text-2xl mr-2">⚠️</span>
+              <h3 className="text-lg font-semibold text-slate-800">Required Field</h3>
+            </div>
+            <button
+              onClick={() => setShowWarning(false)}
+              className="text-slate-500 hover:text-slate-700 transition-colors duration-200 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100"
+            >
+              ×
+            </button>
+          </div>
 
-    // Scroll and focus directly to the target input field
-    setTimeout(() => {
-      let targetInput = null;
-      if (currentMsg.includes('first name')) {
-        targetInput = document.querySelector('input[name="firstName"]');
-      } else if (currentMsg.includes('email')) {
-        targetInput = document.querySelector('input[name="email"]') || document.querySelector('input[type="email"]');
-      } else if (currentMsg.includes('last name')) {
-        targetInput = document.querySelector('input[name="lastName"]');
-      } else if (currentMsg.includes('design')) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
+          <div className="text-center py-4">
+            <p className="text-slate-700 text-lg leading-relaxed">
+              {warningMessage}
+            </p>
+          </div>
 
-      if (targetInput) {
-        targetInput.focus();
-        targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 120);
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() => setShowWarning(false)}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 shadow-md"
+            >
+              I Understand
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
-
-  // Close warning popup on Escape key
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && showWarning) {
-        handleCloseWarning(e);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showWarning, warningMessage, currentStep]);
-
 
   // Handle change for basic fields
   const handleChange = (e) => {
@@ -11457,50 +11465,7 @@ const CreateCard = () => {
 
   return (
     <div className="w-full max-w-8xl mx-auto p-3 md:p-6 pl-2 md:pl-4 ml-2">
-      {/* Required Field Alert Modal (Rendered inline for reliable click handling) */}
-      {showWarning && (
-        <div 
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-md"
-          style={{ zIndex: 999999 }}
-          onClick={handleCloseWarning}
-        >
-          <div 
-            className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-100"
-            style={{ zIndex: 1000000 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center">
-                <span className="text-2xl mr-2">⚠️</span>
-                <h3 className="text-lg font-semibold text-slate-800">Required Field</h3>
-              </div>
-              <button
-                type="button"
-                onClick={handleCloseWarning}
-                className="text-slate-500 hover:text-slate-700 transition-colors duration-200 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 cursor-pointer"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="text-center py-4">
-              <p className="text-slate-700 text-lg leading-relaxed">
-                {warningMessage}
-              </p>
-            </div>
-
-            <div className="flex justify-center mt-4">
-              <button
-                type="button"
-                onClick={handleCloseWarning}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 shadow-md cursor-pointer"
-              >
-                I Understand
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <WarningPopup />
 
       {/* Back to Dashboard Button */}
       <button

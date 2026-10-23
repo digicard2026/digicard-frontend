@@ -234,6 +234,7 @@ export function SubscriptionBanner({
     if (cleaned.includes("multiactivit") || cleaned.includes("multi")) return "EntrepreneurialsMulti";
     if (cleaned.includes("entrepreneur")) return "Entrepreneurials";
     if (cleaned.includes("professionalpro")) return "ProfessionalPro";
+    if (cleaned.includes("workingprofessional") || cleaned.includes("working")) return "Business";
     if (cleaned.includes("professional")) return "Professionals";
     if (cleaned.includes("serviceprovider") || cleaned.includes("businesspremium") || cleaned.includes("premium")) return "BusinessPremium";
     if (cleaned.includes("business")) return "Business";
@@ -515,6 +516,77 @@ export function SubscriptionBanner({
             <ArrowRight style={{ width: 14, height: 14 }} />
           </button>
         </div>
+
+        {/* Active Add-ons Area */}
+        {(() => {
+          const ADDON_NAMES: Record<string, string> = {
+            gallery: "Photo Gallery",
+            photogallery: "Photo Gallery",
+            docsbuilder: "Docs Builder",
+            profilebuilder: "Profile Builder",
+            portfoliobuilder: "Portfolio Builder",
+            catalogbuilder: "Catalog Builder",
+            brochurebuilder: "Brochure Builder",
+            nfccard: "NFC Smart Card",
+            leadgen: "Lead Generation",
+            leadmanagement: "Lead Management",
+            appointmentbooking: "Appointment Booking",
+            whatsappintegration: "WhatsApp Integration",
+            analytics: "Analytics",
+            docsmanager: "Docs Manager"
+          };
+
+          let activeAddons: string[] = [];
+          if (Array.isArray((subscriptionData as any)?.purchasedAddons) && (subscriptionData as any).purchasedAddons.length > 0) {
+            activeAddons = (subscriptionData as any).purchasedAddons;
+          } else if (Array.isArray(userPlanData?.subscription?.purchasedAddons) && userPlanData.subscription.purchasedAddons.length > 0) {
+            activeAddons = userPlanData.subscription.purchasedAddons;
+          } else {
+            const stored = localStorage.getItem("selected_addons");
+            if (stored) {
+              try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) activeAddons = parsed;
+              } catch (e) {}
+            }
+          }
+
+          if (!activeAddons || activeAddons.length === 0) return null;
+
+          return (
+            <div style={{ marginTop: "0.25rem", marginBottom: "0.85rem", padding: "0.6rem 0.85rem", backgroundColor: "#f8fafc", borderRadius: "0.5rem", border: "1px solid #e2e8f0" }}>
+              <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "5px" }}>
+                <span>✨ Active Add-ons ({activeAddons.length}):</span>
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                {activeAddons.map((addonKey) => {
+                  const cleaned = String(addonKey).toLowerCase().replace(/[\s\-_]/g, '');
+                  const label = ADDON_NAMES[cleaned] || addonKey;
+                  return (
+                    <span
+                      key={addonKey}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        padding: "3px 9px",
+                        borderRadius: "9999px",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        backgroundColor: "#eff6ff",
+                        color: "#1d4ed8",
+                        border: "1px solid #bfdbfe",
+                      }}
+                    >
+                      <Check style={{ width: 12, height: 12 }} />
+                      {label}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Days Progress Bar */}
         <div>

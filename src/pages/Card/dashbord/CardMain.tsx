@@ -71,6 +71,17 @@ const Indexs = () => {
 
       setSubscriptionData(enhancedData);
 
+      // Keep localStorage in sync with backend!
+      if (resolvedPlan && resolvedPlan !== "free") {
+        localStorage.setItem("selected_plan", resolvedPlan);
+      }
+      if (Array.isArray(data.data?.purchasedAddons) && data.data.purchasedAddons.length > 0) {
+        localStorage.setItem("selected_addons", JSON.stringify(data.data.purchasedAddons));
+      }
+      if (data.data?.price) {
+        localStorage.setItem("selected_plan_price", String(data.data.price));
+      }
+
       if (enhancedData.status === "expired" || enhancedData.daysLeft <= 0) {
         setShowSubscriptionModal(true);
       }
@@ -108,6 +119,7 @@ const Indexs = () => {
     if (cleaned.includes("multiactivit") || cleaned.includes("multi")) return "EntrepreneurialsMulti";
     if (cleaned.includes("entrepreneur")) return "Entrepreneurials";
     if (cleaned.includes("professionalpro")) return "ProfessionalPro";
+    if (cleaned.includes("workingprofessional") || cleaned.includes("working")) return "Business";
     if (cleaned.includes("professional")) return "Professionals";
     if (cleaned.includes("serviceprovider") || cleaned.includes("businesspremium") || cleaned.includes("premium")) return "BusinessPremium";
     if (cleaned.includes("business")) return "Business";
@@ -296,7 +308,9 @@ const Indexs = () => {
       return;
     }
     const userEmail = localStorage.getItem("user_email");
-    navigate("/create", { state: { userEmail, card: card.cardData } });
+    const selectedPlan = card.cardData?.cardType || subscriptionData?.planType || localStorage.getItem("selected_plan") || "Personal";
+    const selectedAddons = subscriptionData?.purchasedAddons || (localStorage.getItem("selected_addons") ? JSON.parse(localStorage.getItem("selected_addons")!) : []);
+    navigate("/create", { state: { userEmail, selectedPlan, selectedAddons, card: card.cardData } });
   };
 
   const handleShareCard = (card: Card, index: number) => {
@@ -316,8 +330,9 @@ const Indexs = () => {
       return;
     }
     const userEmail = localStorage.getItem("user_email");
-    const selectedPlan = subscriptionData?.planType || "free";
-    navigate("/create", { state: { userEmail, selectedPlan } });
+    const selectedPlan = subscriptionData?.planType || localStorage.getItem("selected_plan") || "Personal";
+    const selectedAddons = subscriptionData?.purchasedAddons || (localStorage.getItem("selected_addons") ? JSON.parse(localStorage.getItem("selected_addons")!) : []);
+    navigate("/create", { state: { userEmail, selectedPlan, selectedAddons } });
   };
 
   const handleUpgradeSubscription = () => {

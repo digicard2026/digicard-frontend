@@ -12,7 +12,7 @@ import Modern from "../../assets/images/tailwickComp/Modern";
 // Your blue services and utilities
 import { verifyUser, resendVerificationEmail } from "../../service/userApi";
 import { setRole } from "../../store/RoleStore/roleSlice";
-import { setCookie } from "../../utility/cookies";
+import { CHECK_URL } from "../../utility/constants";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -65,43 +65,59 @@ const SignIn = () => {
           successAlert.classList.remove('hidden');
         }
         
-        dispatch(setRole(data.role || ''));
+        dispatch(setRole(data.role));
         // Store user info in localStorage
         localStorage.setItem('user_id', data.user_id);
         localStorage.setItem('user_email', loginData.email);
-        localStorage.setItem('user_role', data.role || '');
-        localStorage.setItem('role', data.role || '');
-        localStorage.setItem('user', JSON.stringify({ id: data.user_id, email: loginData.email, role: data.role }));
+        localStorage.setItem('user_role', data.role);
         if (data.token) {
           localStorage.setItem('token', data.token);
         }
-        setCookie('user_id', data.user_id, 7);
 
-        if (data.role === 'franchise') {
-          localStorage.setItem('franchise_user_id', data.user_id);
-        } else if (data.role === 'partner') {
-          localStorage.setItem('partner_user_id', data.user_id);
+        // Fetch user active subscription and purchased add-ons so logout/login restores them!
+        try {
+          const statusRes = await fetch(`${CHECK_URL}/status`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(data.token ? { 'Authorization': `Bearer ${data.token}` } : {})
+            },
+            credentials: 'include'
+          });
+          if (statusRes.ok) {
+            const statusData = await statusRes.json();
+            if (statusData.success && statusData.data) {
+              const sub = statusData.data;
+              if (sub.planType || sub.planName) {
+                localStorage.setItem('selected_plan', sub.planType || sub.planName);
+              }
+              if (Array.isArray(sub.purchasedAddons) && sub.purchasedAddons.length > 0) {
+                localStorage.setItem('selected_addons', JSON.stringify(sub.purchasedAddons));
+              }
+              if (sub.price || sub.amountPaid) {
+                localStorage.setItem('selected_plan_price', String(sub.price || sub.amountPaid));
+              }
+            }
+          }
+        } catch (subErr) {
+          console.warn("Could not sync subscription on sign in:", subErr);
         }
         
         // Navigate based on role
         setTimeout(() => {
-          if (data.role === 'franchise') {
-            navigate('/franchise/dashboard');
-          } else if (data.role === 'partner') {
-            navigate('/partner/dashboard');
-          } else if (data.role === 'admin') {
-            navigate('/admin-dashboard');
-          } else if (data.role === 'customer') {
+          if (data.role === 'customer') {
             navigate('/card-dashbord', { 
               state: { 
                 userEmail: loginData.email
               } 
             });
+          } else if (data.role === 'admin') {
+            navigate('/admin-dashboard');
           } else {
             // Default navigation if role not specified
             navigate('/card-dashbord');
           }
-        }, 500);
+        }, 800);
         
       } else {
         // Always show resend button on login failure
