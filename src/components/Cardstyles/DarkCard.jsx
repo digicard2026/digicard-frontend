@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { generateVCard } from "../../utility/vcard";
 import {
   FaPhoneAlt,
   FaWhatsapp,
@@ -323,71 +324,42 @@ const DarkCard = ({ cardData = {} }) => {
   const [currentTestimonialSlide, setCurrentTestimonialSlide] = useState(0);
   const [currentVideoSlide, setCurrentVideoSlide] = useState(0);
 
-  // 🔹 Inject global scroll CSS with custom fonts
+  // 🔹 Scoped typography and container styling for DarkCard
   useEffect(() => {
     const style = document.createElement("style");
+    style.id = "darkcard-custom-styles";
     style.innerHTML = `
       @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-      @import url('https://fonts.cdnfonts.com/css/orgon');
-      @import url('https://fonts.cdnfonts.com/css/ggx89');
       
-      html, body {
-        height: 100%;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
-        font-family: 'GGX89', 'Outfit', sans-serif;
-        margin: 0;
-        padding: 0;
+      .darkcard-container {
+        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #ffffff;
       }
-      #root {
-        min-height: 100%;
-        font-family: 'GGX89', 'Outfit', sans-serif;
-      }
-      * {
-        font-family: 'GGX89', 'Outfit', sans-serif;
+      .darkcard-container * {
         box-sizing: border-box;
       }
-      .font-labrador {
-        font-family: 'Labrador', serif;
-      }
-      .font-ggx89 {
-        font-family: 'GGX89', sans-serif;
-      }
-      .font-BankGothicGT {
-        font-family: 'BankGothicGT', sans-serif;
-      }
-      .font-Zona {
-        font-family: 'Zona', sans-serif;
-      }
-      .font-ZonaPro {
-        font-family: 'Zona Pro', sans-serif;
-      }
 
-      /* ========== DESKTOP VIEW ========== */
+      /* Desktop Presentation */
       @media (min-width: 641px) {
         .darkcard-container {
-          width: 375px;
-          height: 667px;
-          overflow: hidden;
+          width: 100%;
+          max-width: 400px;
+          min-height: 720px;
           position: relative;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-          background: linear-gradient(to bottom, #000000, #0A0A2A, #1E3A8A);
-          border-radius: 24px;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-          margin: 20px auto;
-        }
-        
-        .darkcard-container::-webkit-scrollbar {
-          display: none;
+          background: linear-gradient(180deg, #020617 0%, #0a0f2d 40%, #0d1b47 100%);
+          border-radius: 36px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.1);
+          margin: 0 auto;
+          overflow: hidden;
         }
         
         .darkcard-content {
           height: 100%;
+          max-height: 820px;
           overflow-y: auto;
           scrollbar-width: none;
           -ms-overflow-style: none;
-          padding-bottom: 20px;
+          padding-bottom: 32px;
         }
         
         .darkcard-content::-webkit-scrollbar {
@@ -395,40 +367,25 @@ const DarkCard = ({ cardData = {} }) => {
         }
       }
 
-      /* ========== MOBILE VIEW ========== */
+      /* Mobile Full Viewport */
       @media (max-width: 640px) {
-        html, body {
-          background: black !important;
-          overflow: hidden;
-        }
-        
         .darkcard-container {
-          width: 100vw !important;
-          height: 100vh !important;
+          width: 100% !important;
+          min-height: 100dvh !important;
           max-width: 100% !important;
           border-radius: 0 !important;
           margin: 0 !important;
           padding: 0 !important;
-          background: linear-gradient(to bottom, #000000, #0A0A2A, #1E3A8A) !important;
-          position: fixed !important;
-          top: 0 !important;
-          left: 0 !important;
-          right: 0 !important;
-          bottom: 0 !important;
-          overflow: hidden !important;
+          background: linear-gradient(180deg, #020617 0%, #0a0f2d 40%, #0d1b47 100%) !important;
+          overflow-x: hidden !important;
           box-shadow: none !important;
         }
         
         .darkcard-content {
-          height: 100% !important;
+          min-height: 100dvh !important;
           overflow-y: auto;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-          padding-bottom: 20px;
-        }
-        
-        .darkcard-content::-webkit-scrollbar {
-          display: none;
+          -webkit-overflow-scrolling: touch;
+          padding-bottom: 48px;
         }
       }
     `;
@@ -1023,46 +980,60 @@ const DarkCard = ({ cardData = {} }) => {
               </div>
             )}
 
-            {/* Contact Buttons */}
-            <div className="flex flex-col items-center space-y-4">
+            {/* Contact Buttons Suite */}
+            <div className="flex flex-col items-center space-y-3 w-full max-w-sm mx-auto">
+              {/* PRIMARY CTA: Save Contact to Phone (vCard .vcf) */}
+              <button
+                type="button"
+                onClick={() => generateVCard(cardData)}
+                className="flex items-center justify-center gap-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3.5 rounded-full w-full shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 font-semibold tracking-wide text-sm"
+              >
+                <FaDownload className="w-4 h-4 animate-bounce" />
+                <span>Save Contact to Phone</span>
+              </button>
+
               {primaryPhone && profileData.enableOneTapCall && isFieldAllowed('phones') && (
                 <button
+                  type="button"
                   onClick={() => handleContact("phone", primaryPhone.number)}
-                  className="flex items-center justify-center bg-white text-[#0A1A4B] px-6 py-3 rounded-full w-90 h-11 shadow-sm hover:shadow-md border border-gray-200 transition-all duration-300 font-[BankGothicGT] tracking-wide"
+                  className="flex items-center justify-center gap-2.5 bg-white text-[#0A1A4B] hover:bg-slate-100 px-6 py-3 rounded-full w-full shadow-sm hover:shadow-md transition-all duration-300 font-medium text-sm"
                 >
-                  <FaPhoneAlt className="w-5 h-5 mr-3 text-[#0A1A4B]" />
-                  <span className="text-base font-medium">Phone</span>
+                  <FaPhoneAlt className="w-4 h-4 text-[#0A1A4B]" />
+                  <span>Call {primaryPhone.number}</span>
                 </button>
               )}
 
               {profileData.email && profileData.enableEmail && isFieldAllowed('emails') && (
                 <button
+                  type="button"
                   onClick={() => handleContact("email", profileData.email)}
-                  className="flex items-center justify-center bg-white text-[#0A1A4B] px-6 py-3 rounded-full w-90 h-11 shadow-sm hover:shadow-md border border-gray-200 transition-all duration-300 font-[BankGothicGT] tracking-wide"
+                  className="flex items-center justify-center gap-2.5 bg-white text-[#0A1A4B] hover:bg-slate-100 px-6 py-3 rounded-full w-full shadow-sm hover:shadow-md transition-all duration-300 font-medium text-sm"
                 >
-                  <FaEnvelope className="w-5 h-5 mr-3 text-[#0A1A4B]" />
-                  <span className="text-base font-medium">Email</span>
+                  <FaEnvelope className="w-4 h-4 text-[#0A1A4B]" />
+                  <span>Email: {profileData.email}</span>
                 </button>
               )}
 
               {primaryPhone && profileData.enableWhatsApp && isFieldAllowed('phones') && (
                 <button
+                  type="button"
                   onClick={() => handleContact("whatsapp", primaryPhone.number)}
-                  className="flex items-center justify-center bg-white text-[#0A1A4B] px-6 py-3 rounded-full w-90 h-11 shadow-sm hover:shadow-md border border-gray-200 transition-all duration-300 font-[BankGothicGT] tracking-wide"
+                  className="flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] text-white px-6 py-3 rounded-full w-full shadow-sm hover:shadow-md transition-all duration-300 font-medium text-sm"
                 >
-                  <FaWhatsapp className="w-5 h-5 mr-2 text-[#0A1A4B] ml-7" />
-                  <span className="text-base font-medium">WhatsApp</span>
+                  <FaWhatsapp className="w-4 h-4 text-white" />
+                  <span>Chat on WhatsApp</span>
                 </button>
               )}
 
               {/* Virtual Number Button */}
               {profileData.virtualNumber && isFieldAllowed('virtualNumber') && (
                 <button
+                  type="button"
                   onClick={() => handleContact("virtualNumber", profileData.virtualNumber)}
-                  className="flex items-center justify-center bg-white text-[#0A1A4B] px-6 py-3 rounded-full w-90 h-11 shadow-sm hover:shadow-md border border-gray-200 transition-all duration-300 font-[BankGothicGT] tracking-wide"
+                  className="flex items-center justify-center gap-2.5 bg-white text-[#0A1A4B] hover:bg-slate-100 px-6 py-3 rounded-full w-full shadow-sm hover:shadow-md transition-all duration-300 font-medium text-sm"
                 >
-                  <FaPhoneAlt className="w-5 h-5 mr-3 text-[#0A1A4B]" />
-                  <span className="text-base font-medium">Virtual Number</span>
+                  <FaPhoneAlt className="w-4 h-4 text-indigo-600" />
+                  <span>Virtual Number: {profileData.virtualNumber}</span>
                 </button>
               )}
 
@@ -1070,13 +1041,42 @@ const DarkCard = ({ cardData = {} }) => {
               {profileData.websites.map((website, index) => (
                 <button
                   key={index}
+                  type="button"
                   onClick={() => handleContact("website", website.url)}
-                  className="flex items-center justify-center bg-white text-[#0A1A4B] px-6 py-3 rounded-full w-90 h-11 shadow-sm hover:shadow-md border border-gray-200 transition-all duration-300 font-[BankGothicGT] tracking-wide mb-3"
+                  className="flex items-center justify-center gap-2.5 bg-white text-[#0A1A4B] hover:bg-slate-100 px-6 py-3 rounded-full w-full shadow-sm hover:shadow-md transition-all duration-300 font-medium text-sm"
                 >
-                  <FaGlobe className="w-5 h-5 mr-2 text-[#0A1A4B] ml-3" />
-                  <span className="text-base font-medium">Website</span>
+                  <FaGlobe className="w-4 h-4 text-blue-600" />
+                  <span>{website.label || "Visit Website"}</span>
                 </button>
               ))}
+
+              {/* Location & Address Card */}
+              {profileData.addresses.length > 0 && isFieldAllowed('addresses') && (
+                <div className="w-full mt-2 space-y-2">
+                  {profileData.addresses.map((address, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleContact("map", address.googleMapsLink || `https://maps.google.com/?q=${encodeURIComponent(`${address.street || ''} ${address.city || ''} ${address.state || ''} ${address.postalCode || ''}`)}`)}
+                      className="flex items-start p-3.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all cursor-pointer group text-left w-full"
+                    >
+                      <div className="w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <FaMapMarkerAlt className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="text-white text-xs font-semibold">
+                            {address.label || "Address"} {address.isPrimary && "(Primary)"}
+                          </span>
+                          <span className="text-[11px] text-blue-400 group-hover:underline">Open Map →</span>
+                        </div>
+                        <p className="text-white/70 text-xs mt-1 leading-relaxed break-words">
+                          {address.fullAddress || `${address.street ? address.street + ', ' : ''}${address.city || ''}${address.state ? ', ' + address.state : ''} ${address.postalCode || ''}`}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Social Icons */}
@@ -1689,37 +1689,16 @@ const DarkCard = ({ cardData = {} }) => {
               </div>
             )}
 
-            {/* Address Information */}
-            {profileData.addresses.length > 0 && isFieldAllowed('addresses') && (
-              <div className="text-center mt-8">
-                <h3 className="text-base font-semibold text-white flex justify-center items-center mb-2 font-Zona">
-                  <FaMapMarkerAlt className="w-4 h-4 text-red-400 mr-2" />
-                  Location
-                </h3>
-                <div className="space-y-2 max-w-xl mx-auto">
-                  {profileData.addresses.map((address, index) => (
-                    <div
-                      key={index}
-                      onClick={() => handleContact("map", address.googleMapsLink)}
-                      className="flex items-start justify-start p-3 rounded-xl hover:scale-105 transform transition-transform duration-300 cursor-pointer bg-white/5"
-                    >
-                      <div className="w-7 h-7 bg-red-500/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <FaMapMarkerAlt className="w-3 h-3 text-red-400" />
-                      </div>
-                      <div className="flex-1 min-w-0 text-left">
-                        <span className="text-white text-sm font-semibold block break-words font-ZonaPro">
-                          {address.label || "Address"} {address.isPrimary && "(Primary)"}
-                        </span>
-                        <span className="text-white/70 text-sm block mt-1 break-words font-ZonaPro">
-                          {address.fullAddress ||
-                            `${address.street}, ${address.city}, ${address.state} ${address.postalCode}`}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Revayah One Branding Watermark */}
+            <div className="pt-6 pb-4 text-center">
+              <a
+                href="/"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-white/60 hover:text-white transition-all duration-200"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                <span>Powered by <strong className="font-semibold text-white">Revayah One</strong></span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

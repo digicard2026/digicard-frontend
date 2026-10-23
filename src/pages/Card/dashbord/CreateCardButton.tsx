@@ -18,78 +18,51 @@ export function CreateCardButton({
 }: CreateCardButtonProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
       disabled={disabled}
       className={cn(
         "group relative aspect-[1.6/1] rounded-2xl border-2 border-dashed transition-all duration-300",
-        "flex flex-col items-center justify-center gap-4",
-        "bg-muted/30 hover:bg-muted/50 hover:scale-[1.02]",
+        "flex flex-col items-center justify-center gap-3",
+        "bg-slate-50/60 hover:bg-slate-100/80 dark:bg-slate-900/40 dark:hover:bg-slate-900/80 hover:scale-[1.01]",
         disabled 
-          ? "border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed hover:scale-100" 
-          : "border-muted-foreground/30 hover:border-primary/50",
+          ? "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/20 text-slate-400 cursor-not-allowed hover:scale-100" 
+          : "border-slate-300 dark:border-strokedark hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-sm cursor-pointer",
         "p-4 sm:p-6",
         className
       )}
     >
       <div className={cn(
-        "w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300",
-        disabled ? "bg-gray-200" : "bg-primary/10 group-hover:bg-primary/20"
+        "w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300",
+        disabled ? "bg-slate-200 dark:bg-slate-800" : "bg-blue-50 dark:bg-blue-950/60 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/60 shadow-xs"
       )}>
         <Plus className={cn(
           "w-6 h-6 transition-colors duration-300",
-          disabled ? "text-gray-400" : "text-primary"
+          disabled ? "text-slate-400" : "text-blue-600 dark:text-blue-400"
         )} />
       </div>
-      <div className="text-center max-w-[180px]">
+
+      <div className="text-center max-w-[200px]">
         <p className={cn(
-          "font-semibold text-sm sm:text-base transition-colors duration-300 line-clamp-1",
-          disabled ? "text-gray-500" : "text-foreground"
+          "font-semibold text-sm transition-colors duration-300 line-clamp-1",
+          disabled ? "text-slate-400 dark:text-slate-600" : "text-slate-900 dark:text-white"
         )}>
           {label}
         </p>
         <p className={cn(
-          "text-xs sm:text-sm mt-1 transition-colors duration-300 line-clamp-2",
-          disabled ? "text-gray-400" : "text-muted-foreground"
+          "text-xs mt-0.5 transition-colors duration-300 line-clamp-2",
+          disabled ? "text-slate-400 dark:text-slate-600" : "text-slate-500 dark:text-slate-400"
         )}>
           {description}
         </p>
       </div>
       
       {!disabled && (
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl" />
-          <div className="absolute inset-0 rounded-2xl ring-2 ring-primary/20 ring-inset" />
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl" />
+          <div className="absolute inset-0 rounded-2xl ring-2 ring-blue-500/20 ring-inset" />
         </div>
       )}
     </button>
   );
 }
-// import { Plus } from "lucide-react";
-// import { cn } from "../dashbord/lib/utils";
-
-// interface CreateCardButtonProps {
-//   className?: string;
-//   onClick?: () => void; // Add this prop
-// }
-
-// export function CreateCardButton({ className, onClick }: CreateCardButtonProps) {
-//   return (
-//     <button
-//       onClick={onClick} // Use the onClick prop instead of inline navigate
-//       className={cn(
-//         "group relative aspect-[1.6/1] rounded-2xl border-2 border-dashed border-muted-foreground/30",
-//         "bg-muted/30 hover:bg-muted/50 hover:border-primary/50 transition-all duration-300",
-//         "flex flex-col items-center justify-center gap-3",
-//         className
-//       )}
-//     >
-//       <div className="w-14 h-14 rounded-2xl bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-colors duration-300">
-//         <Plus className="w-7 h-7 text-primary" />
-//       </div>
-//       <div className="text-center">
-//         <p className="font-semibold text-foreground">Create New Card</p>
-//         <p className="text-sm text-muted-foreground">Design your digital business card</p>
-//       </div>
-//     </button>
-//   );
-// }
