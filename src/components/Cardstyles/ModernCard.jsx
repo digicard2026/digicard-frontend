@@ -164,19 +164,19 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
       // Business features allowed
       showCheckUsOut: true,
       showBrandLabel: false, // Business Premium only
-      showVideo: true,
-      showGallery: true,
+      showVideo: Boolean(cardData?.addons?.profilebuilder),
+      showGallery: Boolean(cardData?.addons?.gallery || cardData?.addons?.photogallery),
       showServices: false, // Business Premium only
-      showTestimonials: true,
+      showTestimonials: Boolean(cardData?.addons?.portfoliobuilder),
       showTeam: false, // Business Premium only
       showBusinessHours: true, // Business plan gets business hours
       showVirtualNumber: true,
-      showCatalogPDF: true,
-      showProductVideo: true,
-      showVideos: true,
+      showCatalogPDF: Boolean(cardData?.addons?.docsbuilder || cardData?.addons?.catalogbuilder || cardData?.addons?.brochurebuilder || cardData?.addons?.docsmanager),
+      showProductVideo: Boolean(cardData?.addons?.portfoliobuilder),
+      showVideos: false, // Introduced in Plan 4 Professionals
       showMultipleEmails: true,
-      showNFCCard: false, // Business Premium only
-      showDownloads: true,
+      showNFCCard: Boolean(cardData?.addons?.nfccard || cardData?.addons?.nfc),
+      showDownloads: Boolean(cardData?.addons?.docsbuilder || cardData?.addons?.catalogbuilder || cardData?.addons?.brochurebuilder || cardData?.addons?.docsmanager),
       showInteractive: false, // Business Premium only
       showCustomFields: true,
       showQRCode: true,
@@ -184,8 +184,8 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
       showServicesProducts: true,
       showShareableUrl: true,
       showProductRangeDisplay: true,
-      showBusinessCardInstagram: true,
-      showTextbooks: true,
+      showBusinessCardInstagram: false,
+      showTextbooks: false,
       showChatAssistant: false // Business Premium only
     },
     'BusinessPremium': {
@@ -1485,6 +1485,13 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                 >
                   {profileData.jobTitle}
                 </p>
+                {(profileData.companyName || profileData.department) && (
+                  <p 
+                    className="mb-3 px-2 text-blue-600 font-medium text-xs tracking-wide"
+                  >
+                    {[profileData.department, profileData.companyName].filter(Boolean).join(" • ")}
+                  </p>
+                )}
                 
                 {/* Location */}
                 {primaryAddress && primaryAddress.fullAddress && currentPlan.showAddress && (
@@ -1990,9 +1997,14 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                 <h1 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '24px', lineHeight: '1.2', marginBottom: '6px', fontWeight: 500, letterSpacing: '-0.3px', color: '#000000' }}>
                   {profileData.name}
                 </h1>
-                <p style={{ fontSize: '16px', marginBottom: '6px', fontWeight: 400, letterSpacing: '0.1px', color: '#000000' }}>
+                <p style={{ fontSize: '16px', marginBottom: '4px', fontWeight: 400, letterSpacing: '0.1px', color: '#000000' }}>
                   {profileData.jobTitle}
                 </p>
+                {(profileData.companyName || profileData.department) && (
+                  <p className="mb-4 px-2 text-blue-600 font-medium text-xs tracking-wide">
+                    {[profileData.department, profileData.companyName].filter(Boolean).join(" • ")}
+                  </p>
+                )}
                 
                 {primaryAddress && primaryAddress.fullAddress && currentPlan.showAddress && (
                   <div className="flex items-center justify-center text-gray-500 mb-12 px-2" style={{ fontSize: '14px', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>

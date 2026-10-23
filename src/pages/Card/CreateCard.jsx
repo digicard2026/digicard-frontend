@@ -5828,7 +5828,7 @@ const fieldPlanMap = {
   'suffix': allPlansList,
   'profilePhoto': allPlansList,
   'tagline': allPlansList,
-  'profileVideo': businessPlansList,
+  'profileVideo': professionalsAndAbove,
   'aboutText': allPlansList,
 
   // Contact Management
@@ -5845,7 +5845,7 @@ const fieldPlanMap = {
   'shareableUrl': allPlansList,
   'nfcSettings': businessPlansList,
   'downloads': businessPlansList,
-  'videos': businessPlansList,
+  'videos': professionalsAndAbove,
 
   // Business fields
   'companyName': businessPlansList,
@@ -5857,8 +5857,8 @@ const fieldPlanMap = {
   'servicesProducts': businessPlansList,
   'gallery': businessPlansList,
   'catalog': businessPlansList,
-  'productVideo': businessPlansList,
-  'testimonials': businessPlansList,
+  'productVideo': professionalsAndAbove,
+  'testimonials': professionalsAndAbove,
 
   // Advanced & Interactive fields (Cumulative from BusinessPremium upwards)
   'interactiveElements': businessPremiumAndAbove,
@@ -6383,7 +6383,17 @@ const CreateCard = () => {
       return hasActiveAddon('gallery') || hasActiveAddon('photogallery');
     }
 
-    // 4. Default plan permission check:
+    // 4. Plans where catalog/PDF/downloads is an Add-on for Personal and Business (only visible if Docs Builder addon selected):
+    if ((fieldName === 'catalog' || fieldName === 'catalogPDF' || fieldName === 'downloads') && ['Personal', 'Business'].includes(formData?.cardType)) {
+      return hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder') || hasActiveAddon('brochurebuilder') || hasActiveAddon('docsmanager');
+    }
+
+    // 5. Plans where NFC is an Add-on:
+    if (fieldName === 'nfcSettings' && ['Personal', 'Business', 'BusinessPremium', 'Professionals'].includes(formData?.cardType)) {
+      return hasActiveAddon('nfccard') || hasActiveAddon('nfc');
+    }
+
+    // 6. Default plan permission check:
     const allowedPlans = fieldPlanMap[fieldName] || [];
     return allowedPlans.includes(formData.cardType);
   };
@@ -6406,17 +6416,17 @@ const CreateCard = () => {
 
     const steps = [1]; // Step 1 is always available
 
-    // Check Step 2
-    const step2Fields = ['companyName', 'department', 'jobTitle', 'bio', 'companyLogo', 'logoSize', 'foundedName', 'organization', 'servicesProducts', 'brandLabel', 'catalog', 'businessHours', 'virtualNumber', 'catalogPDF', 'productVideo'];
+    // Check Step 2 (Employment Details for Business/Working Professionals)
+    const step2Fields = ['companyName', 'department', 'jobTitle', 'bio', 'companyLogo', 'logoSize', 'foundedName', 'organization', 'servicesProducts', 'brandLabel', 'catalog', 'businessHours', 'virtualNumber', 'catalogPDF'];
     if (isSectionVisible(step2Fields)) {
       steps.push(2);
     }
 
-    // Step 3 is always available (has social links)
+    // Step 3 is always available (Contact details & Social Hub)
     steps.push(3);
 
-    // Check Step 4
-    const step4Fields = ['interactiveElements', 'testimonials', 'gallery', 'dynamicQRCode', 'nfcSettings', 'downloads', 'videos', 'chatAssistant', 'liveChat'];
+    // Check Step 4 (Features & Add-Ons - only shown if interactive/addon features are active)
+    const step4Fields = ['interactiveElements', 'testimonials', 'gallery', 'nfcSettings', 'downloads', 'videos', 'chatAssistant', 'liveChat'];
     if (isSectionVisible(step4Fields)) {
       steps.push(4);
     }
@@ -8656,7 +8666,9 @@ const CreateCard = () => {
         {/* Company Details */}
         {isFieldVisible('companyName') && (
           <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Company Name / Organisation</label>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              {formData.cardType === 'Business' ? 'Name of the Company / Organisation' : 'Company Name / Organisation'}
+            </label>
             <input
               type="text"
               name="companyName"
@@ -8688,7 +8700,9 @@ const CreateCard = () => {
 
               {isFieldVisible('jobTitle') && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Job Title</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    {formData.cardType === 'Business' ? 'Designation / Job Title' : 'Job Title'}
+                  </label>
                   <input
                     type="text"
                     name="jobTitle"
@@ -8705,10 +8719,19 @@ const CreateCard = () => {
 
         {formData.cardType !== 'Personal' && isFieldVisible('bio') && (
           <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Professional Bio</label>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              {formData.cardType === 'Business' ? 'About My Role & Responsibilities' : 'Professional Bio'}
+            </label>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+              {formData.cardType === 'Business' 
+                ? 'Describe your responsibilities, team leadership, and key focus areas at your company.' 
+                : 'Detailed professional biography, career achievements, or background.'}
+            </p>
             <textarea
               name="bio"
-              placeholder="Detailed professional biography, career achievements, or background..."
+              placeholder={formData.cardType === 'Business' 
+                ? "Describe your key role, deliverables, and responsibilities..." 
+                : "Detailed professional biography, career achievements, or background..."}
               value={formData.bio || ""}
               onChange={handleChange}
               rows="4"
@@ -8721,7 +8744,9 @@ const CreateCard = () => {
         {isFieldVisible('servicesProducts') && (
           <div className={`p-5 md:p-6 rounded-2xl border ${hasActiveAddon('portfoliobuilder') ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark'} space-y-3 shadow-2xs`}>
             <div className="flex items-center gap-2">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Brief about Products & Services</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                {formData.cardType === 'Business' ? 'Products & Services (Overview)' : 'Brief about Products & Services'}
+              </label>
               {hasActiveAddon('portfoliobuilder') && (
                 <span className="text-[10px] bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded-full border border-purple-200">
                   ✓ Portfolio Builder Add-On Active
@@ -11211,9 +11236,16 @@ const CreateCard = () => {
   const ProgressSteps = () => {
     const availableSteps = getAvailableSteps();
     const isPersonal = (formData?.cardType || 'Personal') === 'Personal';
+    const isBusiness = formData?.cardType === 'Business';
     const stepLabels = isPersonal ? {
       1: 'DIGITAL IDENTITY',
       3: 'CONTACT & SOCIAL',
+      5: 'DESIGN'
+    } : isBusiness ? {
+      1: 'PERSONAL',
+      2: 'EMPLOYMENT',
+      3: 'CONTACT & SOCIAL',
+      4: 'ADD-ONS',
       5: 'DESIGN'
     } : {
       1: 'PROFILE',
@@ -11304,7 +11336,11 @@ const CreateCard = () => {
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
-            {formData.cardType || 'Personal'} Plan
+            {formData.cardType === 'Personal' 
+              ? 'DI - Individuals Plan' 
+              : formData.cardType === 'Business' 
+              ? 'DI - Working Professionals Plan' 
+              : `${formData.cardType || 'Personal'} Plan`}
           </span>
           {editingCard && (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">

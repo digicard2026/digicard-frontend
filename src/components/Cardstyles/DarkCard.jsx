@@ -176,38 +176,40 @@ const cardFieldsConfig = {
 
   Business: {
     name: 'Business',
-    description: 'Enhanced features for professional presence',
+    description: 'DI - Working Professionals',
     allowed: [
-      // ALL Personal fields
-      'profilePhoto',         // Profile /PC/Logo
-      'firstName',            // Name / source name
-      'lastName',             // Name / source name  
-      'tagline',              // Tag line / Slogan
-      'profileVideo',         // Profile video
-      'aboutText',            // About my self/company/organisation
-      'phones',               // One-tap call, WhatsApp, email
-      'emails',               // One-tap call, WhatsApp, email
-      'websites',             // website/portfolio link
-      'addresses',            // Location [address]
-      'socialLinks',          // Social & Digital Hub
-      'dynamicQRCode',        // Dynamic QR code
-      'shareableUrl',         // Share
-      'nfcSettings',          // NFC card developer with Print
-      'downloads',            // Downloads
-      'videos',               // Videos
+      // 1. Personal Details
+      'profilePhoto',
+      'firstName',
+      'lastName',
+      'prefix',
+      'suffix',
+      'jobTitle',
+      'tagline',
+      'aboutText',
+      'bio',
 
-      // PLUS Business-only fields from image
-      'companyName',          // Company name / Organisation
-      'businessHours',        // Business hours
-      'virtualNumber',        // Virtual no integration (Optional @m extra cost)
+      // 2. Employment Details
+      'companyName',
+      'department',
+      'companyLogo',
+      'logoSize',
+      'businessHours',
+      'servicesProducts',
 
-      // Professional/Business Details section
-      'services',             // Service/Provision
-      'servicesProducts',     // Brief about Product/Services (Only Product name display with general briefing)
-      'gallery',              // Product show case / Gallery/Portfolio
-      'catalog',              // Product/Catalog [PDF]
-      'productVideo',         // Product video
-      'testimonials'          // Testimonials
+      // 3. Contact & Social Details
+      'phones',
+      'email',
+      'emails',
+      'websites',
+      'addresses',
+      'enableOneTapCall',
+      'enableWhatsApp',
+      'enableEmail',
+      'socialLinks',
+      'dynamicQRCode',
+      'shareableUrl',
+      'shareableLink'
     ]
   },
 
@@ -522,6 +524,17 @@ const DarkCard = ({ cardData = {} }) => {
 
   // Helper to check if a field/feature is allowed for current plan
   const isFieldAllowed = (fieldName) => {
+    // 1. Check if allowed via active add-on
+    if (cardData?.addons) {
+      const lk = fieldName.toLowerCase();
+      if (lk === 'gallery' && (cardData.addons.gallery || cardData.addons.photogallery)) return true;
+      if ((lk === 'catalog' || lk === 'catalogpdf' || lk === 'downloads') &&
+          (cardData.addons.docsbuilder || cardData.addons.catalogbuilder || cardData.addons.brochurebuilder || cardData.addons.docsmanager)) return true;
+      if ((lk === 'nfcsettings' || lk === 'nfccard') && (cardData.addons.nfccard || cardData.addons.nfc)) return true;
+      if ((lk === 'profilevideo' || lk === 'productvideo') && (cardData.addons.profilebuilder || cardData.addons.portfoliobuilder)) return true;
+      if (lk === 'testimonials' && cardData.addons.portfoliobuilder) return true;
+    }
+
     const planConfig = cardFieldsConfig[currentPlan] || cardFieldsConfig['BusinessPremium'] || cardFieldsConfig['Personal'];
     if (!planConfig) return true;
 
@@ -851,9 +864,14 @@ const DarkCard = ({ cardData = {} }) => {
             <h2 className="text-4xl font-medium text-white mt-20 text-center font-orgon break-words w-full mx-auto px-3" style={{ maxWidth: '380px' }}>
               {profileData.name}
             </h2>
-            <p className="text-lg text-white/90 font-[300] text-center font-orgon break-words w-full px-4 mt-0 mb-2">
+            <p className="text-lg text-white/90 font-[300] text-center font-orgon break-words w-full px-4 mt-0 mb-1">
               {profileData.jobTitle}
             </p>
+            {(profileData.companyName || profileData.department) && (
+              <p className="text-sm text-blue-200/80 font-[400] text-center font-ZonaPro break-words w-full px-4 mb-2">
+                {[profileData.department, profileData.companyName].filter(Boolean).join(" • ")}
+              </p>
+            )}
           </div>
 
           {/* Main Content Area - Reduced bottom padding */}
@@ -1339,7 +1357,7 @@ const DarkCard = ({ cardData = {} }) => {
               <div className="text-center mt-2 mb-4">
                 <h3 className="text-base font-semibold text-white flex justify-center items-center mb-2 font-Zona">
                   <FaBriefcase className="w-4 h-4 text-blue-400 mr-2" />
-                  Professional Bio
+                  {profileData.cardType === 'Business' ? 'About My Role' : 'Professional Bio'}
                 </h3>
                 <p className="text-white/90 text-sm leading-relaxed break-words font-ZonaPro">
                   {profileData.bio}
