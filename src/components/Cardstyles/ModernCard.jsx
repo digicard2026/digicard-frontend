@@ -1605,7 +1605,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                   )}
 
                   {/* About Text */}
-                  {profileData.aboutText && profileData.aboutText !== "." && (
+                  {profileData.aboutText && profileData.aboutText !== "." && profileData.aboutText !== profileData.bio && (
                     <div className="mt-4 px-2">
                       <div className="text-left mx-auto" style={{ maxWidth: '100%', padding: '0' }}>
                         <p style={{ 
@@ -2050,7 +2050,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                     </div>
                   )}
 
-                  {profileData.aboutText && profileData.aboutText !== "." && (
+                  {profileData.aboutText && profileData.aboutText !== "." && profileData.aboutText !== profileData.bio && (
                     <div className="mt-6 px-2">
                       <div className="text-left mx-auto" style={{ maxWidth: '100%', padding: '0' }}>
                         <p style={{ fontSize: '14px', lineHeight: '1.6', fontWeight: 400, fontFamily: "'Poppins', sans-serif", color: '#374151', textAlign: 'justify', textAlignLast: 'left', wordBreak: 'break-word', overflowWrap: 'break-word' }}>

@@ -5927,7 +5927,7 @@ const cleanFormData = (data) => {
       }
     }),
     ...(data.tagline && { tagline: data.tagline }),
-    ...(data.aboutText && { aboutText: data.aboutText }),
+    ...((data.aboutText || (isPersonal && data.bio)) && { aboutText: data.aboutText || data.bio }),
     ...(!isPersonal && data.foundedName && { foundedName: data.foundedName }),
     ...(!isPersonal && data.organization && { organization: data.organization }),
 
@@ -5935,7 +5935,7 @@ const cleanFormData = (data) => {
     ...(!isPersonal && data.companyName && { companyName: data.companyName }),
     ...(!isPersonal && data.department && { department: data.department }),
     ...(data.jobTitle && { jobTitle: data.jobTitle }),
-    ...(data.bio && { bio: data.bio }),
+    ...((data.bio || (isPersonal && data.aboutText)) && { bio: data.bio || data.aboutText }),
     ...(!isPersonal && data.companyLogo && { companyLogo: data.companyLogo }),
     ...(!isPersonal && data.logoSize && { logoSize: data.logoSize }),
     ...(!isPersonal && data.servicesProducts && { servicesProducts: data.servicesProducts }),
@@ -6395,6 +6395,15 @@ const CreateCard = () => {
 
   // Get available steps based on plan
   const getAvailableSteps = () => {
+    const isPersonal = (formData?.cardType || 'Personal') === 'Personal';
+    if (isPersonal) {
+      // Plan 1: DI - INDIVIDUALS (Personal)
+      // Step 1: DIGITAL IDENTITY (Profile, Name, Designation/Title, Tagline, Short Intro, URL)
+      // Step 3: CONTACT & SOCIAL (One-Tap, Phones, Emails, Websites, Address, Map, Social Links, Dynamic QR)
+      // Step 5: DESIGN (Card Design & Live Preview)
+      return [1, 3, 5];
+    }
+
     const steps = [1]; // Step 1 is always available
 
     // Check Step 2
@@ -6818,7 +6827,8 @@ const CreateCard = () => {
         const draftInfo = localStorage.getItem(`card_draft_${email}`);
         if (draftInfo) {
           const info = JSON.parse(draftInfo);
-          if (info.step) setCurrentStep(info.step);
+          const availableSteps = getAvailableSteps();
+          if (info.step && availableSteps.includes(info.step)) setCurrentStep(info.step);
           if (info.createdBy) setPartnerId(info.createdBy);
         }
 
@@ -8219,6 +8229,21 @@ const CreateCard = () => {
           </>
         )}
 
+        {/* Designation / Title for Personal (DI - INDIVIDUALS matches PDF A. DIGITAL IDENTITY) */}
+        {formData.cardType === 'Personal' && isFieldVisible('jobTitle') && (
+          <div>
+            <label className="block text-slate-700 mb-1">Designation / Title</label>
+            <input
+              type="text"
+              name="jobTitle"
+              placeholder="e.g. Software Engineer, Consultant, Designer"
+              value={formData.jobTitle || ""}
+              onChange={handleChange}
+              className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+        )}
+
         {/* Email Field */}
         <div>
           <label className="block text-slate-700 mb-1">Email Address *</label>
@@ -8507,15 +8532,29 @@ const CreateCard = () => {
           </div>
         )}
 
-        {/* About Text */}
+        {/* About Text / Short Intro (Matches PDF A. DIGITAL IDENTITY: Short intro) */}
         {isFieldVisible('aboutText') && (
           <div>
-            <label className="block text-slate-700 mb-1">About Myself / Company / Organisation</label>
+            <label className="block text-slate-700 mb-1">
+              {formData.cardType === 'Personal' ? 'Short Intro' : 'About Myself / Company / Organisation'}
+            </label>
             <textarea
               name="aboutText"
-              placeholder="Tell us about yourself, your company, or organization..."
+              placeholder={formData.cardType === 'Personal' ? "Brief intro about yourself, your skills, or background..." : "Tell us about yourself, your company, or organization..."}
               value={formData.aboutText || ""}
-              onChange={handleChange}
+              onChange={(e) => {
+                const val = e.target.value;
+                const updated = {
+                  ...formData,
+                  aboutText: val,
+                  ...(formData.cardType === 'Personal' && { bio: val })
+                };
+                setFormData(updated);
+                formDataRef.current = updated;
+                setHasUnsavedChanges(true);
+                setChangeCount(prev => prev + 1);
+                autoSaveToLocalStorage(updated);
+              }}
               rows="4"
               className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
@@ -8647,7 +8686,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {(isFieldVisible('department') || isFieldVisible('jobTitle')) && (
+        {formData.cardType !== 'Personal' && (isFieldVisible('department') || isFieldVisible('jobTitle')) && (
           <div className="grid grid-cols-2 gap-4">
             {isFieldVisible('department') && (
               <div>
@@ -8679,7 +8718,7 @@ const CreateCard = () => {
           </div>
         )}
 
-        {isFieldVisible('bio') && (
+        {formData.cardType !== 'Personal' && isFieldVisible('bio') && (
           <div>
             <label className="block text-slate-700 mb-1">Bio</label>
             <textarea
@@ -9284,6 +9323,20 @@ const CreateCard = () => {
                 </div>
               </div>
             </div>
+
+            {/* Phone Warning if One-Tap Call or WhatsApp is enabled but no phone exists */}
+            {(formData.enableOneTapCall || formData.enableWhatsApp) && 
+             (!formData.phones || formData.phones.filter(p => p.number && p.number.trim()).length === 0) && (
+              <div className="mt-4 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg text-sm flex items-start space-x-2">
+                <span className="text-amber-500 font-bold text-base leading-none mt-0.5">⚠️</span>
+                <div>
+                  <p className="font-semibold">Phone number required for One-Tap Call / WhatsApp</p>
+                  <p className="text-amber-700 mt-0.5">
+                    You have enabled One-Tap Call or WhatsApp, but haven't added a phone number yet. Please enter your phone number below so visitors can call or message you directly.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -9666,6 +9719,60 @@ const CreateCard = () => {
               </>
             )}
           </div>
+
+          {/* Dynamic QR Code for Personal Cards (Matches PDF C. SOCIAL LINKS: ... QR code, Share) */}
+          {formData.cardType === 'Personal' && isFieldVisible('dynamicQRCode') && (
+            <div className="border border-slate-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                <FaQrcode className="w-5 h-5 text-blue-500 mr-2" />
+                Dynamic QR Code
+              </h4>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-slate-700 mb-1">QR Code Type</label>
+                  <select
+                    value={formData.dynamicQRCode?.type || "dynamic"}
+                    onChange={(e) => {
+                      const updatedData = {
+                        ...formData,
+                        dynamicQRCode: { ...formData.dynamicQRCode, type: e.target.value }
+                      };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="dynamic">Dynamic</option>
+                    <option value="static">Static</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 mb-1">Target URL (Optional - defaults to your card link)</label>
+                  <input
+                    type="url"
+                    placeholder="https://your-card-url.com"
+                    value={formData.dynamicQRCode?.targetUrl || ""}
+                    onChange={(e) => {
+                      const updatedData = {
+                        ...formData,
+                        dynamicQRCode: { ...formData.dynamicQRCode, targetUrl: e.target.value }
+                      };
+                      setFormData(updatedData);
+                      formDataRef.current = updatedData;
+                      setHasUnsavedChanges(true);
+                      setChangeCount(prev => prev + 1);
+                      autoSaveToLocalStorage(updatedData);
+                    }}
+                    className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -11069,7 +11176,7 @@ const CreateCard = () => {
             )}
 
             {/* QR Code Settings */}
-            {isFieldVisible('dynamicQRCode') && (
+            {formData.cardType !== 'Personal' && isFieldVisible('dynamicQRCode') && (
               <div className="border border-slate-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
                   <FaQrcode className="w-5 h-5 text-blue-500 mr-2" />
@@ -11428,7 +11535,12 @@ const CreateCard = () => {
   // Progress Steps Component
   const ProgressSteps = () => {
     const availableSteps = getAvailableSteps();
-    const stepLabels = {
+    const isPersonal = (formData?.cardType || 'Personal') === 'Personal';
+    const stepLabels = isPersonal ? {
+      1: 'DIGITAL IDENTITY',
+      3: 'CONTACT & SOCIAL',
+      5: 'DESIGN'
+    } : {
       1: 'PROFILE',
       2: 'BUSINESS',
       3: 'CONTACT',
@@ -11438,7 +11550,7 @@ const CreateCard = () => {
 
     return (
       <div className="flex justify-between mb-8 relative">
-        <div className="absolute top-1/2 left-0 right=0 h-1 bg-slate-200 -z-10"></div>
+        <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -z-10"></div>
         <div
           className="absolute top-1/2 left-0 h-1 bg-blue-500 -z-10 transition-all duration-300"
           style={{ width: `${((availableSteps.indexOf(currentStep)) / (availableSteps.length - 1)) * 100}%` }}

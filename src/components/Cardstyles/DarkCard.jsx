@@ -492,8 +492,8 @@ const DarkCard = ({ cardData = {} }) => {
 
     productVideo: cardData?.productVideo || null,
     titleLine: cardData?.titleLine || "",
-    aboutText: cardData?.aboutText || "",
-    bio: cardData?.bio || cardData?.aboutText || "",
+    aboutText: cardData?.aboutText || cardData?.bio || "",
+    bio: (cardData?.bio && cardData?.bio !== (cardData?.aboutText || "")) ? cardData.bio : "",
     servicesProducts: cardData?.servicesProducts || "",
     brandLabel: cardData?.brandLabel || "",
     catalog: cardData?.catalog || cardData?.catalogPDF || "",
@@ -932,12 +932,12 @@ const DarkCard = ({ cardData = {} }) => {
               </div>
             )}
 
-            {/* About Section */}
+            {/* About / Short Intro Section */}
             {profileData.aboutText && isFieldAllowed('aboutText') && (
               <div className="text-center mt-1">
                 <h3 className="text-base font-semibold text-white flex justify-center items-center mb-2 font-Zona">
                   <FaUserFriends className="w-4 h-4 text-blue-400 mr-2" />
-                  About
+                  {profileData.cardType === 'Personal' ? 'Short Intro' : 'About'}
                 </h3>
                 <p className="text-white/90 text-sm leading-relaxed mb-4 font-ZonaPro">
                   {profileData.aboutText}
@@ -1335,7 +1335,7 @@ const DarkCard = ({ cardData = {} }) => {
             )}
 
             {/* Professional Bio */}
-            {profileData.bio && (
+            {profileData.bio && profileData.cardType !== 'Personal' && profileData.bio !== profileData.aboutText && (
               <div className="text-center mt-2 mb-4">
                 <h3 className="text-base font-semibold text-white flex justify-center items-center mb-2 font-Zona">
                   <FaBriefcase className="w-4 h-4 text-blue-400 mr-2" />
