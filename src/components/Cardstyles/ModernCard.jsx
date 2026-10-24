@@ -311,15 +311,15 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
       <div className="w-full max-w-md bg-white shadow-xl flex flex-col relative overflow-hidden min-h-screen sm:min-h-0 sm:rounded-[36px] sm:border sm:border-slate-200/80 my-0 sm:my-6">
         
         {/* ========================================================
-            HERO HEADER: TECH & STARTUP MODERN GRADIENT
+            HERO HEADER: VIBRANT LUXURY ROSE & FUCHSIA MODERN GRADIENT
             ======================================================== */}
-        <div className="relative h-48 bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-700 overflow-hidden flex flex-col justify-between p-4">
+        <div className="relative h-48 bg-gradient-to-r from-rose-500 via-pink-600 to-fuchsia-600 overflow-hidden flex flex-col justify-between p-4 shadow-inner">
           
-          {/* Subtle Ambient Tech Geometry */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none">
-            <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-cyan-400 blur-2xl" />
-            <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full bg-indigo-500 blur-2xl" />
-            <svg className="w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
+          {/* Ambient Lighting & Soft Glow */}
+          <div className="absolute inset-0 opacity-25 pointer-events-none">
+            <div className="absolute -top-12 -right-12 w-52 h-52 rounded-full bg-white blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-rose-900 blur-2xl" />
+            <svg className="w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <pattern id="modern-grid" width="20" height="20" patternUnits="userSpaceOnUse">
                   <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" strokeWidth="0.5" />
@@ -331,9 +331,9 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
 
           {/* Top Brand Pill & Share */}
           <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/20 backdrop-blur-md">
-              <FaShieldAlt className="w-3 h-3 text-cyan-400" />
-              <span className="text-[11px] font-semibold text-white/90 uppercase tracking-wider">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/25 border border-white/30 backdrop-blur-md">
+              <FaShieldAlt className="w-3 h-3 text-white" />
+              <span className="text-[11px] font-semibold text-white uppercase tracking-wider">
                 {profile.brandLabel}
               </span>
             </div>
@@ -341,11 +341,11 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
             <button
               type="button"
               onClick={handleNativeShare}
-              className="p-2 rounded-full bg-black/40 hover:bg-black/60 border border-white/20 text-white backdrop-blur-md transition-all active:scale-95 shadow-md"
+              className="p-2 rounded-full bg-black/25 hover:bg-black/40 border border-white/30 text-white backdrop-blur-md transition-all active:scale-95 shadow-md"
               title="Share Card"
             >
               {copiedItem === 'shareUrl' ? (
-                <FaCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <FaCheck className="w-3.5 h-3.5 text-emerald-300" />
               ) : (
                 <FaShareAlt className="w-3.5 h-3.5" />
               )}
@@ -356,12 +356,12 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
           {(profile.companyLogo || profile.companyName) && (
             <div className="relative z-10 flex items-center justify-center gap-2 pb-6">
               {profile.companyLogo && (
-                <div className="w-7 h-7 rounded-lg bg-white/20 backdrop-blur-md p-1 border border-white/30 flex items-center justify-center">
-                  <img src={profile.companyLogo} alt="Logo" className="w-full h-full object-contain" />
+                <div className="w-7 h-7 rounded-lg bg-white/30 backdrop-blur-md p-1 border border-white/40 flex items-center justify-center shadow-sm">
+                  <img src={profile.companyLogo} alt="Logo" className="w-full h-full object-contain brightness-0 invert" />
                 </div>
               )}
               {profile.companyName && (
-                <span className="text-xs font-semibold text-white/90 tracking-wide drop-shadow-sm">
+                <span className="text-xs font-semibold text-white tracking-wide drop-shadow-sm">
                   {profile.companyName}
                 </span>
               )}
@@ -370,7 +370,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
 
           {/* Avatar Anchor */}
           <div className="absolute -bottom-14 left-1/2 -translate-x-1/2 z-20">
-            <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-slate-900/20">
+            <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-rose-950/20">
               <img
                 src={profile.profilePhoto}
                 alt={profile.name}
@@ -381,7 +381,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                 }}
               />
               {/* Verified Badge */}
-              <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center text-white shadow">
+              <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-rose-600 border-2 border-white flex items-center justify-center text-white shadow">
                 <FaCheckCircle className="w-3.5 h-3.5" />
               </div>
             </div>
@@ -401,7 +401,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
 
           {/* Job Title */}
           {profile.jobTitle && (
-            <p className="text-sm font-semibold text-blue-600 mb-2">
+            <p className="text-sm font-semibold text-rose-600 mb-2">
               {profile.jobTitle}
             </p>
           )}
@@ -434,14 +434,14 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
             )}
 
             {profile.serviceArea && isFieldAllowed('serviceArea') && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                <FaMapMarkerAlt className="w-2.5 h-2.5 text-blue-500" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200">
+                <FaMapMarkerAlt className="w-2.5 h-2.5 text-rose-500" />
                 <span>Serving: {profile.serviceArea}</span>
               </span>
             )}
 
             {profile.serviceAvailability && isFieldAllowed('serviceAvailability') && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-pink-50 text-pink-700 border border-pink-200">
                 <span>{profile.serviceAvailability}</span>
               </span>
             )}
@@ -449,7 +449,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
 
           {/* Tagline */}
           {profile.tagline && isFieldAllowed('tagline') && (
-            <div className="mt-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-slate-50 via-blue-50/50 to-slate-50 border border-slate-200/80 text-slate-600 text-xs italic">
+            <div className="mt-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-rose-50 via-pink-50/60 to-rose-50 border border-rose-200/80 text-rose-950 text-xs italic font-medium">
               "{profile.tagline}"
             </div>
           )}
@@ -461,11 +461,11 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
             ======================================================== */}
         <div className="px-6 pb-6 space-y-4">
           
-          {/* PRIMARY CTA: Save Contact to Phone (vCard .vcf) */}
+          {/* PRIMARY CTA: Save Contact to Phone (vCard .vcf) in Signature Pink/Rose */}
           <button
             type="button"
             onClick={handleSaveContact}
-            className="w-full flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-98 cursor-pointer"
+            className="w-full flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-600 to-fuchsia-600 hover:from-rose-600 hover:to-fuchsia-700 text-white font-semibold text-sm shadow-lg shadow-pink-500/25 transition-all active:scale-98 cursor-pointer"
           >
             <FaDownload className="w-4 h-4 animate-bounce" />
             <span>Save Contact to Phone</span>
@@ -491,12 +491,12 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
               type="button"
               disabled={!primaryPhone || !profile.enableOneTapCall}
               onClick={() => handleCall(primaryPhone)}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50 hover:bg-blue-50/60 border border-slate-200/80 hover:border-blue-300 transition-all active:scale-95 disabled:opacity-40 group"
+              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-rose-50/60 hover:bg-rose-100/70 border border-rose-200/80 hover:border-rose-400 transition-all active:scale-95 disabled:opacity-40 group"
             >
-              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-1.5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mb-1.5 group-hover:bg-rose-600 group-hover:text-white transition-colors">
                 <FaPhoneAlt className="w-4 h-4" />
               </div>
-              <span className="text-[11px] font-semibold text-slate-700">Call</span>
+              <span className="text-[11px] font-semibold text-rose-900">Call</span>
             </button>
 
             {/* Email */}
@@ -504,12 +504,12 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
               type="button"
               disabled={!primaryEmail || !profile.enableEmail}
               onClick={() => handleEmail(primaryEmail)}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50 hover:bg-violet-50/60 border border-slate-200/80 hover:border-violet-300 transition-all active:scale-95 disabled:opacity-40 group"
+              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-pink-50/60 hover:bg-pink-100/70 border border-pink-200/80 hover:border-pink-400 transition-all active:scale-95 disabled:opacity-40 group"
             >
-              <div className="w-10 h-10 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center mb-1.5 group-hover:bg-violet-600 group-hover:text-white transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center mb-1.5 group-hover:bg-pink-600 group-hover:text-white transition-colors">
                 <FaEnvelope className="w-4 h-4" />
               </div>
-              <span className="text-[11px] font-semibold text-slate-700">Email</span>
+              <span className="text-[11px] font-semibold text-pink-900">Email</span>
             </button>
 
             {/* Web */}
@@ -517,12 +517,12 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
               type="button"
               disabled={!primaryWebsite}
               onClick={() => handleWebsite(primaryWebsite)}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50 hover:bg-cyan-50/60 border border-slate-200/80 hover:border-cyan-300 transition-all active:scale-95 disabled:opacity-40 group"
+              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-fuchsia-50/60 hover:bg-fuchsia-100/70 border border-fuchsia-200/80 hover:border-fuchsia-400 transition-all active:scale-95 disabled:opacity-40 group"
             >
-              <div className="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center mb-1.5 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-fuchsia-100 text-fuchsia-600 flex items-center justify-center mb-1.5 group-hover:bg-fuchsia-600 group-hover:text-white transition-colors">
                 <FaGlobe className="w-4 h-4" />
               </div>
-              <span className="text-[11px] font-semibold text-slate-700">Portal</span>
+              <span className="text-[11px] font-semibold text-fuchsia-900">Portal</span>
             </button>
           </div>
 
@@ -535,22 +535,22 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
 
           {/* DIRECT CUSTOMER INQUIRY / LEAD CAPTURE FUNNEL */}
           {isFieldAllowed('customerInquiry') && (
-            <div className="p-5 rounded-3xl bg-gradient-to-br from-slate-900 to-indigo-950 text-white shadow-xl space-y-3">
+            <div className="p-5 rounded-3xl bg-gradient-to-br from-slate-900 via-rose-950/70 to-slate-950 text-white shadow-xl border border-rose-500/30 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-cyan-400 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-300 flex items-center justify-center">
                     <FaPaperPlane className="w-3.5 h-3.5" />
                   </div>
                   <div>
                     <h3 className="text-xs font-bold uppercase tracking-wider text-white">
                       Service Inquiry & Consultation
                     </h3>
-                    <p className="text-[10px] text-slate-400">Direct booking with {profile.name}</p>
+                    <p className="text-[10px] text-rose-200/80">Direct booking with {profile.name}</p>
                   </div>
                 </div>
 
                 {profile.serviceAvailability && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-medium">
                     {profile.serviceAvailability}
                   </span>
                 )}
@@ -568,7 +568,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                   <button
                     type="button"
                     onClick={() => setInquiryData(prev => ({ ...prev, submitted: false }))}
-                    className="text-[11px] text-cyan-400 hover:text-cyan-300 underline pt-1 inline-block"
+                    className="text-[11px] text-rose-300 hover:text-white underline pt-1 inline-block"
                   >
                     Send another request
                   </button>
@@ -576,7 +576,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
               ) : (
                 <div className="space-y-2.5 pt-1">
                   <div>
-                    <label className="block text-[10px] font-semibold text-slate-300 mb-1 uppercase tracking-wider">
+                    <label className="block text-[10px] font-semibold text-rose-200/90 mb-1 uppercase tracking-wider">
                       Service Required <span className="text-rose-400">*</span>
                     </label>
                     <input
@@ -584,37 +584,37 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                       value={inquiryData.service}
                       onChange={(e) => setInquiryData(prev => ({ ...prev, service: e.target.value }))}
                       placeholder={profile.services[0]?.name || "e.g. Enterprise Cloud Architecture"}
-                      className="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/80 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400"
+                      className="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/80 border border-rose-900/60 text-white placeholder:text-slate-500 focus:outline-none focus:border-rose-400"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-[10px] font-semibold text-slate-300 mb-1 uppercase tracking-wider">
+                      <label className="block text-[10px] font-semibold text-rose-200/90 mb-1 uppercase tracking-wider">
                         Preferred Date
                       </label>
                       <input
                         type="date"
                         value={inquiryData.date}
                         onChange={(e) => setInquiryData(prev => ({ ...prev, date: e.target.value }))}
-                        className="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/80 border border-slate-700 text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/80 border border-rose-900/60 text-white focus:outline-none focus:border-rose-400"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-semibold text-slate-300 mb-1 uppercase tracking-wider">
+                      <label className="block text-[10px] font-semibold text-rose-200/90 mb-1 uppercase tracking-wider">
                         Preferred Time
                       </label>
                       <input
                         type="time"
                         value={inquiryData.time}
                         onChange={(e) => setInquiryData(prev => ({ ...prev, time: e.target.value }))}
-                        className="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/80 border border-slate-700 text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/80 border border-rose-900/60 text-white focus:outline-none focus:border-rose-400"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-semibold text-slate-300 mb-1 uppercase tracking-wider">
+                    <label className="block text-[10px] font-semibold text-rose-200/90 mb-1 uppercase tracking-wider">
                       Your Contact Number <span className="text-rose-400">*</span>
                     </label>
                     <input
@@ -622,14 +622,14 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                       value={inquiryData.contact}
                       onChange={(e) => setInquiryData(prev => ({ ...prev, contact: e.target.value }))}
                       placeholder="Your mobile phone or WhatsApp"
-                      className="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/80 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400"
+                      className="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/80 border border-rose-900/60 text-white placeholder:text-slate-500 focus:outline-none focus:border-rose-400"
                     />
                   </div>
 
                   <button
                     type="button"
                     onClick={handleSendInquiry}
-                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-fuchsia-600 hover:from-rose-500 hover:to-fuchsia-500 text-white font-semibold text-xs shadow-md shadow-rose-950/50 flex items-center justify-center gap-2 transition-all cursor-pointer"
                   >
                     <FaWhatsapp className="w-3.5 h-3.5" />
                     <span>Send Inquiry via WhatsApp</span>
@@ -646,7 +646,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
                     <FaAward className="w-3.5 h-3.5" />
                   </div>
                   <h3 className="text-sm font-bold text-slate-900 tracking-tight">
@@ -660,12 +660,12 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                 {profile.services.map((service, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-blue-300 transition-all space-y-2.5 text-left"
+                    className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-rose-300 transition-all space-y-2.5 text-left"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         {service.category && (
-                          <span className="inline-block px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider mb-1">
+                          <span className="inline-block px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 text-[10px] font-bold uppercase tracking-wider mb-1">
                             {service.category}
                           </span>
                         )}
@@ -676,7 +676,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
 
                       {service.price && (
                         <div className="text-right shrink-0">
-                          <span className="inline-block px-2.5 py-1 rounded-xl bg-slate-900 text-white text-xs font-bold tracking-tight shadow-sm">
+                          <span className="inline-block px-2.5 py-1 rounded-xl bg-slate-900 text-rose-300 text-xs font-bold tracking-tight shadow-sm">
                             {service.currency === 'EUR' ? '€' : service.currency === 'INR' ? '₹' : '$'}
                             {service.price}
                           </span>
@@ -711,7 +711,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                           }));
                           window.scrollTo({ top: 350, behavior: 'smooth' });
                         }}
-                        className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 group"
+                        className="text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1 group"
                       >
                         <span>Inquire</span>
                         <FaChevronRight className="w-2.5 h-2.5 group-hover:translate-x-0.5 transition-transform" />
@@ -727,7 +727,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
           {(profile.aboutText || profile.bio) && isFieldAllowed('aboutText') && (
             <div className="space-y-2.5">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center">
                   <FaBuilding className="w-3.5 h-3.5" />
                 </div>
                 <h3 className="text-sm font-bold text-slate-900 tracking-tight">
@@ -760,7 +760,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
                     <FaRegClock className="w-3.5 h-3.5" />
                   </div>
                   <h3 className="text-sm font-bold text-slate-900 tracking-tight">
@@ -772,7 +772,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                   <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${
                     businessStatus.isOpen 
                       ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                      : 'bg-slate-100 text-slate-600 border-slate-200'
+                      : 'bg-rose-50 text-rose-700 border-rose-200'
                   }`}>
                     {businessStatus.text}
                   </span>
@@ -795,7 +795,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
           {/* CONTACT INFORMATION HUB */}
           <div className="space-y-2.5">
             <h3 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+              <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
                 <FaPhoneAlt className="w-3 h-3" />
               </div>
               <span>Contact Information</span>
@@ -809,7 +809,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                   className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
                       <FaPhoneAlt className="w-3.5 h-3.5" />
                     </div>
                     <div>
@@ -832,7 +832,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                     <button
                       type="button"
                       onClick={() => handleCall(phone.number)}
-                      className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
+                      className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-sm transition-colors"
                     >
                       Call
                     </button>
@@ -847,7 +847,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                   className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3 overflow-hidden">
-                    <div className="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center shrink-0">
                       <FaEnvelope className="w-3.5 h-3.5" />
                     </div>
                     <div className="overflow-hidden">
@@ -870,7 +870,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                     <button
                       type="button"
                       onClick={() => handleEmail(email.address)}
-                      className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold"
+                      className="px-3 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-700 text-white text-xs font-semibold shadow-sm transition-colors"
                     >
                       Send
                     </button>
@@ -885,7 +885,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                   className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3 overflow-hidden">
-                    <div className="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center shrink-0">
                       <FaGlobe className="w-3.5 h-3.5" />
                     </div>
                     <div className="overflow-hidden">
@@ -899,7 +899,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                   <button
                     type="button"
                     onClick={() => handleWebsite(web.url)}
-                    className="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold flex items-center gap-1 shrink-0"
+                    className="px-3 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white text-xs font-semibold flex items-center gap-1 shrink-0 shadow-sm transition-colors"
                   >
                     <span>Visit</span>
                     <FaExternalLinkAlt className="w-2.5 h-2.5" />
