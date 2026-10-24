@@ -313,10 +313,10 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
         {/* ========================================================
             HERO HEADER: VIBRANT LUXURY ROSE & FUCHSIA MODERN GRADIENT
             ======================================================== */}
-        <div className="relative h-48 bg-gradient-to-r from-rose-500 via-pink-600 to-fuchsia-600 overflow-hidden flex flex-col justify-between p-4 shadow-inner">
+        <div className="relative h-44 bg-gradient-to-r from-rose-500 via-pink-600 to-fuchsia-600 p-4 shadow-inner flex flex-col justify-between">
           
-          {/* Ambient Lighting & Soft Glow */}
-          <div className="absolute inset-0 opacity-25 pointer-events-none">
+          {/* Ambient Lighting & Soft Glow (strictly clipped inside banner) */}
+          <div className="absolute inset-0 overflow-hidden opacity-25 pointer-events-none">
             <div className="absolute -top-12 -right-12 w-52 h-52 rounded-full bg-white blur-2xl" />
             <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-rose-900 blur-2xl" />
             <svg className="w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
@@ -351,26 +351,16 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
               )}
             </button>
           </div>
+        </div>
 
-          {/* Company Brand Watermark in Header */}
-          {(profile.companyLogo || profile.companyName) && (
-            <div className="relative z-10 flex items-center justify-center gap-2 pb-6">
-              {profile.companyLogo && (
-                <div className="w-7 h-7 rounded-lg bg-white/30 backdrop-blur-md p-1 border border-white/40 flex items-center justify-center shadow-sm">
-                  <img src={profile.companyLogo} alt="Logo" className="w-full h-full object-contain brightness-0 invert" />
-                </div>
-              )}
-              {profile.companyName && (
-                <span className="text-xs font-semibold text-white tracking-wide drop-shadow-sm">
-                  {profile.companyName}
-                </span>
-              )}
-            </div>
-          )}
-
-          {/* Avatar Anchor */}
-          <div className="absolute -bottom-14 left-1/2 -translate-x-1/2 z-20">
-            <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-rose-950/20">
+        {/* ========================================================
+            PROFILE INFORMATION & IDENTITY
+            ======================================================== */}
+        <div className="relative z-10 px-6 pb-4 text-center">
+          
+          {/* Avatar Anchor - Perfectly overlapping banner without clipping */}
+          <div className="relative -mt-16 mb-3 inline-block">
+            <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-rose-950/20 ring-4 ring-white">
               <img
                 src={profile.profilePhoto}
                 alt={profile.name}
@@ -381,18 +371,28 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
                 }}
               />
               {/* Verified Badge */}
-              <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-rose-600 border-2 border-white flex items-center justify-center text-white shadow">
-                <FaCheckCircle className="w-3.5 h-3.5" />
+              <div 
+                className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-rose-600 border-2 border-white flex items-center justify-center text-white shadow-md"
+                title="Verified Identity"
+              >
+                <FaCheckCircle className="w-4 h-4" />
               </div>
+
+              {/* Company Logo Badge if available */}
+              {profile.companyLogo && (
+                <div 
+                  className="absolute -top-1 -right-1 w-8 h-8 rounded-xl bg-white border border-slate-200 p-1 shadow-md flex items-center justify-center"
+                  title={profile.companyName || "Company"}
+                >
+                  <img 
+                    src={profile.companyLogo} 
+                    alt="Company Logo" 
+                    className="w-full h-full object-contain" 
+                  />
+                </div>
+              )}
             </div>
           </div>
-
-        </div>
-
-        {/* ========================================================
-            PROFILE INFORMATION & IDENTITY
-            ======================================================== */}
-        <div className="pt-16 pb-4 px-6 text-center">
           
           {/* Full Name */}
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-1">
