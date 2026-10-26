@@ -1,2135 +1,1104 @@
-import React, { useEffect, useState } from "react";
-import {
-  FaPhoneAlt,
-  FaWhatsapp,
-  FaFacebookF,
-  FaMapMarkerAlt,
-  FaInstagram,
-  FaGlobe,
-  FaEnvelope,
-  FaLinkedinIn,
-  FaDownload,
-  FaCalendarAlt,
-  FaShoppingCart,
-  FaCreditCard,
-  FaLanguage,
-  FaStar,
-  FaFilePdf,
-  FaUserFriends,
-  FaBriefcase,
-  FaBuilding,
-  FaClock,
-  FaStore,
-  FaHeadset,
-  FaCrown,
-  FaGem,
-  FaChevronLeft,
-  FaChevronRight,
-  FaVideo,
-  FaQrcode,
-  FaShieldAlt,
-  FaBook,
-  FaIdCard,
-  FaImages,
-  FaImage,
-  FaUser,
-  FaEllipsisH,
-  FaInfoCircle,
-  FaAddressCard,
-  FaTags,
-  FaFileAlt,
-  FaFileInvoice,
-  FaRegClock,
-  FaFileVideo,
-  FaRobot,
-  FaCommentDots,
-  FaBullhorn,
-  FaClipboardList,
-  FaSuitcase,
-  FaHistory,
-  FaCheckCircle,
-  FaLightbulb,
-  FaAward,
-  FaHandshake,
-  FaChartLine,
-  FaUsers,
-  FaCogs,
-  FaBullseye,
-  FaRocket,
-  FaHandHoldingUsd,
-  FaShare
-} from "react-icons/fa";
-import { FaXTwitter, FaYoutube } from "react-icons/fa6";
+import React, { useState } from 'react';
+import { 
+  FaLinkedin, FaTwitter, FaInstagram, FaEnvelope, 
+  FaMapMarkerAlt, FaChevronRight, FaGlobe, 
+  FaPhoneAlt, FaWhatsapp, FaUserFriends, 
+  FaBuilding, FaVideo, FaImage, FaGem, FaStar, 
+  FaDownload, FaQrcode, FaShieldAlt, FaInfoCircle, 
+  FaCrown, FaBriefcase, FaCalendarAlt, FaHeadset,
+  FaFilePdf, FaIdCard, FaTags, FaFileAlt, 
+  FaFileInvoice, FaRegClock, FaFileVideo, FaRobot, 
+  FaCommentDots, FaBullhorn, FaClipboardList, 
+  FaSuitcase, FaUsers, FaCogs, FaCheckCircle, 
+  FaAward, FaPaperPlane, FaExternalLinkAlt, FaClock,
+  FaShareAlt, FaCopy, FaCheck, FaTimes
+} from 'react-icons/fa';
+import { FaXTwitter, FaGithub, FaYoutube, FaFacebookF } from "react-icons/fa6";
+import { generateVCard } from '../../utility/vcard';
 
-// Video player component with better S3 handling
+// --- CONFIG: Plan Features Matrix (Synchronized with Backend Tiers) ---
+const personalAllowed = [
+  'profilePhoto', 'firstName', 'lastName', 'prefix', 'suffix', 'jobTitle',
+  'tagline', 'aboutText', 'bio', 'phones', 'email', 'emails', 'websites',
+  'addresses', 'enableOneTapCall', 'enableWhatsApp', 'enableEmail', 'socialLinks',
+  'dynamicQRCode', 'shareableUrl', 'shareableLink'
+];
+
+const businessAllowed = [
+  ...personalAllowed,
+  'companyName', 'companyLogo', 'logoSize', 'department', 'organization',
+  'businessHours', 'virtualNumber', 'profileVideo', 'services', 'servicesProducts',
+  'gallery', 'catalog', 'catalogPDF', 'productVideo', 'nfcSettings', 'downloads'
+];
+
+const businessPremiumAllowed = [
+  ...businessAllowed,
+  'serviceArea', 'serviceAvailability', 'customerInquiry', 'interactiveElements',
+  'individualProductDisplay', 'clientList', 'businessCardInstagram', 'textbooks',
+  'chatAssistant', 'liveChat', 'foundedName', 'brandLabel', 'productRangeDisplay'
+];
+
+const professionalsAllowed = [
+  ...businessPremiumAllowed,
+  'testimonials', 'videos'
+];
+
+const cardFieldsConfig = {
+  Personal: personalAllowed,
+  Business: businessAllowed,
+  BusinessPremium: businessPremiumAllowed,
+  Professionals: professionalsAllowed,
+  ProfessionalPro: professionalsAllowed,
+  Entrepreneurials: professionalsAllowed,
+  EntrepreneurialsMulti: professionalsAllowed,
+  CorporateBusiness: professionalsAllowed,
+  Team: professionalsAllowed,
+  MiniWebsite: professionalsAllowed
+};
+
+// --- HELPER: Video Player Component ---
 const VideoPlayer = ({ src, poster, title, className = "" }) => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-  
-  const getVideoUrl = (url) => {
-    if (!url) return '';
-    return url;
-  };
-  
-  const videoUrl = getVideoUrl(src);
-  
-  const handleError = (e) => {
-    console.error('Video playback error:', e);
-    setError(true);
-    setLoading(false);
-  };
-  
-  const handleLoadStart = () => {
-    setLoading(true);
-  };
-  
-  const handleLoadedData = () => {
-    setLoading(false);
-  };
-  
-  if (error) {
+
+  const videoUrl = typeof src === 'object' && src !== null && src.url ? src.url : src;
+
+  if (!videoUrl || typeof videoUrl !== 'string') return null;
+
+  if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+    let videoId = '';
+    if (videoUrl.includes('youtu.be/')) {
+      videoId = videoUrl.split('youtu.be/')[1]?.split('?')[0];
+    } else if (videoUrl.includes('watch?v=')) {
+      videoId = videoUrl.split('watch?v=')[1]?.split('&')[0];
+    } else if (videoUrl.includes('embed/')) {
+      videoId = videoUrl.split('embed/')[1]?.split('?')[0];
+    }
     return (
-      <div className={`flex flex-col items-center justify-center bg-gray-800 rounded-lg ${className}`}>
-        <FaVideo className="w-12 h-12 text-gray-400 mb-2" />
-        <p className="text-sm text-gray-400">Video failed to load</p>
-        <p className="text-xs text-gray-500 mt-1">{title}</p>
+      <div className={`relative rounded-2xl overflow-hidden aspect-video bg-black shadow-lg border border-slate-200/80 my-3 ${className}`}>
+        <iframe
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`}
+          title={title || "YouTube video"}
+          className="w-full h-full border-0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
       </div>
     );
   }
-  
+
+  if (error) {
+    return (
+      <div className={`flex flex-col items-center justify-center bg-slate-900/10 rounded-2xl p-6 text-slate-500 border border-slate-200 my-3 ${className}`}>
+        <FaVideo className="w-8 h-8 text-slate-400 mb-2" />
+        <p className="text-xs font-medium">Video currently unavailable</p>
+      </div>
+    );
+  }
+
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative rounded-2xl overflow-hidden aspect-video bg-black shadow-lg border border-slate-200/80 my-3 ${className}`}>
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 z-10">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/40 z-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-sky-500 border-t-transparent" />
         </div>
       )}
-      
       <video
         src={videoUrl}
-        className="w-full h-full object-contain rounded-lg"
+        className="w-full h-full object-contain"
         controls
         playsInline
         preload="metadata"
         poster={poster}
-        onError={handleError}
-        onLoadStart={handleLoadStart}
-        onLoadedData={handleLoadedData}
-        onCanPlay={handleLoadedData}
-      >
-        <source src={videoUrl} type="video/mp4" />
-        <source src={videoUrl} type="video/webm" />
-        Your browser does not support the video tag.
-      </video>
-      
-      {title && (
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-          <p className="casper-font text-sm text-white">{title}</p>
-        </div>
-      )}
+        onError={() => setError(true)}
+        onLoadedData={() => setLoading(false)}
+      />
     </div>
   );
 };
 
-const LightCard = ({ cardData = {} }) => {
-  console.log('🎯 LightTabCard received data:', cardData);
-  const [activeTab, setActiveTab] = useState('profile');
-  const [currentServiceSlide, setCurrentServiceSlide] = useState(0);
-  const [currentProductSlide, setCurrentProductSlide] = useState(0);
-  const [currentTestimonialSlide, setCurrentTestimonialSlide] = useState(0);
-  const [currentClientSlide, setCurrentClientSlide] = useState(0);
-  const [currentVideoSlide, setCurrentVideoSlide] = useState(0);
-  const [showAllClients, setShowAllClients] = useState(false);
-  const [showQRCode, setShowQRCode] = useState(false);
+// --- HELPER: Live Business Status ---
+const getBusinessStatus = (businessHours = []) => {
+  if (!businessHours || businessHours.length === 0) return null;
 
-  // Updated background image
-  const backgroundImage = "https://images.pexels.com/photos/1257860/pexels-photo-1257860.jpeg";
+  const now = new Date();
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const currentDayName = days[now.getDay()];
 
-  // Get current plan from cardData
-  const currentPlan = cardData?.cardType || 'Personal';
+  const todaySchedule = businessHours.find(h => h.day?.toLowerCase() === currentDayName);
+  if (!todaySchedule || todaySchedule.isClosed) {
+    return { isOpen: false, text: 'Closed Today' };
+  }
 
-  // Helper to check if a feature is allowed for current plan
-  const isFeatureAllowed = (featureName) => {
-    // All plans get basic features
-    const basicFeatures = [
-      'Profile Photo/Logo',
-      'Name/Source Name',
-      'Tag Line/Slogan',
-      'Profile Video',
-      'About Me',
-      'Contact Management',
-      'One-tap Call, WhatsApp, Email',
-      'Website/Portfolio Link',
-      'Location [Address]',
-      'Social & Digital Hub',
-      'Dynamic QR Code',
-      'Share',
-      'Downloads',
-      'Videos'
-    ];
-    
-    if (basicFeatures.includes(featureName)) {
-      return true;
+  if (!todaySchedule.openingTime || !todaySchedule.closingTime) {
+    return { isOpen: true, text: 'Open Today' };
+  }
+
+  const [openH, openM] = todaySchedule.openingTime.split(':').map(Number);
+  const [closeH, closeM] = todaySchedule.closingTime.split(':').map(Number);
+
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const openMinutes = openH * 60 + openM;
+  const closeMinutes = closeH * 60 + closeM;
+
+  if (currentMinutes >= openMinutes && currentMinutes <= closeMinutes) {
+    return { isOpen: true, text: `Open until ${todaySchedule.closingTime}` };
+  }
+  return { isOpen: false, text: `Closed • Opens ${todaySchedule.openingTime}` };
+};
+
+const LightCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
+  // Normalize plan
+  const normalizePlan = (raw) => {
+    if (!raw) return 'Personal';
+    if (cardFieldsConfig[raw]) return raw;
+    const cleaned = String(raw).replace(/[\s\-_]/g, '').toLowerCase();
+    for (const key of Object.keys(cardFieldsConfig)) {
+      if (key.toLowerCase() === cleaned) return key;
     }
-    
-    // Business and BusinessPremium features
-    const businessFeatures = [
-      'About Me/Company/Organization',
-      'Virtual Number Integration',
-      'Business Hours',
-      'Professional/Business Details',
-      'Services/Provision',
-      'Brief about Product/Services',
-      'Product Showcase/Gallery/Portfolio',
-      'Product/Catalog [PDF]',
-      'Product Video',
-      'Testimonials'
-    ];
-    
-    if (businessFeatures.includes(featureName)) {
-      return currentPlan === 'Business' || currentPlan === 'BusinessPremium';
+    return 'BusinessPremium';
+  };
+
+  const currentPlan = normalizePlan(cardData?.cardType || plan);
+
+  const isFieldAllowed = (field) => {
+    if (!field) return true;
+    if (cardData?.addons) {
+      const lk = field.toLowerCase();
+      if (lk === 'gallery' && (cardData.addons.gallery || cardData.addons.photogallery)) return true;
+      if ((lk === 'catalog' || lk === 'catalogpdf' || lk === 'downloads') &&
+          (cardData.addons.docsbuilder || cardData.addons.catalogbuilder || cardData.addons.brochurebuilder || cardData.addons.docsmanager)) return true;
+      if ((lk === 'nfcsettings' || lk === 'nfccard') && (cardData.addons.nfccard || cardData.addons.nfc)) return true;
+      if ((lk === 'profilevideo' || lk === 'productvideo') && (cardData.addons.profilebuilder || cardData.addons.portfoliobuilder)) return true;
+      if (lk === 'testimonials' && cardData.addons.portfoliobuilder) return true;
     }
-    
-    // BusinessPremium only features
-    const premiumFeatures = [
-      'Individual Product Display',
-      'Testimonials / Client List',
-      'Interactive Elements',
-      'Call-to-Action',
-      'Live Chat – WhatsApp / Messages',
-      'Appointment Scheduler',
-      'Digital Payments',
-      'Lead / Contact Form',
-      'Chat Assistant',
-      'Brand Label Product/Services',
-      'Product Range Display',
-      'NFC Card Development with Print'
-    ];
-    
-    if (premiumFeatures.includes(featureName)) {
-      return currentPlan === 'BusinessPremium';
-    }
-    
-    // Default fallback
-    return true;
+    const allowed = cardFieldsConfig[currentPlan] || cardFieldsConfig.Personal;
+    return allowed.includes(field);
   };
 
-  // Build complete profileData from cardData WITH ALL FIELDS
-  const profileData = {
-    // Personal Info
-    prefix: cardData?.prefix || "",
-    firstName: cardData?.firstName || "",
-    lastName: cardData?.lastName || "",
-    suffix: cardData?.suffix || "",
-    name: `${cardData?.prefix || ""} ${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim(),
-    tagline: cardData?.tagline || "",
-    
-    // Professional Info
-    jobTitle: cardData?.jobTitle || "",
-    companyName: cardData?.companyName || "",
-    department: cardData?.department || "",
-    foundedName: cardData?.foundedName || "",
-    organization: cardData?.organization || "",
-    
-    // Contact Info
-    email: cardData?.email || "",
-    emails: cardData?.emails || [
-      { 
-        address: cardData?.email || "", 
-        label: "primary", 
-        isPrimary: true 
-      }
-    ],
-    phones: cardData?.phones || [{ number: "", isPrimary: true }],
-    websites: cardData?.websites || [],
-    addresses: cardData?.addresses || [],
-    virtualNumber: cardData?.virtualNumber || { number: "", isEnabled: false },
-    
-    // Profile Content
-    profileVideo: cardData?.profileVideo || { url: "", title: "Intro Video" },
-    productVideo: cardData?.productVideo || null,
-    videos: cardData?.videos || [],
-    aboutText: cardData?.aboutText || ".",
-    bio: cardData?.bio || cardData?.aboutText || "",
-    servicesProducts: cardData?.servicesProducts || "",
-    
-    // Catalog
-    catalog: cardData?.catalog || cardData?.catalogPDF || "",
-    
-    // Business Hours
-    businessHours: cardData?.businessHours || [],
-    
-    // Social & Media
-    socialLinks: cardData?.socialLinks || [],
-    profilePhoto: cardData?.profilePhoto,
-    companyLogo: cardData?.companyLogo,
-    logoSize: cardData?.logoSize || "medium",
-    
-    // Services & Products
-    services: cardData?.services || [],
-    products: cardData?.products || [],
-    
-    // Premium Features
-    testimonials: cardData?.testimonials || [],
-    clientList: cardData?.clientList || [],
-    gallery: cardData?.gallery || [],
-    downloads: cardData?.downloads || [],
-    interactiveElements: cardData?.interactiveElements || [],
-    individualProductDisplay: cardData?.individualProductDisplay || false,
-    businessCardInstagram: cardData?.businessCardInstagram || "",
-    textbooks: cardData?.textbooks || [],
+  // State management
+  const [copiedItem, setCopiedItem] = useState(null);
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [inquiryData, setInquiryData] = useState({
+    service: '',
+    date: '',
+    time: '',
+    contact: '',
+    submitted: false
+  });
 
-    // Digital Features
-    dynamicQRCode: cardData?.dynamicQRCode || null,
-    
-    // Shareable URL
-    shareableUrl: cardData?.shareableUrl || cardData?.shareUrl || "",
-    
-    // Brand & Product
-    brandLabel: cardData?.brandLabel || "",
-    productRangeDisplay: cardData?.productRangeDisplay || "grid",
-    
-    nfcSettings: cardData?.nfcSettings || { isEnabled: false },
-    
-    // Chat Features
-    chatAssistant: cardData?.chatAssistant || { isEnabled: false, welcomeMessage: "Hello! How can I help you today?" },
-    liveChat: cardData?.liveChat || { isEnabled: false, platform: "whatsapp", phoneNumber: "" },
-    
-    // Plan Info
-    cardType: currentPlan,
-    
-    // Settings
-    enableOneTapCall: cardData?.enableOneTapCall !== undefined ? cardData.enableOneTapCall : true,
-    enableWhatsApp: cardData?.enableWhatsApp !== undefined ? cardData.enableWhatsApp : true,
-    enableEmail: cardData?.enableEmail !== undefined ? cardData.enableEmail : true
+  // --- RESILIENT DATA MAPPING ---
+  const profile = {
+    prefix: cardData.prefix || '',
+    firstName: cardData.firstName || '',
+    lastName: cardData.lastName || '',
+    name: `${cardData.prefix ? cardData.prefix + ' ' : ''}${cardData.firstName || ''} ${cardData.lastName || ''}`.trim() || 'Professional Contact',
+    jobTitle: cardData.jobTitle || '',
+    department: cardData.department || '',
+    companyName: cardData.companyName || cardData.organization || '',
+    companyLogo: cardData.companyLogo,
+    profilePhoto: cardData.profilePhoto || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600",
+    tagline: cardData.tagline || '',
+    bio: cardData.bio || '',
+    aboutText: cardData.aboutText || '',
+    foundedName: cardData.foundedName || '',
+    organization: cardData.organization || '',
+    serviceArea: cardData.serviceArea || '',
+    serviceAvailability: cardData.serviceAvailability || '',
+
+    phones: Array.isArray(cardData.phones) && cardData.phones.length > 0 
+      ? cardData.phones 
+      : cardData.phone ? [{ label: 'work', number: cardData.phone }] : [],
+    emails: Array.isArray(cardData.emails) && cardData.emails.length > 0 
+      ? cardData.emails 
+      : cardData.email ? [{ label: 'work', address: cardData.email }] : [],
+    websites: Array.isArray(cardData.websites) && cardData.websites.length > 0 
+      ? cardData.websites 
+      : cardData.website ? [{ label: 'company', url: cardData.website }] : [],
+    addresses: cardData.addresses || [],
+    socialLinks: cardData.socialLinks || [],
+
+    services: cardData.services || [],
+    products: cardData.products || [],
+    businessHours: cardData.businessHours || [],
+    downloads: cardData.downloads || [],
+    profileVideo: cardData.profileVideo,
+    productVideo: cardData.productVideo,
+    videos: cardData.videos || [],
+
+    nfcSettings: cardData.nfcSettings || { isEnabled: false },
+    testimonials: cardData.testimonials || [],
+    clientList: cardData.clientList || [],
+    gallery: cardData.gallery || [],
+
+    brandLabel: cardData.brandLabel || 'Revayah One Verified',
+    enableOneTapCall: cardData.enableOneTapCall !== undefined ? cardData.enableOneTapCall : true,
+    enableWhatsApp: cardData.enableWhatsApp !== undefined ? cardData.enableWhatsApp : true,
+    enableEmail: cardData.enableEmail !== undefined ? cardData.enableEmail : true
   };
 
-  // Feature to actual field mapping
-  const featureToFieldMap = {
-    // Personal Plan Features
-    'Profile Photo/Logo': ['profilePhoto'],
-    'Name/Source Name': ['firstName', 'lastName', 'name'],
-    'Tag Line/Slogan': ['tagline'],
-    'Profile Video': ['profileVideo'],
-    'About Me': ['aboutText'],
-    'Contact Management': ['emails', 'phones'],
-    'One-tap Call, WhatsApp, Email': ['phones', 'emails'],
-    'Website/Portfolio Link': ['websites'],
-    'Location [Address]': ['addresses'],
-    'Social & Digital Hub': ['socialLinks'],
-    'Dynamic QR Code': ['dynamicQRCode'],
-    'Share': ['shareableUrl'],
-    'Downloads': ['downloads'],
-    'Videos': ['videos'],
-    
-    // Business Plan Additional Features
-    'About Me/Company/Organization': ['aboutText', 'companyName'],
-    'Virtual Number Integration': ['virtualNumber'],
-    'Business Hours': ['businessHours'],
-    'Professional/Business Details': ['companyName', 'department'],
-    'Services/Provision': ['services'],
-    'Brief about Product/Services': ['servicesProducts'],
-    'Product Showcase/Gallery/Portfolio': ['gallery'],
-    'Product/Catalog [PDF]': ['catalog'],
-    'Product Video': ['productVideo'],
-    'Testimonials': ['testimonials'],
-    
-    // BusinessPremium Additional Features
-    'Individual Product Display': ['services', 'individualProductDisplay'],
-    'Testimonials / Client List': ['testimonials', 'clientList'],
-    'Interactive Elements': ['interactiveElements'],
-    'Call-to-Action': ['interactiveElements'],
-    'Live Chat – WhatsApp / Messages': ['liveChat'],
-    'Appointment Scheduler': ['interactiveElements'],
-    'Digital Payments': ['interactiveElements'],
-    'Lead / Contact Form': ['interactiveElements'],
-    'Chat Assistant': ['chatAssistant'],
-    'Brand Label Product/Services': ['brandLabel'],
-    'Product Range Display': ['productRangeDisplay'],
-    'NFC Card Development with Print': ['nfcSettings']
+  const primaryPhone = profile.phones.find(p => p.isPrimary)?.number || profile.phones[0]?.number || '';
+  const primaryEmail = profile.emails.find(e => e.isPrimary)?.address || profile.emails[0]?.address || cardData.email || '';
+  const primaryWebsite = profile.websites[0]?.url || '';
+  const businessStatus = getBusinessStatus(profile.businessHours);
+
+  // Copy helper
+  const handleCopy = (text, key) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedItem(key);
+    setTimeout(() => setCopiedItem(null), 2000);
   };
 
-  // Helper to check if a feature should be shown (both allowed by plan AND has data)
-  const shouldShowFeature = (featureName, profileData) => {
-    // First check if feature is allowed for current plan
-    if (!isFeatureAllowed(featureName)) {
-      return false;
-    }
-    
-    // Then check if there's data for this feature
-    const fields = featureToFieldMap[featureName] || [];
-    return fields.some(field => {
-      const data = profileData[field];
-      if (Array.isArray(data)) {
-        return data.length > 0;
-      } else if (typeof data === 'object' && data !== null) {
-        if (field === 'profileVideo' || field === 'productVideo') {
-          return data?.url;
-        }
-        if (field === 'dynamicQRCode') {
-          return data?.targetUrl || data?.qrImage;
-        }
-        if (field === 'nfcSettings') {
-          return data?.isEnabled;
-        }
-        if (field === 'virtualNumber') {
-          return data?.number || data?.isEnabled;
-        }
-        if (field === 'chatAssistant') {
-          return data?.isEnabled;
-        }
-        if (field === 'liveChat') {
-          return data?.isEnabled;
-        }
-        return Object.keys(data).length > 0;
-      } else {
-        return !!data && data !== '.';
-      }
-    });
+  // Direct contact actions
+  const handleCall = (num) => {
+    if (!num) return;
+    window.location.href = `tel:${num.replace(/\s+/g, '')}`;
   };
 
-  // Helper to check if a feature should be shown for current user
-  const checkFeature = (featureName) => {
-    return shouldShowFeature(featureName, profileData);
+  const handleWhatsApp = (num) => {
+    const cleanNum = (num || primaryPhone).replace(/\D/g, '');
+    if (!cleanNum) return;
+    const greeting = encodeURIComponent(`Hello ${profile.name}, I connected with you via your Revayah One digital card.`);
+    window.open(`https://wa.me/${cleanNum}?text=${greeting}`, '_blank');
   };
 
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.innerHTML = `
-      /* Import Google Fonts as fallbacks */
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-      
-      /* Rumaila-like font for headings - using Montserrat as fallback */
-      .rumaila-font {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 500;
-        color: white!important;
-      }
-      
-      /* Casper-like font for body text - using Poppins as fallback */
-      .casper-font {
-        font-family: 'Poppins', sans-serif;
-        font-weight: 200 !important;
-        color: white !important;
-      }
-      
-      html, body {
-        height: 100%;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
-        font-family: 'Poppins', sans-serif;
-        margin: 0;
-        padding: 0;
-      }
-      #root {
-        min-height: 100%;
-        font-family: 'Poppins', sans-serif;
-      }
-      * {
-        font-family: 'Poppins', sans-serif;
-        box-sizing: border-box;
-      }
-      
-      /* ========== DESKTOP VIEW ========== */
-      @media (min-width: 641px) {
-        .mobile-container {
-          width: 375px;
-          height: 667px;
-          overflow: hidden;
-          position: relative;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-          background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('${backgroundImage}');
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
-          border-radius: 24px;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-          margin: 20px auto;
-        }
-        
-        .mobile-container::-webkit-scrollbar {
-          display: none;
-        }
-        
-        .tab-content-wrapper {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-        }
-      }
-      
-      /* ========== MOBILE VIEW ========== */
-      @media (max-width: 640px) {
-        html, body {
-          background: black !important;
-          overflow: hidden;
-        }
-        
-        .mobile-container {
-          width: 100vw !important;
-          height: 100vh !important;
-          max-width: 100% !important;
-          border-radius: 0 !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('${backgroundImage}') !important;
-          background-size: cover !important;
-          background-position: center !important;
-          background-repeat: no-repeat !important;
-          position: fixed !important;
-          top: 0 !important;
-          left: 0 !important;
-          right: 0 !important;
-          bottom: 0 !important;
-          overflow: hidden !important;
-          box-shadow: none !important;
-        }
-        
-        .tab-content-wrapper {
-          height: 100% !important;
-          display: flex;
-          flex-direction: column;
-        }
-      }
-      
-      .tab-content {
-        flex: 1;
-        overflow-y: auto;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        padding-bottom: 70px;
-      }
-      .tab-content::-webkit-scrollbar {
-        display: none;
-      }
-      .sticky-bottom-nav {
-        position: sticky;
-        bottom: 0;
-        width: 100%;
-        z-index: 50;
-        margin-top: auto;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(10px);
-      }
-      
-      /* Remove all box backgrounds and borders */
-      .no-bg-border {
-        background: transparent !important;
-        border: none !important;
-        backdrop-filter: none !important;
-        box-shadow: none !important;
-      }
-      
-      /* Social Media Icons - Larger Size */
-      .social-icon-large {
-        width: 60px !important;
-        height: 60px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-      }
-      .social-icon-large svg {
-        width: 28px !important;
-        height: 28px !important;
-      }
-      
-      /* Professional Bio Fix - Prevent text overlap */
-      .bio-text-container {
-        max-width: 100%;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        hyphens: auto;
-      }
-      .bio-text {
-        text-align: justify;
-        text-justify: inter-word;
-        line-height: 1.6;
-      }
-      
-      /* Video player styles */
-      video {
-        max-width: 100%;
-        height: auto;
-      }
-      
-      /* Tagline special styling */
-      .tagline-container {
-        position: relative;
-        padding: 10px 20px;
-        margin: 10px auto;
-        max-width: 90%;
-      }
-      .tagline-text {
-        font-style: italic;
-        text-align: center;
-        position: relative;
-        z-index: 1;
-        padding: 0 10px;
-      }
-      .tagline-glow {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-        border-radius: 10px;
-        z-index: 0;
-      }
-      
-      /* Business Hours Grid */
-      .hours-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-      }
-      
-      /* Client List with toggle */
-      .client-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 10px;
-      }
-      
-      /* Interactive Elements Grid */
-      .interactive-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 10px;
-      }
-      
-      /* Share button styles */
-      .share-button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      }
-      
-      /* QR Code Modal */
-      .qr-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(10px);
-      }
-      
-      .qr-modal-content {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        padding: 30px;
-        max-width: 300px;
-        text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      }
-      
-      .qr-image {
-        width: 200px;
-        height: 200px;
-        object-fit: contain;
-        margin: 0 auto 20px;
-        border-radius: 10px;
-        background: white;
-        padding: 10px;
-      }
-      
-      /* Mobile-specific adjustments */
-      @media (max-width: 640px) {
-        .social-icon-large {
-          width: 56px !important;
-          height: 56px !important;
-        }
-        .social-icon-large svg {
-          width: 24px !important;
-          height: 24px !important;
-        }
-        
-        .tab-content {
-          padding: 0 16px 80px 16px !important;
-        }
-        
-        .sticky-bottom-nav {
-          border-top: 1px solid rgba(255,255,255,0.1);
-          background: rgba(0, 0, 0, 0.9);
-        }
-        
-        /* Safe area for notched phones */
-        .safe-area-bottom {
-          padding-bottom: env(safe-area-inset-bottom, 20px);
-        }
-        
-        /* Better touch targets */
-        button, [role="button"] {
-          min-height: 44px;
-          min-width: 44px;
-        }
-      }
-    `;
-    document.head.appendChild(style);
+  const handleEmail = (email) => {
+    if (!email) return;
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(`Inquiry via Revayah One: ${profile.name}`)}`;
+  };
 
-    // Auto slide intervals
-    const serviceInterval = setInterval(() => {
-      if (profileData.services?.length > 0) {
-        setCurrentServiceSlide(prev => (prev + 1) % Math.max(1, profileData.services.length));
-      }
-    }, 4000);
+  const handleWebsite = (url) => {
+    if (!url) return;
+    const cleanUrl = url.startsWith('http') ? url : `https://${url}`;
+    window.open(cleanUrl, '_blank', 'noopener,noreferrer');
+  };
 
-    const productInterval = setInterval(() => {
-      if (profileData.products?.length > 0) {
-        setCurrentProductSlide(prev => (prev + 1) % Math.max(1, profileData.products.length));
-      }
-    }, 4000);
+  const handleSaveContact = () => {
+    generateVCard(cardData);
+  };
 
-    const testimonialInterval = setInterval(() => {
-      if (profileData.testimonials?.length > 0) {
-        setCurrentTestimonialSlide(prev => (prev + 1) % Math.max(1, profileData.testimonials.length));
-      }
-    }, 5000);
-
-    const videoInterval = setInterval(() => {
-      if (profileData.videos?.length > 0) {
-        setCurrentVideoSlide(prev => (prev + 1) % Math.max(1, profileData.videos.length));
-      }
-    }, 4000);
-
-    const clientInterval = setInterval(() => {
-      if (profileData.clientList?.length > 0) {
-        setCurrentClientSlide(prev => (prev + 1) % Math.max(1, profileData.clientList.length));
-      }
-    }, 3000);
-
-    return () => {
-      document.head.removeChild(style);
-      clearInterval(serviceInterval);
-      clearInterval(productInterval);
-      clearInterval(testimonialInterval);
-      clearInterval(videoInterval);
-      clearInterval(clientInterval);
+  const handleNativeShare = () => {
+    const shareUrl = window.location.href;
+    const shareData = {
+      title: `${profile.name} | Digital Identity Card`,
+      text: `Connect with ${profile.name} (${profile.jobTitle || 'Professional'}) on Revayah One:`,
+      url: shareUrl
     };
-  }, []);
 
-  // Format business hours
-  const formatBusinessHours = () => {
-    const hours = profileData.businessHours;
-    if (!hours || (Array.isArray(hours) && hours.length === 0)) return null;
-    
-    const hoursArray = Array.isArray(hours) ? hours : [];
-    if (hoursArray.length === 0) return null;
-    
-    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-    return days.map(day => {
-      const dayData = hoursArray.find(h => h.day === day);
-      if (!dayData || dayData.isClosed || (!dayData.openingTime && !dayData.closingTime)) {
-        return { day, display: `${day.charAt(0).toUpperCase() + day.slice(1)}: Closed` };
-      }
-      return { 
-        day, 
-        display: `${day.charAt(0).toUpperCase() + day.slice(1)}: ${dayData.openingTime || 'N/A'} - ${dayData.closingTime || 'N/A'}`,
-        openingTime: dayData.openingTime,
-        closingTime: dayData.closingTime
-      };
-    });
-  };
-
-  // Bottom navbar tabs - show based on plan and data availability
-  const getAvailableTabs = () => {
-    const allTabs = [
-      { 
-        id: 'profile', 
-        label: 'Profile', 
-        icon: FaUser, 
-        tooltip: 'Profile',
-        show: true // Always show profile tab
-      },
-      { 
-        id: 'services', 
-        label: 'Services', 
-        icon: FaShoppingCart, 
-        tooltip: 'Services & Products',
-        show: checkFeature('Services/Provision') || 
-              checkFeature('Brief about Product/Services') ||
-              checkFeature('Product/Catalog [PDF]') ||
-              checkFeature('Product Video') ||
-              checkFeature('Individual Product Display')
-      },
-      { 
-        id: 'contact', 
-        label: 'Contact', 
-        icon: FaAddressCard, 
-        tooltip: 'Contact Info',
-        show: checkFeature('Contact Management') || 
-              checkFeature('Website/Portfolio Link') ||
-              checkFeature('Location [Address]') ||
-              checkFeature('Virtual Number Integration') ||
-              checkFeature('Business Hours') ||
-              checkFeature('Social & Digital Hub')
-      },
-      { 
-        id: 'gallery', 
-        label: 'Gallery', 
-        icon: FaImages, 
-        tooltip: 'Gallery',
-        show: checkFeature('Product Showcase/Gallery/Portfolio') || 
-              checkFeature('Videos')
-      },
-      { 
-        id: 'more', 
-        label: 'More', 
-        icon: FaEllipsisH, 
-        tooltip: 'More Info',
-        show: checkFeature('Testimonials') || 
-              checkFeature('Testimonials / Client List') ||
-              checkFeature('Downloads') ||
-              checkFeature('Interactive Elements') ||
-              checkFeature('Dynamic QR Code') ||
-              checkFeature('NFC Card Development with Print') ||
-              checkFeature('Share') ||
-              checkFeature('Chat Assistant') ||
-              checkFeature('Brand Label Product/Services')
-      }
-    ];
-
-    return allTabs.filter(tab => tab.show);
-  };
-
-  const tabs = getAvailableTabs();
-
-  const handleContact = (type, value) => {
-    if (!value) return;
-    switch (type) {
-      case "email":
-        window.open(`mailto:${value}`);
-        break;
-      case "phone":
-        window.open(`tel:${value}`);
-        break;
-      case "whatsapp":
-        window.open(`https://wa.me/${value.replace(/\D/g, "")}`);
-        break;
-      case "map":
-        window.open(value, "_blank");
-        break;
-      case "website":
-        window.open(value, "_blank");
-        break;
-      case "virtualNumber":
-        window.open(`tel:${value}`);
-        break;
-      default:
-        window.open(value, "_blank");
-    }
-  };
-
-  // Share functionality
-  const handleShare = () => {
-    const shareUrl = profileData.shareableUrl || window.location.href;
-    const shareText = `Check out ${profileData.name}'s digital card`;
-    
     if (navigator.share) {
-      navigator.share({
-        title: `${profileData.name}'s Digital Card`,
-        text: shareText,
-        url: shareUrl,
-      });
+      navigator.share(shareData).catch(() => handleCopy(shareUrl, 'shareUrl'));
     } else {
-      // Fallback to copy to clipboard
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        alert('Link copied to clipboard!');
-      });
+      handleCopy(shareUrl, 'shareUrl');
     }
   };
 
-  // QR Code functionality
-  const renderQRCodeModal = () => {
-    if (!showQRCode || !profileData.dynamicQRCode) return null;
-    
-    const qrData = profileData.dynamicQRCode;
-    const qrImageUrl = qrData.qrImage || 
-      `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData.targetUrl || profileData.shareableUrl || window.location.href)}`;
-    
-    return (
-      <div className="qr-modal-overlay" onClick={() => setShowQRCode(false)}>
-        <div className="qr-modal-content" onClick={(e) => e.stopPropagation()}>
-          <h3 className="rumaila-font text-xl mb-4">Scan QR Code</h3>
-          <img 
-            src={qrImageUrl} 
-            alt="QR Code" 
-            className="qr-image"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.style.display = 'none';
-              const placeholder = document.createElement('div');
-              placeholder.className = 'qr-image flex items-center justify-center bg-white';
-              placeholder.innerHTML = '<FaQrcode className="w-16 h-16 text-gray-400" />';
-              e.target.parentElement.appendChild(placeholder);
-            }}
-          />
-          <p className="casper-font text-sm mb-4">Scan to save contact or visit profile</p>
-          <button
-            onClick={() => setShowQRCode(false)}
-            className="casper-font bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-4 py-2 rounded-lg transition-all"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
+  const handleSendInquiry = () => {
+    if (!inquiryData.service || !inquiryData.contact) {
+      alert("Please provide the service required and your contact number.");
+      return;
+    }
+    const cleanPhone = primaryPhone.replace(/\D/g, '');
+    const message = `Hello ${profile.name}!\n\nI would like to request a consultation via your Revayah One card:\n- Service: ${inquiryData.service}\n- Preferred Date: ${inquiryData.date || 'Flexible'}\n- Preferred Time: ${inquiryData.time || 'Flexible'}\n- Customer Contact: ${inquiryData.contact}`;
+
+    setInquiryData(prev => ({ ...prev, submitted: true }));
+
+    if (cleanPhone) {
+      window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
+    } else if (primaryEmail) {
+      window.location.href = `mailto:${primaryEmail}?subject=${encodeURIComponent(`Service Request: ${inquiryData.service}`)}&body=${encodeURIComponent(message)}`;
+    }
   };
 
   const getSocialIcon = (platform) => {
-    const platformLower = platform.toLowerCase();
-    switch (platformLower) {
-      case 'facebook': return <FaFacebookF />;
-      case 'instagram': return <FaInstagram />;
-      case 'twitter': return <FaXTwitter />;
-      case 'x': return <FaXTwitter />;
-      case 'youtube': return <FaYoutube />;
-      case 'linkedin': return <FaLinkedinIn />;
-      case 'whatsapp': return <FaWhatsapp />;
-      default: return <FaGlobe />;
-    }
+    const p = platform?.toLowerCase() || '';
+    if (p.includes('linkedin')) return <FaLinkedin className="w-4 h-4" />;
+    if (p.includes('twitter') || p.includes('x')) return <FaXTwitter className="w-4 h-4" />;
+    if (p.includes('github')) return <FaGithub className="w-4 h-4" />;
+    if (p.includes('instagram')) return <FaInstagram className="w-4 h-4" />;
+    if (p.includes('facebook')) return <FaFacebookF className="w-4 h-4" />;
+    if (p.includes('youtube')) return <FaYoutube className="w-4 h-4" />;
+    if (p.includes('whatsapp')) return <FaWhatsapp className="w-4 h-4" />;
+    return <FaGlobe className="w-4 h-4" />;
   };
 
-  const renderStars = (rating) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <FaStar
-        key={i}
-        className={`w-3 h-3 ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-400'}`}
-      />
-    ));
-  };
-
-  const getInteractiveElementIcon = (type) => {
-    switch (type) {
-      case 'call-to-action': return <FaBullhorn className="w-4 h-4" />;
-      case 'shop-flow': return <FaShoppingCart className="w-4 h-4" />;
-      case 'live-chat': return <FaCommentDots className="w-4 h-4" />;
-      case 'appointment-scheduler': return <FaCalendarAlt className="w-4 h-4" />;
-      case 'digital-payments': return <FaCreditCard className="w-4 h-4" />;
-      case 'lead-form': return <FaClipboardList className="w-4 h-4" />;
-      case 'contact-form': return <FaEnvelope className="w-4 h-4" />;
-      case 'language-switcher': return <FaLanguage className="w-4 h-4" />;
-      case 'chat-assistant': return <FaRobot className="w-4 h-4" />;
-      case 'booking-system': return <FaCalendarAlt className="w-4 h-4" />;
-      case 'newsletter-signup': return <FaEnvelope className="w-4 h-4" />;
-      case 'file-download': return <FaDownload className="w-4 h-4" />;
-      default: return <FaGlobe className="w-4 h-4" />;
-    }
-  };
-
-  const getInteractiveElementLabel = (type) => {
-    switch (type) {
-      case 'call-to-action': return 'Call to Action';
-      case 'shop-flow': return 'Shop Now';
-      case 'live-chat': return 'Live Chat';
-      case 'appointment-scheduler': return 'Book Appointment';
-      case 'digital-payments': return 'Make Payment';
-      case 'lead-form': return 'Get Quote';
-      case 'contact-form': return 'Contact Us';
-      case 'language-switcher': return 'Language';
-      case 'chat-assistant': return 'Chat Assistant';
-      default: return type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    }
-  };
-
-  // Get current service item
-  const getCurrentServiceItem = () => {
-    return profileData.services[currentServiceSlide];
-  };
-
-  // Get current product item
-  const getCurrentProductItem = () => {
-    return profileData.products[currentProductSlide];
-  };
-
-  // Get current testimonial item
-  const getCurrentTestimonialItem = () => {
-    return profileData.testimonials[currentTestimonialSlide];
-  };
-
-  // Get current video item
-  const getCurrentVideoItem = () => {
-    return profileData.videos[currentVideoSlide];
-  };
-
-  // Tagline Component
-  const renderTagline = () => {
-    if (!profileData.tagline) return null;
-    
-    return (
-      <div className="tagline-container">
-        <div className="tagline-glow"></div>
-        <p className="casper-font text-center text-sm tagline-text">
-          "{profileData.tagline}"
-        </p>
-      </div>
-    );
-  };
-
-  // Services/Products Overview
-  const renderServicesProductsOverview = () => {
-    if (!profileData.servicesProducts) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaSuitcase className="w-5 h-5 text-blue-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Services & Products Overview</h3>
-        </div>
-        <div className="rounded-xl p-4 bg-white/5">
-          <p className="casper-font text-sm text-justify">{profileData.servicesProducts}</p>
-        </div>
-      </div>
-    );
-  };
-
-  // Business Hours Component
-  const renderBusinessHours = () => {
-    if (!checkFeature('Business Hours')) return null;
-    
-    const hours = formatBusinessHours();
-    if (!hours) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaRegClock className="w-5 h-5 text-yellow-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Business Hours</h3>
-        </div>
-        <div className="space-y-2">
-          {hours.map((hour, index) => (
-            <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <p className="rumaila-font text-xs">{hour.day.charAt(0).toUpperCase() + hour.day.slice(1)}</p>
-              <p className="casper-font text-xs">
-                {hour.openingTime && hour.closingTime 
-                  ? `${hour.openingTime} - ${hour.closingTime}`
-                  : 'Closed'
-                }
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  // Virtual Number Component
-  const renderVirtualNumber = () => {
-    if (!checkFeature('Virtual Number Integration')) return null;
-    if (!profileData.virtualNumber?.number || !profileData.virtualNumber?.isEnabled) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaPhoneAlt className="w-5 h-5 text-green-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Virtual Number</h3>
-        </div>
-        <button
-          onClick={() => handleContact("virtualNumber", profileData.virtualNumber.number)}
-          className="w-full bg-green-500/20 hover:bg-green-500/30 text-green-400 py-3 rounded-xl border border-green-500/30 transition-all transform hover:scale-[1.02]"
-        >
-          <span className="casper-font">{profileData.virtualNumber.number}</span>
-        </button>
-      </div>
-    );
-  };
-
-  // Catalog Component
-  const renderCatalog = () => {
-    if (!checkFeature('Product/Catalog [PDF]')) return null;
-    
-    const catalog = profileData.catalog;
-    if (!catalog) return null;
-    
-    // Handle both string URL and object format
-    const catalogUrl = typeof catalog === 'string' ? catalog : catalog?.url || catalog?.fileUrl;
-    const catalogName = catalog?.name || "Catalog";
-    const catalogSize = catalog?.fileSize || "";
-    
-    if (!catalogUrl) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaFileInvoice className="w-5 h-5 text-red-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Catalog</h3>
-        </div>
-        <button
-          onClick={() => window.open(catalogUrl, '_blank')}
-          className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 py-3 rounded-xl border border-red-500/30 transition-all transform hover:scale-[1.02] flex items-center justify-center"
-        >
-          <FaFilePdf className="w-5 h-5 mr-2" />
-          <span className="casper-font">Download {catalogName}</span>
-          {catalogSize && <span className="casper-font text-xs ml-2">({catalogSize})</span>}
-        </button>
-      </div>
-    );
-  };
-
-  // Brand Label Component
-  const renderBrandLabel = () => {
-    if (!checkFeature('Brand Label Product/Services')) return null;
-    if (!profileData.brandLabel) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaTags className="w-5 h-5 text-purple-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Brand Label</h3>
-        </div>
-        <div className="bg-white/5 rounded-xl p-4 text-center">
-          <p className="casper-font text-sm">{profileData.brandLabel}</p>
-        </div>
-      </div>
-    );
-  };
-
-  // Product Video Component
-  const renderProductVideo = () => {
-    if (!checkFeature('Product Video')) return null;
-    if (!profileData.productVideo?.url) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaFileVideo className="w-5 h-5 text-purple-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Product Video</h3>
-        </div>
-        <VideoPlayer
-          src={profileData.productVideo.url}
-          poster={profileData.productVideo.thumbnail}
-          title={profileData.productVideo.title || "Product Video"}
-          className="h-40"
-        />
-      </div>
-    );
-  };
-
-  // Videos Slider Component
-  const renderVideosSlider = () => {
-    if (!profileData.videos?.length) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaVideo className="w-5 h-5 text-blue-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Videos</h3>
-        </div>
-        <div className="relative overflow-hidden rounded-xl bg-white/5 p-4">
-          {getCurrentVideoItem() && (
-            <VideoPlayer
-              src={getCurrentVideoItem().url}
-              poster={getCurrentVideoItem().thumbnail}
-              title={getCurrentVideoItem().title}
-              className="h-40"
-            />
-          )}
+  return (
+    <div className="w-full min-h-screen bg-slate-50 text-slate-800 flex flex-col items-center justify-start p-0 font-sans antialiased selection:bg-sky-500 selection:text-white relative overflow-x-hidden">
+      
+      {/* Luminous Light Card Shell */}
+      <div className="w-full max-w-md bg-white shadow-xl flex flex-col relative overflow-hidden min-h-screen sm:min-h-0 sm:rounded-[36px] sm:border sm:border-slate-200/90 my-0 sm:my-6">
+        
+        {/* ========================================================
+            HERO HEADER: LUMINOUS SKY & FROST GRADIENT
+            ======================================================== */}
+        <div className="relative h-28 bg-gradient-to-r from-sky-400 via-sky-500 to-blue-500 px-3.5 pt-3 pb-2 shadow-inner flex flex-col justify-start">
           
-          {profileData.videos.length > 1 && (
-            <div className="flex justify-center space-x-2 mt-3">
-              {Array.from({ length: profileData.videos.length }, (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentVideoSlide(index)}
-                  className={`w-2 h-2 rounded-full transition-all transform duration-300 ${
-                    index === currentVideoSlide ? 'bg-blue-400 scale-110' : 'bg-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  // Share Button Component
-  const renderShareButton = () => {
-    if (!profileData.shareableUrl) return null;
-    
-    return (
-      <div className="mb-4 mt-5">
-        <button
-          onClick={handleShare}
-          className="w-full share-button hover:opacity-90 text-white py-3 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-center"
-        >
-          <FaShare className="w-5 h-5 mr-2" />
-          <span className="casper-font font-medium">Share My Card</span>
-        </button>
-      </div>
-    );
-  };
-
-  // QR Code Component
-  const renderQRCode = () => {
-    if (!profileData.dynamicQRCode) return null;
-    
-    const qrData = profileData.dynamicQRCode;
-    const qrImageUrl = qrData.qrImage || 
-      `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData.targetUrl || profileData.shareableUrl || window.location.href)}`;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaQrcode className="w-5 h-5 text-blue-400 mr-2" />
-          <h3 className="rumaila-font text-lg">QR Code</h3>
-        </div>
-        <div className="flex flex-col items-center">
-          <div 
-            className="bg-white/10 rounded-xl p-4 cursor-pointer transform transition-transform duration-300 hover:scale-105"
-            onClick={() => setShowQRCode(true)}
-          >
-            <img
-              src={qrImageUrl}
-              alt="QR Code"
-              className="w-32 h-32 object-contain rounded-lg"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.style.display = 'none';
-                const placeholder = document.createElement('div');
-                placeholder.className = 'w-32 h-32 flex items-center justify-center bg-white/10 rounded-lg';
-                placeholder.innerHTML = '<FaQrcode className="w-12 h-12 text-gray-400" />';
-                e.target.parentElement.appendChild(placeholder);
-              }}
-            />
+          {/* Ambient Frosted Glow (strictly contained) */}
+          <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
+            <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-white blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-36 h-36 rounded-full bg-sky-200 blur-2xl" />
+            <svg className="w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="light-grid" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <path d="M 16 0 L 0 0 0 16" fill="none" stroke="white" strokeWidth="0.5" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#light-grid)" />
+            </svg>
           </div>
-          <p className="casper-font text-sm mt-3 text-center">Tap to enlarge QR Code</p>
-          <button
-            onClick={() => setShowQRCode(true)}
-            className="mt-2 text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
-          >
-            View Full Size
-          </button>
-        </div>
-      </div>
-    );
-  };
 
-  // NFC Card Component
-  const renderNFCCard = () => {
-    if (!checkFeature('NFC Card Development with Print')) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaIdCard className="w-5 h-5 text-purple-400 mr-2" />
-          <h3 className="rumaila-font text-lg">NFC Card</h3>
-        </div>
-        <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-300/30 rounded-xl p-4 flex items-center justify-center">
-          <FaIdCard className="w-8 h-8 text-purple-400 mr-3" />
-          <div>
-            <p className="rumaila-font text-sm">NFC Card Available</p>
-            <p className="casper-font text-xs">Tap to connect with NFC</p>
+          {/* Top Brand Pill & Share */}
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/20 border border-white/40 backdrop-blur-md">
+              <FaShieldAlt className="w-3 h-3 text-white" />
+              <span className="text-[10px] font-semibold text-white uppercase tracking-wider">
+                {isFieldAllowed('brandLabel') && profile.brandLabel ? profile.brandLabel : 'REVAYAH ONE'}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleNativeShare}
+              className="p-1.5 rounded-full bg-black/20 hover:bg-black/30 border border-white/40 text-white backdrop-blur-md transition-all active:scale-95 shadow-md"
+              title="Share Card"
+            >
+              {copiedItem === 'shareUrl' ? (
+                <FaCheck className="w-3.5 h-3.5 text-emerald-300" />
+              ) : (
+                <FaShareAlt className="w-3.5 h-3.5" />
+              )}
+            </button>
           </div>
         </div>
-      </div>
-    );
-  };
 
-  // Enhanced Client List with toggle
-  const renderEnhancedClientList = () => {
-    if (!profileData.clientList?.length) return null;
-    
-    const displayClients = showAllClients ? profileData.clientList : profileData.clientList.slice(0, 6);
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaUsers className="w-5 h-5 text-blue-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Our Clients</h3>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          {displayClients.map((client, index) => (
-            <div key={index} className="bg-white/5 rounded-lg p-3 text-center">
-              <p className="casper-font text-sm truncate">
-                {typeof client === 'string' ? client : client.name || client.company || 'Client'}
-              </p>
-            </div>
-          ))}
-        </div>
-        {profileData.clientList.length > 6 && (
-          <button
-            onClick={() => setShowAllClients(!showAllClients)}
-            className="w-full mt-3 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 py-2 rounded-xl transition-all"
-          >
-            <span className="casper-font text-sm">
-              {showAllClients ? 'Show Less' : `Show All (${profileData.clientList.length})`}
-            </span>
-          </button>
-        )}
-      </div>
-    );
-  };
-
-  // Chat Assistant Component
-  const renderChatAssistant = () => {
-    if (!checkFeature('Chat Assistant')) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaRobot className="w-5 h-5 text-blue-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Chat Assistant</h3>
-        </div>
-        <div className="bg-white/5 rounded-xl p-4 text-center">
-          <p className="casper-font text-sm mb-2">{profileData.chatAssistant.welcomeMessage}</p>
-          <button className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 py-2 px-4 rounded-lg transition-all">
-            Start Chat
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  // Live Chat Component
-  const renderLiveChat = () => {
-    if (!checkFeature('Live Chat – WhatsApp / Messages')) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <FaCommentDots className="w-5 h-5 text-green-400 mr-2" />
-          <h3 className="rumaila-font text-lg">Live Chat</h3>
-        </div>
-        <button
-          onClick={() => handleContact("whatsapp", profileData.liveChat.phoneNumber)}
-          className="w-full bg-green-500/20 hover:bg-green-500/30 text-green-400 py-3 rounded-xl border border-green-500/30 transition-all transform hover:scale-[1.02] flex items-center justify-center"
-        >
-          <FaWhatsapp className="w-5 h-5 mr-2" />
-          <span className="casper-font">Chat on {profileData.liveChat.platform}</span>
-        </button>
-      </div>
-    );
-  };
-
-  // ========== MAIN COMPONENT RENDERING ==========
-
-  // Profile Header Component
-  const ProfileHeader = () => {
-    // Check if profile photo feature is allowed
-    if (!checkFeature('Profile Photo/Logo')) {
-      return (
-        <div className="pb-4 pt-6 no-bg-border">
-          {checkFeature('Name/Source Name') && (
-            <h1 className="rumaila-font text-4xl font-bold text-center mb-1">
-              {profileData.name}
-            </h1>
-          )}
-          {(currentPlan === 'Business' || currentPlan === 'BusinessPremium') && profileData.jobTitle && (
-            <div className="mb-2">
-              <p className="rumaila-font text-center text-m">
-                {profileData.jobTitle}
-              </p>
-            </div>
-          )}
-          {checkFeature('Tag Line/Slogan') && renderTagline()}
-        </div>
-      );
-    }
-    
-    return (
-      <div className="pb-4 pt-6 no-bg-border">
-        {/* Company Logo and Name - Only show if Business/BusinessPremium */}
-        {profileData.companyLogo && (currentPlan === 'Business' || currentPlan === 'BusinessPremium') && (
-          <div className="flex justify-center items-center mb-3">
-            <div className="flex items-center space-x-2">
-              <div className="bg-white rounded-full p-1 shadow-sm">
-                <img
-                  src={profileData.companyLogo}
-                  alt="Company Logo"
-                  className="w-6 h-6 object-contain"
-                  onError={(e) => {
-                    console.log('Company logo failed to load');
-                    e.target.style.display = 'none';
-                  }}
-                />
+        {/* ========================================================
+            PROFILE INFORMATION & IDENTITY
+            ======================================================== */}
+        <div className="relative z-10 px-6 pb-4 text-center">
+          
+          {/* Avatar Anchor - Overlapping banner without clipping */}
+          <div className="relative -mt-14 mb-2 inline-block">
+            <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-sky-950/15 ring-4 ring-white">
+              <img
+                src={profile.profilePhoto}
+                alt={profile.name}
+                className="w-full h-full object-cover rounded-full bg-slate-50"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600";
+                }}
+              />
+              {/* Verified Badge */}
+              <div 
+                className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-sky-500 border-2 border-white flex items-center justify-center text-white shadow-md"
+                title="Verified Identity"
+              >
+                <FaCheckCircle className="w-4 h-4" />
               </div>
-              {profileData.companyName && (
-                <h4 className="rumaila-font text-sm">
-                  {profileData.companyName}
-                </h4>
+
+              {/* Company Logo Badge if available */}
+              {isFieldAllowed('companyLogo') && profile.companyLogo && (
+                <div 
+                  className="absolute -top-1 -right-1 w-8 h-8 rounded-xl bg-white border border-slate-200 p-1 shadow-md flex items-center justify-center"
+                  title={profile.companyName || "Company"}
+                >
+                  <img 
+                    src={profile.companyLogo} 
+                    alt="Company Logo" 
+                    className="w-full h-full object-contain" 
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Full Name */}
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-1">
+            {profile.name}
+          </h1>
+
+          {/* Job Title */}
+          {profile.jobTitle && (
+            <p className="text-sm font-semibold text-sky-600 mb-2">
+              {profile.jobTitle}
+            </p>
+          )}
+
+          {/* Company & Department Details */}
+          {isFieldAllowed('companyName') && profile.companyName && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium mb-3">
+              <FaBuilding className="w-3 h-3 text-slate-500" />
+              <span>{profile.companyName}</span>
+              {isFieldAllowed('department') && profile.department && (
+                <>
+                  <span className="text-slate-400">•</span>
+                  <span className="text-slate-600">{profile.department}</span>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Service Area & Availability Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+            {isFieldAllowed('businessHours') && businessStatus && (
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${
+                businessStatus.isOpen 
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                  : 'bg-slate-100 text-slate-600 border-slate-200'
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                {businessStatus.text}
+              </span>
+            )}
+
+            {isFieldAllowed('serviceArea') && profile.serviceArea && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-sky-50 text-sky-700 border border-sky-200">
+                <FaMapMarkerAlt className="w-2.5 h-2.5 text-sky-500" />
+                Serving: {profile.serviceArea}
+              </span>
+            )}
+          </div>
+
+          {isFieldAllowed('serviceAvailability') && profile.serviceAvailability && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50/70 border border-sky-200/80 text-sky-800 text-xs font-medium mb-4">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+              </span>
+              <span>{profile.serviceAvailability}</span>
+            </div>
+          )}
+
+          {/* HERO CTA: SAVE CONTACT TO PHONE (vCard) */}
+          <div className="mt-1">
+            <button
+              type="button"
+              onClick={handleSaveContact}
+              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-semibold text-sm tracking-wide shadow-lg shadow-sky-500/25 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2"
+            >
+              <FaDownload className="w-4 h-4" />
+              <span>Save Contact to Phone</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ========================================================
+            QUICK ACTION DOCK (4 CORE CHANNELS)
+            ======================================================== */}
+        <div className="px-6 py-2">
+          <div className="grid grid-cols-4 gap-2.5">
+            
+            {/* Call */}
+            {profile.enableOneTapCall && primaryPhone && (
+              <button
+                type="button"
+                onClick={() => handleCall(primaryPhone)}
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-sky-50/70 hover:bg-sky-100/70 border border-sky-100 text-sky-700 transition-all active:scale-95 shadow-sm"
+              >
+                <div className="w-9 h-9 rounded-xl bg-sky-500 text-white flex items-center justify-center mb-1.5 shadow-sm">
+                  <FaPhoneAlt className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11px] font-semibold tracking-tight">Call</span>
+              </button>
+            )}
+
+            {/* WhatsApp */}
+            {profile.enableWhatsApp && primaryPhone && (
+              <button
+                type="button"
+                onClick={() => handleWhatsApp(primaryPhone)}
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/70 border border-emerald-100 text-emerald-700 transition-all active:scale-95 shadow-sm"
+              >
+                <div className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center mb-1.5 shadow-sm">
+                  <FaWhatsapp className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] font-semibold tracking-tight">WhatsApp</span>
+              </button>
+            )}
+
+            {/* Email */}
+            {profile.enableEmail && primaryEmail && (
+              <button
+                type="button"
+                onClick={() => handleEmail(primaryEmail)}
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-indigo-50/70 hover:bg-indigo-100/70 border border-indigo-100 text-indigo-700 transition-all active:scale-95 shadow-sm"
+              >
+                <div className="w-9 h-9 rounded-xl bg-indigo-500 text-white flex items-center justify-center mb-1.5 shadow-sm">
+                  <FaEnvelope className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11px] font-semibold tracking-tight">Email</span>
+              </button>
+            )}
+
+            {/* Website */}
+            {primaryWebsite ? (
+              <button
+                type="button"
+                onClick={() => handleWebsite(primaryWebsite)}
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all active:scale-95 shadow-sm"
+              >
+                <div className="w-9 h-9 rounded-xl bg-slate-800 text-white flex items-center justify-center mb-1.5 shadow-sm">
+                  <FaGlobe className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11px] font-semibold tracking-tight">Portal</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowQrModal(true)}
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all active:scale-95 shadow-sm"
+              >
+                <div className="w-9 h-9 rounded-xl bg-slate-800 text-white flex items-center justify-center mb-1.5 shadow-sm">
+                  <FaQrcode className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11px] font-semibold tracking-tight">QR Code</span>
+              </button>
+            )}
+
+          </div>
+        </div>
+
+        {/* ========================================================
+            ABOUT & EXECUTIVE SUMMARY
+            ======================================================== */}
+        {(profile.aboutText || profile.bio || profile.tagline) && (
+          <div className="px-6 py-4">
+            <div className="bg-slate-50/80 rounded-2xl p-4 border border-slate-200/80 shadow-sm">
+              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <FaBriefcase className="w-3 h-3 text-sky-500" />
+                Executive Summary
+              </h2>
+              {profile.tagline && (
+                <p className="text-xs font-medium italic text-sky-800 mb-2">
+                  "{profile.tagline}"
+                </p>
+              )}
+              {profile.aboutText && (
+                <p className="text-xs leading-relaxed text-slate-600 mb-2">
+                  {profile.aboutText}
+                </p>
+              )}
+              {profile.bio && profile.bio !== profile.aboutText && (
+                <p className="text-xs leading-relaxed text-slate-500">
+                  {profile.bio}
+                </p>
               )}
             </div>
           </div>
         )}
 
-        {/* Profile Section */}
-        <div className="relative flex flex-col items-center justify-center px-4">
-          {/* Profile Photo - INCREASED SIZE to w-40 h-40 */}
-          <div className="mb-3">
-            {profileData.profilePhoto ? (
-              <img
-                src={profileData.profilePhoto}
-                alt={profileData.name}
-                className="w-40 h-40 rounded-full border-4 border-white/20 shadow-lg object-cover"
-                onError={(e) => {
-                  console.log('Profile photo failed to load:', profileData.profilePhoto);
-                  e.target.style.display = 'none';
-                }}
-              />
-            ) : null}
-            {/* Fallback profile picture - SAME SIZE w-40 h-40 */}
-            {!profileData.profilePhoto && (
-              <div className="w-40 h-40 rounded-full border-4 border-white/20 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
-                {profileData.name?.charAt(0) || "Z"}
-              </div>
-            )}
-          </div>
-
-          {/* Name - Only show if feature allowed */}
-          {checkFeature('Name/Source Name') && (
-            <h1 className="rumaila-font text-4xl font-bold text-center mb-1">
-              {profileData.name}
-            </h1>
-          )}
-
-          {/* Designation Box - Only for Business/BusinessPremium */}
-          {(currentPlan === 'Business' || currentPlan === 'BusinessPremium') && profileData.jobTitle && (
-            <div className="mb-2">
-              <p className="rumaila-font text-center text-m">
-                {profileData.jobTitle}
-              </p>
+        {/* ========================================================
+            FEATURED SERVICES & CAPABILITIES
+            ======================================================== */}
+        {isFieldAllowed('services') && profile.services && profile.services.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <FaCogs className="w-4 h-4 text-sky-500" />
+                <span>Services & Capabilities</span>
+              </h2>
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700">
+                {profile.services.length} Available
+              </span>
             </div>
-          )}
 
-          {/* Tagline Box - Only show if feature allowed */}
-          {checkFeature('Tag Line/Slogan') && renderTagline()}
-        </div>
-      </div>
-    );
-  };
+            <div className="space-y-3">
+              {profile.services.map((srv, idx) => (
+                <div 
+                  key={idx}
+                  className="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-sky-200 transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-2 mb-1.5">
+                      <h3 className="font-semibold text-slate-900 text-sm">
+                        {srv.name}
+                      </h3>
+                      {srv.price && (
+                        <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-100 whitespace-nowrap">
+                          {srv.currency || '€'} {srv.price}
+                        </span>
+                      )}
+                    </div>
 
-  // Profile Tab
-  const ProfileTab = () => (
-    <div className="space-y-6 px-4 pb-4">
-      <ProfileHeader />
+                    {srv.category && (
+                      <span className="inline-block text-[10px] font-medium uppercase tracking-wider text-sky-600 bg-sky-50 px-2 py-0.5 rounded mb-2">
+                        {srv.category}
+                      </span>
+                    )}
 
-      {/* About Section - Only show if feature allowed */}
-      {checkFeature('About Me') && profileData.aboutText && profileData.aboutText !== "." && (
-        <div>
-          <div className="mb-3 no-bg-border">
-            <h3 className="rumaila-font text-xl flex items-center justify-center">
-              <FaUser className="w-5 h-5 text-blue-400 mr-2" />
-              About Me
-            </h3>
+                    {srv.description && (
+                      <p className="text-xs text-slate-600 leading-relaxed mb-3">
+                        {srv.description}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-[11px] text-slate-400 font-medium">
+                      Direct Advisory
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setInquiryData(prev => ({ ...prev, service: srv.name }));
+                        const funnel = document.getElementById('light-inquiry-funnel');
+                        if (funnel) funnel.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-500 text-sky-700 hover:text-white text-xs font-semibold transition-all flex items-center gap-1.5"
+                    >
+                      <span>Inquire</span>
+                      <FaPaperPlane className="w-2.5 h-2.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <p className="casper-font text-sm text-justify text-left-last hyphens-auto">
-            {profileData.aboutText}
+        )}
+
+        {/* ========================================================
+            DIRECT LEAD CAPTURE FUNNEL: CONSULTATION & INQUIRY
+            ======================================================== */}
+        {isFieldAllowed('customerInquiry') && (
+          <div id="light-inquiry-funnel" className="px-6 py-4 border-t border-slate-100">
+            <div className="bg-gradient-to-br from-sky-50/70 to-blue-50/40 rounded-2xl p-5 border border-sky-100 shadow-sm">
+              <div className="flex items-center gap-2 mb-1">
+                <FaCalendarAlt className="w-4 h-4 text-sky-500" />
+                <h2 className="text-sm font-bold text-slate-900">Request a Consultation</h2>
+              </div>
+              <p className="text-xs text-slate-500 mb-4">
+                Schedule direct discussion with {profile.name} for strategic or technical advisory.
+              </p>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Required Service or Topic
+                  </label>
+                  <select
+                    value={inquiryData.service}
+                    onChange={(e) => setInquiryData(prev => ({ ...prev, service: e.target.value }))}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  >
+                    <option value="">Select a service / topic...</option>
+                    {profile.services.map((s, idx) => (
+                      <option key={idx} value={s.name}>{s.name}</option>
+                    ))}
+                    <option value="General Strategic Consultation">General Strategic Consultation</option>
+                    <option value="Enterprise Architecture Review">Enterprise Architecture Review</option>
+                    <option value="Other Inquiries">Other Inquiries</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                      Preferred Date
+                    </label>
+                    <input
+                      type="date"
+                      value={inquiryData.date}
+                      onChange={(e) => setInquiryData(prev => ({ ...prev, date: e.target.value }))}
+                      className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                      Preferred Time
+                    </label>
+                    <input
+                      type="time"
+                      value={inquiryData.time}
+                      onChange={(e) => setInquiryData(prev => ({ ...prev, time: e.target.value }))}
+                      className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Your Contact Number / WhatsApp
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="+91 98765 43210"
+                    value={inquiryData.contact}
+                    onChange={(e) => setInquiryData(prev => ({ ...prev, contact: e.target.value }))}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSendInquiry}
+                  className="w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs tracking-wide shadow-md transition-all flex items-center justify-center gap-2 mt-2"
+                >
+                  <FaPaperPlane className="w-3 h-3" />
+                  <span>Submit Consultation Request</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            PRODUCTS & MERCHANDISE (IF ANY)
+            ======================================================== */}
+        {isFieldAllowed('products') && profile.products && profile.products.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <FaGem className="w-4 h-4 text-sky-500" />
+                <span>Products & Solutions</span>
+              </h2>
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700">
+                {profile.products.length} Items
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {profile.products.map((item, idx) => (
+                <div key={idx} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-start gap-3">
+                  {item.image && (
+                    <img src={item.image} alt={item.name} className="w-16 h-16 rounded-xl object-cover border border-slate-100" />
+                  )}
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-semibold text-slate-900 text-xs">{item.name}</h3>
+                      {item.price && (
+                        <span className="text-xs font-bold text-sky-600">{item.currency || '€'} {item.price}</span>
+                      )}
+                    </div>
+                    {item.description && (
+                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{item.description}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            PROFILE VIDEO & MEDIA (IF ANY)
+            ======================================================== */}
+        {isFieldAllowed('profileVideo') && profile.profileVideo && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <h2 className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
+              <FaVideo className="w-4 h-4 text-sky-500" />
+              <span>Introductory Video</span>
+            </h2>
+            <VideoPlayer src={profile.profileVideo} title={`${profile.name} - Introduction`} />
+          </div>
+        )}
+
+        {/* ========================================================
+            LIVE BUSINESS HOURS
+            ======================================================== */}
+        {isFieldAllowed('businessHours') && profile.businessHours && profile.businessHours.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <FaRegClock className="w-4 h-4 text-sky-500" />
+                <span>Operating Schedule</span>
+              </h2>
+              {businessStatus && (
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  businessStatus.isOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                }`}>
+                  {businessStatus.isOpen ? 'Open Now' : 'Closed Today'}
+                </span>
+              )}
+            </div>
+
+            <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 text-xs space-y-2">
+              {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
+                const sched = profile.businessHours.find(h => h.day?.toLowerCase() === day);
+                const isToday = new Date().getDay() === ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'].indexOf(day);
+                return (
+                  <div 
+                    key={day} 
+                    className={`flex justify-between items-center py-1 px-2 rounded-lg ${
+                      isToday ? 'bg-sky-50 font-semibold text-sky-900' : 'text-slate-600'
+                    }`}
+                  >
+                    <span className="capitalize">{day}</span>
+                    <span>
+                      {!sched || sched.isClosed ? (
+                        <span className="text-slate-400">Closed</span>
+                      ) : (
+                        `${sched.openingTime || '09:00'} - ${sched.closingTime || '18:00'}`
+                      )}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            CONTACT INFORMATION DIRECTORY
+            ======================================================== */}
+        <div className="px-6 py-4 border-t border-slate-100">
+          <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <FaHeadset className="w-4 h-4 text-sky-500" />
+            <span>Contact Information</span>
+          </h2>
+
+          <div className="space-y-2.5">
+            {/* Phone */}
+            {profile.phones.map((p, idx) => (
+              <div 
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center">
+                    <FaPhoneAlt className="w-3 h-3" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                      {p.label || 'Direct Phone'}
+                    </span>
+                    <p className="text-xs font-semibold text-slate-800">{p.number}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(p.number, `phone-${idx}`)}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
+                    title="Copy Number"
+                  >
+                    {copiedItem === `phone-${idx}` ? <FaCheck className="w-3 h-3 text-emerald-500" /> : <FaCopy className="w-3 h-3" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleCall(p.number)}
+                    className="p-1.5 rounded-lg text-sky-600 hover:bg-sky-50 transition-colors"
+                    title="Call Direct"
+                  >
+                    <FaExternalLinkAlt className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* Email */}
+            {profile.emails.map((e, idx) => (
+              <div 
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                    <FaEnvelope className="w-3 h-3" />
+                  </div>
+                  <div className="max-w-[200px] truncate">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                      {e.label || 'Email Address'}
+                    </span>
+                    <p className="text-xs font-semibold text-slate-800 truncate">{e.address}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(e.address, `email-${idx}`)}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
+                    title="Copy Email"
+                  >
+                    {copiedItem === `email-${idx}` ? <FaCheck className="w-3 h-3 text-emerald-500" /> : <FaCopy className="w-3 h-3" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleEmail(e.address)}
+                    className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors"
+                    title="Send Email"
+                  >
+                    <FaExternalLinkAlt className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* Address */}
+            {profile.addresses.map((addr, idx) => {
+              const fullText = addr.fullAddress || `${addr.street || ''}, ${addr.city || ''} ${addr.country || ''}`.trim();
+              if (!fullText) return null;
+              return (
+                <div 
+                  key={idx}
+                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center">
+                      <FaMapMarkerAlt className="w-3 h-3" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                        {addr.label || 'Office Location'}
+                      </span>
+                      <p className="text-xs font-semibold text-slate-800">{fullText}</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(fullText)}`, '_blank')}
+                    className="p-1.5 rounded-lg text-sky-600 hover:bg-sky-50 transition-colors"
+                    title="Open Maps"
+                  >
+                    <FaExternalLinkAlt className="w-3 h-3" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ========================================================
+            SOCIAL NETWORKS DOCK
+            ======================================================== */}
+        {profile.socialLinks && profile.socialLinks.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <FaUsers className="w-4 h-4 text-sky-500" />
+              <span>Social Networks</span>
+            </h2>
+
+            <div className="flex flex-wrap gap-2">
+              {profile.socialLinks.map((s, idx) => {
+                if (!s.url) return null;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => handleWebsite(s.url)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 hover:bg-sky-50 border border-slate-200 hover:border-sky-200 text-slate-700 hover:text-sky-700 transition-all text-xs font-semibold"
+                  >
+                    {getSocialIcon(s.platform)}
+                    <span className="capitalize">{s.platform}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            DOWNLOADS & CATALOGS (IF ANY)
+            ======================================================== */}
+        {isFieldAllowed('downloads') && profile.downloads && profile.downloads.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <FaDownload className="w-4 h-4 text-sky-500" />
+              <span>Documents & Catalogs</span>
+            </h2>
+
+            <div className="space-y-2">
+              {profile.downloads.map((doc, idx) => (
+                <a
+                  key={idx}
+                  href={doc.fileUrl || doc.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors text-xs font-medium text-slate-800"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <FaFilePdf className="w-4 h-4 text-red-500" />
+                    <span>{doc.title || doc.name || `Document #${idx + 1}`}</span>
+                  </div>
+                  <FaDownload className="w-3 h-3 text-slate-400" />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            CARD FOOTER: REVAYAH ONE AUTHENTICITY
+            ======================================================== */}
+        <div className="mt-6 px-6 py-6 bg-slate-50 border-t border-slate-200 text-center">
+          <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-800 mb-1">
+            <FaCrown className="w-3.5 h-3.5 text-sky-500" />
+            <span>REVAYAH ONE</span>
+          </div>
+          <p className="text-[11px] text-slate-400">
+            Official Digital Identity & Service Portal
           </p>
-        </div>
-      )}
-
-      {/* Professional Bio - Only for Business/BusinessPremium */}
-      {(currentPlan === 'Business' || currentPlan === 'BusinessPremium') && profileData.bio && (
-        <div>
-          <div className="mb-3 no-bg-border">
-            <h3 className="rumaila-font text-xl flex items-center justify-center">
-              <FaBriefcase className="w-5 h-5 text-purple-400 mr-2" />
-              Professional Bio
-            </h3>
-          </div>
-          <div className="bio-text-container">
-            <p className="casper-font text-sm bio-text">
-              {profileData.bio}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Services/Products Overview - Only for Business/BusinessPremium */}
-      {checkFeature('Brief about Product/Services') && renderServicesProductsOverview()}
-
-      {/* Organization Details - Only for Business/BusinessPremium */}
-      {(currentPlan === 'Business' || currentPlan === 'BusinessPremium') && 
-       (profileData.organization || profileData.foundedName) && (
-        <div>
-          <div className="mb-3 no-bg-border">
-            <h3 className="rumaila-font text-xl flex items-center justify-center">
-              <FaBuilding className="w-5 h-5 text-green-400 mr-2" />
-              Organization Details
-            </h3>
-          </div>
-          <div className="space-y-2 text-center bg-white/5 rounded-xl p-4">
-            {profileData.organization && (
-              <p className="casper-font text-sm">
-                <span className="rumaila-font">Organization:</span> {profileData.organization}
-              </p>
-            )}
-            {profileData.foundedName && (
-              <p className="casper-font text-sm mt-2">
-                <span className="rumaila-font">Founded By:</span> {profileData.foundedName}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Brand Label - Only for BusinessPremium */}
-      {renderBrandLabel()}
-
-      {/* Profile Video - Only show if feature allowed */}
-      {checkFeature('Profile Video') && profileData.profileVideo?.url && (
-        <div>
-          <div className="mb-3 no-bg-border">
-            <h3 className="rumaila-font text-xl flex items-center justify-center">
-              <FaVideo className="w-5 h-5 text-red-400 mr-2" />
-              Introduction Video
-            </h3>
-          </div>
-          <VideoPlayer
-            src={profileData.profileVideo.url}
-            poster={profileData.profileVideo.thumbnail}
-            title={profileData.profileVideo.title || "Introduction Video"}
-            className="h-40"
-          />
-        </div>
-      )}
-    </div>
-  );
-
-  // ServicesTab Component
-  const ServicesTab = () => {
-    const hasServices = checkFeature('Services/Provision') && profileData.services?.length > 0;
-    const hasProducts = checkFeature('Services/Provision') && profileData.products?.length > 0;
-    const hasCatalog = checkFeature('Product/Catalog [PDF]') && !!profileData.catalog;
-    const hasProductVideo = checkFeature('Product Video') && !!profileData.productVideo?.url;
-    const hasIndividualDisplay = checkFeature('Individual Product Display');
-
-    if (!hasServices && !hasProducts && !hasCatalog && !hasProductVideo) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full px-4 pt-20">
-          <FaShoppingCart className="w-16 h-16 text-gray-400 mb-4" />
-          <p className="casper-font text-center text-sm">No services or products available</p>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-6 px-4 pt-4 pb-4 mt-5">
-        {/* Catalog */}
-        {hasCatalog && renderCatalog()}
-
-        {/* Product Video */}
-        {hasProductVideo && renderProductVideo()}
-
-        {/* Services Slider */}
-        {hasServices && (
-          <div>
-            <div className="mb-9 no-bg-border mt-4">
-              <h3 className="rumaila-font text-xl flex items-center justify-center">
-                <FaShoppingCart className="w-5 h-5 text-blue-400 mr-2" />
-                Services
-              </h3>
-            </div>
-            
-            <div className="relative overflow-hidden">
-              <div className="flex transition-transform duration-300">
-                {getCurrentServiceItem() && (
-                  <div className="w-full flex-shrink-0">
-                    <div className="hover:shadow-2xl transition-all rounded-xl overflow-hidden">
-                      {getCurrentServiceItem().image && (
-                        <div className="mb-3 rounded-xl overflow-hidden h-36">
-                          <img
-                            src={getCurrentServiceItem().image}
-                            alt={getCurrentServiceItem().name}
-                            className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                      )}
-                      
-                      <div className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="rumaila-font text-lg">{getCurrentServiceItem().name}</h4>
-                          {getCurrentServiceItem().price && (
-                            <span className="casper-font text-sm text-blue-600">
-                              {getCurrentServiceItem().price}
-                            </span>
-                          )}
-                        </div>
-                        {getCurrentServiceItem().description && (
-                          <p className="casper-font text-sm mt-2">{getCurrentServiceItem().description}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {profileData.services.length > 1 && (
-              <div className="flex justify-center space-x-2 mt-4">
-                {Array.from({ length: profileData.services.length }, (_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentServiceSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-all transform duration-300 ${
-                      index === currentServiceSlide ? 'bg-blue-400 scale-110' : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Products Slider */}
-        {hasProducts && (
-          <div>
-            <div className="mb-4 no-bg-border">
-              <h3 className="rumaila-font text-xl flex items-center justify-center">
-                <FaGem className="w-5 h-5 text-purple-400 mr-2" />
-                Products
-              </h3>
-            </div>
-            
-            <div className="relative overflow-hidden">
-              <div className="flex transition-transform duration-300">
-                {getCurrentProductItem() && (
-                  <div className="w-full flex-shrink-0">
-                    <div className="hover:shadow-2xl transition-all rounded-xl overflow-hidden">
-                      {getCurrentProductItem().image && (
-                        <div className="mb-3 rounded-xl overflow-hidden h-36">
-                          <img
-                            src={getCurrentProductItem().image}
-                            alt={getCurrentProductItem().name}
-                            className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                      )}
-                      
-                      <div className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="rumaila-font text-lg">{getCurrentProductItem().name}</h4>
-                          {getCurrentProductItem().price && (
-                            <span className="casper-font text-sm text-green-600">
-                              {getCurrentProductItem().price}
-                            </span>
-                          )}
-                        </div>
-                        {getCurrentProductItem().description && (
-                          <p className="casper-font text-sm mt-2">{getCurrentProductItem().description}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {profileData.products.length > 1 && (
-              <div className="flex justify-center space-x-2 mt-4">
-                {Array.from({ length: profileData.products.length }, (_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentProductSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-all transform duration-300 ${
-                      index === currentProductSlide ? 'bg-purple-400 scale-110' : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // ContactTab Component
-  const ContactTab = () => {
-    const primaryPhone = profileData.phones.find(phone => phone.isPrimary) || profileData.phones[0];
-    const primaryEmail = profileData.emails.find(email => email.isPrimary) || profileData.emails[0];
-    
-    return (  
-      <div className="space-y-6 px-4 pt-4 pb-4">
-        {/* Email Section */}
-        {profileData.email && (
-          <div className="mb-4 mt-5">
-            <div className="flex items-center justify-center mb-2">
-              <FaEnvelope className="w-5 h-5 text-blue-400 mr-2" />
-              <h3 className="rumaila-font text-lg">Email</h3>
-            </div>
+          <div className="flex items-center justify-center gap-4 mt-3">
             <button
-              onClick={() => handleContact("email", profileData.email)}
-              className="w-full bg-white/5 hover:bg-white/10 text-left p-3 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-between"
+              type="button"
+              onClick={handleNativeShare}
+              className="text-xs font-semibold text-sky-600 hover:text-sky-700 flex items-center gap-1"
             >
-              <div className="flex items-center">
-                <FaEnvelope className="w-4 h-4 text-blue-400 mr-2" />
-                <span className="casper-font text-sm">Primary Email</span>
-              </div>
-              <span className="casper-font text-sm truncate ml-2">{profileData.email}</span>
+              <FaShareAlt className="w-3 h-3" />
+              Share
+            </button>
+            <span className="text-slate-300">•</span>
+            <button
+              type="button"
+              onClick={() => setShowQrModal(true)}
+              className="text-xs font-semibold text-sky-600 hover:text-sky-700 flex items-center gap-1"
+            >
+              <FaQrcode className="w-3 h-3" />
+              QR Code
             </button>
           </div>
-        )}
-
-        {/* Multiple Emails */}
-        {profileData.emails.length > 0 && profileData.emails.some(email => email.address && email.address.trim()) && (
-          <div className="mb-4">
-            <div className="flex items-center justify-center mb-2">
-              <FaEnvelope className="w-5 h-5 text-blue-400 mr-2" />
-              <h3 className="rumaila-font text-lg">Email Addresses</h3>
-            </div>
-            <div className="space-y-2">
-              {profileData.emails
-                .filter(email => email.address && email.address.trim())
-                .map((email, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleContact("email", email.address)}
-                    className="w-full bg-white/5 hover:bg-white/10 text-left p-3 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-between"
-                  >
-                    <div className="flex items-center">
-                      <FaEnvelope className="w-4 h-4 text-blue-400 mr-2" />
-                      <span className="casper-font text-sm">
-                        {email.label || (email.isPrimary ? "Primary" : `Email ${index + 1}`)}
-                      </span>
-                    </div>
-                    <span className="casper-font text-sm truncate ml-2">{email.address}</span>
-                  </button>
-                ))}
-            </div>
-          </div>
-        )}
-
-        {/* Virtual Number */}
-        {renderVirtualNumber()}
-
-        {/* Business Hours */}
-        {renderBusinessHours()}
-
-        {/* Quick Actions */}
-        <div>
-          <div className="mb-4 no-bg-border">
-            <h3 className="rumaila-font text-xl text-center mt-4">
-              <FaPhoneAlt className="w-5 h-5 text-green-400 mr-2 inline" />
-              Quick Contact
-            </h3>
-          </div>
-          <div className="flex space-x-2">
-            {/* WhatsApp Button */}
-            {primaryPhone && profileData.enableWhatsApp && (
-              <button
-                onClick={() => handleContact("whatsapp", primaryPhone.number)}
-                className="flex-1 bg-gray-800 hover:bg-gray-900 text-white rounded-xl py-4 px-4 flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-105 text-sm"
-              >
-                <FaWhatsapp className="w-5 h-5 mr-2" />
-                <span className="casper-font font-medium">WhatsApp</span>
-              </button>
-            )}
-
-            {/* Email Button */}
-            {primaryEmail?.address && profileData.enableEmail && (
-              <button
-                onClick={() => handleContact("email", primaryEmail.address)}
-                className="flex-1 bg-gray-800 hover:bg-gray-900 text-white rounded-xl py-4 px-4 flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-105 text-sm"
-              >
-                <FaEnvelope className="w-5 h-5 mr-2" />
-                <span className="casper-font font-medium">Email</span>
-              </button>
-            )}
-
-            {/* Website Button */}
-            {profileData.websites.length > 0 && profileData.websites[0].url && (
-              <button
-                onClick={() => handleContact("website", profileData.websites[0].url)}
-                className="flex-1 bg-gray-800 hover:bg-gray-900 text-white rounded-xl py-4 px-4 flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-105 text-sm"
-              >
-                <FaGlobe className="w-5 h-5 mr-2" />
-                <span className="casper-font font-medium">Website</span>
-              </button>
-            )}
-          </div>
         </div>
 
-        {/* Addresses */}
-        {profileData.addresses.length > 0 && (
-          <div>
-            <div className="mb-4 no-bg-border">
-              <h3 className="rumaila-font text-xl text-center">
-                <FaMapMarkerAlt className="w-5 h-5 text-red-400 mr-2 inline" />
-                Locations
-              </h3>
-            </div>
-            <div className="space-y-3">
-              {profileData.addresses.map((address, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleContact("map", address.googleMapsLink)}
-                  className="rounded-xl p-4 hover:shadow-xl transition-all cursor-pointer transform hover:scale-105 bg-gray-50/10"
-                >
-                  <div className="flex items-start">
-                    <FaMapMarkerAlt className="w-5 h-5 text-red-400 mt-1 mr-3 flex-shrink-0" />
-                    <div>
-                      <p className="rumaila-font text-sm">
-                        {address.label} {address.isPrimary && <span className="text-blue-400">(Primary)</span>}
-                      </p>
-                      <p className="casper-font text-sm mt-2">
-                        {address.fullAddress || `${address.street}, ${address.city}`}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Social Links */}
-        {profileData.socialLinks.filter(link => link.url).length > 0 && (
-          <div>
-            <div className="mb-4 no-bg-border">
-              <h3 className="rumaila-font text-xl text-center">
-                Follow Me
-              </h3>
-            </div>
-            <div className="flex justify-center space-x-4 flex-wrap">
-              {profileData.socialLinks
-                .filter(link => link.url)
-                .map((social, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleContact("default", social.url)}
-                    className="social-icon-large rounded-full bg-gray-800 shadow-lg hover:shadow-xl transition-all transform hover:scale-110 flex items-center justify-center text-white hover:text-blue-400 mb-2"
-                    title={social.platform}
-                  >
-                    {getSocialIcon(social.platform)}
-                  </button>
-                ))}
-            </div>
-          </div>
-        )}
       </div>
-    );
-  };
 
-  // GalleryTab Component
-  const GalleryTab = () => {
-    const hasGallery = checkFeature('Product Showcase/Gallery/Portfolio') && profileData.gallery.length > 0;
-    const hasVideos = checkFeature('Videos') && profileData.videos.length > 0;
-    
-    if (!hasGallery && !hasVideos) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full px-4 pt-20">
-          <FaImages className="w-16 h-16 text-gray-400 mb-4" />
-          <p className="casper-font text-center text-sm">No gallery or videos available</p>
-        </div>
-      );
-    }
-    
-    return (
-      <div className="space-y-4 px-4 pt-4 pb-4 mt-5">
-        <div>
-          <div className="mb-4 no-bg-border">
-            <h3 className="rumaila-font text-xl flex items-center justify-center">
-              <FaImages className="w-5 h-5 text-blue-400 mr-2 mt-4" />
-              Gallery
-            </h3>
-          </div>
-          
-          {/* Image Gallery */}
-          {hasGallery && (
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              {profileData.gallery.map((item, index) => (
-                <div key={index} className="aspect-square rounded-xl overflow-hidden transform hover:scale-105 transition-transform duration-300">
-                  <img
-                    src={item.url}
-                    alt={item.title || `Gallery image ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
+      {/* ========================================================
+          QR CODE MODAL
+          ======================================================== */}
+      {showQrModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-xs w-full shadow-2xl text-center relative border border-slate-100">
+            <button
+              type="button"
+              onClick={() => setShowQrModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-slate-600"
+            >
+              <FaTimes className="w-4 h-4" />
+            </button>
+            <div className="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mx-auto mb-3">
+              <FaQrcode className="w-6 h-6" />
             </div>
-          )}
-          
-          {/* Videos */}
-          {hasVideos && renderVideosSlider()}
-        </div>
-      </div>
-    );
-  };
-
-  // MoreTab Component
-  const MoreTab = () => {
-    const hasTestimonials = checkFeature('Testimonials') && profileData.testimonials.length > 0;
-    const hasClientList = checkFeature('Testimonials / Client List') && profileData.clientList.length > 0;
-    const hasDownloads = checkFeature('Downloads') && profileData.downloads.length > 0;
-    const hasInteractiveElements = checkFeature('Interactive Elements') && profileData.interactiveElements.length > 0;
-    const hasQRCode = checkFeature('Dynamic QR Code') && !!profileData.dynamicQRCode;
-    const hasNFC = checkFeature('NFC Card Development with Print') && !!profileData.nfcSettings?.isEnabled;
-    const hasShare = checkFeature('Share') && !!profileData.shareableUrl;
-    const hasChatAssistant = checkFeature('Chat Assistant') && !!profileData.chatAssistant?.isEnabled;
-    const hasLiveChat = checkFeature('Live Chat – WhatsApp / Messages') && !!profileData.liveChat?.isEnabled;
-
-    const hasContent = hasTestimonials || hasClientList || hasDownloads || 
-                      hasInteractiveElements || hasQRCode || hasNFC || hasShare ||
-                      hasChatAssistant || hasLiveChat;
-
-    if (!hasContent) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full px-4 pt-20">
-          <FaEllipsisH className="w-16 h-16 text-gray-400 mb-4" />
-          <p className="casper-font text-center text-sm">No additional features available</p>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-6 px-4 pt-4 pb-4">
-        {/* Share Button */}
-        {hasShare && renderShareButton()}
-
-        {/* QR Code */}
-        {hasQRCode && renderQRCode()}
-
-        {/* Chat Assistant */}
-        {hasChatAssistant && renderChatAssistant()}
-
-        {/* Live Chat */}
-        {hasLiveChat && renderLiveChat()}
-
-        {/* Testimonials Slider */}
-        {hasTestimonials && (
-          <div>
-            <div className="mb-4 no-bg-border">
-              <h3 className="rumaila-font text-xl flex items-center justify-center">
-                <FaStar className="w-5 h-5 text-yellow-400 mr-2 mt-4" />
-                Testimonials
-              </h3>
+            <h3 className="text-base font-bold text-slate-900 mb-1">Scan & Connect</h3>
+            <p className="text-xs text-slate-500 mb-4">
+              Point your camera to instantly view and save {profile.name}'s digital card.
+            </p>
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 inline-block mb-4">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.href)}`}
+                alt="QR Code"
+                className="w-44 h-44 object-contain rounded-lg"
+              />
             </div>
-            
-            <div className="relative overflow-hidden">
-              <div className="flex transition-transform duration-300">
-                {getCurrentTestimonialItem() && (
-                  <div className="w-full flex-shrink-0">
-                    <div className="rounded-xl p-4 bg-gray-50/10">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="rumaila-font text-lg">
-                          {getCurrentTestimonialItem().clientName}
-                        </span>
-                        {getCurrentTestimonialItem().rating && (
-                          <div className="flex space-x-1">
-                            {renderStars(getCurrentTestimonialItem().rating)}
-                          </div>
-                        )}
-                      </div>
-                      <p className="casper-font text-sm italic mb-3">
-                        "{getCurrentTestimonialItem().testimonial}"
-                      </p>
-                      {getCurrentTestimonialItem().company && (
-                        <p className="casper-font text-sm">
-                          {getCurrentTestimonialItem().company}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {profileData.testimonials.length > 1 && (
-              <div className="flex justify-center space-x-2 mt-4">
-                {Array.from({ length: profileData.testimonials.length }, (_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentTestimonialSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-all transform duration-300 ${
-                      index === currentTestimonialSlide ? 'bg-yellow-400 scale-110' : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Enhanced Client List */}
-        {renderEnhancedClientList()}
-
-        {/* Downloads */}
-        {hasDownloads && (
-          <div>
-            <div className="mb-4 no-bg-border">
-              <h3 className="rumaila-font text-xl flex items-center justify-center">
-                <FaDownload className="w-5 h-5 text-green-400 mr-2" />
-                Downloads
-              </h3>
-            </div>
-            <div className="space-y-3">
-              {profileData.downloads.map((download, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleContact("default", download.fileUrl)}
-                  className="rounded-xl p-4 hover:shadow-xl transition-all cursor-pointer transform hover:scale-105 bg-gray-50/10"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <FaFilePdf className="w-6 h-6 text-red-400 mr-4" />
-                      <div>
-                        <p className="rumaila-font text-sm">{download.name}</p>
-                        {download.fileSize && (
-                          <p className="casper-font text-sm mt-1">{download.fileSize}</p>
-                        )}
-                      </div>
-                    </div>
-                    <FaDownload className="w-5 h-5 text-gray-400" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Interactive Elements */}
-        {hasInteractiveElements && (
-          <div>
-            <div className="mb-4 no-bg-border">
-              <h3 className="rumaila-font text-xl flex items-center justify-center">
-                <FaHeadset className="w-5 h-5 text-purple-400 mr-2" />
-                Quick Actions
-              </h3>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {profileData.interactiveElements
-                .filter(element => element.isActive)
-                .map((element, index) => {
-                  const primaryPhone = profileData.phones.find(phone => phone.isPrimary) || profileData.phones[0];
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        switch (element.type) {
-                          case 'call-to-action':
-                          case 'shop-flow':
-                          case 'lead-form':
-                          case 'contact-form':
-                          case 'booking-system':
-                          case 'newsletter-signup':
-                            if (element.config?.redirectUrl) {
-                              window.open(element.config.redirectUrl, '_blank');
-                            }
-                            break;
-                          case 'live-chat':
-                            if (primaryPhone) handleContact("whatsapp", primaryPhone.number);
-                            break;
-                          case 'appointment-scheduler':
-                            window.open('https://calendly.com', '_blank');
-                            break;
-                          case 'digital-payments':
-                            window.open('https://paypal.com', '_blank');
-                            break;
-                          default:
-                            break;
-                        }
-                      }}
-                      className="flex flex-col items-center justify-center p-4 rounded-xl hover:shadow-xl transition-all transform hover:scale-105 bg-gray-50/10"
-                    >
-                      <div className="text-blue-400 mb-3">
-                        {getInteractiveElementIcon(element.type)}
-                      </div>
-                      <span className="casper-font text-sm text-center">
-                        {getInteractiveElementLabel(element.type)}
-                      </span>
-                    </button>
-                  );
-                })}
-            </div>
-          </div>
-        )}
-
-        {/* NFC Card */}
-        {hasNFC && renderNFCCard()}
-      </div>
-    );
-  };
-
-  const primaryPhone = profileData.phones.find(phone => phone.isPrimary) || profileData.phones[0];
-  const primaryEmail = profileData.emails.find(email => email.isPrimary) || profileData.emails[0];
-
-  return (
-    <>
-      {/* QR Code Modal */}
-      {renderQRCodeModal()}
-      
-      <div className="mobile-container">
-        <div className="tab-content-wrapper h-full">
-          {/* Tab Content - Scrollable with specific content for each tab */}
-          <div className="tab-content relative">
-            {activeTab === 'profile' && <ProfileTab />}
-            {activeTab === 'services' && <ServicesTab />}
-            {activeTab === 'contact' && <ContactTab />}
-            {activeTab === 'gallery' && <GalleryTab />}
-            {activeTab === 'more' && <MoreTab />}
-          </div>
-
-          {/* Bottom Navigation Bar - Sticky inside container */}
-          <div className="sticky-bottom-nav safe-area-bottom">
-            <div className="backdrop-blur-xl border-t border-white/10">
-              <div className="flex justify-between items-center px-4 py-3">
-                {tabs.map(tab => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex flex-col items-center justify-center transition-all duration-300 ${
-                      activeTab === tab.id 
-                        ? 'text-blue-400 transform scale-110' 
-                        : 'text-white/60 hover:text-white'
-                    }`}
-                    title={tab.tooltip}
-                  >
-                    <tab.icon className="w-5 h-5 mb-1" />
-                    <span className="text-[10px] truncate max-w-12 casper-font">
-                      {tab.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Fixed Contact Buttons - INCREASED SIZE to w-12 h-12 */}
-          <div className="absolute bottom-24 right-4 z-20 flex flex-col space-y-3">
-            {/* Call Button */}
-            {primaryPhone && profileData.enableOneTapCall && (
-              <button
-                onClick={() => handleContact("phone", primaryPhone.number)}
-                className="w-12 h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-3xl transition-all transform hover:scale-110 border border-green-400/30"
-              >
-                <FaPhoneAlt className="w-4 h-4" />
-              </button>
-            )}
-            
-            {/* Email Button */}
-            {(primaryEmail?.address || profileData.email) && profileData.enableEmail && (
-              <button
-                onClick={() => handleContact("email", primaryEmail?.address || profileData.email)}
-                className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-3xl transition-all transform hover:scale-110 border border-red-400/30"
-              >
-                <FaEnvelope className="w-4 h-4" />
-              </button>
-            )}
-            
-            {/* WhatsApp Button */}
-            {primaryPhone && profileData.enableWhatsApp && (
-              <button
-                onClick={() => handleContact("whatsapp", primaryPhone.number)}
-                className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-3xl transition-all transform hover:scale-110 border border-green-400/30"
-              >
-                <FaWhatsapp className="w-4 h-4" />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => handleCopy(window.location.href, 'qrModal')}
+              className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-all flex items-center justify-center gap-2"
+            >
+              {copiedItem === 'qrModal' ? (
+                <>
+                  <FaCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Link Copied!</span>
+                </>
+              ) : (
+                <>
+                  <FaCopy className="w-3.5 h-3.5" />
+                  <span>Copy Card URL</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
-      </div>
-    </>
+      )}
+
+    </div>
   );
 };
 
