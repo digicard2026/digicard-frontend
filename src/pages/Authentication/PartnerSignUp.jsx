@@ -10,15 +10,15 @@ import Modern from "../../assets/images/tailwickComp/Modern";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const  PartnerSignUp = () => {
+const PartnerSignUp = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const [isRegistered, setIsRegistered] = useState(false);
   const [franchiseContext, setFranchiseContext] = useState(null);
   const [emailSent, setEmailSent] = useState(false);
   const [userEmail, setUserEmail] = useState("");
-  const [message, setMessage] = useState({ text: '', type: '' });
+  const [message, setMessage] = useState({ text: '', type: '', hasAccount: false });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -30,7 +30,7 @@ const  PartnerSignUp = () => {
         franchiseName: location.state.franchiseName,
       });
     }
-    
+
     const bodyElement = document.body;
     bodyElement.classList.add('font-public');
     document.title = "Sign Up | Digi_card";
@@ -65,8 +65,8 @@ const  PartnerSignUp = () => {
 
   const handleSignup = async (values) => {
     setIsLoading(true);
-    setMessage({ text: '', type: '' });
-    
+    setMessage({ text: '', type: '', hasAccount: false });
+
     try {
       const res = await fetch(`${API_URL}/api/v1/user/sign-up`, {
         method: "POST",
@@ -76,7 +76,7 @@ const  PartnerSignUp = () => {
           password: values.password,
           confirmPassword: values.confirmPassword,
           createdBy: franchiseContext?.createdBy,
-        //   selectedPlan: location.state?.selectedPlan,
+          //   selectedPlan: location.state?.selectedPlan,
         }),
       });
 
@@ -85,19 +85,32 @@ const  PartnerSignUp = () => {
       if (res.ok) {
         setUserEmail(values.email);
         setEmailSent(true);
-        setMessage({ text: 'Account created successfully!', type: 'success' });
+        setMessage({ text: 'Account created successfully!', type: 'success', hasAccount: false });
         formik.resetForm();
       } else {
-        setMessage({ 
-          text: data.error || 'Signup failed. Please try again.', 
-          type: 'error' 
-        });
+        const isEmailExists = res.status === 409 ||
+          (data.error && /already exists|email_exists|already registered/i.test(data.error));
+
+        if (isEmailExists) {
+          setMessage({
+            text: 'An account with this email already exists.',
+            type: 'error',
+            hasAccount: true
+          });
+        } else {
+          setMessage({
+            text: data.error || 'Signup failed. Please try again.',
+            type: 'error',
+            hasAccount: false
+          });
+        }
       }
     } catch (error) {
       console.error('Signup error:', error);
-      setMessage({ 
-        text: 'Something went wrong. Please try again later.', 
-        type: 'error' 
+      setMessage({
+        text: 'Something went wrong. Please try again later.',
+        type: 'error',
+        hasAccount: false
       });
     } finally {
       setIsLoading(false);
@@ -126,15 +139,15 @@ const  PartnerSignUp = () => {
   const handleContinue = () => {
     if (franchiseContext) {
       navigate("/signin/partner");
-    // } else if (location.state?.selectedPlan) {
-    //   navigate("/create", {
-    //     state: {
-    //       selectedPlan: location.state.selectedPlan,
-    //       userEmail,
-    //       createdBy: location.state?.createdBy || "",
-    //       fromPartnerDashboard: location.state?.fromPartnerDashboard || false,
-    //     },
-    //   });
+      // } else if (location.state?.selectedPlan) {
+      //   navigate("/create", {
+      //     state: {
+      //       selectedPlan: location.state.selectedPlan,
+      //       userEmail,
+      //       createdBy: location.state?.createdBy || "",
+      //       fromPartnerDashboard: location.state?.fromPartnerDashboard || false,
+      //     },
+      //   });
     } else {
       navigate("/signin/partner");
     }
@@ -145,7 +158,7 @@ const  PartnerSignUp = () => {
       <React.Fragment>
         {/* Blue overlay background */}
         <div className="absolute inset-0 bg-blue-900 z-0"></div>
-        
+
         <div className="relative flex flex-col w-full overflow-hidden xl:flex-row to-custom-800 bg-gradient-to-r from-custom-900 dark:to-custom-900 dark:from-custom-950">
           <ModernImage />
           <div className="min-h-[calc(100vh_-_theme('spacing.4')_*_2)] mx-3 lg:w-[35rem] shrink-0 px-6 py-6 flex items-center justify-center m-4 bg-white dark:bg-zink-800 rounded-lg z-10 relative dark:text-zink-100 md:mx-auto xl:mx-4 dark:border-zink-700 shadow-lg">
@@ -159,13 +172,12 @@ const  PartnerSignUp = () => {
                 <div id="successAlert" className={`p-3 mb-3 text-sm text-blue-600 rounded-lg bg-gray-100 dark:bg-gray-500/20 dark:border-gray-500/50 dark:text-black`}>
                   A verification link has been sent to <strong className="font-medium">{userEmail}</strong>.
                 </div>
-                
+
                 {message.text && (
-                  <div className={`p-3 mb-3 text-xs rounded-lg ${
-                    message.type === 'error' 
+                  <div className={`p-3 mb-3 text-xs rounded-lg ${message.type === 'error'
                       ? 'text-red-800 border border-red-300 bg-red-100 dark:bg-red-500/20 dark:border-red-500/50 dark:text-red-400'
                       : 'text-green-800 border border-green-300 bg-green-100 dark:bg-green-500/20 dark:border-green-500/50 dark:text-green-400'
-                  }`}>
+                    }`}>
                     {message.text}
                   </div>
                 )}
@@ -209,7 +221,7 @@ const  PartnerSignUp = () => {
     <React.Fragment>
       {/* Blue overlay background */}
       <div className="absolute inset-0 bg-blue-900 z-0"></div>
-      
+
       <div className="relative flex flex-col w-full overflow-hidden xl:flex-row to-custom-800 bg-gradient-to-r from-custom-900 dark:to-custom-900 dark:from-custom-950">
         <ModernImage />
         <div className="min-h-[calc(100vh_-_theme('spacing.4')_*_2)] mx-3 lg:w-[40rem] shrink-0 px-6 py-6 flex items-center justify-center m-4 bg-white dark:bg-zink-800 rounded-lg z-10 relative dark:text-zink-100 md:mx-auto xl:mx-4 dark:border-zink-700 shadow-lg">
@@ -219,21 +231,11 @@ const  PartnerSignUp = () => {
               <div className="text-center mb-10">
                 <h1 className="text-2xl font-bold text-black dark:text-white">
                   {franchiseContext ? "Create Partner Account" :
-                   location.state?.selectedPlan ? "Create Your Account" : "Sign Up"}
+                    location.state?.selectedPlan ? "Create Your Account" : "Sign Up"}
                 </h1>
               </div>
 
               <form onSubmit={formik.handleSubmit} className="space-y-6">
-                {/* Message Alert */}
-                {message.text && (
-                  <div className={`p-3 mb-3 text-xs rounded-lg ${
-                    message.type === 'error' 
-                      ? 'text-red-800 border border-red-300 bg-red-100 dark:bg-red-500/20 dark:border-red-500/50 dark:text-red-400'
-                      : 'text-green-800 border border-green-300 bg-green-100 dark:bg-green-500/20 dark:border-green-500/50 dark:text-green-400'
-                  }`}>
-                    {message.text}
-                  </div>
-                )}
 
                 {/* Email field */}
                 <div className="space-y-3">
@@ -319,7 +321,7 @@ const  PartnerSignUp = () => {
                 </div>
 
                 {/* Terms & Conditions */}
-                <div className="flex items-center gap-2 mt-8">
+                <div className="flex items-center gap-2">
                   <input
                     id="terms"
                     name="terms"
@@ -340,11 +342,30 @@ const  PartnerSignUp = () => {
                   </label>
                 </div>
 
+                {/* Status / Error Message */}
+                {message.text && (
+                  <p className={`text-xs ${message.type === 'error' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'
+                    }`}>
+                    <span>{message.text} </span>
+                    {message.hasAccount && (
+                      <span className="text-slate-700 dark:text-zinc-300">
+                        Already have an account?{" "}
+                        <Link
+                          to={franchiseContext ? "/signin/partner" : "/signin"}
+                          className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline transition-colors"
+                        >
+                          Sign In
+                        </Link>
+                      </span>
+                    )}
+                  </p>
+                )}
+
                 {/* Create Account button */}
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 active:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg mt-8"
+                  className="w-full py-3 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 active:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center">
@@ -355,12 +376,12 @@ const  PartnerSignUp = () => {
                 </button>
               </form>
 
-              {/* Home link */}
+              {/* Already have an account / Sign In link */}
               <div className="text-center pt-8 mt-2">
                 <p className="text-gray-700 dark:text-zink-300 text-sm">
-                  Back To{" "}
-                  <Link to="/" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-                   Home
+                  Already have an account?{" "}
+                  <Link to={franchiseContext ? "/signin/partner" : "/signin"} className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+                    Sign In
                   </Link>
                 </p>
               </div>

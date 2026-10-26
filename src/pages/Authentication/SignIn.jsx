@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AppleIcon, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
@@ -327,38 +327,12 @@ const SignIn = () => {
                   ) : "Sign In"}
                 </button>
               </form>
-              <div className="relative text-center my-8 before:absolute before:top-3 before:left-0 before:right-0 before:border-t before:border-slate-200 dark:before:border-slate-600">
-              <span className="inline-block px-4 py-0.5 text-sm font-medium bg-white text-slate-500 dark:bg-slate-800 dark:text-slate-400 relative z-10">
-                Sign In with
-              </span>
-            </div>
-
-            {/* Google & Apple Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <button type="button" className="flex items-center justify-center gap-2 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors bg-white dark:bg-slate-800">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">Google</span>
-              </button>
-
-              <button type="button" className="flex items-center justify-center gap-2 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors bg-white dark:bg-slate-800">
-                {/* <svg className="w-5 h-5 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17.05 20.28c-.98.95-2.05.88-3.08.35-1.09-.56-2.07-.53-3.15 0-1.09.56-2.2.66-3.13-.25-4.17-4.1-3.47-11.23 1.69-11.45 1.34.06 2.22.75 2.97.75.69 0 1.84-.81 3.19-.69 2.15.19 3.25 1.25 3.91 2.31-3.69 2.25-2.91 7.75 1.13 9.44-.72 1.94-1.81 3.56-3.53 5.34v-.03zM12.03 7.25c-.16-2.53 2.03-4.75 4.53-5 0 2.66-2.38 4.88-4.53 5z"/>
-                </svg> */}
-<svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 384 512"><path d="M319.1 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7-55.8 .9-115.1 44.5-115.1 133.2 0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zM262.5 104.5c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>             <span className="text-sm font-medium text-slate-700 dark:text-slate-200">Apple</span>
-              </button>
-            </div>
-
-              {/* Home link */}
+              {/* Sign Up link */}
               <div className="text-center pt-8 mt-2">
                 <p className="text-slate-700 dark:text-zinc-300 text-sm">
-                  Back to {" "}
-                  <Link to="/" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-                    Home
+                  Don't have an account?{" "}
+                  <Link to="/signup" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+                    Sign Up
                   </Link>
                 </p>
               </div>
