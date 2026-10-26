@@ -1,1483 +1,1101 @@
-import React, { useEffect } from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import React, { useState, useEffect } from 'react';
+import { 
+  FaLinkedin, FaTwitter, FaInstagram, FaEnvelope, 
+  FaMapMarkerAlt, FaChevronRight, FaGlobe, 
+  FaPhoneAlt, FaWhatsapp, FaUserFriends, 
+  FaBuilding, FaVideo, FaImage, FaGem, FaStar, 
+  FaDownload, FaQrcode, FaShieldAlt, FaInfoCircle, 
+  FaCrown, FaBriefcase, FaCalendarAlt, FaHeadset,
+  FaFilePdf, FaIdCard, FaTags, FaFileAlt, 
+  FaFileInvoice, FaRegClock, FaFileVideo, FaRobot, 
+  FaCommentDots, FaBullhorn, FaClipboardList, 
+  FaSuitcase, FaUsers, FaCogs, FaCheckCircle, 
+  FaAward, FaPaperPlane, FaExternalLinkAlt, FaClock,
+  FaShareAlt, FaCopy, FaCheck, FaTimes
+} from 'react-icons/fa';
+import { FaXTwitter, FaGithub, FaYoutube, FaFacebookF } from "react-icons/fa6";
+import { generateVCard } from '../../utility/vcard';
 
-import {
-  FaGlobe,
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaTelegramPlane,
-  FaWhatsapp,
-  FaEnvelope,
-  FaPhone,
-  FaMapMarkerAlt,
-  FaClock,
-  FaStar,
-  FaUser,
-  FaBriefcase,
-  FaBuilding,
-  FaFilePdf,
-  FaDownload,
-  FaQrcode,
-  FaIdCard,
-  FaVideo,
-  FaImages,
-  FaShoppingCart,
-  FaGem,
-  FaShare,
-  FaFileInvoice,
-  FaFileVideo,
-  FaRobot,
-  FaCommentDots,
-  FaRegClock,
-  FaSuitcase,
-  FaTags,
-  FaUsers
-} from "react-icons/fa";
-import { FaXTwitter, FaYoutube } from "react-icons/fa6";
+// --- CONFIG: Plan Features Matrix (Synchronized with Backend Tiers) ---
+const personalAllowed = [
+  'profilePhoto', 'firstName', 'lastName', 'prefix', 'suffix', 'jobTitle',
+  'tagline', 'aboutText', 'bio', 'phones', 'email', 'emails', 'websites',
+  'addresses', 'enableOneTapCall', 'enableWhatsApp', 'enableEmail', 'socialLinks',
+  'dynamicQRCode', 'shareableUrl', 'shareableLink'
+];
 
-// Video player component
+const businessAllowed = [
+  ...personalAllowed,
+  'companyName', 'companyLogo', 'logoSize', 'department', 'organization',
+  'businessHours', 'virtualNumber', 'profileVideo', 'services', 'servicesProducts',
+  'gallery', 'catalog', 'catalogPDF', 'productVideo', 'nfcSettings', 'downloads'
+];
+
+const businessPremiumAllowed = [
+  ...businessAllowed,
+  'serviceArea', 'serviceAvailability', 'customerInquiry', 'interactiveElements',
+  'individualProductDisplay', 'clientList', 'businessCardInstagram', 'textbooks',
+  'chatAssistant', 'liveChat', 'foundedName', 'brandLabel', 'productRangeDisplay'
+];
+
+const professionalsAllowed = [
+  ...businessPremiumAllowed,
+  'testimonials', 'videos'
+];
+
+const cardFieldsConfig = {
+  Personal: personalAllowed,
+  Business: businessAllowed,
+  BusinessPremium: businessPremiumAllowed,
+  Professionals: professionalsAllowed,
+  ProfessionalPro: professionalsAllowed,
+  Entrepreneurials: professionalsAllowed,
+  EntrepreneurialsMulti: professionalsAllowed,
+  CorporateBusiness: professionalsAllowed,
+  Team: professionalsAllowed,
+  MiniWebsite: professionalsAllowed
+};
+
+// --- HELPER: Video Player Component ---
 const VideoPlayer = ({ src, poster, title, className = "" }) => {
-  const [error, setError] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
-  
-  const getVideoUrl = (url) => {
-    if (!url) return '';
-    return url;
-  };
-  
-  const videoUrl = getVideoUrl(src);
-  
-  const handleError = (e) => {
-    console.error('Video playback error:', e);
-    setError(true);
-    setLoading(false);
-  };
-  
-  const handleLoadStart = () => {
-    setLoading(true);
-  };
-  
-  const handleLoadedData = () => {
-    setLoading(false);
-  };
-  
-  if (error) {
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const videoUrl = typeof src === 'object' && src !== null && src.url ? src.url : src;
+
+  if (!videoUrl || typeof videoUrl !== 'string') return null;
+
+  if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+    let videoId = '';
+    if (videoUrl.includes('youtu.be/')) {
+      videoId = videoUrl.split('youtu.be/')[1]?.split('?')[0];
+    } else if (videoUrl.includes('watch?v=')) {
+      videoId = videoUrl.split('watch?v=')[1]?.split('&')[0];
+    } else if (videoUrl.includes('embed/')) {
+      videoId = videoUrl.split('embed/')[1]?.split('?')[0];
+    }
     return (
-      <div className={`flex flex-col items-center justify-center bg-gray-800 rounded-lg ${className}`}>
-        <FaVideo className="w-12 h-12 text-gray-400 mb-2" />
-        <p className="text-sm text-gray-400">Video failed to load</p>
-        <p className="text-xs text-gray-500 mt-1">{title}</p>
+      <div className={`relative rounded-2xl overflow-hidden aspect-video bg-black shadow-lg border border-slate-200/80 my-3 ${className}`}>
+        <iframe
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`}
+          title={title || "YouTube video"}
+          className="w-full h-full border-0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
       </div>
     );
   }
-  
+
+  if (error) {
+    return (
+      <div className={`flex flex-col items-center justify-center bg-slate-900/10 rounded-2xl p-6 text-slate-500 border border-slate-200 my-3 ${className}`}>
+        <FaVideo className="w-8 h-8 text-slate-400 mb-2" />
+        <p className="text-xs font-medium">Video currently unavailable</p>
+      </div>
+    );
+  }
+
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative rounded-2xl overflow-hidden aspect-video bg-black shadow-lg border border-slate-200/80 my-3 ${className}`}>
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 z-10">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/40 z-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent" />
         </div>
       )}
-      
       <video
         src={videoUrl}
-        className="w-full h-full object-contain rounded-lg"
+        className="w-full h-full object-contain"
         controls
         playsInline
         preload="metadata"
         poster={poster}
-        onError={handleError}
-        onLoadStart={handleLoadStart}
-        onLoadedData={handleLoadedData}
-        onCanPlay={handleLoadedData}
-      >
-        <source src={videoUrl} type="video/mp4" />
-        <source src={videoUrl} type="video/webm" />
-        Your browser does not support the video tag.
-      </video>
-      
-      {title && (
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-          <p className="text-sm text-white">{title}</p>
-        </div>
-      )}
+        onError={() => setError(true)}
+        onLoadedData={() => setLoading(false)}
+      />
     </div>
   );
 };
 
-// RECEIVE DATA VIA PROPS instead of useLocation
-const DefaultCard = ({ cardData = {} }) => {
-  console.log('🎯 DefaultCard received data:', cardData); // Debug log
+// --- HELPER: Live Business Status ---
+const getBusinessStatus = (businessHours = []) => {
+  if (!businessHours || businessHours.length === 0) return null;
 
-  // Build complete profileData from cardData WITHOUT ANY DUMMY DATA
-  const profileData = {
-    // Personal Info
-    prefix: cardData?.prefix || "",
-    firstName: cardData?.firstName || "",
-    lastName: cardData?.lastName || "",
-    suffix: cardData?.suffix || "",
-    name: `${cardData?.prefix || ""} ${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim(),
-    jobTitle: cardData?.jobTitle || "",
-    bio: cardData?.bio || "",
-    aboutText: cardData?.aboutText || "",
-    tagline: cardData?.tagline || "",
-    
-    // Professional Info
-    companyName: cardData?.companyName || "",
-    department: cardData?.department || "",
-    organization: cardData?.organization || "",
-    foundedName: cardData?.foundedName || "",
-    
-    // Contact Info - FIXED: Better email handling
-    email: cardData?.email || "",
-    emails: Array.isArray(cardData?.emails) ? cardData.emails : 
-             (cardData?.email ? [{ address: cardData.email, label: "primary", isPrimary: true }] : []),
-    phones: cardData?.phones || [],
-    addresses: cardData?.addresses || [],
-    websites: cardData?.websites || [],
-    virtualNumber: cardData?.virtualNumber || { number: "", isEnabled: false },
-    
-    // Business Hours
-    businessHours: cardData?.businessHours || [],
-    
-    // Profile Content
-    profileVideo: cardData?.profileVideo || null,
-    productVideo: cardData?.productVideo || null,
-    videos: cardData?.videos || [],
-    servicesProducts: cardData?.servicesProducts || "",
-    
-    // Catalog
-    catalog: cardData?.catalog || cardData?.catalogPDF || "",
-    catalogPDF: cardData?.catalogPDF || "",
-    
-    // Images
-    profilePhoto: cardData?.profilePhoto,
-    companyLogo: cardData?.companyLogo,
-    
-    // Services & Products
-    services: cardData?.services || [],
-    products: cardData?.products || [],
-    
-    // Social Links
-    socialLinks: cardData?.socialLinks || [],
-    
-    // Premium Features
-    testimonials: cardData?.testimonials || [],
-    clientList: cardData?.clientList || [],
-    gallery: cardData?.gallery || [],
-    downloads: cardData?.downloads || [],
-    interactiveElements: cardData?.interactiveElements || [],
-    individualProductDisplay: cardData?.individualProductDisplay || false,
-    businessCardInstagram: cardData?.businessCardInstagram || "",
-    textbooks: cardData?.textbooks || [],
+  const now = new Date();
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const currentDayName = days[now.getDay()];
 
-    // Digital Features
-    dynamicQRCode: cardData?.dynamicQRCode || null,
-    
-    // Shareable URL
-    shareableUrl: cardData?.shareableUrl || cardData?.shareUrl || "",
-    
-    // Brand & Product
-    brandLabel: cardData?.brandLabel || "",
-    productRangeDisplay: cardData?.productRangeDisplay || "grid",
-    
-    // NFC Settings
-    nfcSettings: cardData?.nfcSettings || { isEnabled: false },
-    
-    // Chat Features
-    chatAssistant: cardData?.chatAssistant || { isEnabled: false, welcomeMessage: "Hello! How can I help you today?" },
-    liveChat: cardData?.liveChat || { isEnabled: false, platform: "whatsapp", phoneNumber: "" },
-    
-    // Plan Info
-    cardType: cardData?.cardType || 'Personal',
-    
-    // Settings
-    enableOneTapCall: cardData?.enableOneTapCall !== undefined ? cardData.enableOneTapCall : true,
-    enableWhatsApp: cardData?.enableWhatsApp !== undefined ? cardData.enableWhatsApp : true,
-    enableEmail: cardData?.enableEmail !== undefined ? cardData.enableEmail : true
-  };
+  const todaySchedule = businessHours.find(h => h.day?.toLowerCase() === currentDayName);
+  if (!todaySchedule || todaySchedule.isClosed) {
+    return { isOpen: false, text: 'Closed Today' };
+  }
 
-  console.log('🎯 Profile data built:', profileData); // Debug log
+  if (!todaySchedule.openingTime || !todaySchedule.closingTime) {
+    return { isOpen: true, text: 'Open Today' };
+  }
 
-  // Get primary contact info - FIXED: Better email extraction
-  const getPrimaryEmail = () => {
-    // First check if we have emails array
-    if (profileData.emails && profileData.emails.length > 0) {
-      // Try to find primary email
-      const primaryEmail = profileData.emails.find(email => 
-        email && email.address && email.address.trim() && email.isPrimary
-      );
-      
-      if (primaryEmail) {
-        return primaryEmail;
-      }
-      
-      // If no primary, take the first valid email
-      const firstEmail = profileData.emails.find(email => 
-        email && email.address && email.address.trim()
-      );
-      
-      if (firstEmail) {
-        return firstEmail;
-      }
+  const [openH, openM] = todaySchedule.openingTime.split(':').map(Number);
+  const [closeH, closeM] = todaySchedule.closingTime.split(':').map(Number);
+
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const openMinutes = openH * 60 + openM;
+  const closeMinutes = closeH * 60 + closeM;
+
+  if (currentMinutes >= openMinutes && currentMinutes <= closeMinutes) {
+    return { isOpen: true, text: `Open until ${todaySchedule.closingTime}` };
+  }
+  return { isOpen: false, text: `Closed • Opens ${todaySchedule.openingTime}` };
+};
+
+const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
+  // Normalize plan
+  const normalizePlan = (raw) => {
+    if (!raw) return 'Personal';
+    if (cardFieldsConfig[raw]) return raw;
+    const cleaned = String(raw).replace(/[\s\-_]/g, '').toLowerCase();
+    for (const key of Object.keys(cardFieldsConfig)) {
+      if (key.toLowerCase() === cleaned) return key;
     }
-    
-    // Fallback to the main email field
-    if (profileData.email && profileData.email.trim()) {
-      return { address: profileData.email, label: "primary", isPrimary: true };
+    return 'BusinessPremium';
+  };
+
+  const currentPlan = normalizePlan(cardData?.cardType || plan);
+
+  const isFieldAllowed = (field) => {
+    if (cardData?.addons) {
+      const lk = field.toLowerCase();
+      if (lk === 'gallery' && (cardData.addons.gallery || cardData.addons.photogallery)) return true;
+      if ((lk === 'catalog' || lk === 'catalogpdf' || lk === 'downloads') &&
+          (cardData.addons.docsbuilder || cardData.addons.catalogbuilder || cardData.addons.brochurebuilder || cardData.addons.docsmanager)) return true;
+      if ((lk === 'nfcsettings' || lk === 'nfccard') && (cardData.addons.nfccard || cardData.addons.nfc)) return true;
+      if ((lk === 'profilevideo' || lk === 'productvideo') && (cardData.addons.profilebuilder || cardData.addons.portfoliobuilder)) return true;
     }
-    
-    return null;
+    const allowed = cardFieldsConfig[currentPlan] || cardFieldsConfig.BusinessPremium;
+    return allowed.includes(field);
   };
 
-  const primaryPhone = profileData.phones.find(phone => 
-    phone && phone.number && phone.number.trim()
-  ) || profileData.phones[0];
-  
-  const primaryEmail = getPrimaryEmail();
-  const primaryAddress = profileData.addresses.find(addr => 
-    addr && (addr.fullAddress || addr.street)
-  ) || profileData.addresses[0];
+  // State management
+  const [copiedItem, setCopiedItem] = useState(null);
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [inquiryData, setInquiryData] = useState({
+    service: '',
+    date: '',
+    time: '',
+    contact: '',
+    submitted: false
+  });
 
-  // Check if we have any contact info
-  const hasContactInfo = () => {
-    return (
-      (primaryEmail && primaryEmail.address && primaryEmail.address.trim()) ||
-      (profileData.phones && profileData.phones.some(phone => phone && phone.number && phone.number.trim())) ||
-      (primaryAddress && (primaryAddress.fullAddress || primaryAddress.street))
-    );
+  // --- RESILIENT DATA MAPPING ---
+  const profile = {
+    prefix: cardData.prefix || '',
+    firstName: cardData.firstName || '',
+    lastName: cardData.lastName || '',
+    name: `${cardData.prefix ? cardData.prefix + ' ' : ''}${cardData.firstName || ''} ${cardData.lastName || ''}`.trim() || 'Professional Contact',
+    jobTitle: cardData.jobTitle || '',
+    department: cardData.department || '',
+    companyName: cardData.companyName || cardData.organization || '',
+    companyLogo: cardData.companyLogo,
+    profilePhoto: cardData.profilePhoto || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600",
+    tagline: cardData.tagline || '',
+    bio: cardData.bio || '',
+    aboutText: cardData.aboutText || '',
+    foundedName: cardData.foundedName || '',
+    organization: cardData.organization || '',
+    serviceArea: cardData.serviceArea || '',
+    serviceAvailability: cardData.serviceAvailability || '',
+
+    phones: Array.isArray(cardData.phones) && cardData.phones.length > 0 
+      ? cardData.phones 
+      : cardData.phone ? [{ label: 'work', number: cardData.phone }] : [],
+    emails: Array.isArray(cardData.emails) && cardData.emails.length > 0 
+      ? cardData.emails 
+      : cardData.email ? [{ label: 'work', address: cardData.email }] : [],
+    websites: Array.isArray(cardData.websites) && cardData.websites.length > 0 
+      ? cardData.websites 
+      : cardData.website ? [{ label: 'company', url: cardData.website }] : [],
+    addresses: cardData.addresses || [],
+    socialLinks: cardData.socialLinks || [],
+
+    services: cardData.services || [],
+    products: cardData.products || [],
+    businessHours: cardData.businessHours || [],
+    downloads: cardData.downloads || [],
+    profileVideo: cardData.profileVideo,
+    productVideo: cardData.productVideo,
+    videos: cardData.videos || [],
+
+    nfcSettings: cardData.nfcSettings || { isEnabled: false },
+    testimonials: cardData.testimonials || [],
+    clientList: cardData.clientList || [],
+    gallery: cardData.gallery || [],
+
+    brandLabel: cardData.brandLabel || 'Revayah One Verified',
+    enableOneTapCall: cardData.enableOneTapCall !== undefined ? cardData.enableOneTapCall : true,
+    enableWhatsApp: cardData.enableWhatsApp !== undefined ? cardData.enableWhatsApp : true,
+    enableEmail: cardData.enableEmail !== undefined ? cardData.enableEmail : true
   };
 
-  // Particle Animation Effect - Faster and Larger
-  useEffect(() => {
-    const canvas = document.getElementById('particle-canvas');
-    if (!canvas) return;
+  const primaryPhone = profile.phones.find(p => p.isPrimary)?.number || profile.phones[0]?.number || '';
+  const primaryEmail = profile.emails.find(e => e.isPrimary)?.address || profile.emails[0]?.address || cardData.email || '';
+  const primaryWebsite = profile.websites[0]?.url || '';
+  const businessStatus = getBusinessStatus(profile.businessHours);
 
-    const ctx = canvas.getContext('2d');
-    let animationFrameId;
+  // Copy helper
+  const handleCopy = (text, key) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedItem(key);
+    setTimeout(() => setCopiedItem(null), 2000);
+  };
 
-    // Set canvas size
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+  // Direct contact actions
+  const handleCall = (num) => {
+    if (!num) return;
+    window.location.href = `tel:${num.replace(/\s+/g, '')}`;
+  };
+
+  const handleWhatsApp = (num) => {
+    const cleanNum = (num || primaryPhone).replace(/\D/g, '');
+    if (!cleanNum) return;
+    const greeting = encodeURIComponent(`Hello ${profile.name}, I connected with you via your Revayah One digital card.`);
+    window.open(`https://wa.me/${cleanNum}?text=${greeting}`, '_blank');
+  };
+
+  const handleEmail = (email) => {
+    if (!email) return;
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(`Inquiry via Revayah One: ${profile.name}`)}`;
+  };
+
+  const handleWebsite = (url) => {
+    if (!url) return;
+    const cleanUrl = url.startsWith('http') ? url : `https://${url}`;
+    window.open(cleanUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleSaveContact = () => {
+    generateVCard(cardData);
+  };
+
+  const handleNativeShare = () => {
+    const shareUrl = window.location.href;
+    const shareData = {
+      title: `${profile.name} | Digital Identity Card`,
+      text: `Connect with ${profile.name} (${profile.jobTitle || 'Professional'}) on Revayah One:`,
+      url: shareUrl
     };
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Particle class with larger and faster particles
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 4 + 2;
-        this.speedX = Math.random() * 2 - 1;
-        this.speedY = Math.random() * 2 - 1;
-        this.color = `rgba(105, 83, 243, ${Math.random() * 0.5 + 0.3})`;
-      }
-
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-
-        if (this.x > canvas.width || this.x < 0) {
-          this.speedX = -this.speedX;
-        }
-        if (this.y > canvas.height || this.y < 0) {
-          this.speedY = -this.speedY;
-        }
-
-        this.x = Math.max(0, Math.min(canvas.width, this.x));
-        this.y = Math.max(0, Math.min(canvas.height, this.y));
-      }
-
-      draw() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.shadowColor = 'rgba(105, 83, 243, 0.8)';
-        ctx.shadowBlur = 10;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-    }
-
-    // Create more particles
-    const particles = [];
-    const particleCount = 100;
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle());
-    }
-
-    // Animation loop
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach(particle => {
-        particle.update();
-        particle.draw();
-      });
-
-      // Draw connections
-      ctx.strokeStyle = 'rgba(105, 83, 243, 0.2)';
-      ctx.lineWidth = 1.5;
-      ctx.shadowColor = 'rgba(105, 83, 243, 0.3)';
-      ctx.shadowBlur = 5;
-
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 200) {
-            const opacity = 1 - (distance / 200);
-            ctx.strokeStyle = `rgba(105, 83, 243, ${opacity * 0.3})`;
-            
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      ctx.shadowBlur = 0;
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
-  const BaseSliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 600,
-    centerMode: true,
-    centerPadding: "40px", 
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    arrows: false,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          centerPadding: "20px",
-          slidesToShow: 1,
-        },
-      },
-    ],
-    appendDots: (dots) => (
-      <div>
-        <ul className="flex justify-center gap-1 mt-4">{dots}</ul>
-      </div>
-    ),
-    customPaging: () => (
-      <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-    ),
-    dotsClass: "slick-dots",
-  };
-
-  const sliderSettingsNoDots = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    centerMode: true,
-    centerPadding: "10px",
-    slidesToShow: 1.5,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          centerPadding: "20px",
-          slidesToShow: 1.5,
-        },
-      },
-    ],
-  };
-
-  // Social media configuration
-  const socialMediaConfig = {
-    linkedin: { icon: <FaLinkedinIn className="w-4 h-4" />, color: "text-[#311cb4]" },
-    twitter: { icon: <FaXTwitter className="w-4 h-4" />, color: "text-[#311cb4]" },
-    facebook: { icon: <FaFacebookF className="w-4 h-4" />, color: "text-[#311cb4]" },
-    instagram: { icon: <FaInstagram className="w-4 h-4" />, color: "text-[#311cb4]" },
-    youtube: { icon: <FaYoutube className="w-4 h-4" />, color: "text-[#311cb4]" },
-    whatsapp: { icon: <FaWhatsapp className="w-4 h-4" />, color: "text-[#311cb4]" },
-    telegram: { icon: <FaTelegramPlane className="w-4 h-4" />, color: "text-[#311cb4]" },
-    website: { icon: <FaGlobe className="w-4 h-4" />, color: "text-[#311cb4]" }
-  };
-
-  // Get active social icons from dynamic data
-  const activeSocialIcons = profileData.socialLinks
-    .filter(link => link && link.url && link.platform && socialMediaConfig[link.platform])
-    .map(link => ({
-      platform: link.platform,
-      url: link.url,
-      ...socialMediaConfig[link.platform]
-    }));
-
-  const handleContact = (type, value) => {
-    if (!value) return;
-    switch (type) {
-      case "email":
-        window.open(`mailto:${value}`);
-        break;
-      case "phone":
-        window.open(`tel:${value}`);
-        break;
-      case "whatsapp":
-        window.open(`https://wa.me/${value.replace(/\D/g, "")}`);
-        break;
-      case "map":
-        window.open(value, "_blank");
-        break;
-      case "website":
-        window.open(value, "_blank");
-        break;
-      case "virtualNumber":
-        window.open(`tel:${value}`);
-        break;
-      default:
-        window.open(value, "_blank");
-    }
-  };
-
-  // Share functionality
-  const handleShare = () => {
-    let shareUrl = profileData.shareableUrl;
-    
-    if (!shareUrl || shareUrl.includes('api.revayahone.com') || shareUrl === 'https://api.revayahone.com') {
-      shareUrl = window.location.origin + window.location.pathname;
-      
-      if (shareUrl.includes('localhost')) {
-        const previewUrl = `https://revayahone.com/preview/${profileData.firstName}-${profileData.lastName || 'card'}`;
-        shareUrl = previewUrl;
-      }
-    }
-    
-    const shareText = `Check out ${profileData.name || 'my'}'s digital card`;
-    const shareTitle = `${profileData.name || 'My'} Digital Card`;
-    
     if (navigator.share) {
-      navigator.share({
-        title: shareTitle,
-        text: shareText,
-        url: shareUrl,
-      }).catch(err => {
-        console.log('Share failed:', err);
-        fallbackShare(shareUrl, shareText);
-      });
+      navigator.share(shareData).catch(() => handleCopy(shareUrl, 'shareUrl'));
     } else {
-      fallbackShare(shareUrl, shareText);
+      handleCopy(shareUrl, 'shareUrl');
     }
   };
 
-  // Fallback share function
-  const fallbackShare = (url, text) => {
-    navigator.clipboard.writeText(`${text}\n${url}`).then(() => {
-      alert('Link copied to clipboard! You can now paste and share it.');
-    }).catch(() => {
-      prompt('Copy this link to share:', `${text}\n${url}`);
-    });
-  };
-
-  // ========== UPDATED COMPONENTS ==========
-
-  // Share Button Component - Only show if we have a name
-  const renderShareButton = () => {
-    if (!profileData.shareableUrl && !profileData.name) return null;
-    
-    return (
-      <div className="px-6 pb-4">
-        <button
-          onClick={handleShare}
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-semibold py-3 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
-        >
-          <FaShare className="w-5 h-5" />
-          Share My Card
-        </button>
-        {profileData.firstName && (
-          <p className="text-center text-gray-500 text-xs mt-2">
-            Share link: revayahone.com/preview/{profileData.firstName?.toLowerCase() || 'name'}
-          </p>
-        )}
-      </div>
-    );
-  };
-
-  // Business Hours Component - Only for Business/BusinessPremium
-  const renderBusinessHours = () => {
-    if (profileData.cardType === 'Personal' || 
-        !profileData.businessHours || 
-        profileData.businessHours.length === 0) {
-      return null;
+  const handleSendInquiry = () => {
+    if (!inquiryData.service || !inquiryData.contact) {
+      alert("Please provide the service required and your contact number.");
+      return;
     }
-    
-    const validHours = profileData.businessHours.filter(hour => 
-      hour && (!hour.isClosed) && (hour.openingTime || hour.closingTime)
-    );
-    
-    if (validHours.length === 0) return null;
-    
-    const formatHours = () => {
-      const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-      return days.map(day => {
-        const dayData = validHours.find(h => h.day === day);
-        if (!dayData || dayData.isClosed || (!dayData.openingTime && !dayData.closingTime)) {
-          return { day, display: `${day.charAt(0).toUpperCase() + day.slice(1)}: Closed` };
-        }
-        return { 
-          day, 
-          display: `${day.charAt(0).toUpperCase() + day.slice(1)}: ${dayData.openingTime || 'N/A'} - ${dayData.closingTime || 'N/A'}`
-        };
-      });
-    };
+    const cleanPhone = primaryPhone.replace(/\D/g, '');
+    const message = `Hello ${profile.name}!\n\nI would like to request a consultation via your Revayah One card:\n- Service: ${inquiryData.service}\n- Preferred Date: ${inquiryData.date || 'Flexible'}\n- Preferred Time: ${inquiryData.time || 'Flexible'}\n- Customer Contact: ${inquiryData.contact}`;
 
-    const hours = formatHours();
-    if (!hours || hours.length === 0) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">BUSINESS HOURS</h2>
-        <div className="bg-white rounded-2xl shadow-lg p-6 max-w-md mx-auto">
-          <div className="flex items-center justify-center mb-4">
-            <FaRegClock className="w-5 h-5 text-blue-500 mr-2" />
-            <h3 className="text-lg font-bold text-gray-900">Working Hours</h3>
+    setInquiryData(prev => ({ ...prev, submitted: true }));
+
+    if (cleanPhone) {
+      window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
+    } else if (primaryEmail) {
+      window.location.href = `mailto:${primaryEmail}?subject=${encodeURIComponent(`Service Request: ${inquiryData.service}`)}&body=${encodeURIComponent(message)}`;
+    }
+  };
+
+  const getSocialIcon = (platform) => {
+    const p = platform?.toLowerCase() || '';
+    if (p.includes('linkedin')) return <FaLinkedin className="w-4 h-4" />;
+    if (p.includes('twitter') || p.includes('x')) return <FaXTwitter className="w-4 h-4" />;
+    if (p.includes('github')) return <FaGithub className="w-4 h-4" />;
+    if (p.includes('instagram')) return <FaInstagram className="w-4 h-4" />;
+    if (p.includes('facebook')) return <FaFacebookF className="w-4 h-4" />;
+    if (p.includes('youtube')) return <FaYoutube className="w-4 h-4" />;
+    if (p.includes('whatsapp')) return <FaWhatsapp className="w-4 h-4" />;
+    return <FaGlobe className="w-4 h-4" />;
+  };
+
+  return (
+    <div className="w-full min-h-screen bg-slate-100/70 text-slate-800 flex flex-col items-center justify-start p-0 font-sans antialiased selection:bg-blue-600 selection:text-white relative overflow-x-hidden">
+      
+      {/* Executive Card Shell */}
+      <div className="w-full max-w-md bg-white shadow-xl flex flex-col relative overflow-hidden min-h-screen sm:min-h-0 sm:rounded-[36px] sm:border sm:border-slate-200/80 my-0 sm:my-6">
+        
+        {/* ========================================================
+            HERO HEADER: COBALT TECH BLUE & DEEP INDIGO GRADIENT
+            ======================================================== */}
+        <div className="relative h-28 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-3.5 pt-3 pb-2 shadow-inner flex flex-col justify-start">
+          
+          {/* Ambient Lighting & Soft Glow (strictly contained) */}
+          <div className="absolute inset-0 overflow-hidden opacity-25 pointer-events-none">
+            <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-white blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-36 h-36 rounded-full bg-blue-950 blur-2xl" />
+            <svg className="w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="default-grid" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <path d="M 16 0 L 0 0 0 16" fill="none" stroke="white" strokeWidth="0.5" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#default-grid)" />
+            </svg>
           </div>
-          <div className="space-y-2">
-            {hours.map((hour, index) => (
-              <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium text-gray-900">{hour.day.charAt(0).toUpperCase() + hour.day.slice(1)}</span>
-                <span className="text-gray-600">{hour.display.split(': ')[1]}</span>
+
+          {/* Top Brand Pill & Share */}
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/25 border border-white/30 backdrop-blur-md">
+              <FaShieldAlt className="w-3 h-3 text-white" />
+              <span className="text-[10px] font-semibold text-white uppercase tracking-wider">
+                {isFieldAllowed('brandLabel') && profile.brandLabel ? profile.brandLabel : 'REVAYAH ONE'}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleNativeShare}
+              className="p-1.5 rounded-full bg-black/25 hover:bg-black/40 border border-white/30 text-white backdrop-blur-md transition-all active:scale-95 shadow-md"
+              title="Share Card"
+            >
+              {copiedItem === 'shareUrl' ? (
+                <FaCheck className="w-3.5 h-3.5 text-emerald-300" />
+              ) : (
+                <FaShareAlt className="w-3.5 h-3.5" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* ========================================================
+            PROFILE INFORMATION & IDENTITY
+            ======================================================== */}
+        <div className="relative z-10 px-6 pb-4 text-center">
+          
+          {/* Avatar Anchor - Perfectly overlapping banner without clipping */}
+          <div className="relative -mt-14 mb-2 inline-block">
+            <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-blue-950/20 ring-4 ring-white">
+              <img
+                src={profile.profilePhoto}
+                alt={profile.name}
+                className="w-full h-full object-cover rounded-full bg-slate-100"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600";
+                }}
+              />
+              {/* Verified Badge */}
+              <div 
+                className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center text-white shadow-md"
+                title="Verified Identity"
+              >
+                <FaCheckCircle className="w-4 h-4" />
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
 
-  // Virtual Number Component - Only for Business/BusinessPremium
-  const renderVirtualNumber = () => {
-    if (profileData.cardType === 'Personal' || 
-        !profileData.virtualNumber?.number || 
-        !profileData.virtualNumber?.isEnabled) return null;
-    
-    return (
-      <div className="px-6 pb-4">
-        <h3 className="text-sm font-bold text-gray-700 mb-2 text-center">VIRTUAL NUMBER</h3>
-        <button
-          onClick={() => handleContact("virtualNumber", profileData.virtualNumber.number)}
-          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold py-3 rounded-xl transition-all transform hover:scale-[1.02]"
-        >
-          {profileData.virtualNumber.number}
-        </button>
-      </div>
-    );
-  };
-
-  // Services/Products Overview Component
-  const renderServicesProductsOverview = () => {
-    if (!profileData.servicesProducts) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">SERVICES OVERVIEW</h2>
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 max-w-md mx-auto">
-          <div className="flex items-center justify-center mb-3">
-            <FaSuitcase className="w-5 h-5 text-blue-500 mr-2" />
-            <h3 className="text-lg font-bold text-gray-900">What We Offer</h3>
-          </div>
-          <p className="text-gray-600 text-sm leading-relaxed text-center">
-            {profileData.servicesProducts}
-          </p>
-        </div>
-      </div>
-    );
-  };
-
-  // Brand Label Component
-  const renderBrandLabel = () => {
-    if (!profileData.brandLabel) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">BRAND LABEL</h2>
-        <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl p-6 text-white text-center max-w-md mx-auto">
-          <div className="flex items-center justify-center mb-3">
-            <FaTags className="w-5 h-5 text-white mr-2" />
-            <h3 className="text-lg font-bold">Our Brand</h3>
-          </div>
-          <p className="text-sm opacity-90">{profileData.brandLabel}</p>
-        </div>
-      </div>
-    );
-  };
-
-  // Product Video Component
-  const renderProductVideo = () => {
-    if (!profileData.productVideo?.url) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">PRODUCT VIDEO</h2>
-        <div className="bg-white rounded-2xl shadow-lg p-4 max-w-md mx-auto">
-          <div className="flex items-center justify-center mb-3">
-            <FaFileVideo className="w-5 h-5 text-purple-500 mr-2" />
-            <h3 className="text-lg font-bold text-gray-900">Product Showcase</h3>
-          </div>
-          <VideoPlayer
-            src={profileData.productVideo.url}
-            poster={profileData.productVideo.thumbnail}
-            title={profileData.productVideo.title || "Product Video"}
-            className="h-48 rounded-lg"
-          />
-        </div>
-      </div>
-    );
-  };
-
-  // Videos Slider Component
-  const renderVideosSlider = () => {
-    if (!profileData.videos?.length) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">VIDEOS</h2>
-        <div className="overflow-visible -mx-4 px-4">
-          <Slider {...BaseSliderSettings}>
-            {profileData.videos.map((video, i) => (
-              <div key={i} className="px-2">
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden max-w-md mx-auto">
-                  <VideoPlayer
-                    src={video.url}
-                    poster={video.thumbnail}
-                    title={video.title}
-                    className="h-48"
+              {/* Company Logo Badge if available */}
+              {isFieldAllowed('companyLogo') && profile.companyLogo && (
+                <div 
+                  className="absolute -top-1 -right-1 w-8 h-8 rounded-xl bg-white border border-slate-200 p-1 shadow-md flex items-center justify-center"
+                  title={profile.companyName || "Company"}
+                >
+                  <img 
+                    src={profile.companyLogo} 
+                    alt="Company Logo" 
+                    className="w-full h-full object-contain" 
                   />
-                  <div className="p-4">
-                    <h3 className="text-base font-bold text-gray-900">{video.title}</h3>
-                    {video.description && (
-                      <p className="text-sm text-gray-600 mt-2">{video.description}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Full Name */}
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-1">
+            {profile.name}
+          </h1>
+
+          {/* Job Title */}
+          {profile.jobTitle && (
+            <p className="text-sm font-semibold text-blue-600 mb-2">
+              {profile.jobTitle}
+            </p>
+          )}
+
+          {/* Company & Department Details */}
+          {isFieldAllowed('companyName') && profile.companyName && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium mb-3">
+              <FaBuilding className="w-3 h-3 text-slate-500" />
+              <span>{profile.companyName}</span>
+              {isFieldAllowed('department') && profile.department && (
+                <>
+                  <span className="text-slate-400">•</span>
+                  <span className="text-slate-600">{profile.department}</span>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Service Area & Availability Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+            {isFieldAllowed('businessHours') && businessStatus && (
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${
+                businessStatus.isOpen 
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                  : 'bg-slate-100 text-slate-600 border-slate-200'
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                {businessStatus.text}
+              </span>
+            )}
+
+            {isFieldAllowed('serviceArea') && profile.serviceArea && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                <FaMapMarkerAlt className="w-2.5 h-2.5 text-blue-500" />
+                Serving: {profile.serviceArea}
+              </span>
+            )}
+          </div>
+
+          {isFieldAllowed('serviceAvailability') && profile.serviceAvailability && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50/70 border border-blue-200/80 text-blue-800 text-xs font-medium mb-4">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+              </span>
+              <span>{profile.serviceAvailability}</span>
+            </div>
+          )}
+
+          {/* HERO CTA: SAVE CONTACT TO PHONE (vCard) */}
+          <div className="mt-1">
+            <button
+              type="button"
+              onClick={handleSaveContact}
+              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-sm tracking-wide shadow-lg shadow-blue-500/25 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2"
+            >
+              <FaDownload className="w-4 h-4" />
+              <span>Save Contact to Phone</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ========================================================
+            QUICK ACTION DOCK (4 CORE CHANNELS)
+            ======================================================== */}
+        <div className="px-6 py-2">
+          <div className="grid grid-cols-4 gap-2.5">
+            
+            {/* Call */}
+            {profile.enableOneTapCall && primaryPhone && (
+              <button
+                type="button"
+                onClick={() => handleCall(primaryPhone)}
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50/70 hover:bg-blue-100/70 border border-blue-100 text-blue-700 transition-all active:scale-95 shadow-sm"
+              >
+                <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center mb-1.5 shadow-sm">
+                  <FaPhoneAlt className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11px] font-semibold tracking-tight">Call</span>
+              </button>
+            )}
+
+            {/* WhatsApp */}
+            {profile.enableWhatsApp && primaryPhone && (
+              <button
+                type="button"
+                onClick={() => handleWhatsApp(primaryPhone)}
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/70 border border-emerald-100 text-emerald-700 transition-all active:scale-95 shadow-sm"
+              >
+                <div className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center mb-1.5 shadow-sm">
+                  <FaWhatsapp className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] font-semibold tracking-tight">WhatsApp</span>
+              </button>
+            )}
+
+            {/* Email */}
+            {profile.enableEmail && primaryEmail && (
+              <button
+                type="button"
+                onClick={() => handleEmail(primaryEmail)}
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-indigo-50/70 hover:bg-indigo-100/70 border border-indigo-100 text-indigo-700 transition-all active:scale-95 shadow-sm"
+              >
+                <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center mb-1.5 shadow-sm">
+                  <FaEnvelope className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11px] font-semibold tracking-tight">Email</span>
+              </button>
+            )}
+
+            {/* Website */}
+            {primaryWebsite ? (
+              <button
+                type="button"
+                onClick={() => handleWebsite(primaryWebsite)}
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-sky-50/70 hover:bg-sky-100/70 border border-sky-100 text-sky-700 transition-all active:scale-95 shadow-sm"
+              >
+                <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center mb-1.5 shadow-sm">
+                  <FaGlobe className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11px] font-semibold tracking-tight">Portal</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowQrModal(true)}
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all active:scale-95 shadow-sm"
+              >
+                <div className="w-9 h-9 rounded-xl bg-slate-800 text-white flex items-center justify-center mb-1.5 shadow-sm">
+                  <FaQrcode className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11px] font-semibold tracking-tight">QR Code</span>
+              </button>
+            )}
+
+          </div>
+        </div>
+
+        {/* ========================================================
+            ABOUT & EXECUTIVE SUMMARY
+            ======================================================== */}
+        {(profile.aboutText || profile.bio || profile.tagline) && (
+          <div className="px-6 py-4">
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 shadow-sm">
+              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <FaBriefcase className="w-3 h-3 text-blue-600" />
+                Executive Summary
+              </h2>
+              {profile.tagline && (
+                <p className="text-xs font-medium italic text-blue-800 mb-2">
+                  "{profile.tagline}"
+                </p>
+              )}
+              {profile.aboutText && (
+                <p className="text-xs leading-relaxed text-slate-600 mb-2">
+                  {profile.aboutText}
+                </p>
+              )}
+              {profile.bio && profile.bio !== profile.aboutText && (
+                <p className="text-xs leading-relaxed text-slate-500">
+                  {profile.bio}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            FEATURED SERVICES & CAPABILITIES
+            ======================================================== */}
+        {isFieldAllowed('services') && profile.services && profile.services.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <FaCogs className="w-4 h-4 text-blue-600" />
+                <span>Services & Capabilities</span>
+              </h2>
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
+                {profile.services.length} Available
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {profile.services.map((srv, idx) => (
+                <div 
+                  key={idx}
+                  className="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-2 mb-1.5">
+                      <h3 className="font-semibold text-slate-900 text-sm">
+                        {srv.name}
+                      </h3>
+                      {srv.price && (
+                        <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
+                          {srv.currency || '€'} {srv.price}
+                        </span>
+                      )}
+                    </div>
+
+                    {srv.category && (
+                      <span className="inline-block text-[10px] font-medium uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded mb-2">
+                        {srv.category}
+                      </span>
+                    )}
+
+                    {srv.description && (
+                      <p className="text-xs text-slate-600 leading-relaxed mb-3">
+                        {srv.description}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-[11px] text-slate-400 font-medium">
+                      Direct Advisory
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setInquiryData(prev => ({ ...prev, service: srv.name }));
+                        const funnel = document.getElementById('inquiry-funnel');
+                        if (funnel) funnel.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white text-xs font-semibold transition-all flex items-center gap-1.5"
+                    >
+                      <span>Inquire</span>
+                      <FaPaperPlane className="w-2.5 h-2.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            DIRECT LEAD CAPTURE FUNNEL: CONSULTATION & INQUIRY
+            ======================================================== */}
+        {isFieldAllowed('customerInquiry') && (
+          <div id="inquiry-funnel" className="px-6 py-4 border-t border-slate-100">
+            <div className="bg-gradient-to-br from-blue-50/60 to-indigo-50/40 rounded-2xl p-5 border border-blue-100 shadow-sm">
+              <div className="flex items-center gap-2 mb-1">
+                <FaCalendarAlt className="w-4 h-4 text-blue-600" />
+                <h2 className="text-sm font-bold text-slate-900">Request a Consultation</h2>
+              </div>
+              <p className="text-xs text-slate-500 mb-4">
+                Schedule direct discussion with {profile.name} for strategic or technical advisory.
+              </p>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Required Service or Topic
+                  </label>
+                  <select
+                    value={inquiryData.service}
+                    onChange={(e) => setInquiryData(prev => ({ ...prev, service: e.target.value }))}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select a service / topic...</option>
+                    {profile.services.map((s, idx) => (
+                      <option key={idx} value={s.name}>{s.name}</option>
+                    ))}
+                    <option value="General Strategic Consultation">General Strategic Consultation</option>
+                    <option value="Enterprise Architecture Review">Enterprise Architecture Review</option>
+                    <option value="Other Inquiries">Other Inquiries</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                      Preferred Date
+                    </label>
+                    <input
+                      type="date"
+                      value={inquiryData.date}
+                      onChange={(e) => setInquiryData(prev => ({ ...prev, date: e.target.value }))}
+                      className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                      Preferred Time
+                    </label>
+                    <input
+                      type="time"
+                      value={inquiryData.time}
+                      onChange={(e) => setInquiryData(prev => ({ ...prev, time: e.target.value }))}
+                      className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Your Contact Number / WhatsApp
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="+91 98765 43210"
+                    value={inquiryData.contact}
+                    onChange={(e) => setInquiryData(prev => ({ ...prev, contact: e.target.value }))}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSendInquiry}
+                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide shadow-md transition-all flex items-center justify-center gap-2 mt-2"
+                >
+                  <FaPaperPlane className="w-3 h-3" />
+                  <span>Submit Consultation Request</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            PRODUCTS & MERCHANDISE (IF ANY)
+            ======================================================== */}
+        {isFieldAllowed('products') && profile.products && profile.products.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <FaGem className="w-4 h-4 text-blue-600" />
+                <span>Products & Solutions</span>
+              </h2>
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
+                {profile.products.length} Items
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {profile.products.map((item, idx) => (
+                <div key={idx} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-start gap-3">
+                  {item.image && (
+                    <img src={item.image} alt={item.name} className="w-16 h-16 rounded-xl object-cover border border-slate-100" />
+                  )}
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-semibold text-slate-900 text-xs">{item.name}</h3>
+                      {item.price && (
+                        <span className="text-xs font-bold text-blue-600">{item.currency || '€'} {item.price}</span>
+                      )}
+                    </div>
+                    {item.description && (
+                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{item.description}</p>
                     )}
                   </div>
                 </div>
-              </div>
-            ))}
-          </Slider>
-        </div>
-      </div>
-    );
-  };
-
-  // Gallery Component
-  const renderGallery = () => {
-    if (!profileData.gallery?.length) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">GALLERY</h2>
-        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-          {profileData.gallery.slice(0, 4).map((item, index) => (
-            <div key={index} className="aspect-square rounded-xl overflow-hidden shadow-md">
-              <img
-                src={item.url}
-                alt={item.title || `Gallery ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
-        {profileData.gallery.length > 4 && (
-          <p className="text-center text-gray-500 text-sm mt-4">
-            +{profileData.gallery.length - 4} more images
-          </p>
-        )}
-      </div>
-    );
-  };
-
-  // Enhanced Client List Component
-  const renderEnhancedClientList = () => {
-    if (!profileData.clientList?.length) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">OUR CLIENTS</h2>
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 max-w-md mx-auto">
-          <div className="flex items-center justify-center mb-4">
-            <FaUsers className="w-5 h-5 text-blue-500 mr-2" />
-            <h3 className="text-lg font-bold text-gray-900">Trusted By</h3>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {profileData.clientList.slice(0, 6).map((client, index) => (
-              <div key={index} className="bg-white rounded-lg p-3 text-center shadow-sm">
-                <p className="text-sm font-medium text-gray-800 truncate">
-                  {typeof client === 'string' ? client : client.name || client.company || 'Client'}
-                </p>
-              </div>
-            ))}
-          </div>
-          {profileData.clientList.length > 6 && (
-            <p className="text-center text-gray-500 text-sm mt-3">
-              +{profileData.clientList.length - 6} more clients
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  // Downloads Component
-  const renderDownloads = () => {
-    if (!profileData.downloads?.length) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">DOWNLOADS</h2>
-        <div className="space-y-3 max-w-md mx-auto">
-          {profileData.downloads.map((download, index) => (
-            <button
-              key={index}
-              onClick={() => window.open(download.fileUrl, '_blank')}
-              className="w-full bg-white rounded-xl p-4 text-left hover:bg-gray-50 transition-colors shadow-md flex items-center justify-between"
-            >
-              <div className="flex items-center">
-                <FaFilePdf className="w-6 h-6 text-red-500 mr-3" />
-                <div>
-                  <p className="font-medium text-gray-900">{download.name}</p>
-                  {download.fileSize && (
-                    <p className="text-sm text-gray-500">{download.fileSize}</p>
-                  )}
-                </div>
-              </div>
-              <FaDownload className="w-5 h-5 text-gray-400" />
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  // Interactive Elements Component
-  const renderInteractiveElements = () => {
-    if (!profileData.interactiveElements?.length) return null;
-    
-    const getInteractiveIcon = (type) => {
-      switch (type) {
-        case 'call-to-action': return <FaCommentDots className="w-5 h-5" />;
-        case 'shop-flow': return <FaShoppingCart className="w-5 h-5" />;
-        case 'appointment-scheduler': return <FaClock className="w-5 h-5" />;
-        case 'digital-payments': return <FaFileInvoice className="w-5 h-5" />;
-        default: return <FaGlobe className="w-5 h-5" />;
-      }
-    };
-
-    const getInteractiveLabel = (type) => {
-      switch (type) {
-        case 'call-to-action': return 'Call to Action';
-        case 'shop-flow': return 'Shop Now';
-        case 'appointment-scheduler': return 'Book Appointment';
-        case 'digital-payments': return 'Make Payment';
-        default: return type.replace(/-/g, ' ');
-      }
-    };
-
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">QUICK ACTIONS</h2>
-        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-          {profileData.interactiveElements
-            .filter(element => element.isActive)
-            .map((element, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  const primaryPhone = profileData.phones.find(phone => phone.isPrimary) || profileData.phones[0];
-                  switch (element.type) {
-                    case 'call-to-action':
-                    case 'shop-flow':
-                      if (element.config?.redirectUrl) {
-                        window.open(element.config.redirectUrl, '_blank');
-                      }
-                      break;
-                    case 'live-chat':
-                      if (primaryPhone) handleContact("whatsapp", primaryPhone.number);
-                      break;
-                    default:
-                      break;
-                  }
-                }}
-                className="bg-white rounded-xl p-4 text-center hover:bg-gray-50 transition-colors shadow-md flex flex-col items-center justify-center"
-              >
-                <div className="text-blue-500 mb-2">
-                  {getInteractiveIcon(element.type)}
-                </div>
-                <span className="text-sm font-medium text-gray-900">
-                  {getInteractiveLabel(element.type)}
-                </span>
-              </button>
-            ))}
-        </div>
-      </div>
-    );
-  };
-
-  // Chat Assistant Component
-  const renderChatAssistant = () => {
-    if (!profileData.chatAssistant?.isEnabled) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">AI ASSISTANT</h2>
-        <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl p-6 text-white text-center max-w-md mx-auto">
-          <FaRobot className="w-10 h-10 text-white mx-auto mb-3" />
-          <p className="text-sm opacity-90 mb-4">{profileData.chatAssistant.welcomeMessage}</p>
-          <button className="bg-white text-purple-600 font-semibold py-2 px-6 rounded-full hover:bg-gray-100 transition-colors">
-            Start Chat
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  // Tagline Component - Only show if tagline exists
-  const renderTagline = () => {
-    if (!profileData.tagline) return null;
-    
-    return (
-      <div className="px-6 pb-4">
-        <div className="relative rounded-full bg-gradient-to-r from-purple-100 to-blue-100 p-4 text-center max-w-md mx-auto">
-          <div className="absolute inset-0 rounded-full border-2 border-purple-200"></div>
-          <p className="relative text-purple-700 font-semibold text-sm italic">
-            "{profileData.tagline}"
-          </p>
-        </div>
-      </div>
-    );
-  };
-
-  // Organization Details Component - Only show if data exists
-  const renderOrganizationDetails = () => {
-    if (!profileData.organization && !profileData.foundedName) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">ORGANIZATION</h2>
-        <div className="bg-white rounded-2xl shadow-lg p-6 max-w-md mx-auto">
-          <div className="flex items-center justify-center mb-4">
-            <FaBuilding className="w-5 h-5 text-blue-500 mr-2" />
-            <h3 className="text-lg font-bold text-gray-900">Company Details</h3>
-          </div>
-          <div className="space-y-3">
-            {profileData.organization && (
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium text-gray-900">Organization:</span>
-                <span className="text-gray-600">{profileData.organization}</span>
-              </div>
-            )}
-            {profileData.foundedName && (
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium text-gray-900">Founded By:</span>
-                <span className="text-gray-600">{profileData.foundedName}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Profile Video Component - Only show if data exists
-  const renderProfileVideo = () => {
-    if (!profileData.profileVideo?.url) return null;
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">INTRODUCTION VIDEO</h2>
-        <div className="bg-white rounded-2xl shadow-lg p-4 max-w-md mx-auto">
-          <VideoPlayer
-            src={profileData.profileVideo.url}
-            poster={profileData.profileVideo.thumbnail}
-            title={profileData.profileVideo.title || "Introduction Video"}
-            className="h-48 rounded-lg"
-          />
-          <div className="mt-4 text-center">
-            <h3 className="text-base font-bold text-gray-900">Meet {profileData.name || 'Me'}</h3>
-            <p className="text-sm text-gray-600 mt-1">Watch my introduction video</p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // QR Code Component
-  const renderQRCode = () => {
-    if (!profileData.dynamicQRCode?.targetUrl) return null;
-    
-    const generateQRCodeUrl = (targetUrl) => {
-      if (profileData.dynamicQRCode.qrImage && 
-          !profileData.dynamicQRCode.qrImage.includes('api.revayahone.com')) {
-        return profileData.dynamicQRCode.qrImage;
-      }
-      
-      if (targetUrl.includes('revayahone.com')) {
-        const encodedUrl = encodeURIComponent(targetUrl);
-        return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedUrl}&format=png&margin=10`;
-      }
-      
-      const encodedUrl = encodeURIComponent(targetUrl);
-      return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedUrl}`;
-    };
-    
-    const qrImageUrl = generateQRCodeUrl(profileData.dynamicQRCode.targetUrl);
-    const displayUrl = profileData.dynamicQRCode.targetUrl
-      .replace('https://api.revayahone.com', 'revayahone.com')
-      .replace('api.', '');
-    
-    return (
-      <div className="px-6 pb-6">
-        <h2 className="text-lg font-bold text-center text-gray-900 mb-4">SCAN TO CONNECT</h2>
-        <div className="bg-white rounded-2xl shadow-lg p-6 text-center max-w-md mx-auto">
-          <FaQrcode className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-          <div className="flex justify-center mb-4">
-            <img
-              src={qrImageUrl}
-              alt="QR Code"
-              className="w-32 h-32 object-contain border border-gray-200 rounded-lg"
-              onError={(e) => {
-                console.error('QR code failed to load');
-                e.target.style.display = 'none';
-                e.target.parentElement.innerHTML = `
-                  <div class="w-32 h-32 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg flex items-center justify-center flex-col">
-                    <div class="text-gray-400 text-sm mb-2">QR Code</div>
-                    <div class="text-blue-500 font-bold text-lg">${profileData.firstName?.charAt(0) || 'R'}</div>
-                    <div class="text-xs text-gray-500 mt-1">revayahone.com</div>
-                  </div>
-                `;
-              }}
-            />
-          </div>
-          <p className="text-gray-600 text-sm mb-2">Scan to save contact info</p>
-          <div className="bg-gray-50 rounded-lg p-3 mt-2">
-            <p className="text-gray-700 text-xs font-medium">Preview URL:</p>
-            <p className="text-blue-500 text-sm truncate">{displayUrl}</p>
-            <p className="text-gray-400 text-xs mt-1">
-              Name: <span className="font-medium">{profileData.name || 'Digital Card'}</span>
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Mobile container class based on screen size
-  const mobileContainerClass = "mobile-container";
-
-  return (
-    <div className={`min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex justify-center items-start py-8 px-4 relative overflow-hidden ${mobileContainerClass}`}>
-      {/* Particle Animation Canvas */}
-      <canvas 
-        id="particle-canvas"
-        className="absolute inset-0 w-full h-full pointer-events-none"
-      />
-      
-      {/* Mobile container styling applied here */}
-      <div className="bg-white rounded-3xl shadow-2xl overflow-hidden w-full max-w-md relative z-10">
-        
-        {/* Header Banner with Gradient */}
-        <div className="relative h-48 bg-gradient-to-r from-purple-600 to-blue-500">
-          {/* Company Logo */}
-          {profileData.companyLogo && (
-            <div className="absolute top-4 left-4 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg border-2">
-              <img 
-                src={profileData.companyLogo} 
-                alt="Company Logo" 
-                className="w-10 h-10 object-contain rounded-full" 
-              />
-            </div>
-          )}
-
-          {/* Company Name - Only show if exists */}
-          {profileData.companyName && (
-            <div className="absolute top-4 left-24 bg-black/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
-              {profileData.companyName}
-            </div>
-          )}
-
-          {/* Language Selector */}
-          <div className="absolute top-4 right-4">
-            <button className="bg-black/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm flex items-center gap-2">
-              <span>🌐</span>
-              English
-            </button>
-          </div>
-
-          {/* Profile Image - INCREASED SIZE HERE */}
-          <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2">
-            <div className="relative">
-              {profileData.profilePhoto ? (
-                <img
-                  src={profileData.profilePhoto}
-                  alt={profileData.name || "Profile"}
-                  className="w-40 h-40 rounded-full border-4 border-white shadow-xl object-cover"
-                />
-              ) : profileData.name ? (
-                <div className="w-40 h-40 rounded-full border-4 border-white shadow-xl bg-gradient-to-r from-purple-400 to-blue-300 flex items-center justify-center text-white text-3xl font-bold">
-                  {profileData.name.charAt(0)}
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </div>
-
-        {/* Profile Content - Only show if we have data */}
-        <div className="pt-24 px-6 pb-6 text-center">
-          {/* Name - Only show if exists */}
-          {profileData.name && (
-            <h1 className="text-2xl font-bold text-gray-900">{profileData.name}</h1>
-          )}
-          
-          {/* Job Title - Only show if exists */}
-          {profileData.jobTitle && (
-            <p className="text-blue-600 font-semibold mt-1">{profileData.jobTitle}</p>
-          )}
-          
-          {/* Department - Only show if exists */}
-          {profileData.department && (
-            <p className="text-gray-600 text-sm mt-1">{profileData.department}</p>
-          )}
-
-          {/* Tagline */}
-          {renderTagline()}
-
-          {/* About Text - Only show if exists and not empty */}
-          {profileData.aboutText && profileData.aboutText.trim() && profileData.aboutText !== "." && (
-            <p className="text-gray-600 text-sm mt-4 leading-relaxed">
-              {profileData.aboutText}
-            </p>
-          )}
-
-          {/* Bio - Only show if distinct and not a Personal card */}
-          {profileData.bio && profileData.cardType !== 'Personal' && profileData.bio !== profileData.aboutText && (
-            <p className="text-gray-600 text-sm mt-4 leading-relaxed">
-              {profileData.bio}
-            </p>
-          )}
-
-          {/* Social Media Icons - Only show if we have social links */}
-          {activeSocialIcons.length > 0 && (
-            <div className="flex justify-center gap-3 mt-6">
-              {activeSocialIcons.map((social, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleContact("default", social.url)}
-                  className={`w-12 h-12 rounded-xl bg-purple-100 text-[#311cb4] flex items-center justify-center transition-transform hover:scale-110 hover:bg-[#311cb4] hover:text-white`}
-                >
-                  {social.icon}
-                </button>
               ))}
             </div>
-          )}
+          </div>
+        )}
+
+        {/* ========================================================
+            PROFILE VIDEO & MEDIA (IF ANY)
+            ======================================================== */}
+        {isFieldAllowed('profileVideo') && profile.profileVideo && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <h2 className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
+              <FaVideo className="w-4 h-4 text-blue-600" />
+              <span>Introductory Video</span>
+            </h2>
+            <VideoPlayer src={profile.profileVideo} title={`${profile.name} - Introduction`} />
+          </div>
+        )}
+
+        {/* ========================================================
+            LIVE BUSINESS HOURS
+            ======================================================== */}
+        {isFieldAllowed('businessHours') && profile.businessHours && profile.businessHours.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <FaRegClock className="w-4 h-4 text-blue-600" />
+                <span>Operating Schedule</span>
+              </h2>
+              {businessStatus && (
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  businessStatus.isOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                }`}>
+                  {businessStatus.isOpen ? 'Open Now' : 'Closed Today'}
+                </span>
+              )}
+            </div>
+
+            <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 text-xs space-y-2">
+              {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
+                const sched = profile.businessHours.find(h => h.day?.toLowerCase() === day);
+                const isToday = new Date().getDay() === ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'].indexOf(day);
+                return (
+                  <div 
+                    key={day} 
+                    className={`flex justify-between items-center py-1 px-2 rounded-lg ${
+                      isToday ? 'bg-blue-50/80 font-semibold text-blue-900' : 'text-slate-600'
+                    }`}
+                  >
+                    <span className="capitalize">{day}</span>
+                    <span>
+                      {!sched || sched.isClosed ? (
+                        <span className="text-slate-400">Closed</span>
+                      ) : (
+                        `${sched.openingTime || '09:00'} - ${sched.closingTime || '18:00'}`
+                      )}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            CONTACT INFORMATION DIRECTORY
+            ======================================================== */}
+        <div className="px-6 py-4 border-t border-slate-100">
+          <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <FaHeadset className="w-4 h-4 text-blue-600" />
+            <span>Contact Information</span>
+          </h2>
+
+          <div className="space-y-2.5">
+            {/* Phone */}
+            {profile.phones.map((p, idx) => (
+              <div 
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                    <FaPhoneAlt className="w-3 h-3" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                      {p.label || 'Direct Phone'}
+                    </span>
+                    <p className="text-xs font-semibold text-slate-800">{p.number}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(p.number, `phone-${idx}`)}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
+                    title="Copy Number"
+                  >
+                    {copiedItem === `phone-${idx}` ? <FaCheck className="w-3 h-3 text-emerald-500" /> : <FaCopy className="w-3 h-3" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleCall(p.number)}
+                    className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                    title="Call Direct"
+                  >
+                    <FaExternalLinkAlt className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* Email */}
+            {profile.emails.map((e, idx) => (
+              <div 
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                    <FaEnvelope className="w-3 h-3" />
+                  </div>
+                  <div className="max-w-[200px] truncate">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                      {e.label || 'Email Address'}
+                    </span>
+                    <p className="text-xs font-semibold text-slate-800 truncate">{e.address}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(e.address, `email-${idx}`)}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
+                    title="Copy Email"
+                  >
+                    {copiedItem === `email-${idx}` ? <FaCheck className="w-3 h-3 text-emerald-500" /> : <FaCopy className="w-3 h-3" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleEmail(e.address)}
+                    className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors"
+                    title="Send Email"
+                  >
+                    <FaExternalLinkAlt className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* Address */}
+            {profile.addresses.map((addr, idx) => {
+              const fullText = addr.fullAddress || `${addr.street || ''}, ${addr.city || ''} ${addr.country || ''}`.trim();
+              if (!fullText) return null;
+              return (
+                <div 
+                  key={idx}
+                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center">
+                      <FaMapMarkerAlt className="w-3 h-3" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                        {addr.label || 'Office Location'}
+                      </span>
+                      <p className="text-xs font-semibold text-slate-800">{fullText}</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(fullText)}`, '_blank')}
+                    className="p-1.5 rounded-lg text-sky-600 hover:bg-sky-50 transition-colors"
+                    title="Open Maps"
+                  >
+                    <FaExternalLinkAlt className="w-3 h-3" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Share Button */}
-        {renderShareButton()}
+        {/* ========================================================
+            SOCIAL NETWORKS DOCK
+            ======================================================== */}
+        {profile.socialLinks && profile.socialLinks.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <FaUsers className="w-4 h-4 text-blue-600" />
+              <span>Social Networks</span>
+            </h2>
 
-        {/* Virtual Number - Only for Business plans */}
-        {renderVirtualNumber()}
-
-        {/* Profile Video */}
-        {renderProfileVideo()}
-
-        {/* Services/Products Overview */}
-        {renderServicesProductsOverview()}
-
-        {/* Brand Label */}
-        {renderBrandLabel()}
-
-        {/* Organization Details */}
-        {renderOrganizationDetails()}
-
-        {/* Services Section - Only show if we have services */}
-        {profileData.services.length > 0 && (
-          <div className="px-6 pb-6 bg-gradient-to-br from-purple-50 to-blue-50">
-            <h2 className="text-lg font-bold text-center text-[#311cb4] mb-4">MY SERVICES</h2>
-            <div className="overflow-visible -mx-4 px-4">
-              <Slider {...BaseSliderSettings}>
-                {profileData.services.map((service, i) => (
-                  <div key={i} className="px-2">
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden max-w-md mx-auto border border-gray-100">
-                      {service.image && (
-                        <img
-                          src={service.image}
-                          alt={service.name}
-                          className="w-full h-40 object-cover"
-                        />
-                      )}
-                      <div className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="text-base font-bold text-gray-900">{service.name}</h3>
-                          {service.price && (
-                            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
-                              {service.price}
-                            </span>
-                          )}
-                        </div>
-                        {service.description && (
-                          <p className="text-sm text-gray-600 leading-relaxed">{service.description}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </Slider>
-            </div>  
-          </div>
-        )}
-
-        {/* Products Section - Only show if we have products */}
-        {profileData.products.length > 0 && (
-          <div className="px-6 pb-6 bg-white">
-            <h2 className="text-lg font-bold text-center text-gray-900 mb-4">PRODUCTS</h2>
-            <div className="overflow-visible -mx-4 px-4">
-              <Slider {...sliderSettingsNoDots}>
-                {profileData.products.map((product, i) => (
-                  <div key={i} className="px-2">
-                    <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden max-w-md mx-auto border border-gray-100">
-                      {/* Price Tag */}
-                      {product.price && (
-                        <div className="absolute top-4 right-4 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-lg z-10 shadow">
-                          {product.price}
-                        </div>
-                      )}
-                      
-                      {/* Stock Status */}
-                      {product.inStock !== undefined && (
-                        <div className={`absolute top-4 left-4 text-xs font-bold px-2 py-1 rounded-full z-10 ${
-                          product.inStock 
-                            ? "bg-green-100 text-green-800" 
-                            : "bg-red-100 text-red-800"
-                        }`}>
-                          {product.inStock ? "In Stock" : "Out of Stock"}
-                        </div>
-                      )}
-                      
-                      {product.image && (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-32 object-cover"
-                        />
-                      )}
-                      <div className="p-4">
-                        <h3 className="text-base font-bold text-gray-900 mb-1">{product.name}</h3>
-                        {product.description && (
-                          <p className="text-sm text-gray-600">{product.description}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </Slider>
-              <div className="flex justify-center mt-5">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-colors">
-                  View All Products
-                </button>
-              </div>
+            <div className="flex flex-wrap gap-2">
+              {profile.socialLinks.map((s, idx) => {
+                if (!s.url) return null;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => handleWebsite(s.url)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-slate-700 hover:text-blue-700 transition-all text-xs font-semibold"
+                  >
+                    {getSocialIcon(s.platform)}
+                    <span className="capitalize">{s.platform}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* Product Video */}
-        {renderProductVideo()}
+        {/* ========================================================
+            DOWNLOADS & CATALOGS (IF ANY)
+            ======================================================== */}
+        {isFieldAllowed('downloads') && profile.downloads && profile.downloads.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-100">
+            <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <FaDownload className="w-4 h-4 text-blue-600" />
+              <span>Documents & Catalogs</span>
+            </h2>
 
-        {/* Videos Slider */}
-        {renderVideosSlider()}
-
-        {/* Gallery */}
-        {renderGallery()}
-
-        {/* Testimonials Component - Only show if we have testimonials */}
-        {profileData.testimonials && profileData.testimonials.length > 0 && (
-          <div className="px-6 pb-6 bg-gradient-to-br from-blue-50 to-purple-50">
-            <h2 className="text-lg font-bold text-center text-[#311cb4] mb-4">TESTIMONIALS</h2>
-            <div className="overflow-visible -mx-4 px-4">
-              <Slider {...BaseSliderSettings}>
-                {profileData.testimonials.map((testimonial, i) => (
-                  <div key={i} className="px-2">
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden max-w-md mx-auto border border-gray-100 p-6">
-                      <div className="flex items-center mb-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-blue-300 flex items-center justify-center text-white font-bold mr-4">
-                          {testimonial.clientName?.charAt(0) || "C"}
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-gray-900">{testimonial.clientName || "Client"}</h3>
-                          {testimonial.company && (
-                            <p className="text-sm text-gray-600">{testimonial.company}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex mb-3">
-                        {Array.from({ length: 5 }, (_, i) => (
-                          <FaStar
-                            key={i}
-                            className={`w-4 h-4 ${i < (testimonial.rating || 5) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
-                          />
-                        ))}
-                      </div>
-                      <p className="text-gray-600 text-sm leading-relaxed italic">
-                        "{testimonial.testimonial}"
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </Slider>
-            </div>
-          </div>
-        )}
-
-        {/* Enhanced Client List */}
-        {renderEnhancedClientList()}
-
-        {/* Downloads */}
-        {renderDownloads()}
-
-        {/* Interactive Elements */}
-        {renderInteractiveElements()}
-
-        {/* Chat Assistant */}
-        {renderChatAssistant()}
-
-        {/* Business Hours - Only for Business plans */}
-        {renderBusinessHours()}
-
-        {/* NFC Card Component */}
-        {profileData.nfcSettings?.isEnabled && (
-          <div className="px-6 pb-6">
-            <h2 className="text-lg font-bold text-center text-gray-900 mb-4">NFC CARD</h2>
-            <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl shadow-lg p-6 text-center max-w-md mx-auto text-white">
-              <FaIdCard className="w-12 h-12 text-white mx-auto mb-4" />
-              <h3 className="text-lg font-bold mb-2">NFC Enabled Card</h3>
-              <p className="text-sm opacity-90 mb-4">Tap your NFC-enabled device to connect instantly</p>
-              <div className="bg-white/20 rounded-lg p-3 inline-block">
-                <p className="text-sm font-semibold">Tap to Connect</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* QR Code Component */}
-        {renderQRCode()}
-
-        {/* Catalog PDF Component */}
-        {profileData.catalog && (
-          <div className="px-6 pb-6">
-            <h2 className="text-lg font-bold text-center text-gray-900 mb-4">CATALOG</h2>
-            <div className="bg-white rounded-2xl shadow-lg p-6 text-center max-w-md mx-auto">
-              <FaFilePdf className="w-12 h-12 text-red-500 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Download Our Catalog</h3>
-              <p className="text-gray-600 text-sm mb-4">Get our complete product catalog in PDF format</p>
-              <button
-                onClick={() => window.open(profileData.catalog, '_blank')}
-                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-xl transition-colors flex items-center justify-center mx-auto gap-2"
-              >
-                <FaDownload className="w-5 h-5" />
-                Download PDF
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ========== CONTACT SECTION - ALWAYS SHOWS FOR PERSONAL PLANS ========== */}
-        {/* FIXED: Show contact section for Personal plans */}
-        {hasContactInfo() && (
-          <div className="px-6 pb-6 bg-gray-50">
-            <h2 className="text-lg font-bold text-center text-gray-900 mb-4">CONTACT ME</h2>
-            
-            <div className="space-y-4">
-              {/* Primary Email - FIXED: Show if we have any email */}
-              {primaryEmail && primaryEmail.address && (
-                <button
-                  onClick={() => handleContact("email", primaryEmail.address)}
-                  className="bg-white rounded-xl p-4 w-full text-left hover:bg-gray-50 transition-colors"
+            <div className="space-y-2">
+              {profile.downloads.map((doc, idx) => (
+                <a
+                  key={idx}
+                  href={doc.fileUrl || doc.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors text-xs font-medium text-slate-800"
                 >
-                  <p className="text-sm text-gray-600 font-semibold flex items-center gap-2">
-                    <FaEnvelope className="w-4 h-4" />
-                    EMAIL
-                  </p>
-                  <p className="text-gray-900 font-medium">{primaryEmail.address}</p>
-                </button>
-              )}
-
-              {/* All Emails - Show all emails if available */}
-              {profileData.emails && profileData.emails.length > 1 && (
-                <div className="space-y-2">
-                  {profileData.emails
-                    .filter(email => 
-                      email && 
-                      email.address && 
-                      email.address.trim() && 
-                      (!primaryEmail || email.address !== primaryEmail.address)
-                    )
-                    .map((email, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleContact("email", email.address)}
-                        className="bg-white rounded-xl p-4 w-full text-left hover:bg-gray-50 transition-colors"
-                      >
-                        <p className="text-sm text-gray-600 font-semibold flex items-center gap-2">
-                          <FaEnvelope className="w-4 h-4" />
-                          {email.label?.toUpperCase() || `EMAIL ${index + 2}`}
-                        </p>
-                        <p className="text-gray-900 font-medium">{email.address}</p>
-                      </button>
-                    ))}
-                </div>
-              )}
-
-              {/* Phone numbers - FIXED: Show all valid phone numbers */}
-              {profileData.phones && profileData.phones.filter(phone => phone && phone.number && phone.number.trim()).length > 0 && (
-                <div className="space-y-2">
-                  {profileData.phones
-                    .filter(phone => phone && phone.number && phone.number.trim())
-                    .map((phone, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleContact("phone", phone.number)}
-                        className="bg-white rounded-xl p-4 w-full text-left hover:bg-gray-50 transition-colors"
-                      >
-                        <p className="text-sm text-gray-600 font-semibold flex items-center gap-2">
-                          <FaPhone className="w-4 h-4" />
-                          {phone.label ? phone.label.toUpperCase() : "PHONE NUMBER"}
-                        </p>
-                        <p className="text-gray-900 font-medium">{phone.number}</p>
-                      </button>
-                    ))}
-                </div>
-              )}
-
-              {/* Address - FIXED: Show if we have any address */}
-              {primaryAddress && (primaryAddress.fullAddress || primaryAddress.street) && (
-                <button
-                  onClick={() => handleContact("map", primaryAddress.googleMapsLink || `https://maps.google.com/?q=${encodeURIComponent(primaryAddress.fullAddress || primaryAddress.street)}`)}
-                  className="bg-white rounded-xl p-4 w-full text-left hover:bg-gray-50 transition-colors"
-                >
-                  <p className="text-sm text-gray-600 font-semibold flex items-center gap-2">
-                    <FaMapMarkerAlt className="w-4 h-4" />
-                    OFFICE ADDRESS
-                  </p>
-                  <p className="text-gray-900 font-medium">
-                    {primaryAddress.fullAddress || `${primaryAddress.street}, ${primaryAddress.city}`}
-                  </p>
-                </button>
-              )}
+                  <div className="flex items-center gap-2.5">
+                    <FaFilePdf className="w-4 h-4 text-red-500" />
+                    <span>{doc.title || doc.name || `Document #${idx + 1}`}</span>
+                  </div>
+                  <FaDownload className="w-3 h-3 text-slate-400" />
+                </a>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Call to Action - Only show if we have a name or email */}
-        {(profileData.name || primaryEmail?.address || profileData.email) && (
-          <div className="bg-gray-900 text-white text-center py-6 px-6">
-            <h3 className="text-xl font-bold mb-2">Let's Work Together!</h3>
-            <p className="text-gray-300 text-sm mb-4">
-              Ready to start your next project? Let's discuss how I can help you achieve your goals.
-            </p>
-            <button 
-              onClick={() => handleContact("email", primaryEmail?.address || profileData.email)}
-              className="bg-white text-gray-900 font-bold py-3 px-8 rounded-xl hover:bg-gray-100 transition-colors w-full"
+        {/* ========================================================
+            CARD FOOTER: REVAYAH ONE AUTHENTICITY
+            ======================================================== */}
+        <div className="mt-6 px-6 py-6 bg-slate-50 border-t border-slate-200 text-center">
+          <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-800 mb-1">
+            <FaCrown className="w-3.5 h-3.5 text-blue-600" />
+            <span>REVAYAH ONE</span>
+          </div>
+          <p className="text-[11px] text-slate-400">
+            Official Digital Identity & Service Portal
+          </p>
+          <div className="flex items-center justify-center gap-4 mt-3">
+            <button
+              type="button"
+              onClick={handleNativeShare}
+              className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
             >
-              Get In Touch
+              <FaShareAlt className="w-3 h-3" />
+              Share
+            </button>
+            <span className="text-slate-300">•</span>
+            <button
+              type="button"
+              onClick={() => setShowQrModal(true)}
+              className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+            >
+              <FaQrcode className="w-3 h-3" />
+              QR Code
             </button>
           </div>
-        )}
+        </div>
+
       </div>
 
-      <style>
-        {`
-          /* Mobile responsive styles - Using 375x667 dimensions */
-          @media (min-width: 641px) {
-            .mobile-container {
-              width: 375px;
-              height: 667px;
-              margin: 20px auto;
-              overflow-y: auto;
-              border-radius: 20px;
-              box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            }
-          }
-          
-          @media (max-width: 640px) {
-            .mobile-container {
-              width: 100vw !important;
-              height: 100vh !important;
-              margin: 0 !important;
-              position: fixed !important;
-              top: 0 !important;
-              left: 0 !important;
-              border-radius: 0 !important;
-              overflow-y: auto;
-            }
-          }
-          
-          .slick-dots li.slick-active div {
-            background-color: #6953f3ff;
-            width: 30px;
-            border-radius: 9999px;
-          }
-          
-          #particle-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-          }
+      {/* ========================================================
+          QR CODE MODAL
+          ======================================================== */}
+      {showQrModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-xs w-full shadow-2xl text-center relative border border-slate-100">
+            <button
+              type="button"
+              onClick={() => setShowQrModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-slate-600"
+            >
+              <FaTimes className="w-4 h-4" />
+            </button>
+            <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-3">
+              <FaQrcode className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900 mb-1">Scan & Connect</h3>
+            <p className="text-xs text-slate-500 mb-4">
+              Point your camera to instantly view and save {profile.name}'s digital card.
+            </p>
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 inline-block mb-4">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.href)}`}
+                alt="QR Code"
+                className="w-44 h-44 object-contain rounded-lg"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => handleCopy(window.location.href, 'qrModal')}
+              className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-all flex items-center justify-center gap-2"
+            >
+              {copiedItem === 'qrModal' ? (
+                <>
+                  <FaCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Link Copied!</span>
+                </>
+              ) : (
+                <>
+                  <FaCopy className="w-3.5 h-3.5" />
+                  <span>Copy Card URL</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
 
-          /* Ensure body allows scrolling */
-          body {
-            overflow-y: auto;
-          }
-          
-          /* Custom scrollbar for mobile container */
-          .mobile-container::-webkit-scrollbar {
-            width: 6px;
-          }
-          
-          .mobile-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-          }
-          
-          .mobile-container::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-          }
-          
-          .mobile-container::-webkit-scrollbar-thumb:hover {
-            background: #555;
-          }
-        `}
-      </style>
     </div>
   );
 };

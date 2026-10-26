@@ -16,35 +16,44 @@ import {
 import { FaXTwitter, FaGithub, FaYoutube, FaFacebookF } from "react-icons/fa6";
 import { generateVCard } from '../../utility/vcard';
 
-// --- CONFIG: Plan Features Matrix ---
+// --- CONFIG: Plan Features Matrix (Synchronized with Backend Tiers) ---
+const personalAllowed = [
+  'profilePhoto', 'firstName', 'lastName', 'prefix', 'suffix', 'jobTitle',
+  'tagline', 'aboutText', 'bio', 'phones', 'email', 'emails', 'websites',
+  'addresses', 'enableOneTapCall', 'enableWhatsApp', 'enableEmail', 'socialLinks',
+  'dynamicQRCode', 'shareableUrl', 'shareableLink'
+];
+
+const businessAllowed = [
+  ...personalAllowed,
+  'companyName', 'companyLogo', 'logoSize', 'department', 'organization',
+  'businessHours', 'virtualNumber', 'profileVideo', 'services', 'servicesProducts',
+  'gallery', 'catalog', 'catalogPDF', 'productVideo', 'nfcSettings', 'downloads'
+];
+
+const businessPremiumAllowed = [
+  ...businessAllowed,
+  'serviceArea', 'serviceAvailability', 'customerInquiry', 'interactiveElements',
+  'individualProductDisplay', 'clientList', 'businessCardInstagram', 'textbooks',
+  'chatAssistant', 'liveChat', 'foundedName', 'brandLabel', 'productRangeDisplay'
+];
+
+const professionalsAllowed = [
+  ...businessPremiumAllowed,
+  'testimonials', 'videos'
+];
+
 const cardFieldsConfig = {
-  Personal: [
-    'profilePhoto', 'firstName', 'lastName', 'prefix', 'suffix', 'jobTitle',
-    'tagline', 'aboutText', 'bio', 'phones', 'email', 'emails', 'websites',
-    'addresses', 'enableOneTapCall', 'enableWhatsApp', 'enableEmail', 'socialLinks',
-    'dynamicQRCode', 'shareableUrl'
-  ],
-  Business: [
-    'profilePhoto', 'firstName', 'lastName', 'prefix', 'suffix', 'jobTitle',
-    'tagline', 'aboutText', 'bio', 'phones', 'email', 'emails', 'websites',
-    'addresses', 'enableOneTapCall', 'enableWhatsApp', 'enableEmail', 'socialLinks',
-    'dynamicQRCode', 'shareableUrl', 'companyName', 'companyLogo', 'logoSize',
-    'department', 'organization', 'businessHours', 'virtualNumber', 'profileVideo',
-    'services', 'servicesProducts', 'gallery', 'catalog', 'catalogPDF',
-    'productVideo', 'nfcSettings', 'downloads'
-  ],
-  BusinessPremium: [
-    'profilePhoto', 'firstName', 'lastName', 'prefix', 'suffix', 'jobTitle',
-    'tagline', 'aboutText', 'bio', 'phones', 'email', 'emails', 'websites',
-    'addresses', 'enableOneTapCall', 'enableWhatsApp', 'enableEmail', 'socialLinks',
-    'dynamicQRCode', 'shareableUrl', 'companyName', 'companyLogo', 'logoSize',
-    'department', 'organization', 'businessHours', 'virtualNumber', 'profileVideo',
-    'services', 'servicesProducts', 'gallery', 'catalog', 'catalogPDF',
-    'productVideo', 'nfcSettings', 'downloads', 'serviceArea', 'serviceAvailability',
-    'customerInquiry', 'interactiveElements', 'individualProductDisplay', 'clientList',
-    'businessCardInstagram', 'textbooks', 'chatAssistant', 'liveChat', 'foundedName',
-    'testimonials', 'customFields', 'videos'
-  ]
+  Personal: personalAllowed,
+  Business: businessAllowed,
+  BusinessPremium: businessPremiumAllowed,
+  Professionals: professionalsAllowed,
+  ProfessionalPro: professionalsAllowed,
+  Entrepreneurials: professionalsAllowed,
+  EntrepreneurialsMulti: professionalsAllowed,
+  CorporateBusiness: professionalsAllowed,
+  Team: professionalsAllowed,
+  MiniWebsite: professionalsAllowed
 };
 
 // --- HELPER: Video Player Component ---
@@ -313,16 +322,16 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
         {/* ========================================================
             HERO HEADER: VIBRANT LUXURY ROSE & FUCHSIA MODERN GRADIENT
             ======================================================== */}
-        <div className="relative h-44 bg-gradient-to-r from-rose-500 via-pink-600 to-fuchsia-600 p-4 shadow-inner flex flex-col justify-between">
+        <div className="relative h-28 bg-gradient-to-r from-rose-500 via-pink-600 to-fuchsia-600 px-3.5 pt-3 pb-2 shadow-inner flex flex-col justify-start">
           
           {/* Ambient Lighting & Soft Glow (strictly clipped inside banner) */}
           <div className="absolute inset-0 overflow-hidden opacity-25 pointer-events-none">
-            <div className="absolute -top-12 -right-12 w-52 h-52 rounded-full bg-white blur-2xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-rose-900 blur-2xl" />
+            <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-white blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-36 h-36 rounded-full bg-rose-900 blur-2xl" />
             <svg className="w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                <pattern id="modern-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" strokeWidth="0.5" />
+                <pattern id="modern-grid" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <path d="M 16 0 L 0 0 0 16" fill="none" stroke="white" strokeWidth="0.5" />
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#modern-grid)" />
@@ -331,17 +340,17 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
 
           {/* Top Brand Pill & Share */}
           <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/25 border border-white/30 backdrop-blur-md">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/25 border border-white/30 backdrop-blur-md">
               <FaShieldAlt className="w-3 h-3 text-white" />
-              <span className="text-[11px] font-semibold text-white uppercase tracking-wider">
-                {profile.brandLabel}
+              <span className="text-[10px] font-semibold text-white uppercase tracking-wider">
+                {isFieldAllowed('brandLabel') && profile.brandLabel ? profile.brandLabel : 'REVAYAH ONE'}
               </span>
             </div>
 
             <button
               type="button"
               onClick={handleNativeShare}
-              className="p-2 rounded-full bg-black/25 hover:bg-black/40 border border-white/30 text-white backdrop-blur-md transition-all active:scale-95 shadow-md"
+              className="p-1.5 rounded-full bg-black/25 hover:bg-black/40 border border-white/30 text-white backdrop-blur-md transition-all active:scale-95 shadow-md"
               title="Share Card"
             >
               {copiedItem === 'shareUrl' ? (
@@ -359,7 +368,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
         <div className="relative z-10 px-6 pb-4 text-center">
           
           {/* Avatar Anchor - Perfectly overlapping banner without clipping */}
-          <div className="relative -mt-16 mb-3 inline-block">
+          <div className="relative -mt-14 mb-2 inline-block">
             <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-rose-950/20 ring-4 ring-white">
               <img
                 src={profile.profilePhoto}
@@ -379,7 +388,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
               </div>
 
               {/* Company Logo Badge if available */}
-              {profile.companyLogo && (
+              {isFieldAllowed('companyLogo') && profile.companyLogo && (
                 <div 
                   className="absolute -top-1 -right-1 w-8 h-8 rounded-xl bg-white border border-slate-200 p-1 shadow-md flex items-center justify-center"
                   title={profile.companyName || "Company"}
@@ -407,11 +416,11 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
           )}
 
           {/* Company & Department Details */}
-          {profile.companyName && (
+          {isFieldAllowed('companyName') && profile.companyName && (
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium mb-3">
               <FaBuilding className="w-3 h-3 text-slate-500" />
               <span>{profile.companyName}</span>
-              {profile.department && (
+              {isFieldAllowed('department') && profile.department && (
                 <>
                   <span className="text-slate-400">•</span>
                   <span className="text-slate-600">{profile.department}</span>
@@ -422,7 +431,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
 
           {/* Service Area & Availability Badges */}
           <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
-            {businessStatus && (
+            {isFieldAllowed('businessHours') && businessStatus && (
               <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${
                 businessStatus.isOpen 
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
