@@ -18,7 +18,7 @@ const Signup = () => {
   const [franchiseContext, setFranchiseContext] = useState(null);
   const [emailSent, setEmailSent] = useState(false);
   const [userEmail, setUserEmail] = useState("");
-  const [message, setMessage] = useState({ text: '', type: '' });
+  const [message, setMessage] = useState({ text: '', type: '', hasAccount: false });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -65,7 +65,7 @@ const Signup = () => {
 
   const handleSignup = async (values) => {
     setIsLoading(true);
-    setMessage({ text: '', type: '' });
+    setMessage({ text: '', type: '', hasAccount: false });
     
     try {
       const res = await fetch(`${API_URL}/api/v1/user/sign-up`, {
@@ -87,19 +87,32 @@ const Signup = () => {
       if (res.ok) {
         setUserEmail(values.email);
         setEmailSent(true);
-        setMessage({ text: 'Account created successfully!', type: 'success' });
+        setMessage({ text: 'Account created successfully!', type: 'success', hasAccount: false });
         formik.resetForm();
       } else {
-        setMessage({ 
-          text: data.error || 'Signup failed. Please try again.', 
-          type: 'error' 
-        });
+        const isEmailExists = res.status === 409 || 
+          (data.error && /already exists|email_exists|already registered/i.test(data.error));
+
+        if (isEmailExists) {
+          setMessage({ 
+            text: 'An account with this email already exists.', 
+            type: 'error',
+            hasAccount: true
+          });
+        } else {
+          setMessage({ 
+            text: data.error || 'Signup failed. Please try again.', 
+            type: 'error',
+            hasAccount: false
+          });
+        }
       }
     } catch (error) {
       console.error('Signup error:', error);
       setMessage({ 
         text: 'Something went wrong. Please try again later.', 
-        type: 'error' 
+        type: 'error',
+        hasAccount: false
       });
     } finally {
       setIsLoading(false);
@@ -229,16 +242,6 @@ const Signup = () => {
               </div>
 
               <form onSubmit={formik.handleSubmit} className="space-y-6">
-                {/* Message Alert */}
-                {message.text && (
-                  <div className={`p-3 mb-3 text-xs rounded-lg ${
-                    message.type === 'error' 
-                      ? 'text-red-800 border border-red-300 bg-red-100 dark:bg-red-500/20 dark:border-red-500/50 dark:text-red-400'
-                      : 'text-green-800 border border-green-300 bg-green-100 dark:bg-green-500/20 dark:border-green-500/50 dark:text-green-400'
-                  }`}>
-                    {message.text}
-                  </div>
-                )}
 
                 {/* Email field */}
                 <div className="space-y-3">
@@ -324,7 +327,7 @@ const Signup = () => {
                 </div>
 
                 {/* Terms & Conditions */}
-                <div className="flex items-center gap-2 mt-8">
+                <div className="flex items-center gap-2">
                   <input
                     id="terms"
                     name="terms"
@@ -345,11 +348,31 @@ const Signup = () => {
                   </label>
                 </div>
 
+                {/* Status / Error Message */}
+                {message.text && (
+                  <p className={`text-xs ${
+                    message.type === 'error' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'
+                  }`}>
+                    <span>{message.text} </span>
+                    {message.hasAccount && (
+                      <span className="text-slate-700 dark:text-zinc-300">
+                        Already have an account?{" "}
+                        <Link 
+                          to={franchiseContext ? "/signin/partner" : "/signin"} 
+                          className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline transition-colors"
+                        >
+                          Sign In
+                        </Link>
+                      </span>
+                    )}
+                  </p>
+                )}
+
                 {/* Create Account button */}
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 active:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg mt-8"
+                  className="w-full py-3 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 active:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center">
@@ -360,12 +383,12 @@ const Signup = () => {
                 </button>
               </form>
 
-              {/* Home link */}
+              {/* Already have an account / Sign In link */}
               <div className="text-center pt-8 mt-2">
                 <p className="text-gray-700 dark:text-zink-300 text-sm">
-                  Back To{" "}
-                  <Link to="/" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-                   Home
+                  Already have an account?{" "}
+                  <Link to={franchiseContext ? "/signin/partner" : "/signin"} className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+                   Sign In
                   </Link>
                 </p>
               </div>
