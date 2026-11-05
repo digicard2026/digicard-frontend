@@ -57,29 +57,33 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
               <li>
-                <a href="#digital-identity" className="hover:text-white transition-colors">
+                {/* Previous anchor: <a href="#digital-identity" className="hover:text-white transition-colors">Digital Identity</a> */}
+                <Link to="/digital-identity" className="hover:text-white transition-colors">
                   Digital Identity
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#digital-tools" className="hover:text-white transition-colors">
+                <Link to="/digital-tools" className="hover:text-white transition-colors">
                   Digital Tools
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#industry-solutions" className="hover:text-white transition-colors">
+                {/* Previous anchor: <a href="#industry-solutions" className="hover:text-white transition-colors">Industry Solutions</a> */}
+                <Link to="/industry-solutions" className="hover:text-white transition-colors">
                   Industry Solutions
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#digital-health" className="hover:text-white transition-colors">
+                {/* Previous anchor: <a href="#digital-health" className="hover:text-white transition-colors">Digital Health</a> */}
+                <Link to="/digital-health" className="hover:text-white transition-colors">
                   Digital Health
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#academy" className="hover:text-white transition-colors">
+                {/* Previous anchor: <a href="#academy" className="hover:text-white transition-colors">Reva-Yah One Academy</a> */}
+                <Link to="/academy" className="hover:text-white transition-colors">
                   Reva-Yah One Academy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

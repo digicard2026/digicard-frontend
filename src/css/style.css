@@ -361,3 +361,14 @@ span.flatpickr-weekday,
 .custom-no-button:hover {
   background-color: #45a049; 
 }
+
+.bg-custom {
+  background-image: url('../images/pngkey.com-hexagon-shape-png-2797295.png');
+}
+
+/* HD Image Quality Optimization */
+.img-hd {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}

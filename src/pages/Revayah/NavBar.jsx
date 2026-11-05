@@ -24,11 +24,15 @@ const NavBar = () => {
 
   const navLinks = [
     { label: "Home", href: "/", isHome: true },
-    { label: "Digital Identity", href: "/#digital-identity" },
-    { label: "Digital Tools", href: "/#digital-tools" },
-    { label: "Industry Solutions", href: "/#industry-solutions" },
-    { label: "Digital Health", href: "/#digital-health" },
-    { label: "One Academy", href: "/#academy" },
+    // Previous anchor link: { label: "Digital Identity", href: "/#digital-identity" },
+    { label: "Digital Identity", href: "/digital-identity" },
+    { label: "Digital Tools", href: "/digital-tools" },
+    // Previous anchor link: { label: "Industry Solutions", href: "/#industry-solutions" },
+    { label: "Industry Solutions", href: "/industry-solutions" },
+    // Previous anchor link: { label: "Digital Health", href: "/#digital-health" },
+    { label: "Digital Health", href: "/digital-health" },
+    // Previous anchor link: { label: "One Academy", href: "/#academy" },
+    { label: "One Academy", href: "/academy" },
     { label: "Partner With Us", href: "/partner-opportunities" },
     { label: "About Reva-Yah", href: "/#about-revayah" },
   ];
@@ -64,17 +68,26 @@ const NavBar = () => {
           {/* Desktop & Laptop Navigation Links */}
           <nav className="hidden lg:flex items-center justify-center gap-3.5 xl:gap-6 flex-1 px-2">
             {navLinks.map((link) => {
-              const isActive = link.isHome && location.pathname === "/";
-              return (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className={`text-[12px] xl:text-[13px] font-medium transition-colors relative py-2 whitespace-nowrap shrink-0 ${
-                    isActive
-                      ? "text-blue-600 dark:text-blue-400 font-semibold"
-                      : "text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400"
-                  }`}
-                >
+              const isRoute = link.href.startsWith("/") && !link.href.includes("#");
+              const isActive =
+                (link.isHome && location.pathname === "/") ||
+                (!link.isHome && isRoute && location.pathname === link.href);
+
+              const className = `text-[12px] xl:text-[13px] font-medium transition-colors relative py-2 whitespace-nowrap shrink-0 ${
+                isActive
+                  ? "text-blue-600 dark:text-blue-400 font-semibold"
+                  : "text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400"
+              }`;
+
+              return isRoute ? (
+                <Link key={link.label} to={link.href} className={className}>
+                  {link.label}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-7 h-[2.5px] bg-blue-600 dark:bg-blue-400 rounded-full" />
+                  )}
+                </Link>
+              ) : (
+                <a key={link.label} href={link.href} className={className}>
                   {link.label}
                   {isActive && (
                     <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-7 h-[2.5px] bg-blue-600 dark:bg-blue-400 rounded-full" />
@@ -167,16 +180,36 @@ const NavBar = () => {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-5 pt-3 pb-6 shadow-xl">
           <nav className="flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="py-2.5 px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const isRoute = link.href.startsWith("/") && !link.href.includes("#");
+              const isActive =
+                (link.isHome && location.pathname === "/") ||
+                (!link.isHome && isRoute && location.pathname === link.href);
+
+              return isRoute ? (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 font-bold"
+                      : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-2.5 px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
+                >
+                  {link.label}
+                </a>
+              );
+            })}
           </nav>
         </div>
       )}
