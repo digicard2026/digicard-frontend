@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { toPng } from "html-to-image";
+import { toPng, toBlob } from "html-to-image";
 import DefaultCard from "../../components/Cardstyles/DefaultCard";
 import ModernCard from "../../components/Cardstyles/ModernCard";
 import DarkCard from "../../components/Cardstyles/DarkCard";
@@ -29,6 +29,8 @@ const PreviewCard = () => {
   const location = useLocation();
   const { urlSlug } = useParams();
   const cardRef = useRef(null);
+  const desktopCardRef = useRef(null);
+  const mobileCardRef = useRef(null);
 
   const [cardData, setCardData] = useState(null);
   const [buttonsVisible, setButtonsVisible] = useState(false);
@@ -36,6 +38,14 @@ const PreviewCard = () => {
   const [error, setError] = useState(null);
   const [showQrModal, setShowQrModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+
+  const getActiveCardNode = () => {
+    if (typeof window !== "undefined" && window.innerWidth < 640 && mobileCardRef.current) {
+      return mobileCardRef.current;
+    }
+    return desktopCardRef.current || mobileCardRef.current || cardRef.current;
+  };
 
   useEffect(() => {
     // ALWAYS fetch from database - never use location.state directly
@@ -95,33 +105,108 @@ const PreviewCard = () => {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const handleNativeShare = () => {
+  const handleNativeShare = async () => {
     const shareUrl = getPublicLink();
-    const fullName = `${cardData?.prefix ? cardData.prefix + " " : ""}${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim();
-    const shareTitle = `${fullName}'s Digital Identity Card`;
-    const shareText = `Connect with ${fullName} on Revayah One:`;
+    const fullName = `${cardData?.prefix ? cardData.prefix + " " : ""}${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim() || "My Digital Identity Card";
+    const shareTitle = `${fullName} | Digital Identity Card`;
+    const shareText = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
 
+    const node = getActiveCardNode();
     if (navigator.share) {
-      navigator.share({
-        title: shareTitle,
-        text: shareText,
-        url: shareUrl,
-      }).catch(() => {
-        setShowQrModal(true);
-      });
-    } else {
-      setShowQrModal(true);
+      try {
+        setIsSharing(true);
+        if (navigator.canShare && node) {
+          try {
+            const blob = await toBlob(node, { cacheBust: true, pixelRatio: 2 });
+            if (blob) {
+              const file = new File(
+                [blob],
+                `${cardData?.firstName || "digital"}_identity_card.png`,
+                { type: "image/png" }
+              );
+              if (navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                  title: shareTitle,
+                  text: shareText,
+                  files: [file],
+                });
+                setIsSharing(false);
+                return;
+              }
+            }
+          } catch (fileErr) {
+            console.log("File sharing fallback to URL share", fileErr);
+          }
+        }
+
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+        setIsSharing(false);
+        return;
+      } catch (err) {
+        setIsSharing(false);
+        if (err.name === "AbortError") return;
+      }
     }
+    setIsSharing(false);
+    setShowQrModal(true);
   };
 
-  const handleDownloadPng = () => {
-    if (cardRef.current) {
-      toPng(cardRef.current).then((dataUrl) => {
-        const link = document.createElement("a");
-        link.href = dataUrl;
-        link.download = `${cardData?.firstName || "card"}_digital_card.png`;
-        link.click();
-      });
+  const handleWhatsAppShare = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const shareUrl = getPublicLink();
+    const fullName = `${cardData?.prefix ? cardData.prefix + " " : ""}${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim() || "My Digital Identity Card";
+    const shareMessage = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
+
+    const node = getActiveCardNode();
+    if (navigator.canShare && node && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      try {
+        setIsSharing(true);
+        const blob = await toBlob(node, { cacheBust: true, pixelRatio: 2 });
+        if (blob) {
+          const file = new File(
+            [blob],
+            `${cardData?.firstName || "digital"}_identity_card.png`,
+            { type: "image/png" }
+          );
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: `${fullName}'s Digital Identity Card`,
+              text: shareMessage,
+              files: [file],
+            });
+            setIsSharing(false);
+            setShowQrModal(false);
+            return;
+          }
+        }
+      } catch (err) {
+        setIsSharing(false);
+        if (err.name === "AbortError") return;
+        console.log("Direct WhatsApp image share fallback to wa.me", err);
+      }
+    }
+    setIsSharing(false);
+
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
+    setShowQrModal(false);
+  };
+
+  const handleDownloadPng = async () => {
+    const node = getActiveCardNode();
+    if (!node) return;
+    try {
+      const dataUrl = await toPng(node, { cacheBust: true, pixelRatio: 2 });
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = `${cardData?.firstName || "card"}_digital_identity_card.png`;
+      link.click();
+    } catch (err) {
+      console.error("Failed to generate PNG:", err);
     }
   };
 
@@ -231,7 +316,7 @@ const PreviewCard = () => {
           </div>
 
           {/* Screen Content Wrapper */}
-          <div className="overflow-hidden rounded-[36px] bg-black shadow-inner" ref={cardRef}>
+          <div className="overflow-hidden rounded-[36px] bg-black shadow-inner" ref={desktopCardRef}>
             {renderCard()}
           </div>
 
@@ -241,7 +326,7 @@ const PreviewCard = () => {
       </div>
 
       {/* MOBILE FULL-BLEED VIEW (Mobile view) */}
-      <div className="sm:hidden w-full min-h-[100dvh] z-10" ref={cardRef}>
+      <div className="sm:hidden w-full min-h-[100dvh] z-10" ref={mobileCardRef}>
         {renderCard()}
       </div>
 
@@ -329,7 +414,7 @@ const PreviewCard = () => {
             </div>
 
             {/* Share Link Row with 1-Tap Copy */}
-            <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl p-1.5 mb-4">
+            <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl p-1.5 mb-3">
               <input
                 type="text"
                 readOnly
@@ -358,20 +443,29 @@ const PreviewCard = () => {
               </button>
             </div>
 
+            {/* Direct 1-Tap WhatsApp Share Button */}
+            <button
+              onClick={handleWhatsAppShare}
+              disabled={isSharing}
+              className="w-full mb-4 py-2.5 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-semibold text-xs rounded-xl shadow-lg shadow-[#25D366]/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer disabled:opacity-60"
+            >
+              <FaWhatsapp className="w-4 h-4" />
+              <span>{isSharing ? "Preparing Card..." : "Share to WhatsApp"}</span>
+            </button>
+
             {/* Quick Social Share Buttons */}
-            <div className="flex items-center justify-center gap-3 pt-2">
-              <a
-                href={`https://wa.me/?text=${encodeURIComponent(`Check out ${fullName}'s digital card: ${shareUrl}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
+            <div className="flex items-center justify-center gap-3 pt-1 border-t border-slate-800/60">
+              <button
+                type="button"
+                onClick={handleWhatsAppShare}
                 title="Share via WhatsApp"
-                className="w-10 h-10 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] border border-[#25D366]/30 flex items-center justify-center transition-all hover:scale-110"
+                className="w-10 h-10 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] border border-[#25D366]/30 flex items-center justify-center transition-all hover:scale-110 cursor-pointer"
               >
                 <FaWhatsapp className="w-4 h-4" />
-              </a>
+              </button>
 
               <a
-                href={`mailto:?subject=${encodeURIComponent(`${fullName}'s Digital Card`)}&body=${encodeURIComponent(`Hi,\n\nCheck out ${fullName}'s digital identity card on Revayah One:\n${shareUrl}`)}`}
+                href={`mailto:?subject=${encodeURIComponent(`${fullName}'s Digital Identity Card`)}&body=${encodeURIComponent(`Hi,\n\nHere's my digital identity card. Click to view my profile:\n${shareUrl}`)}`}
                 title="Share via Email"
                 className="w-10 h-10 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 border border-blue-500/30 flex items-center justify-center transition-all hover:scale-110"
               >
@@ -389,7 +483,7 @@ const PreviewCard = () => {
               </a>
 
               <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${fullName}'s digital card:`)}&url=${encodeURIComponent(shareUrl)}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Hi! Here's my digital identity card. Click to view my profile:`)}&url=${encodeURIComponent(shareUrl)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Share on X"

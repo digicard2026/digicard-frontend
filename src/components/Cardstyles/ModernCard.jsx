@@ -273,7 +273,7 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
     const shareUrl = window.location.href;
     const shareData = {
       title: `${profile.name} | Digital Identity Card`,
-      text: `Connect with ${profile.name} (${profile.jobTitle || 'Professional'}) on Revayah One:`,
+      text: "Hi! Here's my digital identity card. Click to view my profile:",
       url: shareUrl
     };
 
