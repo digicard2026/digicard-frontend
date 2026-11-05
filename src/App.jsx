@@ -76,6 +76,11 @@ import AdminDashBoard from './pages/Dashboard/AdminDashBoard';
 import AdminSignin from './pages/Authentication/AdminSignin';
 import ResumeBuilder from './pages/Revayah/ResumeBuilder';
 import PartnerOpportunities from './pages/Revayah/PartnerOpportunities';
+import DigitalIdentityPage from './pages/Revayah/DigitalIdentityPage';
+import DigitalToolsPage from './pages/Revayah/DigitalToolsPage';
+import IndustrySolutionsPage from './pages/Revayah/IndustrySolutionsPage';
+import DigitalHealthPage from './pages/Revayah/DigitalHealthPage';
+import OneAcademyPage from './pages/Revayah/OneAcademyPage';
 import ComingSoon from './pages/ComingSoon';
 function App() {
   const [loading, setLoading] = useState(true);
@@ -513,6 +518,17 @@ function App() {
         {/* <Route path="/revayah-business-card" element={<PublicLayout><Home/></PublicLayout>} /> */}
                 <Route path="/revayah-business-card" element={<Home/>} />
                 <Route path="/partner-opportunities" element={<PartnerOpportunities/>} />
+        <Route path="/digital-identity" element={<DigitalIdentityPage />} />
+        <Route path="/revayah-digital-identity" element={<DigitalIdentityPage />} />
+        <Route path="/identity" element={<DigitalIdentityPage />} />
+        <Route path="/digital-tools" element={<DigitalToolsPage />} />
+        <Route path="/industry-solutions" element={<IndustrySolutionsPage />} />
+        <Route path="/revayah-industry-solutions" element={<IndustrySolutionsPage />} />
+        <Route path="/digital-health" element={<DigitalHealthPage />} />
+        <Route path="/revayah-digital-health" element={<DigitalHealthPage />} />
+        <Route path="/academy" element={<OneAcademyPage />} />
+        <Route path="/one-academy" element={<OneAcademyPage />} />
+        <Route path="/revayah-academy" element={<OneAcademyPage />} />
 
         <Route path="/revayah-digital-cards" element={<DigitalCards/>} />
         <Route path="/create" element={<DefaultLayout><CreateCard /></DefaultLayout>} />
