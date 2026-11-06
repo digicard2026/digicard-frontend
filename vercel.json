@@ -1,19 +1,19 @@
 {
   "rewrites": [
     {
-      "source": "/preview/:urlSlug",
+      "source": "/preview/:slug*",
       "has": [
         {
           "type": "header",
           "key": "user-agent",
-          "value": ".*([Ww]hats[Aa]pp|facebookexternalhit|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|Applebot|SkypeUriPreview).*"
+          "value": "(?i).*(whatsapp|facebookexternalhit|facebot|twitterbot|linkedinbot|telegrambot|slackbot|discordbot|applebot|skypeuripreview).*"
         }
       ],
-      "destination": "https://api.revayah.one/api/v1/card-routes/share-preview/:urlSlug"
+      "destination": "https://api.revayah.one/preview/:slug*"
     },
     {
-      "source": "/p/:urlSlug",
-      "destination": "https://api.revayah.one/p/:urlSlug"
+      "source": "/p/:slug*",
+      "destination": "https://api.revayah.one/p/:slug*"
     },
     {
       "source": "/(.*)",
