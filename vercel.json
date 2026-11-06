@@ -1,6 +1,21 @@
 {
   "rewrites": [
     {
+      "source": "/preview/:urlSlug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Ww]hats[Aa]pp|facebookexternalhit|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|Applebot|SkypeUriPreview).*"
+        }
+      ],
+      "destination": "https://api.revayah.one/api/v1/card-routes/share-preview/:urlSlug"
+    },
+    {
+      "source": "/p/:urlSlug",
+      "destination": "https://api.revayah.one/p/:urlSlug"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

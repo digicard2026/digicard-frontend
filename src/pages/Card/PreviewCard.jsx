@@ -6,6 +6,8 @@ import ModernCard from "../../components/Cardstyles/ModernCard";
 import DarkCard from "../../components/Cardstyles/DarkCard";
 import LightCard from "../../components/Cardstyles/LightCard";
 import ModernCard2 from "../../components/Cardstyles/ModernCard2";
+import WhatsAppShareModal from "../../components/Cardstyles/WhatsAppShareModal";
+import CardRenderer from "../../components/Cardstyles/CardRenderer";
 import { CARD_URL } from "../../utility/constants";
 import { generateVCard } from "../../utility/vcard";
 import {
@@ -31,12 +33,14 @@ const PreviewCard = () => {
   const cardRef = useRef(null);
   const desktopCardRef = useRef(null);
   const mobileCardRef = useRef(null);
+  const snapshotRef = useRef(null);
 
   const [cardData, setCardData] = useState(null);
   const [buttonsVisible, setButtonsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showQrModal, setShowQrModal] = useState(false);
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
 
@@ -92,11 +96,92 @@ const PreviewCard = () => {
     }
   };
 
-  const getPublicLink = () => {
-    if (cardData?.urlSlug) {
-      return `${window.location.origin}/preview/${cardData.urlSlug}`;
+
+  // Auto-generate & persist high-resolution cardPreviewImage to Azure Blob Storage for WhatsApp & social rich previews
+  const [snapshotStatus, setSnapshotStatus] = useState("");
+  const hasGeneratedRef = useRef(false);
+
+  const captureAndUploadCardSnapshot = async () => {
+    if (!cardData || !cardData._id) return;
+    const node = snapshotRef.current;
+    if (!node) return;
+
+    try {
+      console.log("📸 Capturing card preview snapshot...");
+      setSnapshotStatus("Generating WhatsApp preview card...");
+
+      // Ensure all images are loaded inside the snapshot container
+      const imgs = Array.from(node.querySelectorAll("img"));
+      await Promise.all(
+        imgs.map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((res) => {
+            img.onload = res;
+            img.onerror = res;
+          });
+        })
+      );
+
+      // Brief delay for DOM & fonts stabilization
+      await new Promise((r) => setTimeout(r, 400));
+
+      const dataUrl = await toPng(node, {
+        pixelRatio: 2,
+        cacheBust: true,
+        skipFonts: true,
+      });
+
+      if (!dataUrl) {
+        setSnapshotStatus("Failed to generate image");
+        return;
+      }
+
+      const response = await fetch(`${CARD_URL}/upload-preview-image/${cardData._id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardPreviewImage: dataUrl }),
+      });
+
+      const result = await response.json();
+      console.log("✅ Card preview uploaded:", result);
+      if (result.success && result.cardPreviewImage) {
+        setCardData((prev) => (prev ? { ...prev, cardPreviewImage: result.cardPreviewImage } : prev));
+        setSnapshotStatus("✅ WhatsApp preview card updated!");
+      } else {
+        setSnapshotStatus("Upload failed");
+      }
+    } catch (err) {
+      console.error("❌ Snapshot error:", err);
+      const msg = err.message?.includes("Failed to fetch")
+        ? "⚠️ Backend not running on port 3000. Start backend with 'npm start'."
+        : "Error: " + err.message;
+      setSnapshotStatus(msg);
+    } finally {
+      setTimeout(() => setSnapshotStatus(""), 5000);
     }
-    return window.location.href;
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (cardData?._id && !hasGeneratedRef.current) {
+      hasGeneratedRef.current = true;
+      const timer = setTimeout(() => {
+        if (isMounted) captureAndUploadCardSnapshot();
+      }, 1500);
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+      };
+    }
+  }, [cardData?._id]);
+
+  const getPublicLink = () => {
+    const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+    const origin = isLocal ? "https://www.revayah.one" : (typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one");
+    if (cardData?.urlSlug) {
+      return `${origin}/preview/${cardData.urlSlug}`;
+    }
+    return isLocal ? "https://www.revayah.one" : window.location.href;
   };
 
   const handleCopyLink = () => {
@@ -155,44 +240,13 @@ const PreviewCard = () => {
     setShowQrModal(true);
   };
 
-  const handleWhatsAppShare = async (e) => {
+  const handleWhatsAppShare = (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    const shareUrl = getPublicLink();
-    const fullName = `${cardData?.prefix ? cardData.prefix + " " : ""}${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim() || "My Digital Identity Card";
-    const shareMessage = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
-
-    const node = getActiveCardNode();
-    if (navigator.canShare && node && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      try {
-        setIsSharing(true);
-        const blob = await toBlob(node, { cacheBust: true, pixelRatio: 2 });
-        if (blob) {
-          const file = new File(
-            [blob],
-            `${cardData?.firstName || "digital"}_identity_card.png`,
-            { type: "image/png" }
-          );
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: `${fullName}'s Digital Identity Card`,
-              text: shareMessage,
-              files: [file],
-            });
-            setIsSharing(false);
-            setShowQrModal(false);
-            return;
-          }
-        }
-      } catch (err) {
-        setIsSharing(false);
-        if (err.name === "AbortError") return;
-        console.log("Direct WhatsApp image share fallback to wa.me", err);
-      }
-    }
-    setIsSharing(false);
-
-    const waUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
-    window.open(waUrl, "_blank", "noopener,noreferrer");
+    const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+    const origin = isLocal ? "https://www.revayah.one" : (typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one");
+    const shareUrl = `${origin}/preview/${cardData?.urlSlug || ""}`;
+    const message = encodeURIComponent(`Hi! Here's my digital identity card. Click to view my profile: ${shareUrl}`);
+    window.open(`https://wa.me/?text=${message}`, "_blank");
     setShowQrModal(false);
   };
 
@@ -388,6 +442,13 @@ const PreviewCard = () => {
         </a>
       </div>
 
+      {/* WHATSAPP SHARE MODAL */}
+      <WhatsAppShareModal
+        isOpen={showWhatsAppModal}
+        onClose={() => setShowWhatsAppModal(false)}
+        cardData={cardData}
+      />
+
       {/* SHARE & QR MODAL */}
       {showQrModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fade-in">
@@ -423,11 +484,10 @@ const PreviewCard = () => {
               />
               <button
                 onClick={handleCopyLink}
-                className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  copied
+                className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${copied
                     ? "bg-emerald-500 text-white"
                     : "bg-blue-600 hover:bg-blue-700 text-white"
-                }`}
+                  }`}
               >
                 {copied ? (
                   <>
@@ -492,6 +552,36 @@ const PreviewCard = () => {
                 <FaXTwitter className="w-4 h-4" />
               </a>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Off-screen high-res card snapshot for Azure Blob Storage thumbnail upload */}
+      {cardData && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            zIndex: -9999,
+            width: "400px",
+            pointerEvents: "none",
+            opacity: 1,
+            visibility: "visible",
+            overflow: "hidden"
+          }}
+        >
+          <div
+            ref={snapshotRef}
+            style={{ width: "400px", backgroundColor: "#ffffff" }}
+            className="rounded-[28px] overflow-hidden shadow-2xl border border-slate-200"
+          >
+            <CardRenderer
+              design={cardData?.design || "default"}
+              data={cardData}
+              isPreview={true}
+              isSnapshot={true}
+              plan={cardData?.planType || cardData?.plan || "Personal"}
+            />
           </div>
         </div>
       )}

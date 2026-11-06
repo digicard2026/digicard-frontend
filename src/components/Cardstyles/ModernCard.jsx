@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fa';
 import { FaXTwitter, FaGithub, FaYoutube, FaFacebookF } from "react-icons/fa6";
 import { generateVCard } from '../../utility/vcard';
+import { CARD_URL } from '../../utility/constants';
 
 // --- CONFIG: Plan Features Matrix (Synchronized with Backend Tiers) ---
 const personalAllowed = [
@@ -141,7 +142,8 @@ const getBusinessStatus = (businessHours = []) => {
   return { isOpen: false, text: `Closed • Opens ${todaySchedule.openingTime}` };
 };
 
-const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
+const ModernCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = false }) => {
+  if (!cardData || typeof cardData !== 'object') return null;
   // Normalize plan
   const normalizePlan = (raw) => {
     if (!raw) return 'Personal';
@@ -232,6 +234,148 @@ const ModernCard = ({ cardData = {}, plan = 'BusinessPremium' }) => {
   const primaryEmail = profile.emails.find(e => e.isPrimary)?.address || profile.emails[0]?.address || cardData.email || '';
   const primaryWebsite = profile.websites[0]?.url || '';
   const businessStatus = getBusinessStatus(profile.businessHours);
+
+  // Dedicated Rich Snapshot Rendering for WhatsApp and Social Media Preview Unfurls (Modern Style)
+  if (isSnapshot) {
+    const rawPhoto = profile.profilePhoto;
+    const photoSrc = (rawPhoto && rawPhoto.startsWith('http') && !rawPhoto.includes('unsplash.com'))
+      ? `${CARD_URL}/proxy-image?url=${encodeURIComponent(rawPhoto)}`
+      : rawPhoto;
+
+    return (
+      <div className="w-[400px] bg-white text-slate-800 flex flex-col items-center justify-start p-0 font-sans antialiased overflow-hidden rounded-[32px] border border-slate-200 shadow-2xl">
+        {/* HERO HEADER: VIBRANT LUXURY ROSE & FUCHSIA MODERN GRADIENT */}
+        <div className="relative w-full h-28 bg-gradient-to-r from-rose-500 via-pink-600 to-fuchsia-600 px-4 pt-3 pb-2 shadow-inner flex flex-col justify-start">
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/25 border border-white/30 backdrop-blur-md">
+              <FaShieldAlt className="w-3 h-3 text-white" />
+              <span className="text-[10px] font-semibold text-white uppercase tracking-wider">
+                {profile.brandLabel || 'REVAYAH ONE'}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 border border-white/30 text-white text-[10px] font-medium">
+              <span>Digital ID Card</span>
+            </div>
+          </div>
+        </div>
+
+        {/* PROFILE INFORMATION & IDENTITY */}
+        <div className="relative z-10 w-full px-6 pb-4 text-center">
+          {/* Avatar Anchor */}
+          <div className="relative -mt-14 mb-2 inline-block">
+            <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-rose-950/20 ring-4 ring-white">
+              <img
+                src={photoSrc}
+                alt={profile.name}
+                crossOrigin="anonymous"
+                className="w-full h-full object-cover rounded-full bg-slate-100"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600";
+                }}
+              />
+              <div className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-rose-600 border-2 border-white flex items-center justify-center text-white shadow-md">
+                <FaCheckCircle className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+
+          {/* Full Name */}
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-0.5">
+            {profile.name}
+          </h1>
+
+          {/* Job Title */}
+          {profile.jobTitle && (
+            <p className="text-sm font-semibold text-rose-600 mb-1.5">
+              {profile.jobTitle}
+            </p>
+          )}
+
+          {/* Company & Department Details */}
+          {profile.companyName && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium mb-2.5">
+              <FaBuilding className="w-3 h-3 text-slate-500" />
+              <span>{profile.companyName}</span>
+              {profile.department && (
+                <>
+                  <span className="text-slate-400">•</span>
+                  <span className="text-slate-600">{profile.department}</span>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Status Badge */}
+          {businessStatus && (
+            <div className="flex items-center justify-center mb-2">
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${
+                businessStatus.isOpen 
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                  : 'bg-slate-100 text-slate-600 border-slate-200'
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                {businessStatus.text}
+              </span>
+            </div>
+          )}
+
+          {/* Tagline */}
+          {profile.tagline && (
+            <div className="mx-auto max-w-[280px] px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-rose-50 via-pink-50/60 to-rose-50 border border-rose-200/80 text-rose-950 text-xs italic font-medium mb-3">
+              "{profile.tagline}"
+            </div>
+          )}
+
+          {/* Primary CTA: Save Contact to Phone */}
+          <div className="mb-3">
+            <div className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-600 to-fuchsia-600 text-white font-semibold text-sm shadow-md">
+              <FaDownload className="w-4 h-4" />
+              <span>Save Contact to Phone</span>
+            </div>
+          </div>
+
+          {/* Quick Action Dock */}
+          <div className="grid grid-cols-4 gap-2 mb-2">
+            <div className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-1">
+                <FaWhatsapp className="w-4 h-4" />
+              </div>
+              <span className="text-[10px] font-semibold text-slate-700">WhatsApp</span>
+            </div>
+
+            <div className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-rose-50/60 border border-rose-200/80">
+              <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mb-1">
+                <FaPhoneAlt className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-[10px] font-semibold text-rose-900">Call</span>
+            </div>
+
+            <div className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-pink-50/60 border border-pink-200/80">
+              <div className="w-8 h-8 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center mb-1">
+                <FaEnvelope className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-[10px] font-semibold text-pink-900">Email</span>
+            </div>
+
+            <div className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-fuchsia-50/60 border border-fuchsia-200/80">
+              <div className="w-8 h-8 rounded-xl bg-fuchsia-100 text-fuchsia-600 flex items-center justify-center mb-1">
+                <FaGlobe className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-[10px] font-semibold text-fuchsia-900">Portal</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Brand Watermark */}
+        <div className="w-full py-2.5 text-center border-t border-slate-100 bg-slate-50/80">
+          <span className="text-[10px] font-semibold text-slate-500 tracking-wide">
+            Powered by <strong className="text-rose-600">Revayah One</strong> • Smart Digital Identity
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   // Copy helper
   const handleCopy = (text, key) => {

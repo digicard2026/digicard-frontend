@@ -738,9 +738,11 @@ const Card_Dashboard = () => {
   // Handle share card
   const handleShareClick = (card) => {
     if (card.urlSlug) {
-      const shareUrl = `${window.location.origin}/preview/${card.urlSlug}`;
+      const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+      const origin = isLocal ? "https://www.revayah.one" : (typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one");
+      const shareUrl = `${origin}/preview/${card.urlSlug}`;
       navigator.clipboard.writeText(shareUrl);
-      alert('Shareable URL copied to clipboard!');
+      alert('Shareable URL copied to clipboard: ' + shareUrl);
     } else {
       alert('This card is not published yet. Please edit and save the card first.');
     }
