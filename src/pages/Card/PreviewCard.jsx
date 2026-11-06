@@ -102,7 +102,8 @@ const PreviewCard = () => {
   const hasGeneratedRef = useRef(false);
 
   const captureAndUploadCardSnapshot = async () => {
-    if (!cardData || !cardData._id) return;
+    const cardId = cardData?._id || cardData?.urlSlug || urlSlug;
+    if (!cardId) return;
     const node = snapshotRef.current;
     if (!node) return;
 
@@ -136,7 +137,7 @@ const PreviewCard = () => {
         return;
       }
 
-      const response = await fetch(`${CARD_URL}/upload-preview-image/${cardData._id}`, {
+      const response = await fetch(`${CARD_URL}/upload-preview-image/${cardId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cardPreviewImage: dataUrl }),
@@ -163,7 +164,7 @@ const PreviewCard = () => {
 
   useEffect(() => {
     let isMounted = true;
-    if (cardData?._id && !hasGeneratedRef.current) {
+    if ((cardData?._id || cardData?.urlSlug) && !hasGeneratedRef.current) {
       hasGeneratedRef.current = true;
       const timer = setTimeout(() => {
         if (isMounted) captureAndUploadCardSnapshot();
@@ -173,7 +174,7 @@ const PreviewCard = () => {
         clearTimeout(timer);
       };
     }
-  }, [cardData?._id]);
+  }, [cardData?._id, cardData?.urlSlug]);
 
   const getPublicLink = () => {
     const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
