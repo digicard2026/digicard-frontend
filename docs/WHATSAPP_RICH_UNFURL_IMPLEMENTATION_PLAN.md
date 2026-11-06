@@ -1,6 +1,3 @@
-﻿Command exited with code 0.
-
-Command output:
 # Implementation Plan: Rich WhatsApp Chat Unfurl (Open Graph Meta & Card Thumbnail Preview)
 
 > **Goal**: When any digital business card URL is shared on WhatsApp, Telegram, LinkedIn, X (Twitter), iMessage, or Slack, the chat automatically unfurls a rich preview with the miniature card thumbnail, person's name, job title, company, and description.
@@ -56,7 +53,7 @@ sequenceDiagram
 > 1. **Default Unfurl Description**:  
 >    Proposed format:  
 >    **Title**: `${Full Name} | ${Job Title || 'Digital Business Card'}` (e.g., `Priya Sharma | Marketing Manager`)  
->    **Description**: `${Company Name} â€¢ Digital Identity Card on Revayah One. Connect via Call, WhatsApp, Email, and view services.`  
+>    **Description**: `${Company Name} • Digital Identity Card on Revayah One. Connect via Call, WhatsApp, Email, and view services.`  
 >    *Does this match your desired branding?*
 >
 > 2. **Pre-rendering Card Thumbnails**:  
@@ -139,57 +136,7 @@ exports.getCardSharePreview = async (req, res) => {
     const jobTitle = card.jobTitle || 'Digital Business Card';
     const company = card.companyName || card.organization || 'Revayah One';
     const ogTitle = `${fullName} | ${jobTitle}`;
-    const ogDesc = `${company} â€¢ Digital Identity Card on Revayah One. Tap to connect via Call, WhatsApp, Email, and view services.`;
-    const ogImage = card.cardPreviewImage || `${backendUrl}/api/v1/card-routes/og-image/${urlSlug}`;
-
-    const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>${ogTitle}</title>
-  <meta property="og:site_name" content="Revayah One" />
-  <meta property="og:type" content="profile" />
-  <meta property="og:title" content="${ogTitle}" />
-  <meta property="og:description" content="${ogDesc}" />
-  <meta property="og:image" content="${ogImage}" />
-  <meta property="og:image:secure_url" content="${ogImage}" />
-  <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content="600" />
-  <meta property="og:image:height" content="600" />
-  <meta property="og:url" content="${targetUrl}" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="${ogTitle}" />
-  <meta name="twitter:description" content="${ogDesc}" />
-  <meta name="twitter:image" content="${ogImage}" />
-</head>
-<body>
-  <p>Redirecting to <a href="${targetUrl}">${targetUrl}</a>...</p>
-  <script>window.location.replace("${targetUrl}");</script>
-</body>
-</html>`;
-
-    res.set('Content-Type', 'text/html');
-    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 mins
-    return res.status(200).send(html);
-  } catch (error) {
-    console.error('Error in getCardSharePreview:', error);
-    res.status(500).send('Internal server error');
-  }
-};
-```
-
-#### [MODIFY] `src/routes/card-routes.js`
-Mount endpoints:
-- `router.get('/share-preview/:urlSlug', cardController.getCardSharePreview);`
-- `router.get('/og-image/:urlSlug', cardController.getCardOgImage);`
-- Add root short-link route in `index.js`: `app.get('/p/:urlSlug', cardController.getCardSharePreview);`
-
----
-
-### 2. Frontend (`digicard-fe`)
-
-#### [NEW] `src/components/Cardstyles/MiniCardSnapshot.jsx`
-Compact 340Ã—340 (or 600Ã—600) snapshot component matching Screen 1 in the reference:
+Compact 340×340 (or 600×600) snapshot component matching Screen 1 in the reference:
 - Dark Midnight Navy Stage (`#0B1E36`):
   - Centered avatar with crisp white ring
   - Dynamic QR code pointing to live URL
