@@ -4,43 +4,19 @@ import ModernCard from "./ModernCard";
 import DarkCard from "./DarkCard";
 import LightCard from "./LightCard";
 import ModernCard2 from "./ModernCard2";
-import { C } from "jssip";
 
 const CARD_MAP = {
   default: DefaultCard,
   creative: ModernCard2,
   modern: ModernCard,
   dark: DarkCard,
-  light:LightCard
+  light: LightCard
 };
 
-const CardRenderer = ({ design, data, isPreview = false ,plan = '' }) => {
+const CardRenderer = ({ design, data, isPreview = false, isSnapshot = false, plan = '' }) => {
+  if (!data) return null;
   const CardComponent = CARD_MAP[design] || DefaultCard;
-    return <CardComponent cardData={data} plan={plan} isPreview={isPreview} />;
+  return <CardComponent cardData={data} plan={plan} isPreview={isPreview} isSnapshot={isSnapshot} />;
 };
 
 export default CardRenderer;
-// components/cards/CardRenderer.jsx
-// import DefaultCard from "./DefaultCard";
-// import ModernCard from "./ModernCard";
-// import DarkCard from "./DarkCard";
-// import LightCard from "./LightCard";
-
-// const CARD_MAP = {
-//   default: DefaultCard,
-//   modern: ModernCard,
-//   dark: DarkCard,
-//   light: LightCard
-// };
-
-// const CardRenderer = ({ design, data, isPreview = false, plan = 'BusinessPremium' }) => {
-//   const CardComponent = CARD_MAP[design] || DefaultCard;
-  
-//   // Log for debugging
-//   console.log('🎨 CardRenderer:', { design, data, plan, isPreview });
-  
-//   // Pass props according to what each card component expects
-//   return <CardComponent cardData={data} plan={plan} isPreview={isPreview} />;
-// };
-
-// export default CardRenderer;

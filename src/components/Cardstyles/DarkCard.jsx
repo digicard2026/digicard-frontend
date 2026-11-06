@@ -1823,7 +1823,7 @@ const DarkCard = ({ cardData = {} }) => {
                   <button
                     onClick={() => {
                       const shareUrl = profileData.shareableUrl || window.location.href;
-                      const shareText = `Check out ${profileData.name}'s digital card`;
+                      const shareText = "Hi! Here's my digital identity card. Click to view my profile:";
 
                       if (navigator.share) {
                         navigator.share({

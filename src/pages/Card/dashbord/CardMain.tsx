@@ -37,6 +37,7 @@ import { DigitalCardPreview, Card, CardType } from "./DigitalCardPreview";
 import { SubscriptionBanner } from "./SubscriptionBanner";
 import { CreateCardButton } from "./CreateCardButton";
 import { CARD_URL, CHECK_URL } from "../../../utility/constants";
+import WhatsAppShareModal from "../../../components/Cardstyles/WhatsAppShareModal";
 
 const CardMain = () => {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ const CardMain = () => {
   const [qrModalCard, setQrModalCard] = useState<Card | null>(null);
   const [deleteConfirmCard, setDeleteConfirmCard] = useState<Card | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [whatsAppModalCard, setWhatsAppModalCard] = useState<any | null>(null);
 
   // Modern Toast system
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
@@ -371,14 +373,20 @@ const CardMain = () => {
       setShowSubscriptionModal(true);
       return;
     }
-    if (card.urlSlug) {
-      const shareUrl = `${window.location.origin}/preview/${card.urlSlug}`;
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        showToast("✓ Shareable link copied to clipboard!");
-      });
-    } else {
-      showToast("This card does not have a shareable URL yet.", "error");
+    const payload = card.cardData ? { ...card.cardData } : { ...card };
+    payload.urlSlug = payload.urlSlug || card.urlSlug;
+    payload.shareableUrl = payload.shareableUrl || card.urlSlug;
+    if (!payload.firstName && card.title) {
+      const parts = card.title.split(" ");
+      payload.firstName = parts[0];
+      payload.lastName = parts.slice(1).join(" ");
     }
+    payload.jobTitle = payload.jobTitle || card.subtitle;
+    payload.companyName = payload.companyName || (card as any).organization;
+    payload.profilePhoto = payload.profilePhoto || card.avatar;
+    payload.phone = payload.phone || card.phone;
+    payload.email = payload.email || card.email;
+    setWhatsAppModalCard(payload);
   };
 
   const handleCreateNew = () => {
@@ -1263,6 +1271,13 @@ const CardMain = () => {
           </div>
         </div>
       )}
+
+      {/* WhatsApp Share Card Modal */}
+      <WhatsAppShareModal
+        isOpen={!!whatsAppModalCard}
+        onClose={() => setWhatsAppModalCard(null)}
+        cardData={whatsAppModalCard}
+      />
 
       {/* Subscription Limit / Expired Modal */}
       {showSubscriptionModal && (
