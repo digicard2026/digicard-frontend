@@ -137,11 +137,20 @@ const PreviewCard = () => {
       // Brief delay for DOM & fonts stabilization
       await new Promise((r) => setTimeout(r, 400));
 
-      const dataUrl = await toPng(node, {
-        pixelRatio: 2,
-        cacheBust: true,
-        skipFonts: true,
-      });
+      let dataUrl;
+      try {
+        dataUrl = await toPng(node, {
+          pixelRatio: 2,
+          cacheBust: false,
+          skipFonts: true,
+        });
+      } catch (err1) {
+        console.warn("Snapshot attempt 1 failed, retrying without cacheBust...", err1);
+        dataUrl = await toPng(node, {
+          pixelRatio: 1.5,
+          skipFonts: true,
+        });
+      }
 
       if (!dataUrl) {
         setSnapshotStatus("Failed to generate image");
