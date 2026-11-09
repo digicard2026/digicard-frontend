@@ -13,10 +13,10 @@ const CARD_MAP = {
   light: LightCard
 };
 
-const CardRenderer = ({ design, data, isPreview = false, isSnapshot = false, plan = '' }) => {
+const CardRenderer = ({ design, data, isPreview = false, isSnapshot = false, plan = '', onShare }) => {
   if (!data) return null;
   const CardComponent = CARD_MAP[design] || DefaultCard;
-  return <CardComponent cardData={data} plan={plan} isPreview={isPreview} isSnapshot={isSnapshot} />;
+  return <CardComponent cardData={data} plan={plan} isPreview={isPreview} isSnapshot={isSnapshot} onShare={onShare} />;
 };
 
 export default CardRenderer;

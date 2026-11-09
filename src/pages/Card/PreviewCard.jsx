@@ -52,6 +52,7 @@ const PreviewCard = () => {
   };
 
   useEffect(() => {
+    console.log("🎴 [PreviewCard] Page opened with urlSlug:", urlSlug || location.state?.urlSlug || "none");
     // ALWAYS fetch from database - never use location.state directly
     if (urlSlug) {
       fetchCardFromDatabase(urlSlug, false);
@@ -75,6 +76,7 @@ const PreviewCard = () => {
       } else {
         url = `${CARD_URL}/share/${identifier}`;
       }
+      console.log("🔍 [PreviewCard] Fetching card data from:", url);
 
       const response = await fetch(url);
       if (!response.ok) {
@@ -83,6 +85,8 @@ const PreviewCard = () => {
 
       const data = await response.json();
       if (data.success && data.card) {
+        console.log("✅ [PreviewCard] Card loaded:", (data.card.prefix ? data.card.prefix + " " : "") + (data.card.firstName || "") + " " + (data.card.lastName || ""));
+        console.log("🖼️ [PreviewCard] Current cardPreviewImage in DB:", data.card.cardPreviewImage || "None (will generate now)");
         setCardData(data.card);
         setButtonsVisible(showButtons);
       } else {
@@ -99,13 +103,20 @@ const PreviewCard = () => {
 
   // Auto-generate & persist high-resolution cardPreviewImage to Azure Blob Storage for WhatsApp & social rich previews
   const [snapshotStatus, setSnapshotStatus] = useState("");
+  const [needsSnapshot, setNeedsSnapshot] = useState(false);
   const hasGeneratedRef = useRef(false);
 
   const captureAndUploadCardSnapshot = async () => {
     const cardId = cardData?._id || cardData?.urlSlug || urlSlug;
-    if (!cardId) return;
+    if (!cardId) {
+      setNeedsSnapshot(false);
+      return;
+    }
     const node = snapshotRef.current;
-    if (!node) return;
+    if (!node) {
+      setNeedsSnapshot(false);
+      return;
+    }
 
     try {
       console.log("📸 Capturing card preview snapshot...");
@@ -134,6 +145,7 @@ const PreviewCard = () => {
 
       if (!dataUrl) {
         setSnapshotStatus("Failed to generate image");
+        setNeedsSnapshot(false);
         return;
       }
 
@@ -158,6 +170,7 @@ const PreviewCard = () => {
         : "Error: " + err.message;
       setSnapshotStatus(msg);
     } finally {
+      setNeedsSnapshot(false);
       setTimeout(() => setSnapshotStatus(""), 5000);
     }
   };
@@ -165,7 +178,14 @@ const PreviewCard = () => {
   useEffect(() => {
     let isMounted = true;
     if ((cardData?._id || cardData?.urlSlug) && !hasGeneratedRef.current) {
+      // If card already has an image, skip capturing
+      if (cardData.cardPreviewImage && typeof cardData.cardPreviewImage === "string" && cardData.cardPreviewImage.startsWith("http")) {
+        console.log("ℹ️ [PreviewCard] Card already has snapshot image:", cardData.cardPreviewImage);
+        return;
+      }
+      console.log("📸 [PreviewCard] Generating fresh snapshot...");
       hasGeneratedRef.current = true;
+      setNeedsSnapshot(true);
       const timer = setTimeout(() => {
         if (isMounted) captureAndUploadCardSnapshot();
       }, 1500);
@@ -174,7 +194,7 @@ const PreviewCard = () => {
         clearTimeout(timer);
       };
     }
-  }, [cardData?._id, cardData?.urlSlug]);
+  }, [cardData?._id, cardData?.urlSlug, cardData?.cardPreviewImage]);
 
   const getPublicLink = () => {
     const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
@@ -197,57 +217,57 @@ const PreviewCard = () => {
     const shareTitle = `${fullName} | Digital Identity Card`;
     const shareText = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
 
-    const node = getActiveCardNode();
-    if (navigator.share) {
-      try {
-        setIsSharing(true);
-        if (navigator.canShare && node) {
-          try {
-            const blob = await toBlob(node, { cacheBust: true, pixelRatio: 2 });
-            if (blob) {
-              const file = new File(
-                [blob],
-                `${cardData?.firstName || "digital"}_identity_card.png`,
-                { type: "image/png" }
-              );
-              if (navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                  title: shareTitle,
-                  text: shareText,
-                  files: [file],
-                });
-                setIsSharing(false);
-                return;
-              }
-            }
-          } catch (fileErr) {
-            console.log("File sharing fallback to URL share", fileErr);
-          }
-        }
+    // 1. Pre-copy the clean link to clipboard immediately so it's always ready to paste anywhere (Ctrl+V)
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(shareUrl).catch(() => {});
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    }
 
+    // 2. Open the native OS share dialog (Windows "Share link" surface / Android / iOS native sheet)
+    // IMPORTANT: Passing 'url' and omitting 'files' ensures Windows 11 opens in "Share link" mode,
+    // which displays the card URL, card thumbnail, and has the [🔗] Copy Link button enabled!
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
         await navigator.share({
           title: shareTitle,
           text: shareText,
           url: shareUrl,
         });
-        setIsSharing(false);
         return;
       } catch (err) {
-        setIsSharing(false);
-        if (err.name === "AbortError") return;
+        if (err.name === "AbortError") {
+          // User dismissed or closed the share window - normal behavior
+          return;
+        }
+        console.warn("navigator.share fallback:", err);
       }
     }
-    setIsSharing(false);
-    setShowQrModal(true);
+
+    // 3. Fallback if browser doesn't support navigator.share
+    handleCopyLink();
   };
 
   const handleWhatsAppShare = (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-    const origin = isLocal ? "https://www.revayah.one" : (typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one");
-    const shareUrl = `${origin}/preview/${cardData?.urlSlug || ""}`;
-    const message = encodeURIComponent(`Hi! Here's my digital identity card. Click to view my profile: ${shareUrl}`);
-    window.open(`https://wa.me/?text=${message}`, "_blank");
+    const shareUrl = getPublicLink();
+    const fullName = `${cardData?.prefix ? cardData.prefix + " " : ""}${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim() || "My Digital Identity Card";
+    const message = encodeURIComponent(`Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`);
+    const isMobile = typeof navigator !== "undefined" && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && !window.MSStream));
+
+    // Copy link to clipboard for convenience
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(shareUrl).catch(() => {});
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+
+    // Direct WhatsApp Web on desktop PC; WhatsApp app on mobile devices
+    const whatsappUrl = isMobile
+      ? `https://api.whatsapp.com/send?text=${message}`
+      : `https://web.whatsapp.com/send?text=${message}`;
+
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
     setShowQrModal(false);
   };
 
@@ -268,17 +288,22 @@ const PreviewCard = () => {
   const renderCard = () => {
     if (!cardData) return null;
 
+    const props = {
+      cardData,
+      onShare: handleNativeShare,
+    };
+
     switch (cardData.design) {
       case "creative":
-        return <ModernCard2 cardData={cardData} />;
+        return <ModernCard2 {...props} />;
       case "modern":
-        return <ModernCard cardData={cardData} />;
+        return <ModernCard {...props} />;
       case "dark":
-        return <DarkCard cardData={cardData} />;
+        return <DarkCard {...props} />;
       case "light":
-        return <LightCard cardData={cardData} />;
+        return <LightCard {...props} />;
       default:
-        return <DefaultCard cardData={cardData} />;
+        return <DefaultCard {...props} />;
     }
   };
 
@@ -328,12 +353,26 @@ const PreviewCard = () => {
       <div className="hidden sm:flex items-center justify-between w-full max-w-[420px] mb-4 z-10 px-2">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span className="text-xs font-semibold text-slate-300 truncate max-w-[170px]">
+          <span className="text-xs font-semibold text-slate-300 truncate max-w-[130px]">
             {fullName}
           </span>
+          {copied && (
+            <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-950/90 border border-emerald-500/40 px-2 py-0.5 rounded-full animate-fade-in shadow-sm shadow-emerald-500/20">
+              Copied!
+            </span>
+          )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={handleWhatsAppShare}
+            title="Share directly via WhatsApp Web"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-md shadow-[#25D366]/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          >
+            <FaWhatsapp className="w-3.5 h-3.5" />
+            <span>WhatsApp</span>
+          </button>
+
           <button
             onClick={() => generateVCard(cardData)}
             title="Save Contact to Phone"
@@ -345,8 +384,8 @@ const PreviewCard = () => {
 
           <button
             onClick={handleNativeShare}
-            title="Share Digital Card"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/10 hover:bg-white/20 text-white border border-white/15 backdrop-blur-md transition-all hover:scale-105 active:scale-95"
+            title="Share Digital Card (Native Link Share with Copy)"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/10 hover:bg-white/20 text-white border border-white/15 backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
           >
             <FaShareAlt className="w-3 h-3" />
             <span>Share</span>
@@ -355,7 +394,7 @@ const PreviewCard = () => {
           <button
             onClick={() => setShowQrModal(true)}
             title="View QR Code"
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/15 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/15 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
           >
             <FaQrcode className="w-3.5 h-3.5" />
           </button>
@@ -386,19 +425,28 @@ const PreviewCard = () => {
       </div>
 
       {/* MOBILE FLOATING BOTTOM ACTION BAR */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-slate-950/90 backdrop-blur-lg border-t border-slate-800/80 flex items-center justify-between gap-3 safe-area-pb">
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-slate-950/90 backdrop-blur-lg border-t border-slate-800/80 flex items-center justify-between gap-2 safe-area-pb">
         <button
           type="button"
           onClick={() => generateVCard(cardData)}
-          className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-semibold shadow-md active:scale-95 transition-transform"
+          className="flex-1 flex items-center justify-center gap-1.5 py-3 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-xs font-semibold shadow-md active:scale-95 transition-transform"
         >
           <FaDownload className="w-3.5 h-3.5" />
-          <span>Save to Contacts</span>
+          <span>Save Contact</span>
+        </button>
+        <button
+          type="button"
+          onClick={handleWhatsAppShare}
+          title="Share directly via WhatsApp"
+          className="w-12 h-12 flex items-center justify-center bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl text-base active:scale-95 transition-transform flex-shrink-0 shadow-md shadow-emerald-500/25 cursor-pointer"
+        >
+          <FaWhatsapp className="w-5 h-5" />
         </button>
         <button
           type="button"
           onClick={handleNativeShare}
-          className="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/15 rounded-xl text-sm active:scale-95 transition-transform flex-shrink-0"
+          title="Share Link"
+          className="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/15 rounded-xl text-sm active:scale-95 transition-transform flex-shrink-0 cursor-pointer"
         >
           <FaShareAlt className="w-4 h-4" />
         </button>
@@ -557,13 +605,12 @@ const PreviewCard = () => {
         </div>
       )}
       {/* Off-screen high-res card snapshot for Azure Blob Storage thumbnail upload */}
-      {cardData && (
+      {needsSnapshot && cardData && (
         <div
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            zIndex: -9999,
+            left: "-9999px",
+            top: "-9999px",
             width: "400px",
             pointerEvents: "none",
             opacity: 1,

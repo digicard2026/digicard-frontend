@@ -741,8 +741,9 @@ const Card_Dashboard = () => {
       const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
       const origin = isLocal ? "https://www.revayah.one" : (typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one");
       const shareUrl = `${origin}/preview/${card.urlSlug}`;
-      navigator.clipboard.writeText(shareUrl);
-      alert('Shareable URL copied to clipboard: ' + shareUrl);
+      const shareText = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
+      navigator.clipboard.writeText(shareText);
+      alert('Card share message copied to clipboard!');
     } else {
       alert('This card is not published yet. Please edit and save the card first.');
     }

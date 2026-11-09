@@ -141,7 +141,7 @@ const getBusinessStatus = (businessHours = []) => {
   return { isOpen: false, text: `Closed • Opens ${todaySchedule.openingTime}` };
 };
 
-const ModernCard2 = ({ cardData = {}, data = {}, plan = '', isSnapshot = false }) => {
+const ModernCard2 = ({ cardData = {}, data = {}, plan = '', isSnapshot = false, onShare }) => {
   const safeData = Object.keys(cardData).length > 0 ? cardData : data;
   if (!safeData || typeof safeData !== 'object') return null;
 
@@ -368,20 +368,35 @@ const ModernCard2 = ({ cardData = {}, data = {}, plan = '', isSnapshot = false }
     generateVCard(safeData);
   };
 
-  const handleNativeShare = () => {
-    const shareUrl = window.location.href;
-    const shareData = {
-      title: `${profile.fullName} | Digital Identity Card`,
-      text: "Hi! Here's my digital identity card. Click to view my profile:",
-      url: shareUrl
-    };
+  const handleNativeShare = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (onShare) {
+      onShare();
+      return;
+    }
+
+    const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+    const origin = isLocal ? "https://www.revayah.one" : (typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one");
+    const slug = safeData?.urlSlug || safeData?.shareableUrl || "";
+    const shareUrl = slug ? `${origin}/preview/${slug}` : (typeof window !== "undefined" ? window.location.href : "https://www.revayah.one");
+    const shareTitle = `${profile.fullName} | Digital Identity Card`;
+    const shareText = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
+
+    const isMobile = typeof navigator !== "undefined" && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && !window.MSStream));
 
     if (navigator.share) {
-      navigator.share(shareData).catch(() => {
-        handleCopy(shareUrl, 'shareUrl');
+      navigator.share({
+        title: shareTitle,
+        text: shareText,
+        url: shareUrl
+      }).catch((err) => {
+        if (err.name !== "AbortError") {
+          handleCopy(shareText, 'shareUrl');
+        }
       });
     } else {
-      handleCopy(shareUrl, 'shareUrl');
+      handleCopy(shareText, 'shareUrl');
+      window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
     }
   };
 

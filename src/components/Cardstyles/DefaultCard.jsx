@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  FaLinkedin, FaTwitter, FaInstagram, FaEnvelope, 
-  FaMapMarkerAlt, FaChevronRight, FaGlobe, 
-  FaPhoneAlt, FaWhatsapp, FaUserFriends, 
-  FaBuilding, FaVideo, FaImage, FaGem, FaStar, 
-  FaDownload, FaQrcode, FaShieldAlt, FaInfoCircle, 
+import {
+  FaLinkedin, FaTwitter, FaInstagram, FaEnvelope,
+  FaMapMarkerAlt, FaChevronRight, FaGlobe,
+  FaPhoneAlt, FaWhatsapp, FaUserFriends,
+  FaBuilding, FaVideo, FaImage, FaGem, FaStar,
+  FaDownload, FaQrcode, FaShieldAlt, FaInfoCircle,
   FaCrown, FaBriefcase, FaCalendarAlt, FaHeadset,
-  FaFilePdf, FaIdCard, FaTags, FaFileAlt, 
-  FaFileInvoice, FaRegClock, FaFileVideo, FaRobot, 
-  FaCommentDots, FaBullhorn, FaClipboardList, 
-  FaSuitcase, FaUsers, FaCogs, FaCheckCircle, 
+  FaFilePdf, FaIdCard, FaTags, FaFileAlt,
+  FaFileInvoice, FaRegClock, FaFileVideo, FaRobot,
+  FaCommentDots, FaBullhorn, FaClipboardList,
+  FaSuitcase, FaUsers, FaCogs, FaCheckCircle,
   FaAward, FaPaperPlane, FaExternalLinkAlt, FaClock,
   FaShareAlt, FaCopy, FaCheck, FaTimes
 } from 'react-icons/fa';
@@ -148,7 +148,7 @@ const getBusinessStatus = (businessHours = []) => {
   return { isOpen: false, text: `Closed • Opens ${todaySchedule.openingTime}` };
 };
 
-const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = false }) => {
+const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = false, onShare }) => {
   if (!cardData || typeof cardData !== 'object') return null;
   // Normalize plan
   const normalizePlan = (raw) => {
@@ -168,7 +168,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
       const lk = field.toLowerCase();
       if (lk === 'gallery' && (cardData.addons.gallery || cardData.addons.photogallery)) return true;
       if ((lk === 'catalog' || lk === 'catalogpdf' || lk === 'downloads') &&
-          (cardData.addons.docsbuilder || cardData.addons.catalogbuilder || cardData.addons.brochurebuilder || cardData.addons.docsmanager)) return true;
+        (cardData.addons.docsbuilder || cardData.addons.catalogbuilder || cardData.addons.brochurebuilder || cardData.addons.docsmanager)) return true;
       if ((lk === 'nfcsettings' || lk === 'nfccard') && (cardData.addons.nfccard || cardData.addons.nfc)) return true;
       if ((lk === 'profilevideo' || lk === 'productvideo') && (cardData.addons.profilebuilder || cardData.addons.portfoliobuilder)) return true;
     }
@@ -206,14 +206,14 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
     serviceArea: cardData.serviceArea || '',
     serviceAvailability: cardData.serviceAvailability || '',
 
-    phones: Array.isArray(cardData.phones) && cardData.phones.length > 0 
-      ? cardData.phones 
+    phones: Array.isArray(cardData.phones) && cardData.phones.length > 0
+      ? cardData.phones
       : cardData.phone ? [{ label: 'work', number: cardData.phone }] : [],
-    emails: Array.isArray(cardData.emails) && cardData.emails.length > 0 
-      ? cardData.emails 
+    emails: Array.isArray(cardData.emails) && cardData.emails.length > 0
+      ? cardData.emails
       : cardData.email ? [{ label: 'work', address: cardData.email }] : [],
-    websites: Array.isArray(cardData.websites) && cardData.websites.length > 0 
-      ? cardData.websites 
+    websites: Array.isArray(cardData.websites) && cardData.websites.length > 0
+      ? cardData.websites
       : cardData.website ? [{ label: 'company', url: cardData.website }] : [],
     addresses: cardData.addresses || [],
     socialLinks: cardData.socialLinks || [],
@@ -399,18 +399,35 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
     generateVCard(cardData);
   };
 
-  const handleNativeShare = () => {
-    const shareUrl = window.location.href;
-    const shareData = {
-      title: `${profile.name} | Digital Identity Card`,
-      text: "Hi! Here's my digital identity card. Click to view my profile:",
-      url: shareUrl
-    };
+  const handleNativeShare = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (onShare) {
+      onShare();
+      return;
+    }
+
+    const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+    const origin = isLocal ? "https://www.revayah.one" : (typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one");
+    const slug = cardData?.urlSlug || cardData?.shareableUrl || "";
+    const shareUrl = slug ? `${origin}/preview/${slug}` : (typeof window !== "undefined" ? window.location.href : "https://www.revayah.one");
+    const shareTitle = `${profile.name} | Digital Identity Card`;
+    const shareText = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
+
+    const isMobile = typeof navigator !== "undefined" && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && !window.MSStream));
 
     if (navigator.share) {
-      navigator.share(shareData).catch(() => handleCopy(shareUrl, 'shareUrl'));
+      navigator.share({
+        title: shareTitle,
+        text: shareText,
+        url: shareUrl
+      }).catch((err) => {
+        if (err.name !== "AbortError") {
+          handleCopy(shareText, 'shareUrl');
+        }
+      });
     } else {
-      handleCopy(shareUrl, 'shareUrl');
+      handleCopy(shareText, 'shareUrl');
+      window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
     }
   };
 
@@ -445,15 +462,15 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
 
   return (
     <div className="w-full min-h-screen bg-slate-100/70 text-slate-800 flex flex-col items-center justify-start p-0 font-sans antialiased selection:bg-blue-600 selection:text-white relative overflow-x-hidden">
-      
+
       {/* Executive Card Shell */}
       <div className="w-full max-w-md bg-white shadow-xl flex flex-col relative overflow-hidden min-h-screen sm:min-h-0 sm:rounded-[36px] sm:border sm:border-slate-200/80 my-0 sm:my-6">
-        
+
         {/* ========================================================
             HERO HEADER: COBALT TECH BLUE & DEEP INDIGO GRADIENT
             ======================================================== */}
         <div className="relative h-28 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-3.5 pt-3 pb-2 shadow-inner flex flex-col justify-start">
-          
+
           {/* Ambient Lighting & Soft Glow (strictly contained) */}
           <div className="absolute inset-0 overflow-hidden opacity-25 pointer-events-none">
             <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-white blur-2xl" />
@@ -496,7 +513,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
             PROFILE INFORMATION & IDENTITY
             ======================================================== */}
         <div className="relative z-10 px-6 pb-4 text-center">
-          
+
           {/* Avatar Anchor - Perfectly overlapping banner without clipping */}
           <div className="relative -mt-14 mb-2 inline-block">
             <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-blue-950/20 ring-4 ring-white">
@@ -511,7 +528,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
                 }}
               />
               {/* Verified Badge */}
-              <div 
+              <div
                 className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center text-white shadow-md"
                 title="Verified Identity"
               >
@@ -520,15 +537,15 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
 
               {/* Company Logo Badge if available */}
               {isFieldAllowed('companyLogo') && profile.companyLogo && (
-                <div 
+                <div
                   className="absolute -top-1 -right-1 w-8 h-8 rounded-xl bg-white border border-slate-200 p-1 shadow-md flex items-center justify-center"
                   title={profile.companyName || "Company"}
                 >
-                  <img 
-                    src={profile.companyLogo} 
-                    alt="Company Logo" 
+                  <img
+                    src={profile.companyLogo}
+                    alt="Company Logo"
                     crossOrigin="anonymous"
-                    className="w-full h-full object-contain" 
+                    className="w-full h-full object-contain"
                   />
                 </div>
               )}
@@ -564,11 +581,10 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
           {/* Service Area & Availability Badges */}
           <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
             {isFieldAllowed('businessHours') && businessStatus && (
-              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${
-                businessStatus.isOpen 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${businessStatus.isOpen
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                   : 'bg-slate-100 text-slate-600 border-slate-200'
-              }`}>
+                }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-500' : 'bg-slate-400'}`} />
                 {businessStatus.text}
               </span>
@@ -610,7 +626,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
             ======================================================== */}
         <div className="px-6 py-2">
           <div className="grid grid-cols-4 gap-2.5">
-            
+
             {/* Call */}
             {profile.enableOneTapCall && primaryPhone && (
               <button
@@ -727,7 +743,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
 
             <div className="space-y-3">
               {profile.services.map((srv, idx) => (
-                <div 
+                <div
                   key={idx}
                   className="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between"
                 >
@@ -926,9 +942,8 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
                 <span>Operating Schedule</span>
               </h2>
               {businessStatus && (
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                  businessStatus.isOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
-                }`}>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                  }`}>
                   {businessStatus.isOpen ? 'Open Now' : 'Closed Today'}
                 </span>
               )}
@@ -937,13 +952,12 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
             <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 text-xs space-y-2">
               {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
                 const sched = profile.businessHours.find(h => h.day?.toLowerCase() === day);
-                const isToday = new Date().getDay() === ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'].indexOf(day);
+                const isToday = new Date().getDay() === ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].indexOf(day);
                 return (
-                  <div 
-                    key={day} 
-                    className={`flex justify-between items-center py-1 px-2 rounded-lg ${
-                      isToday ? 'bg-blue-50/80 font-semibold text-blue-900' : 'text-slate-600'
-                    }`}
+                  <div
+                    key={day}
+                    className={`flex justify-between items-center py-1 px-2 rounded-lg ${isToday ? 'bg-blue-50/80 font-semibold text-blue-900' : 'text-slate-600'
+                      }`}
                   >
                     <span className="capitalize">{day}</span>
                     <span>
@@ -972,7 +986,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
           <div className="space-y-2.5">
             {/* Phone */}
             {profile.phones.map((p, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
               >
@@ -1010,7 +1024,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
 
             {/* Email */}
             {profile.emails.map((e, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
               >
@@ -1051,7 +1065,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
               const fullText = addr.fullAddress || `${addr.street || ''}, ${addr.city || ''} ${addr.country || ''}`.trim();
               if (!fullText) return null;
               return (
-                <div 
+                <div
                   key={idx}
                   className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
                 >
