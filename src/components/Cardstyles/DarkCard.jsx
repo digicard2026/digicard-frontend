@@ -318,7 +318,7 @@ const cardFieldsConfig = {
   }
 };
 
-const DarkCard = ({ cardData = {} }) => {
+const DarkCard = ({ cardData = {}, onShare }) => {
   console.log('🎯 DarkCard received data:', cardData);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentServiceSlide, setCurrentServiceSlide] = useState(0);
@@ -1821,20 +1821,30 @@ const DarkCard = ({ cardData = {} }) => {
               <div className="text-center mt-8 mb-6">
                 <div className="flex flex-col items-center">
                   <button
-                    onClick={() => {
-                      const shareUrl = profileData.shareableUrl || window.location.href;
-                      const shareText = "Hi! Here's my digital identity card. Click to view my profile:";
+                    onClick={(e) => {
+                      if (onShare) {
+                        onShare(e);
+                        return;
+                      }
+                      const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+                      const origin = isLocal ? "https://www.revayah.one" : (typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one");
+                      const slug = cardData?.urlSlug || cardData?.shareableUrl || profileData.shareableUrl || "";
+                      const shareUrl = slug ? `${origin}/preview/${slug}` : (typeof window !== "undefined" ? window.location.href : "https://www.revayah.one");
+                      const shareText = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
+
+                      const isMobile = typeof navigator !== "undefined" && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && !window.MSStream));
 
                       if (navigator.share) {
                         navigator.share({
-                          title: `${profileData.name}'s Digital Card`,
+                          title: `${profileData.name} | Digital Identity Card`,
                           text: shareText,
                           url: shareUrl,
+                        }).catch(() => {
+                          navigator.clipboard.writeText(shareText);
                         });
                       } else {
-                        navigator.clipboard.writeText(shareUrl).then(() => {
-                          alert('Link copied to clipboard!');
-                        });
+                        navigator.clipboard.writeText(shareText);
+                        window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
                       }
                     }}
                     className="flex items-center justify-center mx-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-full transform transition-transform duration-300 hover:scale-105 w-full max-w-xs"

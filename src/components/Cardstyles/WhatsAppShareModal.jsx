@@ -55,9 +55,10 @@ const WhatsAppShareModal = ({ isOpen, onClose, cardData }) => {
 
     try {
       const blob = await generateCardBlob();
+      const isMobile = typeof navigator !== "undefined" && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && !window.MSStream));
 
-      // Mobile Web Share with File
-      if (blob && navigator.canShare) {
+      // Mobile Web Share with File (Only on mobile devices!)
+      if (isMobile && blob && navigator.canShare) {
         const file = new File(
           [blob],
           `${cardData.firstName || "digital"}_identity_card.png`,
@@ -76,8 +77,8 @@ const WhatsAppShareModal = ({ isOpen, onClose, cardData }) => {
         }
       }
 
-      // Desktop / Web Fallback:
-      // Try copying image to clipboard for easy Ctrl+V in WhatsApp Web
+      // Desktop / Web:
+      // Copy image to clipboard for easy Ctrl+V in WhatsApp Web
       let imageCopiedToClipboard = false;
       if (blob && typeof ClipboardItem !== "undefined" && navigator.clipboard?.write) {
         try {
@@ -92,14 +93,14 @@ const WhatsAppShareModal = ({ isOpen, onClose, cardData }) => {
         }
       }
 
-      // Open WhatsApp Web / App with pre-filled message link
+      // Open WhatsApp Web with pre-filled message & link
       const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
       window.open(waUrl, "_blank", "noopener,noreferrer");
 
       if (imageCopiedToClipboard) {
-        setStatusMessage("✅ Card image copied to clipboard! Paste (Ctrl+V) in WhatsApp chat.");
+        setStatusMessage("✅ Opening WhatsApp! Card image copied — press Ctrl+V in chat.");
       } else {
-        setStatusMessage("Opening WhatsApp with your link...");
+        setStatusMessage("✅ Opening WhatsApp with your message and link...");
       }
 
     } catch (err) {
@@ -110,7 +111,7 @@ const WhatsAppShareModal = ({ isOpen, onClose, cardData }) => {
       }
     } finally {
       setIsProcessing(false);
-      setTimeout(() => setStatusMessage(""), 4000);
+      setTimeout(() => setStatusMessage(""), 5000);
     }
   };
 
@@ -139,15 +140,15 @@ const WhatsAppShareModal = ({ isOpen, onClose, cardData }) => {
     }
   };
 
-  // 5. Copy Link Handler
+  // 5. Copy Link Handler (Copies full message and link for WhatsApp)
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareUrl);
+    navigator.clipboard.writeText(shareText);
     setCopiedLink(true);
-    setStatusMessage("Link copied to clipboard!");
+    setStatusMessage("✅ Message & link copied! Paste (Ctrl+V) in WhatsApp.");
     setTimeout(() => {
       setCopiedLink(false);
       setStatusMessage("");
-    }, 2500);
+    }, 3000);
   };
 
   return (
@@ -263,7 +264,7 @@ const WhatsAppShareModal = ({ isOpen, onClose, cardData }) => {
               ) : (
                 <>
                   <FaCopy className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Copy Profile Link</span>
+                  <span>Copy Message & Link</span>
                 </>
               )}
             </button>
