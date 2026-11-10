@@ -250,113 +250,122 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
       : rawPhoto;
 
     return (
-      <div className="w-[400px] bg-white text-slate-800 flex flex-col items-center justify-start p-0 font-sans antialiased overflow-hidden rounded-[28px] border border-slate-200 shadow-xl">
-        {/* HERO HEADER: COBALT TECH BLUE & DEEP INDIGO GRADIENT */}
-        <div className="relative w-full h-28 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-4 pt-3 pb-2 shadow-inner flex flex-col justify-start">
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/25 border border-white/30 backdrop-blur-md">
-              <FaShieldAlt className="w-3 h-3 text-white" />
-              <span className="text-[10px] font-semibold text-white uppercase tracking-wider">
+      <div className="w-[360px] max-w-full bg-white text-slate-800 flex flex-col items-center justify-start p-0 font-sans antialiased overflow-hidden rounded-[28px] border border-slate-200 shadow-xl">
+        {/* EXECUTIVE HERO: Deep Midnight Navy Canvas */}
+        <div className="relative w-full bg-[#0B1E36] px-5 pt-7 pb-6 text-center overflow-hidden">
+          {/* Subtle Champagne Gold Accent Line */}
+          <div className="absolute top-1/3 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#D8B48D]/40 to-transparent pointer-events-none" />
+
+          {/* Top Brand Pill & Digital ID Indicator */}
+          <div className="relative z-10 flex items-center justify-between mb-3">
+            <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/35 border border-[#D8B48D]/30 backdrop-blur-md">
+              <FaShieldAlt className="w-2.5 h-2.5 text-[#D8B48D]" />
+              <span className="text-[9px] font-semibold text-white uppercase tracking-wider">
                 {profile.brandLabel || 'REVAYAH ONE'}
               </span>
             </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 border border-white/30 text-white text-[10px] font-medium">
+            <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 border border-white/20 text-slate-200 text-[9px] font-medium">
               <span>Digital ID Card</span>
             </div>
           </div>
-        </div>
 
-        {/* PROFILE INFORMATION & IDENTITY */}
-        <div className="relative z-10 w-full px-6 pb-4 text-center">
-          {/* Avatar Anchor */}
-          <div className="relative -mt-14 mb-2 inline-block">
-            <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-blue-950/20 ring-4 ring-white">
+          {/* Centered Avatar with Crisp White Ring Halo */}
+          <div className="relative inline-block mx-auto mb-3">
+            <div className="w-24 h-24 rounded-full p-1 bg-white/20 shadow-xl backdrop-blur-sm border-2 border-white">
               <img
                 src={photoSrc}
                 alt={profile.name}
                 crossOrigin="anonymous"
-                className="w-full h-full object-cover rounded-full bg-slate-100"
+                className="w-full h-full object-cover rounded-full bg-slate-100 shadow-sm"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600";
                 }}
               />
-              <div className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center text-white shadow-md">
-                <FaCheckCircle className="w-4 h-4" />
+              <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#D8B48D] text-[#0B1E36] border-2 border-white flex items-center justify-center shadow-md">
+                <FaCheckCircle className="w-3.5 h-3.5" />
               </div>
             </div>
           </div>
 
-          {/* Full Name */}
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-0.5">
+          {/* Linear Typography Hierarchy */}
+          <h1 className="text-xl font-bold tracking-tight text-white mb-0.5">
             {profile.name}
           </h1>
-
-          {/* Job Title */}
           {profile.jobTitle && (
-            <p className="text-sm font-semibold text-blue-600 mb-1.5">
+            <p className="text-xs font-medium text-slate-200 mb-1">
               {profile.jobTitle}
             </p>
           )}
-
-          {/* Company & Department Details */}
           {profile.companyName && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium mb-3">
-              <FaBuilding className="w-3 h-3 text-slate-500" />
-              <span>{profile.companyName}</span>
-              {profile.department && (
-                <>
-                  <span className="text-slate-400">•</span>
-                  <span className="text-slate-600">{profile.department}</span>
-                </>
-              )}
+            <p className="text-[11px] font-semibold text-[#D8B48D] tracking-wide">
+              {profile.companyName} {profile.department ? `• ${profile.department}` : ''}
+            </p>
+          )}
+
+          {/* Unified Champagne/Gold Quick Action Strip */}
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <div className="flex-1 max-w-[95px] flex items-center justify-center gap-1 py-1.5 px-2 rounded-full bg-[#E5C39E] text-[#0B1E36] font-semibold text-[11px] shadow-sm">
+              <FaPhoneAlt className="w-2.5 h-2.5" />
+              <span>Call</span>
+            </div>
+            <div className="flex-1 max-w-[105px] flex items-center justify-center gap-1 py-1.5 px-2 rounded-full bg-[#E5C39E] text-[#0B1E36] font-semibold text-[11px] shadow-sm">
+              <FaWhatsapp className="w-3 h-3" />
+              <span>WhatsApp</span>
+            </div>
+            <div className="flex-1 max-w-[95px] flex items-center justify-center gap-1 py-1.5 px-2 rounded-full bg-[#E5C39E] text-[#0B1E36] font-semibold text-[11px] shadow-sm">
+              <FaEnvelope className="w-2.5 h-2.5" />
+              <span>Email</span>
+            </div>
+          </div>
+        </div>
+
+        {/* DOSSIER BODY: Clean White Canvas */}
+        <div className="w-full px-5 py-4 space-y-3.5 bg-white text-left">
+          {/* Section: About Me */}
+          {(profile.aboutText || profile.bio) && (
+            <div>
+              <h2 className="text-[11px] font-bold text-[#0B1E36] uppercase tracking-wider mb-1 flex items-center gap-1">
+                <FaBriefcase className="w-2.5 h-2.5 text-[#D8B48D]" />
+                <span>About Me</span>
+              </h2>
+              <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">
+                {profile.aboutText || profile.bio}
+              </p>
             </div>
           )}
 
-          {/* Save Contact Button */}
-          <div className="mt-1 mb-3">
-            <div className="w-full py-3 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold text-sm tracking-wide shadow-md flex items-center justify-center gap-2">
-              <FaDownload className="w-4 h-4" />
+          {/* Section: My Services (2x2 Modular Grid) */}
+          {profile.services && profile.services.length > 0 && (
+            <div>
+              <h2 className="text-[11px] font-bold text-[#0B1E36] uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                <FaCogs className="w-2.5 h-2.5 text-[#D8B48D]" />
+                <span>My Services</span>
+              </h2>
+              <div className="grid grid-cols-2 gap-1.5">
+                {profile.services.slice(0, 4).map((srv, idx) => (
+                  <div key={idx} className="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-1.5">
+                    <span className="text-[#0B1E36] text-xs">🎯</span>
+                    <span className="text-[10px] font-semibold text-slate-700 truncate">{srv.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Save Contact Secondary Action */}
+          <div className="pt-1">
+            <div className="w-full py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-semibold text-[11px] flex items-center justify-center gap-1.5 shadow-xs">
+              <FaDownload className="w-3 h-3 text-slate-500" />
               <span>Save Contact to Phone</span>
-            </div>
-          </div>
-
-          {/* Quick Action Dock */}
-          <div className="grid grid-cols-4 gap-2 mb-2">
-            <div className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-blue-50/80 border border-blue-100 text-blue-700 shadow-sm">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center mb-1">
-                <FaPhoneAlt className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[10px] font-semibold">Call</span>
-            </div>
-
-            <div className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-emerald-50/80 border border-emerald-100 text-emerald-700 shadow-sm">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center mb-1">
-                <FaWhatsapp className="w-4 h-4" />
-              </div>
-              <span className="text-[10px] font-semibold">WhatsApp</span>
-            </div>
-
-            <div className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-indigo-50/80 border border-indigo-100 text-indigo-700 shadow-sm">
-              <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center mb-1">
-                <FaEnvelope className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[10px] font-semibold">Email</span>
-            </div>
-
-            <div className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-sky-50/80 border border-sky-100 text-sky-700 shadow-sm">
-              <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center mb-1">
-                <FaGlobe className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[10px] font-semibold">Portal</span>
             </div>
           </div>
         </div>
 
         {/* Footer Brand Watermark */}
-        <div className="w-full py-2.5 text-center border-t border-slate-100 bg-slate-50/80">
-          <span className="text-[10px] font-semibold text-slate-500 tracking-wide">
-            Powered by <strong className="text-blue-600">Revayah One</strong> • Smart Digital Identity
+        <div className="w-full py-2 text-center border-t border-slate-100 bg-slate-50">
+          <span className="text-[9.5px] font-medium text-slate-500">
+            Powered by <strong className="text-slate-800">Reva-Yah One</strong> • Smart Digital Identity
           </span>
         </div>
       </div>
@@ -461,34 +470,23 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
   };
 
   return (
-    <div className="w-full min-h-screen bg-slate-100/70 text-slate-800 flex flex-col items-center justify-start p-0 font-sans antialiased selection:bg-blue-600 selection:text-white relative overflow-x-hidden">
+    <div className="w-full min-h-screen bg-[#0B1E36] text-slate-800 flex flex-col items-center justify-start p-0 font-sans antialiased selection:bg-[#0B1E36] selection:text-white relative overflow-x-hidden">
 
-      {/* Executive Card Shell */}
-      <div className="w-full max-w-md bg-white shadow-xl flex flex-col relative overflow-hidden min-h-screen sm:min-h-0 sm:rounded-[36px] sm:border sm:border-slate-200/80 my-0 sm:my-6">
+      {/* Executive Card Shell - Flush edge-to-edge layout matching Creative Card */}
+      <div className="w-full max-w-md bg-white flex flex-col relative overflow-hidden min-h-screen">
 
         {/* ========================================================
-            HERO HEADER: COBALT TECH BLUE & DEEP INDIGO GRADIENT
+            HERO HEADER: DEEP MIDNIGHT NAVY & CHAMPAGNE GOLD STAGE
             ======================================================== */}
-        <div className="relative h-28 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-3.5 pt-3 pb-2 shadow-inner flex flex-col justify-start">
+        <div className="relative bg-[#0B1E36] px-6 pt-7 pb-7 text-center overflow-hidden">
 
-          {/* Ambient Lighting & Soft Glow (strictly contained) */}
-          <div className="absolute inset-0 overflow-hidden opacity-25 pointer-events-none">
-            <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-white blur-2xl" />
-            <div className="absolute bottom-0 left-0 w-36 h-36 rounded-full bg-blue-950 blur-2xl" />
-            <svg className="w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="default-grid" width="16" height="16" patternUnits="userSpaceOnUse">
-                  <path d="M 16 0 L 0 0 0 16" fill="none" stroke="white" strokeWidth="0.5" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#default-grid)" />
-            </svg>
-          </div>
+          {/* Subtle Champagne Gold Accent Line */}
+          <div className="absolute top-1/3 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#D8B48D]/40 to-transparent pointer-events-none" />
 
           {/* Top Brand Pill & Share */}
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/25 border border-white/30 backdrop-blur-md">
-              <FaShieldAlt className="w-3 h-3 text-white" />
+          <div className="relative z-10 flex items-center justify-between mb-4">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/35 border border-[#D8B48D]/30 backdrop-blur-md">
+              <FaShieldAlt className="w-3 h-3 text-[#D8B48D]" />
               <span className="text-[10px] font-semibold text-white uppercase tracking-wider">
                 {isFieldAllowed('brandLabel') && profile.brandLabel ? profile.brandLabel : 'REVAYAH ONE'}
               </span>
@@ -497,31 +495,25 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
             <button
               type="button"
               onClick={handleNativeShare}
-              className="p-1.5 rounded-full bg-black/25 hover:bg-black/40 border border-white/30 text-white backdrop-blur-md transition-all active:scale-95 shadow-md"
+              className="p-2 rounded-full bg-black/35 hover:bg-black/50 border border-white/20 text-white backdrop-blur-md transition-all active:scale-95 shadow-md cursor-pointer"
               title="Share Card"
             >
               {copiedItem === 'shareUrl' ? (
                 <FaCheck className="w-3.5 h-3.5 text-emerald-300" />
               ) : (
-                <FaShareAlt className="w-3.5 h-3.5" />
+                <FaShareAlt className="w-3.5 h-3.5 text-white" />
               )}
             </button>
           </div>
-        </div>
 
-        {/* ========================================================
-            PROFILE INFORMATION & IDENTITY
-            ======================================================== */}
-        <div className="relative z-10 px-6 pb-4 text-center">
-
-          {/* Avatar Anchor - Perfectly overlapping banner without clipping */}
-          <div className="relative -mt-14 mb-2 inline-block">
-            <div className="relative w-28 h-28 rounded-full p-1 bg-white shadow-xl shadow-blue-950/20 ring-4 ring-white">
+          {/* Centered Avatar with Crisp White Ring Halo */}
+          <div className="relative inline-block mx-auto mb-3">
+            <div className="relative w-28 h-28 rounded-full p-1 bg-white/20 shadow-xl backdrop-blur-sm border-2 border-white">
               <img
                 src={profile.profilePhoto}
                 alt={profile.name}
                 crossOrigin="anonymous"
-                className="w-full h-full object-cover rounded-full bg-slate-100"
+                className="w-full h-full object-cover rounded-full bg-slate-100 shadow-sm"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600";
@@ -529,7 +521,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
               />
               {/* Verified Badge */}
               <div
-                className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center text-white shadow-md"
+                className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-[#D8B48D] text-[#0B1E36] border-2 border-white flex items-center justify-center shadow-md"
                 title="Verified Identity"
               >
                 <FaCheckCircle className="w-4 h-4" />
@@ -552,92 +544,59 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
             </div>
           </div>
 
-          {/* Full Name */}
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-1">
+          {/* Linear Typography Hierarchy */}
+          <h1 className="text-2xl font-bold tracking-tight text-white mb-0.5">
             {profile.name}
           </h1>
 
           {/* Job Title */}
           {profile.jobTitle && (
-            <p className="text-sm font-semibold text-blue-600 mb-2">
+            <p className="text-sm font-medium text-slate-200 mb-1">
               {profile.jobTitle}
             </p>
           )}
 
           {/* Company & Department Details */}
           {isFieldAllowed('companyName') && profile.companyName && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium mb-3">
-              <FaBuilding className="w-3 h-3 text-slate-500" />
-              <span>{profile.companyName}</span>
+            <p className="text-xs font-semibold text-[#D8B48D] tracking-wide mb-2">
+              {profile.companyName}
               {isFieldAllowed('department') && profile.department && (
-                <>
-                  <span className="text-slate-400">•</span>
-                  <span className="text-slate-600">{profile.department}</span>
-                </>
+                <span> • {profile.department}</span>
               )}
-            </div>
+            </p>
           )}
 
           {/* Service Area & Availability Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
             {isFieldAllowed('businessHours') && businessStatus && (
-              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${businessStatus.isOpen
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                  : 'bg-slate-100 text-slate-600 border-slate-200'
+              <span className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-medium border ${businessStatus.isOpen
+                  ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/30'
+                  : 'bg-white/10 text-slate-300 border-white/15'
                 }`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                <span className={`w-1.5 h-1.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-400' : 'bg-slate-400'}`} />
                 {businessStatus.text}
               </span>
             )}
 
             {isFieldAllowed('serviceArea') && profile.serviceArea && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                <FaMapMarkerAlt className="w-2.5 h-2.5 text-blue-500" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-medium bg-white/10 text-slate-200 border border-white/15">
+                <FaMapMarkerAlt className="w-2.5 h-2.5 text-[#D8B48D]" />
                 Serving: {profile.serviceArea}
               </span>
             )}
           </div>
 
-          {isFieldAllowed('serviceAvailability') && profile.serviceAvailability && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50/70 border border-blue-200/80 text-blue-800 text-xs font-medium mb-4">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-              </span>
-              <span>{profile.serviceAvailability}</span>
-            </div>
-          )}
-
-          {/* HERO CTA: SAVE CONTACT TO PHONE (vCard) */}
-          <div className="mt-1">
-            <button
-              type="button"
-              onClick={handleSaveContact}
-              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-sm tracking-wide shadow-lg shadow-blue-500/25 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2"
-            >
-              <FaDownload className="w-4 h-4" />
-              <span>Save Contact to Phone</span>
-            </button>
-          </div>
-        </div>
-
-        {/* ========================================================
-            QUICK ACTION DOCK (4 CORE CHANNELS)
-            ======================================================== */}
-        <div className="px-6 py-2">
-          <div className="grid grid-cols-4 gap-2.5">
-
+          {/* Unified Champagne/Gold Quick Action Strip */}
+          <div className="flex items-center justify-center gap-2.5 mt-5">
             {/* Call */}
             {profile.enableOneTapCall && primaryPhone && (
               <button
                 type="button"
                 onClick={() => handleCall(primaryPhone)}
-                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50/70 hover:bg-blue-100/70 border border-blue-100 text-blue-700 transition-all active:scale-95 shadow-sm"
+                className="flex-1 max-w-[105px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full bg-[#E5C39E] hover:bg-[#d8b48d] text-[#0B1E36] font-semibold text-xs shadow-md transition-transform active:scale-95 cursor-pointer"
               >
-                <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center mb-1.5 shadow-sm">
-                  <FaPhoneAlt className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-[11px] font-semibold tracking-tight">Call</span>
+                <FaPhoneAlt className="w-3 h-3" />
+                <span>Call</span>
               </button>
             )}
 
@@ -646,12 +605,10 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
               <button
                 type="button"
                 onClick={() => handleWhatsApp(primaryPhone)}
-                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/70 border border-emerald-100 text-emerald-700 transition-all active:scale-95 shadow-sm"
+                className="flex-1 max-w-[110px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full bg-[#E5C39E] hover:bg-[#d8b48d] text-[#0B1E36] font-semibold text-xs shadow-md transition-transform active:scale-95 cursor-pointer"
               >
-                <div className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center mb-1.5 shadow-sm">
-                  <FaWhatsapp className="w-4 h-4" />
-                </div>
-                <span className="text-[11px] font-semibold tracking-tight">WhatsApp</span>
+                <FaWhatsapp className="w-3.5 h-3.5" />
+                <span>WhatsApp</span>
               </button>
             )}
 
@@ -660,529 +617,516 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
               <button
                 type="button"
                 onClick={() => handleEmail(primaryEmail)}
-                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-indigo-50/70 hover:bg-indigo-100/70 border border-indigo-100 text-indigo-700 transition-all active:scale-95 shadow-sm"
+                className="flex-1 max-w-[105px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full bg-[#E5C39E] hover:bg-[#d8b48d] text-[#0B1E36] font-semibold text-xs shadow-md transition-transform active:scale-95 cursor-pointer"
               >
-                <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center mb-1.5 shadow-sm">
-                  <FaEnvelope className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-[11px] font-semibold tracking-tight">Email</span>
+                <FaEnvelope className="w-3 h-3" />
+                <span>Email</span>
               </button>
             )}
 
-            {/* Website */}
+            {/* Website / Portal / QR */}
             {primaryWebsite ? (
               <button
                 type="button"
                 onClick={() => handleWebsite(primaryWebsite)}
-                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-sky-50/70 hover:bg-sky-100/70 border border-sky-100 text-sky-700 transition-all active:scale-95 shadow-sm"
+                className="flex-1 max-w-[105px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full bg-[#E5C39E] hover:bg-[#d8b48d] text-[#0B1E36] font-semibold text-xs shadow-md transition-transform active:scale-95 cursor-pointer"
               >
-                <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center mb-1.5 shadow-sm">
-                  <FaGlobe className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-[11px] font-semibold tracking-tight">Portal</span>
+                <FaGlobe className="w-3 h-3" />
+                <span>Portal</span>
               </button>
             ) : (
               <button
                 type="button"
                 onClick={() => setShowQrModal(true)}
-                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all active:scale-95 shadow-sm"
+                className="flex-1 max-w-[105px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full bg-[#E5C39E] hover:bg-[#d8b48d] text-[#0B1E36] font-semibold text-xs shadow-md transition-transform active:scale-95 cursor-pointer"
               >
-                <div className="w-9 h-9 rounded-xl bg-slate-800 text-white flex items-center justify-center mb-1.5 shadow-sm">
-                  <FaQrcode className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-[11px] font-semibold tracking-tight">QR Code</span>
+                <FaQrcode className="w-3 h-3" />
+                <span>QR Code</span>
               </button>
             )}
-
           </div>
         </div>
 
         {/* ========================================================
-            ABOUT & EXECUTIVE SUMMARY
+            PROFESSIONAL DOSSIER: CRISP WHITE BODY CANVAS
             ======================================================== */}
-        {(profile.aboutText || profile.bio || profile.tagline) && (
-          <div className="px-6 py-4">
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 shadow-sm">
-              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <FaBriefcase className="w-3 h-3 text-blue-600" />
-                Executive Summary
+        <div className="bg-white px-6 py-6 space-y-6 text-left">
+
+          {/* 1. ABOUT ME & EXECUTIVE SUMMARY (Immediately below hero) */}
+          {(profile.aboutText || profile.bio || profile.tagline) && (
+            <div className="space-y-2">
+              <h2 className="text-base font-bold text-[#0B1E36] tracking-tight flex items-center gap-1.5">
+                <FaBriefcase className="w-3.5 h-3.5 text-[#D8B48D]" />
+                <span>About Me</span>
               </h2>
               {profile.tagline && (
-                <p className="text-xs font-medium italic text-blue-800 mb-2">
+                <p className="text-xs font-medium italic text-slate-700">
                   "{profile.tagline}"
                 </p>
               )}
               {profile.aboutText && (
-                <p className="text-xs leading-relaxed text-slate-600 mb-2">
+                <p className="text-xs leading-relaxed text-slate-600 font-normal">
                   {profile.aboutText}
                 </p>
               )}
               {profile.bio && profile.bio !== profile.aboutText && (
-                <p className="text-xs leading-relaxed text-slate-500">
+                <p className="text-xs leading-relaxed text-slate-500 font-normal">
                   {profile.bio}
                 </p>
               )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ========================================================
-            FEATURED SERVICES & CAPABILITIES
-            ======================================================== */}
-        {isFieldAllowed('services') && profile.services && profile.services.length > 0 && (
-          <div className="px-6 py-4 border-t border-slate-100">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <FaCogs className="w-4 h-4 text-blue-600" />
-                <span>Services & Capabilities</span>
-              </h2>
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
-                {profile.services.length} Available
-              </span>
-            </div>
+          {/* 2. MY SERVICES (2x2 MODULAR GRID) */}
+          {isFieldAllowed('services') && profile.services && profile.services.length > 0 && (
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-bold text-[#0B1E36] tracking-tight flex items-center gap-1.5">
+                  <FaCogs className="w-3.5 h-3.5 text-[#D8B48D]" />
+                  <span>My Services</span>
+                </h2>
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  {profile.services.length} Available
+                </span>
+              </div>
 
-            <div className="space-y-3">
-              {profile.services.map((srv, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-start justify-between gap-2 mb-1.5">
-                      <h3 className="font-semibold text-slate-900 text-sm">
+              <div className="grid grid-cols-2 gap-2.5">
+                {profile.services.map((srv, idx) => (
+                  <div
+                    key={idx}
+                    className="flex flex-col justify-between p-3.5 rounded-2xl bg-slate-50/90 border border-slate-100 hover:border-[#D8B48D]/50 hover:bg-slate-50 transition-all shadow-xs group"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[#0B1E36] text-sm">🎯</span>
+                        {srv.price && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-900 border border-amber-200">
+                            {srv.currency || '€'}{srv.price}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#0B1E36] line-clamp-1">
                         {srv.name}
                       </h3>
-                      {srv.price && (
-                        <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
-                          {srv.currency || '€'} {srv.price}
+                      {srv.category && (
+                        <span className="text-[9.5px] font-medium uppercase tracking-wider text-slate-400 block mt-0.5">
+                          {srv.category}
                         </span>
                       )}
-                    </div>
-
-                    {srv.category && (
-                      <span className="inline-block text-[10px] font-medium uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded mb-2">
-                        {srv.category}
-                      </span>
-                    )}
-
-                    {srv.description && (
-                      <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                        {srv.description}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-[11px] text-slate-400 font-medium">
-                      Direct Advisory
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setInquiryData(prev => ({ ...prev, service: srv.name }));
-                        const funnel = document.getElementById('inquiry-funnel');
-                        if (funnel) funnel.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white text-xs font-semibold transition-all flex items-center gap-1.5"
-                    >
-                      <span>Inquire</span>
-                      <FaPaperPlane className="w-2.5 h-2.5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================
-            DIRECT LEAD CAPTURE FUNNEL: CONSULTATION & INQUIRY
-            ======================================================== */}
-        {isFieldAllowed('customerInquiry') && (
-          <div id="inquiry-funnel" className="px-6 py-4 border-t border-slate-100">
-            <div className="bg-gradient-to-br from-blue-50/60 to-indigo-50/40 rounded-2xl p-5 border border-blue-100 shadow-sm">
-              <div className="flex items-center gap-2 mb-1">
-                <FaCalendarAlt className="w-4 h-4 text-blue-600" />
-                <h2 className="text-sm font-bold text-slate-900">Request a Consultation</h2>
-              </div>
-              <p className="text-xs text-slate-500 mb-4">
-                Schedule direct discussion with {profile.name} for strategic or technical advisory.
-              </p>
-
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                    Required Service or Topic
-                  </label>
-                  <select
-                    value={inquiryData.service}
-                    onChange={(e) => setInquiryData(prev => ({ ...prev, service: e.target.value }))}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select a service / topic...</option>
-                    {profile.services.map((s, idx) => (
-                      <option key={idx} value={s.name}>{s.name}</option>
-                    ))}
-                    <option value="General Strategic Consultation">General Strategic Consultation</option>
-                    <option value="Enterprise Architecture Review">Enterprise Architecture Review</option>
-                    <option value="Other Inquiries">Other Inquiries</option>
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                      Preferred Date
-                    </label>
-                    <input
-                      type="date"
-                      value={inquiryData.date}
-                      onChange={(e) => setInquiryData(prev => ({ ...prev, date: e.target.value }))}
-                      className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                      Preferred Time
-                    </label>
-                    <input
-                      type="time"
-                      value={inquiryData.time}
-                      onChange={(e) => setInquiryData(prev => ({ ...prev, time: e.target.value }))}
-                      className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                    Your Contact Number / WhatsApp
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="+91 98765 43210"
-                    value={inquiryData.contact}
-                    onChange={(e) => setInquiryData(prev => ({ ...prev, contact: e.target.value }))}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleSendInquiry}
-                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide shadow-md transition-all flex items-center justify-center gap-2 mt-2"
-                >
-                  <FaPaperPlane className="w-3 h-3" />
-                  <span>Submit Consultation Request</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================
-            PRODUCTS & MERCHANDISE (IF ANY)
-            ======================================================== */}
-        {isFieldAllowed('products') && profile.products && profile.products.length > 0 && (
-          <div className="px-6 py-4 border-t border-slate-100">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <FaGem className="w-4 h-4 text-blue-600" />
-                <span>Products & Solutions</span>
-              </h2>
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
-                {profile.products.length} Items
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              {profile.products.map((item, idx) => (
-                <div key={idx} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-start gap-3">
-                  {item.image && (
-                    <img src={item.image} alt={item.name} className="w-16 h-16 rounded-xl object-cover border border-slate-100" />
-                  )}
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-semibold text-slate-900 text-xs">{item.name}</h3>
-                      {item.price && (
-                        <span className="text-xs font-bold text-blue-600">{item.currency || '€'} {item.price}</span>
+                      {srv.description && (
+                        <p className="text-[11px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">
+                          {srv.description}
+                        </p>
                       )}
                     </div>
-                    {item.description && (
-                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{item.description}</p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {/* ========================================================
-            PROFILE VIDEO & MEDIA (IF ANY)
-            ======================================================== */}
-        {isFieldAllowed('profileVideo') && profile.profileVideo && (
-          <div className="px-6 py-4 border-t border-slate-100">
-            <h2 className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
-              <FaVideo className="w-4 h-4 text-blue-600" />
-              <span>Introductory Video</span>
+                    <div className="pt-2 mt-2 border-t border-slate-200/60 flex items-center justify-between">
+                      <span className="text-[10px] text-slate-400 font-medium">Direct Advisory</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInquiryData(prev => ({ ...prev, service: srv.name }));
+                          const funnel = document.getElementById('inquiry-funnel');
+                          if (funnel) funnel.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="text-[11px] font-semibold text-[#0B1E36] hover:text-[#D8B48D] transition-colors flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>Inquire</span>
+                        <FaPaperPlane className="w-2.5 h-2.5 text-[#D8B48D]" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 3. CONTACT INFORMATION DIRECTORY */}
+          <div className="space-y-3 pt-2">
+            <h2 className="text-base font-bold text-[#0B1E36] tracking-tight flex items-center gap-1.5">
+              <FaHeadset className="w-3.5 h-3.5 text-[#D8B48D]" />
+              <span>Contact Information</span>
             </h2>
-            <VideoPlayer src={profile.profileVideo} title={`${profile.name} - Introduction`} />
-          </div>
-        )}
 
-        {/* ========================================================
-            LIVE BUSINESS HOURS
-            ======================================================== */}
-        {isFieldAllowed('businessHours') && profile.businessHours && profile.businessHours.length > 0 && (
-          <div className="px-6 py-4 border-t border-slate-100">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <FaRegClock className="w-4 h-4 text-blue-600" />
-                <span>Operating Schedule</span>
-              </h2>
-              {businessStatus && (
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
-                  }`}>
-                  {businessStatus.isOpen ? 'Open Now' : 'Closed Today'}
-                </span>
-              )}
-            </div>
-
-            <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 text-xs space-y-2">
-              {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
-                const sched = profile.businessHours.find(h => h.day?.toLowerCase() === day);
-                const isToday = new Date().getDay() === ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].indexOf(day);
-                return (
-                  <div
-                    key={day}
-                    className={`flex justify-between items-center py-1 px-2 rounded-lg ${isToday ? 'bg-blue-50/80 font-semibold text-blue-900' : 'text-slate-600'
-                      }`}
-                  >
-                    <span className="capitalize">{day}</span>
-                    <span>
-                      {!sched || sched.isClosed ? (
-                        <span className="text-slate-400">Closed</span>
-                      ) : (
-                        `${sched.openingTime || '09:00'} - ${sched.closingTime || '18:00'}`
-                      )}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================
-            CONTACT INFORMATION DIRECTORY
-            ======================================================== */}
-        <div className="px-6 py-4 border-t border-slate-100">
-          <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
-            <FaHeadset className="w-4 h-4 text-blue-600" />
-            <span>Contact Information</span>
-          </h2>
-
-          <div className="space-y-2.5">
-            {/* Phone */}
-            {profile.phones.map((p, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
-                    <FaPhoneAlt className="w-3 h-3" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                      {p.label || 'Direct Phone'}
-                    </span>
-                    <p className="text-xs font-semibold text-slate-800">{p.number}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(p.number, `phone-${idx}`)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
-                    title="Copy Number"
-                  >
-                    {copiedItem === `phone-${idx}` ? <FaCheck className="w-3 h-3 text-emerald-500" /> : <FaCopy className="w-3 h-3" />}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleCall(p.number)}
-                    className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
-                    title="Call Direct"
-                  >
-                    <FaExternalLinkAlt className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            {/* Email */}
-            {profile.emails.map((e, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
-                    <FaEnvelope className="w-3 h-3" />
-                  </div>
-                  <div className="max-w-[200px] truncate">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                      {e.label || 'Email Address'}
-                    </span>
-                    <p className="text-xs font-semibold text-slate-800 truncate">{e.address}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(e.address, `email-${idx}`)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
-                    title="Copy Email"
-                  >
-                    {copiedItem === `email-${idx}` ? <FaCheck className="w-3 h-3 text-emerald-500" /> : <FaCopy className="w-3 h-3" />}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleEmail(e.address)}
-                    className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors"
-                    title="Send Email"
-                  >
-                    <FaExternalLinkAlt className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            {/* Address */}
-            {profile.addresses.map((addr, idx) => {
-              const fullText = addr.fullAddress || `${addr.street || ''}, ${addr.city || ''} ${addr.country || ''}`.trim();
-              if (!fullText) return null;
-              return (
+            <div className="space-y-2.5">
+              {/* Phone */}
+              {profile.phones.map((p, idx) => (
                 <div
                   key={idx}
                   className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center">
-                      <FaMapMarkerAlt className="w-3 h-3" />
+                    <div className="w-8 h-8 rounded-lg bg-[#0B1E36] text-[#E5C39E] flex items-center justify-center shadow-xs">
+                      <FaPhoneAlt className="w-3 h-3" />
                     </div>
                     <div>
                       <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                        {addr.label || 'Office Location'}
+                        {p.label || 'Direct Phone'}
                       </span>
-                      <p className="text-xs font-semibold text-slate-800">{fullText}</p>
+                      <p className="text-xs font-semibold text-slate-800">{p.number}</p>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(fullText)}`, '_blank')}
-                    className="p-1.5 rounded-lg text-sky-600 hover:bg-sky-50 transition-colors"
-                    title="Open Maps"
-                  >
-                    <FaExternalLinkAlt className="w-3 h-3" />
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(p.number, `phone-${idx}`)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                      title="Copy Number"
+                    >
+                      {copiedItem === `phone-${idx}` ? <FaCheck className="w-3 h-3 text-emerald-500" /> : <FaCopy className="w-3 h-3" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleCall(p.number)}
+                      className="p-1.5 rounded-lg text-[#0B1E36] hover:bg-slate-200 transition-colors cursor-pointer"
+                      title="Call Direct"
+                    >
+                      <FaExternalLinkAlt className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              ))}
 
-        {/* ========================================================
-            SOCIAL NETWORKS DOCK
-            ======================================================== */}
-        {profile.socialLinks && profile.socialLinks.length > 0 && (
-          <div className="px-6 py-4 border-t border-slate-100">
-            <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
-              <FaUsers className="w-4 h-4 text-blue-600" />
-              <span>Social Networks</span>
-            </h2>
+              {/* Email */}
+              {profile.emails.map((e, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[#0B1E36] text-[#E5C39E] flex items-center justify-center shadow-xs">
+                      <FaEnvelope className="w-3 h-3" />
+                    </div>
+                    <div className="max-w-[200px] truncate">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                        {e.label || 'Email Address'}
+                      </span>
+                      <p className="text-xs font-semibold text-slate-800 truncate">{e.address}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(e.address, `email-${idx}`)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                      title="Copy Email"
+                    >
+                      {copiedItem === `email-${idx}` ? <FaCheck className="w-3 h-3 text-emerald-500" /> : <FaCopy className="w-3 h-3" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleEmail(e.address)}
+                      className="p-1.5 rounded-lg text-[#0B1E36] hover:bg-slate-200 transition-colors cursor-pointer"
+                      title="Send Email"
+                    >
+                      <FaExternalLinkAlt className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              ))}
 
-            <div className="flex flex-wrap gap-2">
-              {profile.socialLinks.map((s, idx) => {
-                if (!s.url) return null;
+              {/* Address */}
+              {profile.addresses.map((addr, idx) => {
+                const fullText = addr.fullAddress || `${addr.street || ''}, ${addr.city || ''} ${addr.country || ''}`.trim();
+                if (!fullText) return null;
                 return (
-                  <button
+                  <div
                     key={idx}
-                    type="button"
-                    onClick={() => handleWebsite(s.url)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-slate-700 hover:text-blue-700 transition-all text-xs font-semibold"
+                    className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors"
                   >
-                    {getSocialIcon(s.platform)}
-                    <span className="capitalize">{s.platform}</span>
-                  </button>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#0B1E36] text-[#E5C39E] flex items-center justify-center shadow-xs">
+                        <FaMapMarkerAlt className="w-3 h-3" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                          {addr.label || 'Office Location'}
+                        </span>
+                        <p className="text-xs font-semibold text-slate-800">{fullText}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(fullText)}`, '_blank')}
+                      className="p-1.5 rounded-lg text-[#0B1E36] hover:bg-slate-200 transition-colors cursor-pointer"
+                      title="Open Maps"
+                    >
+                      <FaExternalLinkAlt className="w-3 h-3" />
+                    </button>
+                  </div>
                 );
               })}
             </div>
           </div>
-        )}
 
-        {/* ========================================================
-            DOWNLOADS & CATALOGS (IF ANY)
-            ======================================================== */}
-        {isFieldAllowed('downloads') && profile.downloads && profile.downloads.length > 0 && (
-          <div className="px-6 py-4 border-t border-slate-100">
-            <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
-              <FaDownload className="w-4 h-4 text-blue-600" />
-              <span>Documents & Catalogs</span>
-            </h2>
+          {/* 4. OPERATING SCHEDULE / BUSINESS HOURS */}
+          {isFieldAllowed('businessHours') && profile.businessHours && profile.businessHours.length > 0 && (
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-bold text-[#0B1E36] tracking-tight flex items-center gap-1.5">
+                  <FaRegClock className="w-3.5 h-3.5 text-[#D8B48D]" />
+                  <span>Operating Schedule</span>
+                </h2>
+                {businessStatus && (
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                    }`}>
+                    {businessStatus.isOpen ? 'Open Now' : 'Closed Today'}
+                  </span>
+                )}
+              </div>
 
-            <div className="space-y-2">
-              {profile.downloads.map((doc, idx) => (
-                <a
-                  key={idx}
-                  href={doc.fileUrl || doc.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors text-xs font-medium text-slate-800"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <FaFilePdf className="w-4 h-4 text-red-500" />
-                    <span>{doc.title || doc.name || `Document #${idx + 1}`}</span>
+              <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 text-xs space-y-2">
+                {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
+                  const sched = profile.businessHours.find(h => h.day?.toLowerCase() === day);
+                  const isToday = new Date().getDay() === ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].indexOf(day);
+                  return (
+                    <div
+                      key={day}
+                      className={`flex justify-between items-center py-1 px-2 rounded-lg ${isToday ? 'bg-[#0B1E36]/10 font-semibold text-[#0B1E36]' : 'text-slate-600'
+                        }`}
+                    >
+                      <span className="capitalize">{day}</span>
+                      <span>
+                        {!sched || sched.isClosed ? (
+                          <span className="text-slate-400">Closed</span>
+                        ) : (
+                          `${sched.openingTime || '09:00'} - ${sched.closingTime || '18:00'}`
+                        )}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 5. DIRECT LEAD CAPTURE FUNNEL: CONSULTATION & INQUIRY */}
+          {isFieldAllowed('customerInquiry') && (
+            <div id="inquiry-funnel" className="pt-2">
+              <div className="bg-gradient-to-br from-slate-50 to-amber-50/20 rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+                <div className="flex items-center gap-2 mb-1">
+                  <FaCalendarAlt className="w-4 h-4 text-[#0B1E36]" />
+                  <h2 className="text-sm font-bold text-[#0B1E36]">Request a Consultation</h2>
+                </div>
+                <p className="text-xs text-slate-500 mb-4">
+                  Schedule direct discussion with {profile.name} for strategic or technical advisory.
+                </p>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                      Required Service or Topic
+                    </label>
+                    <select
+                      value={inquiryData.service}
+                      onChange={(e) => setInquiryData(prev => ({ ...prev, service: e.target.value }))}
+                      className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0B1E36]"
+                    >
+                      <option value="">Select a service / topic...</option>
+                      {profile.services.map((s, idx) => (
+                        <option key={idx} value={s.name}>{s.name}</option>
+                      ))}
+                      <option value="General Strategic Consultation">General Strategic Consultation</option>
+                      <option value="Enterprise Architecture Review">Enterprise Architecture Review</option>
+                      <option value="Other Inquiries">Other Inquiries</option>
+                    </select>
                   </div>
-                  <FaDownload className="w-3 h-3 text-slate-400" />
-                </a>
-              ))}
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                        Preferred Date
+                      </label>
+                      <input
+                        type="date"
+                        value={inquiryData.date}
+                        onChange={(e) => setInquiryData(prev => ({ ...prev, date: e.target.value }))}
+                        className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0B1E36]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                        Preferred Time
+                      </label>
+                      <input
+                        type="time"
+                        value={inquiryData.time}
+                        onChange={(e) => setInquiryData(prev => ({ ...prev, time: e.target.value }))}
+                        className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0B1E36]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                      Your Contact Number / WhatsApp
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="+91 98765 43210"
+                      value={inquiryData.contact}
+                      onChange={(e) => setInquiryData(prev => ({ ...prev, contact: e.target.value }))}
+                      className="w-full text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0B1E36]"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleSendInquiry}
+                    className="w-full py-2.5 rounded-xl bg-[#0B1E36] hover:bg-[#132c4d] text-white font-semibold text-xs tracking-wide shadow-md transition-all flex items-center justify-center gap-2 mt-2 cursor-pointer"
+                  >
+                    <FaPaperPlane className="w-3 h-3 text-[#D8B48D]" />
+                    <span>Submit Consultation Request</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 6. PRODUCTS & MERCHANDISE (IF ANY) */}
+          {isFieldAllowed('products') && profile.products && profile.products.length > 0 && (
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-bold text-[#0B1E36] tracking-tight flex items-center gap-1.5">
+                  <FaGem className="w-3.5 h-3.5 text-[#D8B48D]" />
+                  <span>Products & Solutions</span>
+                </h2>
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  {profile.products.length} Items
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {profile.products.map((item, idx) => (
+                  <div key={idx} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-start gap-3">
+                    {item.image && (
+                      <img src={item.image} alt={item.name} className="w-16 h-16 rounded-xl object-cover border border-slate-100" />
+                    )}
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-semibold text-slate-900 text-xs">{item.name}</h3>
+                        {item.price && (
+                          <span className="text-xs font-bold text-[#0B1E36]">{item.currency || '€'} {item.price}</span>
+                        )}
+                      </div>
+                      {item.description && (
+                        <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{item.description}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 7. PROFILE VIDEO & MEDIA (IF ANY) */}
+          {isFieldAllowed('profileVideo') && profile.profileVideo && (
+            <div className="space-y-2 pt-2">
+              <h2 className="text-base font-bold text-[#0B1E36] tracking-tight flex items-center gap-1.5">
+                <FaVideo className="w-3.5 h-3.5 text-[#D8B48D]" />
+                <span>Introductory Video</span>
+              </h2>
+              <VideoPlayer src={profile.profileVideo} title={`${profile.name} - Introduction`} />
+            </div>
+          )}
+
+          {/* 8. SOCIAL NETWORKS */}
+          {profile.socialLinks && profile.socialLinks.length > 0 && (
+            <div className="space-y-3 pt-2">
+              <h2 className="text-base font-bold text-[#0B1E36] tracking-tight flex items-center gap-1.5">
+                <FaUsers className="w-3.5 h-3.5 text-[#D8B48D]" />
+                <span>Social Networks</span>
+              </h2>
+
+              <div className="flex flex-wrap gap-2">
+                {profile.socialLinks.map((s, idx) => {
+                  if (!s.url) return null;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleWebsite(s.url)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 hover:bg-[#0B1E36]/5 border border-slate-200 hover:border-[#D8B48D]/50 text-slate-700 hover:text-[#0B1E36] transition-all text-xs font-semibold cursor-pointer"
+                    >
+                      {getSocialIcon(s.platform)}
+                      <span className="capitalize">{s.platform}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 9. DOWNLOADS & CATALOGS (IF ANY) */}
+          {isFieldAllowed('downloads') && profile.downloads && profile.downloads.length > 0 && (
+            <div className="space-y-3 pt-2">
+              <h2 className="text-base font-bold text-[#0B1E36] tracking-tight flex items-center gap-1.5">
+                <FaDownload className="w-3.5 h-3.5 text-[#D8B48D]" />
+                <span>Documents & Catalogs</span>
+              </h2>
+
+              <div className="space-y-2">
+                {profile.downloads.map((doc, idx) => (
+                  <a
+                    key={idx}
+                    href={doc.fileUrl || doc.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors text-xs font-medium text-slate-800"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <FaFilePdf className="w-4 h-4 text-red-500" />
+                      <span>{doc.title || doc.name || `Document #${idx + 1}`}</span>
+                    </div>
+                    <FaDownload className="w-3 h-3 text-slate-400" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 10. SECONDARY ACTION: SAVE CONTACT TO PHONE (.vcf) */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={handleSaveContact}
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors shadow-sm cursor-pointer"
+            >
+              <FaDownload className="w-3.5 h-3.5 text-slate-500" />
+              <span>Save Contact to Phone (.vcf)</span>
+            </button>
+          </div>
+
+          {/* 11. FOOTER: POWERED BY REVAYAH ONE */}
+          <div className="pt-4 pb-2 text-center border-t border-slate-100">
+            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-800 mb-1">
+              <FaCrown className="w-3.5 h-3.5 text-[#D8B48D]" />
+              <span>REVAYAH ONE</span>
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Official Digital Identity & Service Portal
+            </p>
+            <div className="flex items-center justify-center gap-4 mt-3">
+              <button
+                type="button"
+                onClick={handleNativeShare}
+                className="text-xs font-semibold text-slate-700 hover:text-[#0B1E36] flex items-center gap-1 cursor-pointer"
+              >
+                <FaShareAlt className="w-3 h-3 text-[#D8B48D]" />
+                Share
+              </button>
+              <span className="text-slate-300">•</span>
+              <button
+                type="button"
+                onClick={() => setShowQrModal(true)}
+                className="text-xs font-semibold text-slate-700 hover:text-[#0B1E36] flex items-center gap-1 cursor-pointer"
+              >
+                <FaQrcode className="w-3 h-3 text-[#D8B48D]" />
+                QR Code
+              </button>
             </div>
           </div>
-        )}
 
-        {/* ========================================================
-            CARD FOOTER: REVAYAH ONE AUTHENTICITY
-            ======================================================== */}
-        <div className="mt-6 px-6 py-6 bg-slate-50 border-t border-slate-200 text-center">
-          <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-800 mb-1">
-            <FaCrown className="w-3.5 h-3.5 text-blue-600" />
-            <span>REVAYAH ONE</span>
-          </div>
-          <p className="text-[11px] text-slate-400">
-            Official Digital Identity & Service Portal
-          </p>
-          <div className="flex items-center justify-center gap-4 mt-3">
-            <button
-              type="button"
-              onClick={handleNativeShare}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
-            >
-              <FaShareAlt className="w-3 h-3" />
-              Share
-            </button>
-            <span className="text-slate-300">•</span>
-            <button
-              type="button"
-              onClick={() => setShowQrModal(true)}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
-            >
-              <FaQrcode className="w-3 h-3" />
-              QR Code
-            </button>
-          </div>
         </div>
 
       </div>
@@ -1200,7 +1144,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
             >
               <FaTimes className="w-4 h-4" />
             </button>
-            <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 rounded-2xl bg-[#0B1E36] text-[#E5C39E] flex items-center justify-center mx-auto mb-3">
               <FaQrcode className="w-6 h-6" />
             </div>
             <h3 className="text-base font-bold text-slate-900 mb-1">Scan & Connect</h3>
@@ -1217,7 +1161,7 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
             <button
               type="button"
               onClick={() => handleCopy(window.location.href, 'qrModal')}
-              className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               {copiedItem === 'qrModal' ? (
                 <>

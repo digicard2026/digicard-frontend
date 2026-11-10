@@ -6,7 +6,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(whatsapp|facebookexternalhit|facebot|twitterbot|linkedinbot|telegrambot|slackbot|discordbot|applebot|skypeuripreview).*"
+          "value": ".*([Ww]hats[Aa]pp|facebookexternalhit|[Ff]acebot|[Tt]witterbot|[Ll]inked[Ii]n[Bb]ot|[Tt]elegram[Bb]ot|[Ss]lackbot|[Dd]iscordbot|[Aa]pplebot|[Ss]kype[Uu]ri[Pp]review).*"
         }
       ],
       "destination": "https://api.revayah.one/preview/:slug*"
