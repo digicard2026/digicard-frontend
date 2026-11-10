@@ -569,11 +569,10 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
           {/* Service Area & Availability Badges */}
           <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
             {isFieldAllowed('businessHours') && businessStatus && (
-              <span className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-medium border ${
-                businessStatus.isOpen
+              <span className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-medium border ${businessStatus.isOpen
                   ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/30'
                   : 'bg-white/10 text-slate-300 border-white/15'
-              }`}>
+                }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-400' : 'bg-slate-400'}`} />
                 {businessStatus.text}
               </span>
@@ -869,9 +868,8 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
                   <span>Operating Schedule</span>
                 </h2>
                 {businessStatus && (
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    businessStatus.isOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
-                  }`}>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${businessStatus.isOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                    }`}>
                     {businessStatus.isOpen ? 'Open Now' : 'Closed Today'}
                   </span>
                 )}
@@ -884,9 +882,8 @@ const DefaultCard = ({ cardData = {}, plan = 'BusinessPremium', isSnapshot = fal
                   return (
                     <div
                       key={day}
-                      className={`flex justify-between items-center py-1 px-2 rounded-lg ${
-                        isToday ? 'bg-[#0B1E36]/10 font-semibold text-[#0B1E36]' : 'text-slate-600'
-                      }`}
+                      className={`flex justify-between items-center py-1 px-2 rounded-lg ${isToday ? 'bg-[#0B1E36]/10 font-semibold text-[#0B1E36]' : 'text-slate-600'
+                        }`}
                     >
                       <span className="capitalize">{day}</span>
                       <span>

@@ -37,9 +37,20 @@ const WhatsAppShareModal = ({ isOpen, onClose, cardData }) => {
   const generateCardBlob = async () => {
     if (!cardRef.current) return null;
     try {
+      const imgs = Array.from(cardRef.current.querySelectorAll("img"));
+      await Promise.all(
+        imgs.map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((res) => {
+            img.onload = res;
+            img.onerror = res;
+          });
+        })
+      );
+
       return await toBlob(cardRef.current, {
-        cacheBust: true,
-        pixelRatio: 2.5,
+        cacheBust: false,
+        pixelRatio: 2,
         backgroundColor: "#FFFFFF",
       });
     } catch (err) {
@@ -94,7 +105,9 @@ const WhatsAppShareModal = ({ isOpen, onClose, cardData }) => {
       }
 
       // Open WhatsApp Web with pre-filled message & link
-      const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+      const waUrl = isMobile
+        ? `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`
+        : `https://web.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
       window.open(waUrl, "_blank", "noopener,noreferrer");
 
       if (imageCopiedToClipboard) {
@@ -106,7 +119,9 @@ const WhatsAppShareModal = ({ isOpen, onClose, cardData }) => {
     } catch (err) {
       if (err.name !== "AbortError") {
         console.error("WhatsApp share failed:", err);
-        const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+        const waUrl = isMobile
+          ? `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`
+          : `https://web.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
         window.open(waUrl, "_blank", "noopener,noreferrer");
       }
     } finally {

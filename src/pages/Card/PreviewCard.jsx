@@ -220,22 +220,56 @@ const PreviewCard = () => {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const handleNativeShare = async () => {
+  // Helper to generate a high-res shareable image File of the active card
+  const getCardSnapshotFile = async () => {
+    try {
+      const node = getActiveCardNode();
+      if (!node) return null;
+
+      // Ensure all images within the card are loaded before capture
+      const imgs = Array.from(node.querySelectorAll("img"));
+      await Promise.all(
+        imgs.map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((res) => {
+            img.onload = res;
+            img.onerror = res;
+          });
+        })
+      );
+
+      const blob = await toBlob(node, {
+        cacheBust: false,
+        pixelRatio: 2,
+        backgroundColor: "#FFFFFF",
+      });
+
+      if (!blob) return null;
+      const fileName = `${cardData?.firstName || "digital"}_identity_card.png`;
+      return new File([blob], fileName, { type: "image/png" });
+    } catch (err) {
+      console.warn("Card snapshot file generation error:", err);
+      return null;
+    }
+  };
+
+  const handleNativeShare = async (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
     const shareUrl = getPublicLink();
     const fullName = `${cardData?.prefix ? cardData.prefix + " " : ""}${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim() || "My Digital Identity Card";
     const shareTitle = `${fullName} | Digital Identity Card`;
     const shareText = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
 
-    // 1. Pre-copy the clean link to clipboard immediately so it's always ready to paste anywhere (Ctrl+V)
+    // 1. Pre-copy clean link to clipboard for convenience
     if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(shareUrl).catch(() => {});
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     }
 
-    // 2. Open the native OS share dialog (Windows "Share link" surface / Android / iOS native sheet)
-    // IMPORTANT: Passing 'url' and omitting 'files' ensures Windows 11 opens in "Share link" mode,
-    // which displays the card URL, card thumbnail, and has the [🔗] Copy Link button enabled!
+    // 2. Open the OS "Share link" dialog (Windows 11 / Android / iOS)
+    // Passing 'url' and 'text' (without 'files') opens the exact "Share link" surface
+    // containing WhatsApp in the list of app icons (along with Teams, Outlook, Gmail, Twitter, LinkedIn)
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
@@ -246,22 +280,24 @@ const PreviewCard = () => {
         return;
       } catch (err) {
         if (err.name === "AbortError") {
-          // User dismissed or closed the share window - normal behavior
           return;
         }
         console.warn("navigator.share fallback:", err);
       }
     }
 
-    // 3. Fallback if browser doesn't support navigator.share
-    handleCopyLink();
+    // 3. Fallback on browsers without navigator.share
+    setShowQrModal(true);
   };
 
-  const handleWhatsAppShare = (e) => {
+  const handleWhatsAppShare = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
+    setShowQrModal(false);
+
     const shareUrl = getPublicLink();
     const fullName = `${cardData?.prefix ? cardData.prefix + " " : ""}${cardData?.firstName || ""} ${cardData?.lastName || ""}`.trim() || "My Digital Identity Card";
-    const message = encodeURIComponent(`Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`);
+    const shareTitle = `${fullName} | Digital Identity Card`;
+    const shareText = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
     const isMobile = typeof navigator !== "undefined" && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && !window.MSStream));
 
     // Copy link to clipboard for convenience
@@ -271,13 +307,33 @@ const PreviewCard = () => {
       setTimeout(() => setCopied(false), 2500);
     }
 
-    // Direct WhatsApp Web on desktop PC; WhatsApp app on mobile devices
-    const whatsappUrl = isMobile
-      ? `https://api.whatsapp.com/send?text=${message}`
-      : `https://web.whatsapp.com/send?text=${message}`;
+    // On mobile devices, attempt native share with card snap image attached directly
+    if (isMobile && typeof navigator !== "undefined" && navigator.share) {
+      setIsSharing(true);
+      try {
+        const file = await getCardSnapshotFile();
+        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: shareTitle,
+            text: shareText,
+            files: [file],
+          });
+          setIsSharing(false);
+          return;
+        }
+      } catch (err) {
+        if (err.name === "AbortError") {
+          setIsSharing(false);
+          return;
+        }
+        console.warn("Mobile WhatsApp file share failed, opening modal:", err);
+      } finally {
+        setIsSharing(false);
+      }
+    }
 
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
-    setShowQrModal(false);
+    // On desktop, open the WhatsApp Share Modal with live chat preview, card image clipboard copy, and WhatsApp Web launch
+    setShowWhatsAppModal(true);
   };
 
   const handleDownloadPng = async () => {
@@ -374,15 +430,6 @@ const PreviewCard = () => {
 
         <div className="flex items-center gap-1.5">
           <button
-            onClick={handleWhatsAppShare}
-            title="Share directly via WhatsApp Web"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-md shadow-[#25D366]/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
-          >
-            <FaWhatsapp className="w-3.5 h-3.5" />
-            <span>WhatsApp</span>
-          </button>
-
-          <button
             onClick={() => generateVCard(cardData)}
             title="Save Contact to Phone"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-600/90 hover:bg-blue-600 text-white shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95"
@@ -393,8 +440,8 @@ const PreviewCard = () => {
 
           <button
             onClick={handleNativeShare}
-            title="Share Digital Card (Native Link Share with Copy)"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/10 hover:bg-white/20 text-white border border-white/15 backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            title="Share Digital Card"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white/10 hover:bg-white/20 text-white border border-white/15 backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
           >
             <FaShareAlt className="w-3 h-3" />
             <span>Share</span>
@@ -445,17 +492,9 @@ const PreviewCard = () => {
         </button>
         <button
           type="button"
-          onClick={handleWhatsAppShare}
-          title="Share directly via WhatsApp"
-          className="w-12 h-12 flex items-center justify-center bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl text-base active:scale-95 transition-transform flex-shrink-0 shadow-md shadow-emerald-500/25 cursor-pointer"
-        >
-          <FaWhatsapp className="w-5 h-5" />
-        </button>
-        <button
-          type="button"
           onClick={handleNativeShare}
-          title="Share Link"
-          className="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/15 rounded-xl text-sm active:scale-95 transition-transform flex-shrink-0 cursor-pointer"
+          title="Share Card"
+          className="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/15 rounded-xl text-base active:scale-95 transition-transform flex-shrink-0 cursor-pointer"
         >
           <FaShareAlt className="w-4 h-4" />
         </button>
@@ -565,10 +604,19 @@ const PreviewCard = () => {
             <button
               onClick={handleWhatsAppShare}
               disabled={isSharing}
-              className="w-full mb-4 py-2.5 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-semibold text-xs rounded-xl shadow-lg shadow-[#25D366]/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer disabled:opacity-60"
+              className="w-full mb-3 py-3 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-semibold text-xs rounded-xl shadow-lg shadow-[#25D366]/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer disabled:opacity-60"
             >
-              <FaWhatsapp className="w-4 h-4" />
-              <span>{isSharing ? "Preparing Card..." : "Share to WhatsApp"}</span>
+              <FaWhatsapp className="w-4 h-4 text-white" />
+              <span>{isSharing ? "Preparing Card..." : "Share to WhatsApp (Card & Link)"}</span>
+            </button>
+
+            {/* Quick Native / More Options */}
+            <button
+              onClick={handleNativeShare}
+              className="w-full mb-4 py-2.5 px-4 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white font-medium text-xs rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition-all cursor-pointer"
+            >
+              <FaShareAlt className="w-3.5 h-3.5" />
+              <span>More Share Options...</span>
             </button>
 
             {/* Quick Social Share Buttons */}
