@@ -206,6 +206,20 @@ const PreviewCard = () => {
   }, [cardData?._id, cardData?.urlSlug, cardData?.cardPreviewImage]);
 
   const getPublicLink = () => {
+    // 1. If explicit public share base URL is configured in .env (for local tunnel testing):
+    const customShareBase = import.meta.env.VITE_PUBLIC_SHARE_URL;
+    if (customShareBase && cardData?.urlSlug) {
+      return `${customShareBase.replace(/\/+$/, "")}/preview/${cardData.urlSlug}`;
+    }
+
+    // 2. If currently accessed through a public tunnel (localhost.run, ngrok, localtunnel), share via tunnel so crawlers can reach it!
+    if (typeof window !== "undefined" && (window.location.hostname.includes("lhr.life") || window.location.hostname.includes("ngrok") || window.location.hostname.includes("loca.lt"))) {
+      if (cardData?.urlSlug) {
+        return `${window.location.origin}/preview/${cardData.urlSlug}`;
+      }
+      return window.location.href;
+    }
+
     const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
     const origin = isLocal ? "https://www.revayah.one" : (typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one");
     if (cardData?.urlSlug) {
