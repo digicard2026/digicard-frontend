@@ -229,7 +229,9 @@ const PreviewCard = () => {
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(getPublicLink());
+    const shareUrl = getPublicLink();
+    const fullMessage = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
+    navigator.clipboard.writeText(fullMessage);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -274,9 +276,9 @@ const PreviewCard = () => {
     const shareTitle = `${fullName} | Digital Identity Card`;
     const shareText = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
 
-    // 1. Pre-copy clean link to clipboard for convenience
+    // 1. Pre-copy clean link with intro text to clipboard for convenience
     if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(shareUrl).catch(() => {});
+      navigator.clipboard.writeText(shareText).catch(() => {});
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     }
