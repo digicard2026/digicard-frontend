@@ -206,6 +206,20 @@ const PreviewCard = () => {
   }, [cardData?._id, cardData?.urlSlug, cardData?.cardPreviewImage]);
 
   const getPublicLink = () => {
+    // 1. If explicit public share base URL is configured in .env (for local tunnel testing):
+    const customShareBase = import.meta.env.VITE_PUBLIC_SHARE_URL;
+    if (customShareBase && cardData?.urlSlug) {
+      return `${customShareBase.replace(/\/+$/, "")}/preview/${cardData.urlSlug}`;
+    }
+
+    // 2. If currently accessed through a public tunnel (localhost.run, ngrok, localtunnel), share via tunnel so crawlers can reach it!
+    if (typeof window !== "undefined" && (window.location.hostname.includes("lhr.life") || window.location.hostname.includes("ngrok") || window.location.hostname.includes("loca.lt"))) {
+      if (cardData?.urlSlug) {
+        return `${window.location.origin}/preview/${cardData.urlSlug}`;
+      }
+      return window.location.href;
+    }
+
     const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
     const origin = isLocal ? "https://www.revayah.one" : (typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one");
     if (cardData?.urlSlug) {
@@ -215,7 +229,9 @@ const PreviewCard = () => {
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(getPublicLink());
+    const shareUrl = getPublicLink();
+    const fullMessage = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
+    navigator.clipboard.writeText(fullMessage);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -260,9 +276,9 @@ const PreviewCard = () => {
     const shareTitle = `${fullName} | Digital Identity Card`;
     const shareText = `Hi! Here's my digital identity card. Click to view my profile:\n${shareUrl}`;
 
-    // 1. Pre-copy clean link to clipboard for convenience
+    // 1. Pre-copy clean link with intro text to clipboard for convenience
     if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(shareUrl).catch(() => {});
+      navigator.clipboard.writeText(shareText).catch(() => {});
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     }
