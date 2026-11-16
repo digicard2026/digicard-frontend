@@ -70,9 +70,19 @@ const SignIn = () => {
         localStorage.setItem('user_id', data.user_id);
         localStorage.setItem('user_email', loginData.email);
         localStorage.setItem('user_role', data.role);
+        if (data.name) {
+          localStorage.setItem('user_name', data.name);
+        }
+        if (data.firstName) {
+          localStorage.setItem('user_first_name', data.firstName);
+        }
+        if (data.lastName) {
+          localStorage.setItem('user_last_name', data.lastName);
+        }
         if (data.token) {
           localStorage.setItem('token', data.token);
         }
+        window.dispatchEvent(new Event('user-profile-updated'));
 
         // Fetch user active subscription and purchased add-ons so logout/login restores them!
         try {

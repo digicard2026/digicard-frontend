@@ -5774,48 +5774,48 @@ const cardPlans = {
 };
 
 const allPlansList = [
-  'Personal', 
-  'Business', 
-  'BusinessPremium', 
-  'Professionals', 
+  'Personal',
+  'Business',
+  'BusinessPremium',
+  'Professionals',
   'ProfessionalPro',
-  'Entrepreneurials', 
-  'EntrepreneurialsMulti', 
-  'CorporateBusiness', 
+  'Entrepreneurials',
+  'EntrepreneurialsMulti',
+  'CorporateBusiness',
   'Team',
   'MiniWebsite'
 ];
 
 const businessPlansList = [
-  'Business', 
-  'BusinessPremium', 
-  'Professionals', 
+  'Business',
+  'BusinessPremium',
+  'Professionals',
   'ProfessionalPro',
-  'Entrepreneurials', 
-  'EntrepreneurialsMulti', 
-  'CorporateBusiness', 
+  'Entrepreneurials',
+  'EntrepreneurialsMulti',
+  'CorporateBusiness',
   'Team',
   'MiniWebsite'
 ];
 
 const businessPremiumAndAbove = [
-  'BusinessPremium', 
-  'Professionals', 
-  'ProfessionalPro', 
-  'Entrepreneurials', 
-  'EntrepreneurialsMulti', 
-  'CorporateBusiness', 
-  'Team', 
+  'BusinessPremium',
+  'Professionals',
+  'ProfessionalPro',
+  'Entrepreneurials',
+  'EntrepreneurialsMulti',
+  'CorporateBusiness',
+  'Team',
   'MiniWebsite'
 ];
 
 const professionalsAndAbove = [
-  'Professionals', 
-  'ProfessionalPro', 
-  'Entrepreneurials', 
-  'EntrepreneurialsMulti', 
-  'CorporateBusiness', 
-  'Team', 
+  'Professionals',
+  'ProfessionalPro',
+  'Entrepreneurials',
+  'EntrepreneurialsMulti',
+  'CorporateBusiness',
+  'Team',
   'MiniWebsite'
 ];
 
@@ -5828,7 +5828,7 @@ const fieldPlanMap = {
   'suffix': allPlansList,
   'profilePhoto': allPlansList,
   'tagline': allPlansList,
-  'profileVideo': professionalsAndAbove,
+  'profileVideo': allPlansList,
   'aboutText': allPlansList,
 
   // Contact Management
@@ -5845,7 +5845,7 @@ const fieldPlanMap = {
   'shareableUrl': allPlansList,
   'nfcSettings': businessPlansList,
   'downloads': businessPlansList,
-  'videos': professionalsAndAbove,
+  'videos': allPlansList,
 
   // Business fields
   'companyName': businessPlansList,
@@ -5894,6 +5894,38 @@ const fieldPlanMap = {
   'enableEmail': allPlansList
 };
 
+// Video URL & Object helpers to handle strings, objects, or nested objects safely
+export const extractVideoUrl = (val) => {
+  if (!val) return "";
+  let curr = val;
+  while (typeof curr === 'object' && curr !== null && curr.url) {
+    curr = curr.url;
+  }
+  if (typeof curr === 'string') {
+    const trimmed = curr.trim();
+    if (trimmed === '[object Object]') return "";
+    return trimmed;
+  }
+  return "";
+};
+
+export const extractVideoField = (val, fieldName, fallback = '') => {
+  if (!val) return fallback;
+  if (typeof val === 'object' && val !== null && val[fieldName] !== undefined) {
+    return val[fieldName];
+  }
+  return fallback;
+};
+
+export const parseVideoObject = (val, thumbFallback = '', titleFallback = '', uploadTypeFallback = 'url') => {
+  if (!val) return { url: "", thumbnail: "", title: "", uploadType: 'url' };
+  const url = extractVideoUrl(val);
+  const thumbnail = extractVideoField(val, 'thumbnail', thumbFallback) || "";
+  const title = extractVideoField(val, 'title', titleFallback) || "";
+  const uploadType = extractVideoField(val, 'uploadType', uploadTypeFallback) || 'url';
+  return { url, thumbnail, title, uploadType };
+};
+
 // Function to clean form data by removing empty fields and handling video objects
 const cleanFormData = (data) => {
   const isPersonal = (data.cardType || 'Personal') === 'Personal';
@@ -5905,7 +5937,7 @@ const cleanFormData = (data) => {
     firstName: data.firstName || "",
     ...(data.lastName && { lastName: data.lastName }),
     ...(data.suffix && { suffix: data.suffix }),
-    ...(data.profilePhoto && { profilePhoto: data.profilePhoto }),
+    profilePhoto: data.profilePhoto || null,
 
     // Email
     email: data.email,
@@ -5922,15 +5954,17 @@ const cleanFormData = (data) => {
     isPublic: data.isPublic !== undefined ? data.isPublic : true,
     ...(data.shareableUrl && { shareableUrl: data.shareableUrl }),
 
-    // Profile Page Fields
-    ...(!isPersonal && data.profileVideo?.url && {
-      profileVideo: {
-        url: data.profileVideo.url,
-        thumbnail: data.profileVideo.thumbnail || "",
-        title: data.profileVideo.title || "",
-        uploadType: data.profileVideo.uploadType || 'url'
-      }
-    }),
+    // Profile Page Fields (Profile Video)
+    profileVideo: (() => {
+      const url = extractVideoUrl(data.profileVideo);
+      if (!url) return null;
+      return {
+        url,
+        thumbnail: extractVideoField(data.profileVideo, 'thumbnail', '') || "",
+        title: extractVideoField(data.profileVideo, 'title', '') || "",
+        uploadType: extractVideoField(data.profileVideo, 'uploadType', 'url') || 'url'
+      };
+    })(),
     ...(data.tagline && { tagline: data.tagline }),
     ...((data.aboutText || (isPersonal && data.bio)) && { aboutText: data.aboutText || data.bio }),
     ...(!isPersonal && data.foundedName && { foundedName: data.foundedName }),
@@ -5941,7 +5975,7 @@ const cleanFormData = (data) => {
     ...(!isPersonal && data.department && { department: data.department }),
     ...(data.jobTitle && { jobTitle: data.jobTitle }),
     ...((data.bio || (isPersonal && data.aboutText)) && { bio: data.bio || data.aboutText }),
-    ...(!isPersonal && data.companyLogo && { companyLogo: data.companyLogo }),
+    companyLogo: isPersonal ? null : (data.companyLogo || null),
     ...(!isPersonal && data.logoSize && { logoSize: data.logoSize }),
     ...(!isPersonal && data.servicesProducts && { servicesProducts: data.servicesProducts }),
     ...(!isPersonal && data.serviceArea && { serviceArea: data.serviceArea }),
@@ -5951,14 +5985,17 @@ const cleanFormData = (data) => {
     ...(!isPersonal && data.productRangeDisplay && { productRangeDisplay: data.productRangeDisplay }),
     ...(!isPersonal && data.catalog && { catalog: data.catalog }),
     ...(!isPersonal && data.catalogPDF && { catalogPDF: data.catalogPDF }),
-    ...(!isPersonal && data.productVideo?.url && {
-      productVideo: {
-        url: data.productVideo.url,
-        thumbnail: data.productVideo.thumbnail || "",
-        title: data.productVideo.title || "",
-        uploadType: data.productVideo.uploadType || 'url'
-      }
-    }),
+    // Product Video
+    productVideo: (() => {
+      const url = extractVideoUrl(data.productVideo);
+      if (!url) return null;
+      return {
+        url,
+        thumbnail: extractVideoField(data.productVideo, 'thumbnail', '') || "",
+        title: extractVideoField(data.productVideo, 'title', '') || "",
+        uploadType: extractVideoField(data.productVideo, 'uploadType', 'url') || 'url'
+      };
+    })(),
     ...(!isPersonal && data.virtualNumber && { virtualNumber: data.virtualNumber }),
     ...(!isPersonal && data.individualProductDisplay && { individualProductDisplay: data.individualProductDisplay }),
     ...(!isPersonal && data.businessCardInstagram && { businessCardInstagram: data.businessCardInstagram }),
@@ -6053,18 +6090,29 @@ const cleanFormData = (data) => {
       clientList: data.clientList.filter(client => client.trim() !== "")
     }),
 
-    ...(!isPersonal && (data.addons?.gallery || ['BusinessPremium', 'MiniWebsite'].includes(data.cardType)) && data.gallery && data.gallery.length > 0 && {
+    ...(data.gallery && data.gallery.length > 0 && {
       gallery: data.gallery
-        .filter(item => item.url && item.url.trim() !== "")
-        .map(item => ({
-          type: item.type || 'image',
-          url: item.url,
-          ...(item.thumbnail && { thumbnail: item.thumbnail }),
-          ...(item.title && { title: item.title }),
-          ...(item.description && { description: item.description }),
-          ...(item.category && { category: item.category }),
-          ...(item.uploadType && { uploadType: item.uploadType })
-        }))
+        .filter(item => {
+          if (!item) return false;
+          const url = typeof item === 'string' ? item : item.url;
+          if (!url) return false;
+          const trimmed = url.trim();
+          return trimmed !== "" && trimmed !== "SAVED" && trimmed !== "null" && trimmed !== "undefined";
+        })
+        .map(item => {
+          if (typeof item === 'string') {
+            return { type: 'image', url: item, uploadType: 'upload' };
+          }
+          return {
+            type: item.type || 'image',
+            url: item.url,
+            ...(item.thumbnail && { thumbnail: item.thumbnail }),
+            ...(item.title && { title: item.title }),
+            ...(item.description && { description: item.description }),
+            ...(item.category && { category: item.category }),
+            ...(item.uploadType && { uploadType: item.uploadType })
+          };
+        })
     }),
 
     ...(data.dynamicQRCode?.targetUrl && { dynamicQRCode: data.dynamicQRCode }),
@@ -6269,6 +6317,75 @@ const interactiveElementsConfig = {
   }
 };
 
+// Standalone Warning Modal declared outside CreateCard so it never unmounts/drops clicks on re-render
+const WarningModal = ({ isOpen, onClose, message }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50 bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 sm:p-7 max-w-md w-full mx-4 border border-slate-200 dark:border-slate-800 transform transition-all scale-100"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl" role="img" aria-label="Warning">⚠️</span>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white">Required Field</h3>
+          </div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
+            aria-label="Close"
+            className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors duration-200 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="text-center py-4">
+          <p className="text-slate-700 dark:text-slate-300 text-base sm:text-lg leading-relaxed font-normal">
+            {message}
+          </p>
+        </div>
+
+        <div className="flex justify-center mt-4">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
+            className="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold py-2.5 px-7 rounded-xl transition-all shadow-md shadow-blue-500/25 cursor-pointer"
+          >
+            I Understand
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CreateCard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -6372,14 +6489,14 @@ const CreateCard = () => {
 
     // 1. Unlocked by active add-ons:
     if (fieldName === 'gallery' && (hasActiveAddon('gallery') || hasActiveAddon('photogallery'))) return true;
-    if ((fieldName === 'catalog' || fieldName === 'catalogPDF' || fieldName === 'downloads') && 
-        (hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder') || hasActiveAddon('brochurebuilder') || hasActiveAddon('docsmanager'))) return true;
+    if ((fieldName === 'catalog' || fieldName === 'catalogPDF' || fieldName === 'downloads') &&
+      (hasActiveAddon('docsbuilder') || hasActiveAddon('catalogbuilder') || hasActiveAddon('brochurebuilder') || hasActiveAddon('docsmanager'))) return true;
     if (fieldName === 'nfcSettings' && (hasActiveAddon('nfccard') || hasActiveAddon('nfc'))) return true;
     if (fieldName === 'clientList' && (hasActiveAddon('leadmanagement') || hasActiveAddon('leadgen'))) return true;
     if (fieldName === 'businessHours' && hasActiveAddon('appointmentbooking')) return true;
     if ((fieldName === 'liveChat' || fieldName === 'enableWhatsApp') && hasActiveAddon('whatsappintegration')) return true;
-    if ((fieldName === 'servicesProducts' || fieldName === 'services' || fieldName === 'catalog') && 
-        (hasActiveAddon('catalogbuilder') || hasActiveAddon('portfoliobuilder'))) return true;
+    if ((fieldName === 'servicesProducts' || fieldName === 'services' || fieldName === 'catalog') &&
+      (hasActiveAddon('catalogbuilder') || hasActiveAddon('portfoliobuilder'))) return true;
     if ((fieldName === 'testimonials' || fieldName === 'productVideo') && hasActiveAddon('portfoliobuilder')) return true;
     if ((fieldName === 'profileVideo' || fieldName === 'organization') && hasActiveAddon('profilebuilder')) return true;
 
@@ -6661,7 +6778,7 @@ const CreateCard = () => {
     }
 
     return (
-      <div className="scale-90 origin-top">
+      <div className="w-full">
         <CardRenderer
           design={formData.design}
           isPreview
@@ -6789,11 +6906,17 @@ const CreateCard = () => {
               ...product,
               image: product.image ? 'SAVED' : null
             })),
-            gallery: data.gallery?.map(item => ({
-              ...item,
-              url: item.url ? 'SAVED' : null,
-              thumbnail: item.thumbnail ? 'SAVED' : null
-            }))
+            gallery: data.gallery?.map(item => {
+              if (!item || !item.url) return null;
+              const u = typeof item.url === 'string' ? item.url.trim() : '';
+              if (!u || u === 'SAVED' || u === 'null' || u === 'undefined') return null;
+              return {
+                ...item,
+                type: item.type || 'image',
+                url: u,
+                thumbnail: item.thumbnail || null
+              };
+            }).filter(Boolean)
           },
           timestamp: new Date().toISOString(),
           step: currentStep,
@@ -6833,7 +6956,8 @@ const CreateCard = () => {
             services: parsedData.services || prev.services,
             products: parsedData.products || prev.products,
             testimonials: parsedData.testimonials || prev.testimonials,
-            gallery: parsedData.gallery || prev.gallery,
+            gallery: (parsedData.gallery || prev.gallery || [])
+              .filter(item => item && item.url && item.url !== 'SAVED' && item.url !== 'null' && item.url !== 'undefined'),
             interactiveElements: parsedData.interactiveElements || prev.interactiveElements,
             downloads: parsedData.downloads || prev.downloads,
             videos: parsedData.videos || prev.videos,
@@ -6913,44 +7037,14 @@ const CreateCard = () => {
     return `${FRONTEND_URL}/preview/${slug}`;
   };
 
-  // Warning Popup Component
-  const WarningPopup = () => {
-    if (!showWarning) return null;
-
-    return (
-      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70 backdrop-blur-md">
-        <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center">
-              <span className="text-2xl mr-2">⚠️</span>
-              <h3 className="text-lg font-semibold text-slate-800">Required Field</h3>
-            </div>
-            <button
-              onClick={() => setShowWarning(false)}
-              className="text-slate-500 hover:text-slate-700 transition-colors duration-200 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100"
-            >
-              ×
-            </button>
-          </div>
-
-          <div className="text-center py-4">
-            <p className="text-slate-700 text-lg leading-relaxed">
-              {warningMessage}
-            </p>
-          </div>
-
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={() => setShowWarning(false)}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 shadow-md"
-            >
-              I Understand
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  // Warning Popup Component (delegates to standalone WarningModal)
+  const WarningPopup = () => (
+    <WarningModal
+      isOpen={showWarning}
+      onClose={() => setShowWarning(false)}
+      message={warningMessage}
+    />
+  );
 
   // Handle change for basic fields
   const handleChange = (e) => {
@@ -6962,6 +7056,7 @@ const CreateCard = () => {
 
     setHasUnsavedChanges(true);
     setChangeCount(prev => prev + 1);
+
 
     autoSaveToLocalStorage(updatedData);
   };
@@ -7278,37 +7373,141 @@ const CreateCard = () => {
     reader.readAsDataURL(file);
   };
 
-  // Handle gallery item upload
+  // Direct Azure Blob Storage uploader
+  const uploadFileToAzure = async (file, fieldPrefix = 'gallery') => {
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+      uploadFormData.append('prefix', fieldPrefix);
+      uploadFormData.append('originalName', file.name || 'photo');
+
+      const response = await fetch(`${CARD_URL}/upload-file`, {
+        method: 'POST',
+        body: uploadFormData
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.success && result.url) {
+        return result.url;
+      }
+      throw new Error(result.message || 'No URL returned from Azure upload');
+    } catch (err) {
+      console.warn('⚠️ Direct Azure upload error, falling back to base64 Data URL:', err.message);
+      return null;
+    }
+  };
+
+  // Handle gallery item upload with immediate Azure Blob Storage sync
   const handleGalleryUpload = async (index, e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const fileData = e.target.result;
-      const fileType = file.type.startsWith('image/') ? 'image' :
-        file.type.startsWith('video/') ? 'video' :
-          file.type === 'application/pdf' ? 'pdf' : 'document';
+    const fileType = file.type.startsWith('image/') ? 'image' :
+      file.type.startsWith('video/') ? 'video' :
+        file.type === 'application/pdf' ? 'pdf' : 'document';
 
+    // 1. Show immediate local preview
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const localBase64 = ev.target.result;
+
+      // Optimistic local preview
       const updatedGallery = [...formData.gallery];
       updatedGallery[index] = {
         ...updatedGallery[index],
         type: fileType,
-        url: fileData,
-        uploadType: 'upload'
+        url: localBase64,
+        uploadType: 'upload',
+        isUploading: true
       };
 
-      const updatedData = { ...formData, gallery: updatedGallery };
+      const interimData = { ...formData, gallery: updatedGallery };
+      setFormData(interimData);
+      formDataRef.current = interimData;
 
-      setFormData(updatedData);
-      formDataRef.current = updatedData;
+      // 2. Upload directly to Azure Blob Storage
+      const azureUrl = await uploadFileToAzure(file, 'gallery');
+
+      // 3. Update with permanent Azure HTTPS URL
+      const finalUrl = azureUrl || localBase64;
+      setFormData(prev => {
+        const nextGallery = [...prev.gallery];
+        nextGallery[index] = {
+          ...nextGallery[index],
+          type: fileType,
+          url: finalUrl,
+          uploadType: 'upload',
+          isUploading: false
+        };
+        const nextData = { ...prev, gallery: nextGallery };
+        formDataRef.current = nextData;
+        autoSaveToLocalStorage(nextData);
+        return nextData;
+      });
 
       setHasUnsavedChanges(true);
       setChangeCount(prev => prev + 1);
-
-      autoSaveToLocalStorage(updatedData);
     };
     reader.readAsDataURL(file);
+  };
+
+  // Handle batch gallery photo collection upload with immediate Azure Blob Storage sync
+  const handleBatchGalleryUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files || files.length === 0) return;
+
+    const uploadPromises = files.map(async (file) => {
+      const rawTitle = file.name ? file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ') : 'Gallery Item';
+      const cleanTitle = rawTitle.charAt(0).toUpperCase() + rawTitle.slice(1);
+      const fileType = file.type.startsWith('video/') ? 'video' : 'image';
+
+      // 1. Upload directly to Azure Blob Storage
+      const azureUrl = await uploadFileToAzure(file, 'gallery');
+      if (azureUrl) {
+        return {
+          type: fileType,
+          url: azureUrl,
+          title: cleanTitle,
+          category: 'Portfolio',
+          description: '',
+          uploadType: 'upload'
+        };
+      }
+
+      // 2. Fallback to base64 if direct Azure upload is unavailable
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          resolve({
+            type: fileType,
+            url: ev.target.result,
+            title: cleanTitle,
+            category: 'Portfolio',
+            description: '',
+            uploadType: 'upload'
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    const newItems = await Promise.all(uploadPromises);
+
+    // Filter out initial empty item if it has no url
+    const currentList = (formData.gallery || []).filter(item => item && item.url && item.url.trim() !== "" && item.url !== "SAVED");
+    const updatedGallery = [...currentList, ...newItems];
+    const updatedData = { ...formData, gallery: updatedGallery };
+
+    setFormData(updatedData);
+    formDataRef.current = updatedData;
+    setHasUnsavedChanges(true);
+    setChangeCount(prev => prev + 1);
+    autoSaveToLocalStorage(updatedData);
+    e.target.value = '';
   };
 
   // Handle download file upload
@@ -7823,6 +8022,8 @@ const CreateCard = () => {
       if (editingCard && editingCard._id) {
         // Keep the original URL slug when editing
         cleanedData.urlSlug = editingCard.urlSlug || cleanedData.urlSlug;
+        // Reset cardPreviewImage so fresh snapshot is captured if photos/logos were updated
+        cleanedData.cardPreviewImage = null;
 
         // Use the update endpoint
         const url = `${CARD_URL}/update-card/${editingCard._id}`;
@@ -7952,8 +8153,8 @@ const CreateCard = () => {
       // Copy to clipboard
       navigator.clipboard.writeText(shareUrl);
 
-      // Clear local storage if this was a new card
-      if (!editingCard && formData.email) {
+      // Clear local storage draft upon save
+      if (formData.email) {
         localStorage.removeItem(`card_draft_${formData.email}`);
         localStorage.removeItem(`card_draft_form_${formData.email}`);
       }
@@ -7997,6 +8198,7 @@ const CreateCard = () => {
       const loadedData = {
         ...initialFormState,
         ...editingCard,
+        cardType: selectedPlanFromState || editingCard.cardType || initialFormState.cardType || 'Personal',
         // Ensure arrays are properly set
         phones: editingCard.phones || initialFormState.phones,
         emails: editingCard.emails || initialFormState.emails,
@@ -8006,7 +8208,7 @@ const CreateCard = () => {
         services: editingCard.services || initialFormState.services,
         products: editingCard.products || initialFormState.products,
         testimonials: editingCard.testimonials || initialFormState.testimonials,
-        gallery: editingCard.gallery || initialFormState.gallery,
+        gallery: (editingCard.gallery || initialFormState.gallery || []).filter(item => item && item.url && item.url !== 'SAVED' && item.url !== 'null'),
         interactiveElements: editingCard.interactiveElements || initialFormState.interactiveElements,
         downloads: editingCard.downloads || initialFormState.downloads,
         videos: editingCard.videos || initialFormState.videos,
@@ -8017,20 +8219,38 @@ const CreateCard = () => {
         design: editingCard.design || "",
         // Ensure createdBy is set
         createdBy: editingCard.createdBy || "",
-        // Handle video fields if they exist as strings
-        profileVideo: editingCard.profileVideo ? {
-          url: editingCard.profileVideo,
-          thumbnail: editingCard.profileVideoThumbnail || "",
-          title: editingCard.profileVideoTitle || "",
-          uploadType: editingCard.profileVideoUploadType || 'url'
-        } : initialFormState.profileVideo,
-        productVideo: editingCard.productVideo ? {
-          url: editingCard.productVideo,
-          thumbnail: editingCard.productVideoThumbnail || "",
-          title: editingCard.productVideoTitle || "",
-          uploadType: editingCard.productVideoUploadType || 'url'
-        } : initialFormState.productVideo
+        // Handle video fields cleanly whether they come as strings, objects, or nested objects
+        profileVideo: parseVideoObject(
+          editingCard.profileVideo,
+          editingCard.profileVideoThumbnail,
+          editingCard.profileVideoTitle,
+          editingCard.profileVideoUploadType
+        ),
+        productVideo: parseVideoObject(
+          editingCard.productVideo,
+          editingCard.productVideoThumbnail,
+          editingCard.productVideoTitle,
+          editingCard.productVideoUploadType
+        )
       };
+
+      // Synchronize uploadType state from editingCard
+      if (editingCard.profileVideo) {
+        let pUt = extractVideoField(editingCard.profileVideo, 'uploadType', editingCard.profileVideoUploadType || '');
+        if (!pUt) {
+          const vUrl = extractVideoUrl(editingCard.profileVideo);
+          pUt = (vUrl.includes('youtube.com') || vUrl.includes('youtu.be') || vUrl.includes('vimeo.com') || vUrl.includes('drive.google.com')) ? 'url' : (vUrl ? 'upload' : 'url');
+        }
+        setUploadType(prev => ({ ...prev, profileVideo: pUt }));
+      }
+      if (editingCard.productVideo) {
+        let prUt = extractVideoField(editingCard.productVideo, 'uploadType', editingCard.productVideoUploadType || '');
+        if (!prUt) {
+          const vUrl = extractVideoUrl(editingCard.productVideo);
+          prUt = (vUrl.includes('youtube.com') || vUrl.includes('youtu.be') || vUrl.includes('vimeo.com') || vUrl.includes('drive.google.com')) ? 'url' : (vUrl ? 'upload' : 'url');
+        }
+        setUploadType(prev => ({ ...prev, productVideo: prUt }));
+      }
 
       setFormData(loadedData);
       formDataRef.current = loadedData;
@@ -8395,7 +8615,7 @@ const CreateCard = () => {
           <div className={`p-5 md:p-6 rounded-2xl border ${hasActiveAddon('profilebuilder') ? 'border-purple-200 bg-purple-50/20' : 'border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark'} space-y-4 shadow-2xs`}>
             <h4 className="text-sm font-semibold text-slate-800 dark:text-white flex items-center gap-2">
               <FaVideo className="w-4 h-4 text-blue-500" />
-              Profile Video
+              Profile Video / Introduction Video
               {hasActiveAddon('profilebuilder') && (
                 <span className="text-[10px] bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded-full border border-purple-200">
                   ✓ Profile Builder Add-On Active
@@ -8407,10 +8627,10 @@ const CreateCard = () => {
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => toggleUploadType('profileVideo')}
+                onClick={() => setUploadType(prev => ({ ...prev, profileVideo: 'url' }))}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${uploadType.profileVideo === 'url'
-                    ? 'bg-blue-600 text-white shadow-2xs'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                  ? 'bg-blue-600 text-white shadow-2xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}
               >
                 <FaLink className="w-3.5 h-3.5" />
@@ -8418,10 +8638,10 @@ const CreateCard = () => {
               </button>
               <button
                 type="button"
-                onClick={() => toggleUploadType('profileVideo')}
+                onClick={() => setUploadType(prev => ({ ...prev, profileVideo: 'upload' }))}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${uploadType.profileVideo === 'upload'
-                    ? 'bg-blue-600 text-white shadow-2xs'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                  ? 'bg-blue-600 text-white shadow-2xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}
               >
                 <FaUpload className="w-3.5 h-3.5" />
@@ -8436,7 +8656,7 @@ const CreateCard = () => {
                   <input
                     type="url"
                     placeholder="https://youtube.com/watch?v=... or Vimeo / direct mp4 link"
-                    value={formData.profileVideo?.url || ""}
+                    value={extractVideoUrl(formData.profileVideo?.url || formData.profileVideo)}
                     onChange={(e) => {
                       const updatedData = {
                         ...formData,
@@ -8534,19 +8754,19 @@ const CreateCard = () => {
         {isFieldVisible('aboutText') && (
           <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              {formData.cardType === 'Personal' 
-                ? 'Short Intro' 
+              {formData.cardType === 'Personal'
+                ? 'Short Intro'
                 : formData.cardType === 'BusinessPremium'
-                ? 'About The Services'
-                : 'About Myself / Company / Organisation'}
+                  ? 'About The Services'
+                  : 'About Myself / Company / Organisation'}
             </label>
             <textarea
               name="aboutText"
-              placeholder={formData.cardType === 'Personal' 
-                ? "Brief intro about yourself, your skills, or background..." 
+              placeholder={formData.cardType === 'Personal'
+                ? "Brief intro about yourself, your skills, or background..."
                 : formData.cardType === 'BusinessPremium'
-                ? "Describe the core services you provide, your expertise, service guarantee, and client commitment..."
-                : "Tell us about yourself, your company, or organization..."}
+                  ? "Describe the core services you provide, your expertise, service guarantee, and client commitment..."
+                  : "Tell us about yourself, your company, or organization..."}
               value={formData.aboutText || ""}
               onChange={(e) => {
                 const val = e.target.value;
@@ -8738,11 +8958,10 @@ const CreateCard = () => {
                     key={mode.value}
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, serviceAvailability: mode.value }))}
-                    className={`px-3 py-2 rounded-xl text-xs font-medium border text-center transition-all ${
-                      isSelected
-                        ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-xs'
-                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 bg-white dark:bg-slate-900'
-                    }`}
+                    className={`px-3 py-2 rounded-xl text-xs font-medium border text-center transition-all ${isSelected
+                      ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-xs'
+                      : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 bg-white dark:bg-slate-900'
+                      }`}
                   >
                     {mode.label}
                   </button>
@@ -8764,11 +8983,11 @@ const CreateCard = () => {
         {isFieldVisible('companyName') && (
           <div className="p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-strokedark bg-white dark:bg-boxdark space-y-2 shadow-2xs">
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              {formData.cardType === 'Business' 
-                ? 'Name of the Company / Organisation' 
+              {formData.cardType === 'Business'
+                ? 'Name of the Company / Organisation'
                 : formData.cardType === 'BusinessPremium'
-                ? 'Practice / Studio / Business Name (Optional)'
-                : 'Company Name / Organisation'}
+                  ? 'Practice / Studio / Business Name (Optional)'
+                  : 'Company Name / Organisation'}
             </label>
             <input
               type="text"
@@ -8824,14 +9043,14 @@ const CreateCard = () => {
               {formData.cardType === 'Business' ? 'About My Role & Responsibilities' : 'Professional Bio'}
             </label>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-1">
-              {formData.cardType === 'Business' 
-                ? 'Describe your responsibilities, team leadership, and key focus areas at your company.' 
+              {formData.cardType === 'Business'
+                ? 'Describe your responsibilities, team leadership, and key focus areas at your company.'
                 : 'Detailed professional biography, career achievements, or background.'}
             </p>
             <textarea
               name="bio"
-              placeholder={formData.cardType === 'Business' 
-                ? "Describe your key role, deliverables, and responsibilities..." 
+              placeholder={formData.cardType === 'Business'
+                ? "Describe your key role, deliverables, and responsibilities..."
                 : "Detailed professional biography, career achievements, or background..."}
               value={formData.bio || ""}
               onChange={handleChange}
@@ -8896,8 +9115,8 @@ const CreateCard = () => {
                 type="button"
                 onClick={() => setUploadType(prev => ({ ...prev, catalog: 'url' }))}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${uploadType.catalog === 'url'
-                    ? 'bg-blue-600 text-white shadow-2xs'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                  ? 'bg-blue-600 text-white shadow-2xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}
               >
                 <FaLink className="w-3.5 h-3.5" />
@@ -8907,8 +9126,8 @@ const CreateCard = () => {
                 type="button"
                 onClick={() => setUploadType(prev => ({ ...prev, catalog: 'upload' }))}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${uploadType.catalog === 'upload'
-                    ? 'bg-blue-600 text-white shadow-2xs'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                  ? 'bg-blue-600 text-white shadow-2xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}
               >
                 <FaUpload className="w-3.5 h-3.5" />
@@ -9206,18 +9425,18 @@ const CreateCard = () => {
             </div>
 
             {/* Phone Warning if One-Tap Call or WhatsApp is enabled but no phone exists */}
-            {(formData.enableOneTapCall || formData.enableWhatsApp) && 
-             (!formData.phones || formData.phones.filter(p => p.number && p.number.trim()).length === 0) && (
-              <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-xl text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5">
-                <span className="text-amber-500 font-bold text-sm leading-none mt-0.5">⚠️</span>
-                <div>
-                  <p className="font-bold">Phone number required for One-Tap Call & WhatsApp</p>
-                  <p className="text-amber-700 dark:text-amber-400 mt-0.5">
-                    You have enabled One-Tap Call or WhatsApp, but haven't added a phone number yet. Please enter your phone number below so visitors can contact you directly.
-                  </p>
+            {(formData.enableOneTapCall || formData.enableWhatsApp) &&
+              (!formData.phones || formData.phones.filter(p => p.number && p.number.trim()).length === 0) && (
+                <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-xl text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5">
+                  <span className="text-amber-500 font-bold text-sm leading-none mt-0.5">⚠️</span>
+                  <div>
+                    <p className="font-bold">Phone number required for One-Tap Call & WhatsApp</p>
+                    <p className="text-amber-700 dark:text-amber-400 mt-0.5">
+                      You have enabled One-Tap Call or WhatsApp, but haven't added a phone number yet. Please enter your phone number below so visitors can contact you directly.
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         )}
 
@@ -9476,8 +9695,8 @@ const CreateCard = () => {
                       setActiveSocialPlatform(activeSocialPlatform === platform ? "" : platform);
                     }}
                     className={`w-13 h-13 rounded-2xl flex items-center justify-center transition-all duration-200 hover:scale-105 relative ${hasUrl
-                        ? `${config.color} text-white shadow-sm`
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                      ? `${config.color} text-white shadow-sm`
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                       } ${isSelected ? 'ring-4 ring-blue-500/30 border-blue-500' : ''
                       }`}
                   >
@@ -10365,13 +10584,35 @@ const CreateCard = () => {
             {/* Gallery - When Add-On Active or Included */}
             {isFieldVisible('gallery') && (
               <div className="border border-purple-200 bg-purple-50/20 rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                    Product Gallery & Portfolio
-                    <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
-                      ✓ Add-On Active
-                    </span>
-                  </h4>
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                  <div>
+                    <h4 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                      Photo Gallery & Portfolio
+                      <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2.5 py-0.5 rounded-full border border-purple-200">
+                        ✓ Add-On Active
+                      </span>
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {formData.gallery?.filter(i => i && i.url).length || 0} photo(s) in collection • Stored securely in Azure Storage
+                    </p>
+                  </div>
+                  <div>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleBatchGalleryUpload}
+                      className="hidden"
+                      id="batch-gallery-upload-top"
+                    />
+                    <label
+                      htmlFor="batch-gallery-upload-top"
+                      className="inline-flex items-center gap-2 px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg cursor-pointer shadow-xs transition-colors"
+                    >
+                      <FaUpload className="w-3.5 h-3.5" />
+                      Upload Collection (Batch)
+                    </label>
+                  </div>
                 </div>
 
                 {formData.gallery.map((item, index) => (
@@ -10404,8 +10645,8 @@ const CreateCard = () => {
                           autoSaveToLocalStorage(updatedData);
                         }}
                         className={`flex items-center px-4 py-2 rounded-lg ${item.uploadType === 'url'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-200 text-gray-700'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 text-gray-700'
                           }`}
                       >
                         <FaLink className="w-4 h-4 mr-2" />
@@ -10424,8 +10665,8 @@ const CreateCard = () => {
                           autoSaveToLocalStorage(updatedData);
                         }}
                         className={`flex items-center px-4 py-2 rounded-lg ${item.uploadType === 'upload'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-200 text-gray-700'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 text-gray-700'
                           }`}
                       >
                         <FaUpload className="w-4 h-4 mr-2" />
@@ -10563,14 +10804,31 @@ const CreateCard = () => {
                   </div>
                 ))}
 
-                <button
-                  type="button"
-                  onClick={addGalleryItem}
-                  className="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors duration-200 flex items-center justify-center gap-2"
-                >
-                  <FaPlus className="w-4 h-4" />
-                  Add Gallery Item
-                </button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                  <button
+                    type="button"
+                    onClick={addGalleryItem}
+                    className="w-full border-2 border-dashed border-slate-300 hover:border-purple-400 bg-white hover:bg-purple-50/30 rounded-xl p-3.5 text-slate-700 hover:text-purple-700 transition-colors duration-200 flex items-center justify-center gap-2 text-xs font-semibold"
+                  >
+                    <FaPlus className="w-3.5 h-3.5" />
+                    Add Single Photo
+                  </button>
+                  <label
+                    htmlFor="batch-gallery-upload-bottom"
+                    className="w-full border-2 border-dashed border-purple-300 hover:border-purple-500 bg-purple-50/40 hover:bg-purple-50 rounded-xl p-3.5 text-purple-700 transition-colors duration-200 flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+                  >
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleBatchGalleryUpload}
+                      className="hidden"
+                      id="batch-gallery-upload-bottom"
+                    />
+                    <FaUpload className="w-3.5 h-3.5" />
+                    Upload Multiple Photos (Collection)
+                  </label>
+                </div>
               </div>
             )}
 
@@ -10629,8 +10887,8 @@ const CreateCard = () => {
                           autoSaveToLocalStorage(updatedData);
                         }}
                         className={`flex items-center px-4 py-2 rounded-lg ${download.uploadType === 'url'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-200 text-gray-700'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 text-gray-700'
                           }`}
                       >
                         <FaLink className="w-4 h-4 mr-2" />
@@ -10649,8 +10907,8 @@ const CreateCard = () => {
                           autoSaveToLocalStorage(updatedData);
                         }}
                         className={`flex items-center px-4 py-2 rounded-lg ${download.uploadType === 'upload'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-200 text-gray-700'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 text-gray-700'
                           }`}
                       >
                         <FaUpload className="w-4 h-4 mr-2" />
@@ -10825,8 +11083,8 @@ const CreateCard = () => {
                           autoSaveToLocalStorage(updatedData);
                         }}
                         className={`flex items-center px-4 py-2 rounded-lg ${video.uploadType === 'url'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-200 text-gray-700'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 text-gray-700'
                           }`}
                       >
                         <FaLink className="w-4 h-4 mr-2" />
@@ -10845,8 +11103,8 @@ const CreateCard = () => {
                           autoSaveToLocalStorage(updatedData);
                         }}
                         className={`flex items-center px-4 py-2 rounded-lg ${video.uploadType === 'upload'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-200 text-gray-700'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 text-gray-700'
                           }`}
                       >
                         <FaUpload className="w-4 h-4 mr-2" />
@@ -11251,11 +11509,10 @@ const CreateCard = () => {
             return (
               <div
                 key={template.id}
-                className={`relative rounded-2xl p-3.5 cursor-pointer transition-all duration-200 border ${
-                  isSelected
-                    ? 'border-blue-600 dark:border-blue-500 bg-blue-50/60 dark:bg-blue-950/30 shadow-md ring-2 ring-blue-500/20'
-                    : 'border-slate-200 dark:border-strokedark bg-white dark:bg-boxdark hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-xs'
-                }`}
+                className={`relative rounded-2xl p-3.5 cursor-pointer transition-all duration-200 border ${isSelected
+                  ? 'border-blue-600 dark:border-blue-500 bg-blue-50/60 dark:bg-blue-950/30 shadow-md ring-2 ring-blue-500/20'
+                  : 'border-slate-200 dark:border-strokedark bg-white dark:bg-boxdark hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-xs'
+                  }`}
                 onClick={() => handleDesignSelect(template.id)}
               >
                 <div className="flex items-center gap-3">
@@ -11269,11 +11526,10 @@ const CreateCard = () => {
                         {template.name}
                       </h4>
                       <div
-                        className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
-                          isSelected
-                            ? 'bg-blue-600 border-blue-600 text-white'
-                            : 'border-slate-300 dark:border-slate-600 bg-transparent'
-                        }`}
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${isSelected
+                          ? 'bg-blue-600 border-blue-600 text-white'
+                          : 'border-slate-300 dark:border-slate-600 bg-transparent'
+                          }`}
                       >
                         {isSelected && <FaCheck className="w-2.5 h-2.5 text-white" />}
                       </div>
@@ -11284,10 +11540,10 @@ const CreateCard = () => {
                     <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
                       Best for: {
                         template.id === 'default' ? 'All professionals' :
-                        template.id === 'creative' ? 'Creative & Portfolios' :
-                        template.id === 'modern' ? 'Tech & Startup' :
-                        template.id === 'dark' ? 'Modern Dark Mode' :
-                        'Corporate & Business'
+                          template.id === 'creative' ? 'Creative & Portfolios' :
+                            template.id === 'modern' ? 'Tech & Startup' :
+                              template.id === 'dark' ? 'Modern Dark Mode' :
+                                'Corporate & Business'
                       }
                     </span>
                   </div>
@@ -11318,7 +11574,7 @@ const CreateCard = () => {
                   <div className="w-2.5 h-2.5 rounded-full bg-slate-900"></div>
                 </div>
                 {/* Screen Container */}
-                <div className="bg-white dark:bg-boxdark rounded-[2rem] overflow-hidden min-h-[460px] max-h-[620px] overflow-y-auto">
+                <div className="bg-white dark:bg-boxdark rounded-[2rem] overflow-hidden min-h-[460px] max-h-[620px] overflow-y-auto no-scrollbar">
                   {renderDesignPreview()}
                 </div>
               </div>
@@ -11463,13 +11719,12 @@ const CreateCard = () => {
                     }
                   }}
                   disabled={step > currentStep}
-                  className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-sm transition-all duration-300 ${
-                    isActive
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 ring-4 ring-blue-500/20 scale-110'
-                      : isCompleted
+                  className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-sm transition-all duration-300 ${isActive
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 ring-4 ring-blue-500/20 scale-110'
+                    : isCompleted
                       ? 'bg-emerald-500 text-white shadow-sm hover:scale-105 cursor-pointer'
                       : 'bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
-                  }`}
+                    }`}
                   title={isCompleted ? `Go back to step ${index + 1}` : undefined}
                 >
                   {isCompleted ? (
@@ -11479,13 +11734,12 @@ const CreateCard = () => {
                   )}
                 </button>
                 <span
-                  className={`mt-2.5 text-[11px] sm:text-xs font-semibold tracking-wider text-center transition-colors uppercase ${
-                    isActive
-                      ? 'text-blue-600 dark:text-blue-400 font-bold'
-                      : isCompleted
+                  className={`mt-2.5 text-[11px] sm:text-xs font-semibold tracking-wider text-center transition-colors uppercase ${isActive
+                    ? 'text-blue-600 dark:text-blue-400 font-bold'
+                    : isCompleted
                       ? 'text-slate-700 dark:text-slate-300'
                       : 'text-slate-400 dark:text-slate-500'
-                  }`}
+                    }`}
                 >
                   {stepLabels[step]}
                 </span>
@@ -11499,7 +11753,11 @@ const CreateCard = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 py-6 space-y-6">
-      <WarningPopup />
+      <WarningModal
+        isOpen={showWarning}
+        onClose={() => setShowWarning(false)}
+        message={warningMessage}
+      />
 
       {/* Top Navigation Bar: Back & Quick Info */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -11516,13 +11774,13 @@ const CreateCard = () => {
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
-            {formData.cardType === 'Personal' 
-              ? 'DI - Individuals Plan' 
-              : formData.cardType === 'Business' 
-              ? 'DI - Working Professionals Plan' 
-              : formData.cardType === 'BusinessPremium'
-              ? 'DI - Service Providers Plan'
-              : `${formData.cardType || 'Personal'} Plan`}
+            {formData.cardType === 'Personal'
+              ? 'DI - Individuals Plan'
+              : formData.cardType === 'Business'
+                ? 'DI - Working Professionals Plan'
+                : formData.cardType === 'BusinessPremium'
+                  ? 'DI - Service Providers Plan'
+                  : `${formData.cardType || 'Personal'} Plan`}
           </span>
           {editingCard && (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
@@ -11540,7 +11798,7 @@ const CreateCard = () => {
             {editingCard ? "Edit Your Digital Card" : "Create Your Digital Card"}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5">
-            {editingCard 
+            {editingCard
               ? "Update your information, change design themes, or customize contact links."
               : "Set up your digital identity in easy steps and publish your shareable card."}
           </p>
@@ -11651,8 +11909,8 @@ const CreateCard = () => {
               onClick={prevStep}
               disabled={(currentStep === 1) || loading}
               className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all w-full sm:w-auto ${(currentStep === 1)
-                  ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/60 dark:border-slate-800'
-                  : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-strokedark hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs'
+                ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/60 dark:border-slate-800'
+                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-strokedark hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs'
                 }`}
             >
               <FaArrowLeft className="w-3.5 h-3.5" />
