@@ -163,7 +163,12 @@ export async function verifyUser(values) {
 
 export async function  getUserProfile(user_id) {
   try {
-    const response = await fetch(`${USER_URL}/profile/${user_id}`, GET_METHOD_NO_AUTH);
+    let response = await fetch(`${USER_URL}/profile/${user_id}`, GET_METHOD_NO_AUTH);
+
+    if (!response.ok && response.status === 404) {
+      // Graceful fallback to direct user id endpoint
+      response = await fetch(`${USER_URL}/${user_id}`, GET_METHOD_NO_AUTH);
+    }
 
     if (!response.ok) {
       // Handle HTTP errors
@@ -174,7 +179,7 @@ export async function  getUserProfile(user_id) {
     const data = await response.json();
     return { response, data };
   } catch (error) {
-    console.error('Error in updateUserById:', error);
+    console.error('Error in getUserProfile:', error);
     throw error;
   }
 }

@@ -294,7 +294,7 @@ export function SubscriptionBanner({
     ? (subscriptionData.status === "active" && subscriptionData.hasSubscription)
     : false;
 
-  const isTrial = !subscriptionData?.endDate && remainingDays > 0;
+  const isTrial = Boolean(subscriptionData?.isTrial || subscriptionData?.paymentStatus === "free_trial");
 
   const daysProgress = (() => {
     if (subscriptionData?.endDate && subscriptionData?.startDate) {

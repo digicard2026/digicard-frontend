@@ -38,6 +38,7 @@ import { SubscriptionBanner } from "./SubscriptionBanner";
 import { CreateCardButton } from "./CreateCardButton";
 import { CARD_URL, CHECK_URL } from "../../../utility/constants";
 import WhatsAppShareModal from "../../../components/Cardstyles/WhatsAppShareModal";
+import { parseEmailToNameAndInitials } from "../../../components/Header/DropdownUser";
 
 const CardMain = () => {
   const navigate = useNavigate();
@@ -84,12 +85,15 @@ const CardMain = () => {
   // Get User Info
   const getUserInfo = () => {
     const storedEmail = localStorage.getItem("user_email") || "";
-    const storedName = localStorage.getItem("user_name");
     const storedUserId = localStorage.getItem("user_id");
+
+    // Profile name derived strictly from the account's email only
+    const fromEmail = parseEmailToNameAndInitials(storedEmail);
+    const resolvedName = fromEmail.name || (storedEmail ? storedEmail.split("@")[0] : "User");
 
     const userInfo = {
       email: storedEmail || null,
-      name: storedName || storedEmail?.split("@")[0] || "User",
+      name: resolvedName,
       userId: storedUserId || storedEmail,
       identifier: storedUserId || storedEmail || "unknown",
     };
@@ -279,11 +283,24 @@ const CardMain = () => {
 
       const limitedCards = userCards.slice(0, subscription?.maxCards || 10);
 
+      const isUserOnTrial = Boolean(
+        subscription?.isTrial ||
+        subscription?.paymentStatus === "free_trial" ||
+        (!subscription?.amountPaid && !subscription?.paymentId && subscription?.status === "active")
+      );
+
       const transformedCards: Card[] = limitedCards.map((card: any, index: number) => {
         const firstName = card.firstName || card.name?.split(" ")[0] || "";
         const lastName = card.lastName || card.name?.split(" ").slice(1).join(" ") || "";
         const fullName = `${firstName} ${lastName}`.trim() || "Unnamed Card";
         const urlSlug = card.urlSlug || card.slug || card.customUrl || card.publicUrl || card._id || "";
+        
+        // A card created during trial remains a trial card permanently (even after subscription upgrade).
+        // Newly created cards under a paid plan have isTrialCard === false and display Active Plan.
+        const isCardTrial = card.isTrialCard !== undefined
+          ? Boolean(card.isTrialCard)
+          : (isUserOnTrial || card.cardType === "Personal");
+
         const cardType: CardType = card.cardType
           ? normalizePlanKey(card.cardType)
           : (subscription?.planType || "Personal");
@@ -299,7 +316,8 @@ const CardMain = () => {
           shares: card.shares || card.shareCount || 0,
           gradient: getGradientFromCardType(cardType),
           cardType,
-          trialDaysLeft: subscription?.daysLeft || 0,
+          trialDaysLeft: isCardTrial ? (subscription?.trialDaysLeft ?? subscription?.daysLeft ?? 0) : 0,
+          isTrial: isCardTrial,
           subscriptionStartDate: subscription?.startDate ? new Date(subscription.startDate) : new Date(),
           urlSlug,
           cardData: card,
@@ -363,7 +381,11 @@ const CardMain = () => {
       return;
     }
     const userEmail = localStorage.getItem("user_email");
-    const selectedPlan = card.cardData?.cardType || subscriptionData?.planType || localStorage.getItem("selected_plan") || "Personal";
+    const isUserPaid = !subscriptionData?.isTrial && subscriptionData?.paymentStatus !== "free_trial" && Boolean(subscriptionData?.planType);
+    // If user has an active paid plan, allow upgrading the card to the active plan!
+    const selectedPlan = isUserPaid
+      ? subscriptionData.planType
+      : (card.cardData?.cardType || subscriptionData?.planType || "Personal");
     const selectedAddons = subscriptionData?.purchasedAddons || (localStorage.getItem("selected_addons") ? JSON.parse(localStorage.getItem("selected_addons")!) : []);
     navigate("/create", { state: { userEmail, selectedPlan, selectedAddons, card: card.cardData } });
   };

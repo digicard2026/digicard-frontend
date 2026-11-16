@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { FaPhoneAlt, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaQrcode } from "react-icons/fa";
+import { FaPhoneAlt, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaQrcode, FaUser } from "react-icons/fa";
 
 /**
  * WhatsAppShareCard
@@ -19,28 +19,27 @@ const WhatsAppShareCard = forwardRef(({ cardData, className = "" }, ref) => {
   const prefix = cardData.prefix ? `${cardData.prefix} ` : "";
   const firstName = cardData.firstName || "";
   const lastName = cardData.lastName || "";
-  const fullName = `${prefix}${firstName} ${lastName}`.trim() || cardData.name || "Priya Sharma";
+  const fullName = `${prefix}${firstName} ${lastName}`.trim() || cardData.name || cardData.email?.split('@')[0] || "";
 
   // 2. Resolve Role & Company
-  const jobTitle = cardData.jobTitle || cardData.tagline || "Marketing Manager";
-  const companyName = cardData.companyName || "BrightPath Solutions";
+  const jobTitle = cardData.jobTitle || cardData.tagline || "";
+  const companyName = cardData.companyName || "";
 
   // 3. Resolve Avatar
-  const profilePhoto = cardData.profilePhoto ||
-    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400";
+  const profilePhoto = cardData.profilePhoto || null;
 
   // 4. Resolve Contacts
   const phone = (Array.isArray(cardData.phones) && cardData.phones[0]?.number) ||
-    cardData.phone || cardData.mobile || "+91 98765 43210";
+    cardData.phone || cardData.mobile || "";
 
   const email = (Array.isArray(cardData.emails) && cardData.emails[0]?.address) ||
-    cardData.email || "priya@brightpath.in";
+    cardData.email || "";
 
   // Resolve Location
-  let location = "Bengaluru, India";
+  let location = "";
   if (Array.isArray(cardData.addresses) && cardData.addresses.length > 0) {
     const addr = cardData.addresses[0];
-    location = addr.city && addr.country ? `${addr.city}, ${addr.country}` : (addr.fullAddress || addr.city || location);
+    location = addr.city && addr.country ? `${addr.city}, ${addr.country}` : (addr.fullAddress || addr.city || "");
   } else if (cardData.serviceArea) {
     location = cardData.serviceArea;
   } else if (cardData.location) {
@@ -49,7 +48,7 @@ const WhatsAppShareCard = forwardRef(({ cardData, className = "" }, ref) => {
 
   // 5. Target URL for QR Code
   const origin = typeof window !== "undefined" ? window.location.origin : "https://www.revayah.one";
-  const urlSlug = cardData.urlSlug || cardData.shareableUrl || "priya-sharma";
+  const urlSlug = cardData.urlSlug || cardData.shareableUrl || cardData.id || cardData._id || "";
   const targetUrl = `${origin}/preview/${urlSlug}`;
   const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(targetUrl)}&format=png&margin=0`;
 
@@ -81,17 +80,29 @@ const WhatsAppShareCard = forwardRef(({ cardData, className = "" }, ref) => {
           
           {/* Avatar with clean white ring */}
           <div className="relative">
-            <div className="w-[74px] h-[74px] rounded-full p-[2.5px] bg-white shadow-lg ring-2 ring-white/40">
-              <img
-                src={profilePhoto}
-                alt={fullName}
-                crossOrigin="anonymous"
-                className="w-full h-full object-cover rounded-full bg-slate-200"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400";
-                }}
-              />
+            <div className="w-[74px] h-[74px] rounded-full p-[2.5px] bg-white shadow-lg ring-2 ring-white/40 overflow-hidden flex items-center justify-center">
+              {profilePhoto ? (
+                <img
+                  src={profilePhoto}
+                  alt={fullName}
+                  crossOrigin="anonymous"
+                  className="w-full h-full object-cover rounded-full bg-slate-200"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) {
+                      e.target.nextSibling.style.display = 'flex';
+                    }
+                  }}
+                />
+              ) : null}
+              <div
+                className={`w-full h-full rounded-full bg-slate-100 flex items-center justify-center text-slate-400 ${
+                  profilePhoto ? 'hidden' : 'flex'
+                }`}
+              >
+                <FaUser className="w-9 h-9 text-slate-400" />
+              </div>
             </div>
           </div>
 
@@ -179,14 +190,16 @@ const WhatsAppShareCard = forwardRef(({ cardData, className = "" }, ref) => {
         )}
 
         {/* 2. WhatsApp */}
-        <div className="flex items-center gap-3.5 text-left">
-          <div className="w-8 h-8 rounded-full bg-[#0B2142] text-white flex items-center justify-center shrink-0 shadow-xs">
-            <FaWhatsapp className="w-4 h-4 text-emerald-300" />
+        {phone && (
+          <div className="flex items-center gap-3.5 text-left">
+            <div className="w-8 h-8 rounded-full bg-[#0B2142] text-white flex items-center justify-center shrink-0 shadow-xs">
+              <FaWhatsapp className="w-4 h-4 text-emerald-300" />
+            </div>
+            <span className="text-[13px] font-semibold text-slate-800 tracking-tight">
+              WhatsApp
+            </span>
           </div>
-          <span className="text-[13px] font-semibold text-slate-800 tracking-tight">
-            WhatsApp
-          </span>
-        </div>
+        )}
 
         {/* 3. Email */}
         {email && (

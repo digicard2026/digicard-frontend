@@ -55,6 +55,7 @@ export interface Card {
   subscriptionStartDate: Date;
   urlSlug?: string;
   cardData?: any;
+  isTrial?: boolean;
 }
 
 interface DigitalCardPreviewProps {
@@ -169,7 +170,7 @@ export function DigitalCardPreview({
 }: DigitalCardPreviewProps) {
   const config = resolveCardConfig(card.cardType);
   const CardIcon = config.icon || User;
-  const isOnTrial = card.trialDaysLeft > 0;
+  const isOnTrial = Boolean(card.isTrial);
 
   const gradientClass = cn(
     "bg-gradient-to-br",
@@ -231,7 +232,7 @@ export function DigitalCardPreview({
         </Badge>
         {isOnTrial && (
           <Badge variant="outline" className="bg-white/95 dark:bg-boxdark/95 backdrop-blur-sm text-xs font-medium text-slate-700 dark:text-slate-300">
-            {card.trialDaysLeft}d trial
+            Free Trial
           </Badge>
         )}
       </div>

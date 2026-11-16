@@ -520,7 +520,7 @@ const PreviewCard = () => {
       {buttonsVisible && cardData && (
         <div className="relative z-10 mt-6 flex flex-wrap gap-2 justify-center max-w-md w-full px-4">
           <button
-            onClick={() => navigate("/create")}
+            onClick={() => navigate("/create", { state: { card: cardData } })}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-slate-800 hover:bg-slate-100 shadow-md transition-all"
           >
             <span>Edit This Card</span>

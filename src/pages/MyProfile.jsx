@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
 import { FcOldTimeCamera } from "react-icons/fc";
 import { USER_URL } from '../utility/constants';
+import { parseEmailToNameAndInitials } from '../components/Header/DropdownUser';
 
 // const apiUrl = import.meta.env.VITE_API_URL;
 // const USER_URL = `${apiUrl}/api/v1/user`;
@@ -122,8 +123,11 @@ const MyProfile = () => {
             }, 3000);
           } // Ensure email is sent correctly
           console.log('User data:', data); // Log user data
-          setfirst_name(data.first_name);
-          setEmail(data.email);
+          const userEmail = data.email || getCookie('user_email') || localStorage.getItem('user_email') || '';
+          const parsedFromMail = parseEmailToNameAndInitials(userEmail);
+          const resolvedFirstName = data.first_name || data.firstName || data.name || parsedFromMail.name || '';
+          setfirst_name(resolvedFirstName);
+          setEmail(userEmail);
           setPhone(data.phoneNumber)
           setcompany_name(data.company_name)
           setlandline_number(data.landline_number)
@@ -264,7 +268,7 @@ const MyProfile = () => {
                           />
                         ) : (
                           <span>
-                            {first_name?.charAt(0).toUpperCase() || '?'}
+                            {first_name?.charAt(0).toUpperCase() || parseEmailToNameAndInitials(email).initials || '?'}
                           </span>
                         )}
                       </div>
