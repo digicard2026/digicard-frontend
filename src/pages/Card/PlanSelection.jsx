@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { CHECK_URL } from "../../utility/constants";
 import { 
   FaBuilding, 
   FaGem, 
@@ -517,7 +518,7 @@ const PlanSelection = () => {
     setSelectedPlan(plan);
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!selectedPlan) return;
     const hasAddons = !!planAddonsMap[selectedPlan];
     const relevantAddons = hasAddons ? planAddonsMap[selectedPlan].list.map(a => a.key) : [];
@@ -529,11 +530,49 @@ const PlanSelection = () => {
 
     const totalPrice = basePrice + addonTotal;
     const userEmail = localStorage.getItem('user_email') || '';
+    const userId = localStorage.getItem('user_id') || '';
+    const token = localStorage.getItem('token') || '';
 
     // Persist in localStorage
     localStorage.setItem('selected_plan', selectedPlan);
     localStorage.setItem('selected_addons', JSON.stringify(activeAddonsList));
     localStorage.setItem('selected_plan_price', totalPrice);
+
+    // If user is already authenticated, update their plan directly and navigate to dashboard
+    if (token || userId || userEmail) {
+      try {
+        await fetch(`${CHECK_URL}/update-user-plan`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({
+            userId,
+            email: userEmail,
+            planName: selectedPlan,
+            billingCycle: 'monthly',
+            price: totalPrice,
+            selectedAddons: activeAddonsList
+          })
+        });
+      } catch (err) {
+        console.warn("Could not update plan:", err);
+      }
+
+      navigate('/card-dashbord', {
+        state: {
+          selectedPlan,
+          selectedAddons: activeAddonsList,
+          addonsObject: selectedAddons,
+          totalPrice,
+          userEmail,
+          billingCycle: 'monthly'
+        }
+      });
+      return;
+    }
 
     // Navigate to Signup page like the previous flow
     navigate('/signup', {

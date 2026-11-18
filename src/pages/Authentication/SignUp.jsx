@@ -3,6 +3,9 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import { setRole } from "../../store/RoleStore/roleSlice";
+import { parseEmailToNameAndInitials } from "../../components/Header/DropdownUser";
 
 // Custom components from your assets
 import ModernImage from "../../assets/images/tailwickComp/ModernImage";
@@ -13,6 +16,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const Signup = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   
   const [isRegistered, setIsRegistered] = useState(false);
   const [franchiseContext, setFranchiseContext] = useState(null);
@@ -86,9 +90,63 @@ const Signup = () => {
 
       if (res.ok) {
         setUserEmail(values.email);
-        setEmailSent(true);
-        setMessage({ text: 'Account created successfully!', type: 'success', hasAccount: false });
+
+        // Derive names & initials identically to signin and DropdownUser
+        const parsed = parseEmailToNameAndInitials(values.email);
+        const resolvedRole = data.role || data.data?.role || 'customer';
+        const resolvedUserId = data.user_id || data.data?._id || data.user?._id || '';
+        const resolvedToken = data.token || '';
+        const resolvedFirstName = data.firstName || parsed.firstName || '';
+        const resolvedLastName = data.lastName || parsed.lastName || '';
+        const resolvedName = data.name || parsed.name || (resolvedFirstName ? `${resolvedFirstName} ${resolvedLastName}`.trim() : 'User');
+
+        dispatch(setRole(resolvedRole));
+
+        // Store user info in localStorage identical to SignIn
+        if (resolvedUserId) localStorage.setItem('user_id', resolvedUserId);
+        localStorage.setItem('user_email', values.email);
+        localStorage.setItem('user_role', resolvedRole);
+        if (resolvedFirstName) localStorage.setItem('user_first_name', resolvedFirstName);
+        if (resolvedLastName) localStorage.setItem('user_last_name', resolvedLastName);
+        if (resolvedName) localStorage.setItem('user_name', resolvedName);
+        if (resolvedToken) localStorage.setItem('token', resolvedToken);
+
+        const planToUse = location.state?.selectedPlan || 'Personal';
+        localStorage.setItem('selected_plan', planToUse);
+        if (location.state?.selectedAddons) {
+          localStorage.setItem('selected_addons', JSON.stringify(location.state.selectedAddons));
+        }
+        if (location.state?.totalPrice) {
+          localStorage.setItem('selected_plan_price', String(location.state.totalPrice));
+        }
+
+        // Trigger profile sync across Header and DropdownUser
+        window.dispatchEvent(new Event('user-profile-updated'));
+
+        setMessage({ text: 'Account created successfully! Navigating to your card setup...', type: 'success', hasAccount: false });
         formik.resetForm();
+
+        // Navigate directly to the card form area (/create) with user details pre-populated
+        setTimeout(() => {
+          if (franchiseContext) {
+            navigate("/signin/partner");
+          } else {
+            navigate("/create", {
+              state: {
+                selectedPlan: planToUse,
+                selectedAddons: location.state?.selectedAddons || [],
+                addonsObject: location.state?.addonsObject || {},
+                totalPrice: location.state?.totalPrice || null,
+                userEmail: values.email,
+                firstName: resolvedFirstName,
+                lastName: resolvedLastName,
+                name: resolvedName,
+                createdBy: franchiseContext?.createdBy || location.state?.createdBy || "",
+                fromPartnerDashboard: location.state?.fromPartnerDashboard || false,
+              },
+            });
+          }
+        }, 800);
       } else {
         const isEmailExists = res.status === 409 || 
           (data.error && /already exists|email_exists|already registered/i.test(data.error));
@@ -141,20 +199,27 @@ const Signup = () => {
   const handleContinue = () => {
     if (franchiseContext) {
       navigate("/signin/partner");
-    } else if (location.state?.selectedPlan) {
+    } else {
+      const parsed = parseEmailToNameAndInitials(userEmail);
+      const planToUse = location.state?.selectedPlan || localStorage.getItem('selected_plan') || 'Personal';
+      const fName = localStorage.getItem('user_first_name') || parsed.firstName || '';
+      const lName = localStorage.getItem('user_last_name') || parsed.lastName || '';
+      const fullName = localStorage.getItem('user_name') || parsed.name || 'User';
+
       navigate("/create", {
         state: {
-          selectedPlan: location.state.selectedPlan,
-          selectedAddons: location.state?.selectedAddons || [],
+          selectedPlan: planToUse,
+          selectedAddons: location.state?.selectedAddons || JSON.parse(localStorage.getItem('selected_addons') || '[]'),
           addonsObject: location.state?.addonsObject || {},
-          totalPrice: location.state?.totalPrice || null,
+          totalPrice: location.state?.totalPrice || localStorage.getItem('selected_plan_price') || null,
           userEmail,
+          firstName: fName,
+          lastName: lName,
+          name: fullName,
           createdBy: location.state?.createdBy || "",
           fromPartnerDashboard: location.state?.fromPartnerDashboard || false,
         },
       });
-    } else {
-      navigate("/signin/partner");
     }
   };
 

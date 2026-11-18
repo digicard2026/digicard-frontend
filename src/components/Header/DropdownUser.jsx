@@ -4,7 +4,7 @@ import ClickOutside from '../ClickOutside';
 import { getCookie, deleteCookie } from '../../utility/cookies';
 import { getUserById } from '../../service/userApi';
 import { ProfileContext } from '../../pages/ProfileProvider';
-import { LuUser, LuLogOut, LuLayoutDashboard, LuChevronDown } from 'react-icons/lu';
+import { LuUser, LuLogOut, LuLayoutDashboard, LuChevronDown, LuCreditCard } from 'react-icons/lu';
 
 // Consonant clusters that cannot begin a syllable/word, used to detect natural name boundaries in handles
 const INVALID_INITIAL = [
@@ -415,6 +415,15 @@ const DropdownUser = () => {
             >
               <LuUser size={15} className="text-slate-400 dark:text-bodydark" />
               <span>My Profile</span>
+            </Link>
+
+            <Link
+              to="/pricing"
+              onClick={() => setDropdownOpen(false)}
+              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-meta-4 transition-colors"
+            >
+              <LuCreditCard size={15} className="text-slate-400 dark:text-bodydark" />
+              <span>Billing & Subscription</span>
             </Link>
           </div>
 

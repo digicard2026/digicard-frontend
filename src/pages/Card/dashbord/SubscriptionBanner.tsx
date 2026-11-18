@@ -116,7 +116,7 @@ const defaultPlanDetails: PlanDetails = {
     color: "from-emerald-600 to-teal-600",
   },
   EntrepreneurialsMulti: {
-    name: "DI - Multi-Activities",
+    name: "DI - Entrepreneurials - Multi Activities",
     price: "₹2,200/mo",
     description: "Multi-venture founders showcasing multiple companies, expertise & booking.",
     features: ["Multi-Brand Ventures Hub", "Dynamic Projects Portfolio", "Direct WhatsApp & Booking"],
@@ -294,7 +294,11 @@ export function SubscriptionBanner({
     ? (subscriptionData.status === "active" && subscriptionData.hasSubscription)
     : false;
 
-  const isTrial = Boolean(subscriptionData?.isTrial || subscriptionData?.paymentStatus === "free_trial");
+  const isTrial = Boolean(
+    (subscriptionData?.isTrial || subscriptionData?.paymentStatus === "free_trial") &&
+    subscriptionData?.paymentStatus !== "success" &&
+    subscriptionData?.paymentStatus !== "paid"
+  );
 
   const daysProgress = (() => {
     if (subscriptionData?.endDate && subscriptionData?.startDate) {

@@ -1,28 +1,28 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { 
-  CreditCard, 
-  Eye, 
-  Share2, 
-  Lock, 
-  Plus, 
-  Search, 
-  Filter, 
-  RefreshCw, 
-  X, 
-  ExternalLink, 
-  QrCode, 
-  Trash2, 
-  Edit2, 
-  CheckCircle, 
-  AlertCircle, 
-  Sparkles, 
-  Copy, 
-  Maximize2, 
-  LayoutGrid, 
-  List, 
-  ShieldCheck, 
-  Download, 
+import {
+  CreditCard,
+  Eye,
+  Share2,
+  Lock,
+  Plus,
+  Search,
+  Filter,
+  RefreshCw,
+  X,
+  ExternalLink,
+  QrCode,
+  Trash2,
+  Edit2,
+  CheckCircle,
+  AlertCircle,
+  Sparkles,
+  Copy,
+  Maximize2,
+  LayoutGrid,
+  List,
+  ShieldCheck,
+  Download,
   Smartphone,
   Check,
   User,
@@ -40,6 +40,24 @@ import { CARD_URL, CHECK_URL } from "../../../utility/constants";
 import WhatsAppShareModal from "../../../components/Cardstyles/WhatsAppShareModal";
 import { parseEmailToNameAndInitials } from "../../../components/Header/DropdownUser";
 
+export const PLAN_DISPLAY_NAMES: Record<string, string> = {
+  Personal: "DI - Individuals",
+  Business: "DI - Working Professionals",
+  BusinessPremium: "DI - Service Providers",
+  Professionals: "DI - Professionals",
+  ProfessionalPro: "DI - Professional Pro",
+  Entrepreneurials: "DI - Entrepreneurials",
+  EntrepreneurialsMulti: "DI - Entrepreneurials - Multi Activities",
+  CorporateBusiness: "DI - Business",
+  Team: "DI - Team",
+  MiniWebsite: "DP - Mini Website",
+};
+
+export const getPlanDisplayName = (planKey?: string): string => {
+  if (!planKey) return "DI - Individuals";
+  return PLAN_DISPLAY_NAMES[planKey] || planKey;
+};
+
 const CardMain = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,7 +70,7 @@ const CardMain = () => {
   const [subscriptionData, setSubscriptionData] = useState<any>(null);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [rawCardsArray, setRawCardsArray] = useState<any[]>([]);
-  
+
   // Search & Filter & View Mode
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPlanFilter, setSelectedPlanFilter] = useState("all");
@@ -284,9 +302,9 @@ const CardMain = () => {
       const limitedCards = userCards.slice(0, subscription?.maxCards || 10);
 
       const isUserOnTrial = Boolean(
-        subscription?.isTrial ||
-        subscription?.paymentStatus === "free_trial" ||
-        (!subscription?.amountPaid && !subscription?.paymentId && subscription?.status === "active")
+        subscription?.isTrial &&
+        subscription?.paymentStatus !== "success" &&
+        subscription?.paymentStatus !== "paid"
       );
 
       const transformedCards: Card[] = limitedCards.map((card: any, index: number) => {
@@ -294,16 +312,16 @@ const CardMain = () => {
         const lastName = card.lastName || card.name?.split(" ").slice(1).join(" ") || "";
         const fullName = `${firstName} ${lastName}`.trim() || "Unnamed Card";
         const urlSlug = card.urlSlug || card.slug || card.customUrl || card.publicUrl || card._id || "";
-        
-        // A card created during trial remains a trial card permanently (even after subscription upgrade).
-        // Newly created cards under a paid plan have isTrialCard === false and display Active Plan.
-        const isCardTrial = card.isTrialCard !== undefined
-          ? Boolean(card.isTrialCard)
-          : (isUserOnTrial || card.cardType === "Personal");
 
-        const cardType: CardType = card.cardType
-          ? normalizePlanKey(card.cardType)
-          : (subscription?.planType || "Personal");
+        // If the user's subscription is no longer a trial (i.e. switched/updated to a plan),
+        // cards must NOT display trial!
+        const isCardTrial = isUserOnTrial
+          ? (card.isTrialCard !== undefined ? Boolean(card.isTrialCard) : true)
+          : false;
+
+        const cardType: CardType = !isUserOnTrial && subscription?.planType
+          ? normalizePlanKey(subscription.planType)
+          : (card.cardType ? normalizePlanKey(card.cardType) : (subscription?.planType || "Personal"));
 
         return {
           id: card._id || card.id || `card-${index}`,
@@ -353,6 +371,16 @@ const CardMain = () => {
   const maxCards = subscriptionData?.maxCards || 10;
   const canCreateMoreCards = () => !isSubscriptionExpired && cards.length < maxCards;
   const isCardLocked = (cardIndex: number) => cardIndex >= maxCards;
+
+  // =========================================================================
+  // CARD CREATION VISIBILITY CONFIGURATION:
+  // - Set HIDE_IF_HAS_CARD = true: If user has 1+ cards, "Create New Card" is hidden
+  // - Set HIDE_IF_HAS_CARD = false: Reverts back to normal logic (allows up to maxCards)
+  // =========================================================================
+  const HIDE_IF_HAS_CARD = true; // <-- Change to false whenever you want to revert!
+
+  // Condition to show "Create New Card" options:
+  const shouldShowCreateCard = HIDE_IF_HAS_CARD ? cards.length === 0 : canCreateMoreCards();
 
   const getRemainingDays = () => {
     if (!subscriptionData?.endDate) return subscriptionData?.daysLeft || 0;
@@ -445,7 +473,7 @@ const CardMain = () => {
     }
     const targetUrl = `${window.location.origin}/preview/${card.urlSlug}`;
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(targetUrl)}&format=png&margin=15`;
-    
+
     try {
       const response = await fetch(qrImageUrl);
       const blob = await response.blob();
@@ -559,16 +587,15 @@ const CardMain = () => {
 
   return (
     <div className="w-full pb-16 transition-colors">
-      
+
       {/* Toast Notification */}
       {toast && (
-        <div className={`fixed top-5 right-5 z-[100000] flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border text-sm font-medium transition-all duration-300 animate-in fade-in slide-in-from-top-4 ${
-          toast.type === "error"
+        <div className={`fixed top-5 right-5 z-[100000] flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border text-sm font-medium transition-all duration-300 animate-in fade-in slide-in-from-top-4 ${toast.type === "error"
             ? "bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950 dark:text-rose-200 dark:border-rose-800"
             : toast.type === "info"
               ? "bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950 dark:text-blue-200 dark:border-blue-800"
               : "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-800"
-        }`}>
+          }`}>
           {toast.type === "error" ? (
             <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
           ) : toast.type === "info" ? (
@@ -626,19 +653,20 @@ const CardMain = () => {
             <span>View Plans</span>
           </button>
 
-          <button
-            type="button"
-            onClick={handleCreateNew}
-            disabled={isSubscriptionExpired || !canCreateMoreCards()}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs md:text-sm text-white shadow-md transition-all duration-200 cursor-pointer ${
-              isSubscriptionExpired || !canCreateMoreCards()
-                ? "bg-slate-400 cursor-not-allowed opacity-75"
-                : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:-translate-y-0.5"
-            }`}
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create New Card</span>
-          </button>
+          {shouldShowCreateCard && (
+            <button
+              type="button"
+              onClick={handleCreateNew}
+              disabled={isSubscriptionExpired || !canCreateMoreCards()}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs md:text-sm text-white shadow-md transition-all duration-200 cursor-pointer ${isSubscriptionExpired || !canCreateMoreCards()
+                  ? "bg-slate-400 cursor-not-allowed opacity-75"
+                  : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:-translate-y-0.5"
+                }`}
+            >
+              <Plus className="w-4 h-4" />
+              <span>Create New Card</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -678,7 +706,7 @@ const CardMain = () => {
 
         <StatsCard
           title="Active Plan"
-          value={subscriptionData?.planType || "Personal"}
+          value={subscriptionData?.planDisplayName || getPlanDisplayName(subscriptionData?.planType || "Personal")}
           subtitle={`${getRemainingDays()} days left in cycle`}
           icon={Sparkles}
           iconBg="bg-purple-50 dark:bg-purple-950/60"
@@ -699,7 +727,7 @@ const CardMain = () => {
 
       {/* Cards Management Section */}
       <section className="bg-white dark:bg-boxdark rounded-2xl border border-slate-200 dark:border-strokedark p-6 shadow-xs">
-        
+
         {/* Section Header & Toolbar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-5 border-b border-slate-100 dark:border-strokedark">
           <div>
@@ -747,8 +775,8 @@ const CardMain = () => {
               <option value="Professionals">DI - Professionals</option>
               <option value="ProfessionalPro">DI - Professional Pro</option>
               <option value="Entrepreneurials">DI - Entrepreneurials</option>
-              <option value="EntrepreneurialsMulti">DI - Multi-Activities</option>
-              <option value="CorporateBusiness">DI - Corporate</option>
+              <option value="EntrepreneurialsMulti">DI - Entrepreneurials - Multi Activities</option>
+              <option value="CorporateBusiness">DI - Business</option>
               <option value="Team">DI - Team</option>
               <option value="MiniWebsite">DP - Mini Website</option>
             </select>
@@ -758,11 +786,10 @@ const CardMain = () => {
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
-                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                  viewMode === "grid"
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewMode === "grid"
                     ? "bg-white dark:bg-boxdark text-blue-600 dark:text-blue-400 shadow-xs"
                     : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-                }`}
+                  }`}
                 title="Grid View"
               >
                 <LayoutGrid className="w-4 h-4" />
@@ -770,11 +797,10 @@ const CardMain = () => {
               <button
                 type="button"
                 onClick={() => setViewMode("table")}
-                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                  viewMode === "table"
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewMode === "table"
                     ? "bg-white dark:bg-boxdark text-blue-600 dark:text-blue-400 shadow-xs"
                     : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-                }`}
+                  }`}
                 title="List/Table View"
               >
                 <List className="w-4 h-4" />
@@ -827,22 +853,24 @@ const CardMain = () => {
         ) : viewMode === "grid" ? (
           /* Grid View */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <CreateCardButton
-              onClick={handleCreateNew}
-              disabled={isSubscriptionExpired || !canCreateMoreCards()}
-              label={
-                isSubscriptionExpired
-                  ? "Upgrade to Create Card"
-                  : !canCreateMoreCards()
-                    ? "Plan Limit Reached"
-                    : "Create New Card"
-              }
-              description={
-                canCreateMoreCards()
-                  ? `${maxCards - cards.length} slots remaining on plan`
-                  : "Upgrade plan for more cards"
-              }
-            />
+            {shouldShowCreateCard && (
+              <CreateCardButton
+                onClick={handleCreateNew}
+                disabled={isSubscriptionExpired || !canCreateMoreCards()}
+                label={
+                  isSubscriptionExpired
+                    ? "Upgrade to Create Card"
+                    : !canCreateMoreCards()
+                      ? "Plan Limit Reached"
+                      : "Create New Card"
+                }
+                description={
+                  canCreateMoreCards()
+                    ? `${maxCards - cards.length} slots remaining on plan`
+                    : "Upgrade plan for more cards"
+                }
+              />
+            )}
 
             {filteredCards.map((card, index) => (
               <div key={card.id}>
@@ -885,7 +913,7 @@ const CardMain = () => {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-strokedark">
                 {filteredCards.map((card, index) => (
-                  <tr 
+                  <tr
                     key={card.id}
                     className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer"
                     onClick={() => setSelectedCard(card)}
@@ -1005,7 +1033,7 @@ const CardMain = () => {
 
           <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
             <div className="w-screen max-w-lg bg-white dark:bg-boxdark shadow-2xl flex flex-col border-l border-slate-200 dark:border-strokedark">
-              
+
               {/* Drawer Header */}
               <div className="p-6 border-b border-slate-100 dark:border-strokedark flex items-center justify-between">
                 <div>
@@ -1033,7 +1061,7 @@ const CardMain = () => {
 
               {/* Drawer Body */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                
+
                 {/* Direct Share Link Box */}
                 {selectedCard.urlSlug && (
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-strokedark">
@@ -1308,7 +1336,7 @@ const CardMain = () => {
             <div className="w-14 h-14 bg-rose-100 dark:bg-rose-950/60 rounded-full flex items-center justify-center mx-auto mb-3 text-rose-600">
               <Lock className="w-7 h-7" />
             </div>
-            
+
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1.5">
               {isSubscriptionExpired ? "Access Restricted" : "Card Limit Reached"}
             </h3>
