@@ -1,6 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CHECK_URL, PLAN_URL, PAYMENT_URL } from "../../utility/constants";
+import {
+  Check,
+  Sparkles,
+  ShieldCheck,
+  ArrowRight,
+  Download,
+  FileText,
+  Calendar,
+  CreditCard,
+  RefreshCw,
+  Clock,
+  AlertCircle,
+  ExternalLink,
+  ChevronRight,
+  Layers,
+  Zap,
+  Building,
+  User,
+  Star,
+  CheckCircle2,
+  Receipt,
+  RotateCcw
+} from "lucide-react";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
 
@@ -257,6 +282,9 @@ const SubscriptionPlans = () => {
   const [billingCycle, setBillingCycle] = useState('yearly');
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeSubscription, setActiveSubscription] = useState(null);
+  const [subscriptionHistory, setSubscriptionHistory] = useState([]);
+  const [activeTab, setActiveTab] = useState('manage'); // 'manage' | 'plans'
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Selected add-ons per plan: { [planName]: { [addonKey]: boolean } }
   // Not selected by default!
@@ -486,6 +514,235 @@ const SubscriptionPlans = () => {
     }
   };
 
+  const fetchSubscriptionHistory = async () => {
+    try {
+      const token = localStorage.getItem('token') || '';
+      const userId = localStorage.getItem('user_id') || '';
+      const email = localStorage.getItem('user_email') || '';
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const response = await fetch(`${CHECK_URL}/history?userId=${encodeURIComponent(userId)}&email=${encodeURIComponent(email)}`, {
+        headers,
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && Array.isArray(data.subscriptions)) {
+          setSubscriptionHistory(data.subscriptions);
+        }
+      }
+    } catch (err) {
+      console.warn('Subscription history error:', err);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await Promise.all([checkUserSubscription(), fetchSubscriptionHistory()]);
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
+
+  useEffect(() => {
+    fetchSubscriptionHistory();
+  }, []);
+
+  const PLAN_TIER_ORDER = [
+    'personal',
+    'business',
+    'businesspremium',
+    'professionals',
+    'professionalpro',
+    'entrepreneurials',
+    'entrepreneurialsmulti',
+    'corporatebusiness',
+    'team',
+    'miniwebsite'
+  ];
+
+  const normalizePlanKey = (raw = '') => {
+    if (!raw) return 'personal';
+    const cleaned = String(raw).replace(/[\s\-_]/g, '').toLowerCase();
+    if (cleaned.includes('miniwebsite') || cleaned.includes('website')) return 'miniwebsite';
+    if (cleaned.includes('team')) return 'team';
+    if (cleaned.includes('corporate')) return 'corporatebusiness';
+    if (cleaned.includes('multi')) return 'entrepreneurialsmulti';
+    if (cleaned.includes('entrepreneur')) return 'entrepreneurials';
+    if (cleaned.includes('professionalpro')) return 'professionalpro';
+    if (cleaned.includes('working')) return 'business';
+    if (cleaned.includes('professional')) return 'professionals';
+    if (cleaned.includes('service') || cleaned.includes('premium')) return 'businesspremium';
+    if (cleaned.includes('business')) return 'business';
+    if (cleaned.includes('personal') || cleaned.includes('individual')) return 'personal';
+    return 'personal';
+  };
+
+  const getPlanTierComparison = (plan) => {
+    if (!activeSubscription) return 'subscribe';
+    const currentKey = normalizePlanKey(activeSubscription.planName || activeSubscription.planDisplayName || activeSubscription.planType);
+    const cardKey = normalizePlanKey(plan.name || plan.displayName);
+    if (currentKey === cardKey) return 'current';
+    const currentIdx = PLAN_TIER_ORDER.indexOf(currentKey);
+    const cardIdx = PLAN_TIER_ORDER.indexOf(cardKey);
+    if (cardIdx > currentIdx) return 'upgrade';
+    return 'downgrade';
+  };
+
+  const isSubExpired = Boolean(
+    activeSubscription && (
+      activeSubscription.status === 'expired' ||
+      activeSubscription.isExpired ||
+      (activeSubscription.daysLeft !== undefined && activeSubscription.daysLeft <= 0)
+    )
+  );
+
+  const isSubTrial = Boolean(
+    activeSubscription &&
+    (activeSubscription.isTrial || activeSubscription.paymentStatus === 'free_trial') &&
+    activeSubscription.paymentStatus !== 'success' &&
+    activeSubscription.paymentStatus !== 'paid'
+  );
+
+  const isTrialExpired = isSubTrial && isSubExpired;
+  const isPaidExpired = !isSubTrial && isSubExpired && activeSubscription;
+  const isPaidActive = Boolean(activeSubscription && !isSubTrial && !isSubExpired && activeSubscription.status === 'active');
+  const isTrialActive = Boolean(activeSubscription && isSubTrial && !isSubExpired);
+
+  const generatePDFInvoice = (sub, invoiceRef = null) => {
+    try {
+      const doc = new jsPDF();
+      const userEmail = localStorage.getItem('user_email') || sub?.email || 'customer@digicard.com';
+      const userName = localStorage.getItem('user_name') || userEmail.split('@')[0];
+      const invNum = invoiceRef || sub?.razorpayOrderId || sub?.paymentId || `INV-${Date.now().toString().slice(-8)}`;
+      const invDate = sub?.startDate ? new Date(sub.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-IN');
+      const planName = sub?.planDisplayName || sub?.planName || sub?.planType || 'Digital Identity Plan';
+      const durationCycle = (sub?.duration || sub?.billingCycle || 'monthly').toUpperCase();
+      const amountPaid = sub?.amountPaid !== undefined ? sub.amountPaid : (sub?.price || (sub?.isTrial ? 0 : 500));
+
+      // Brand Blue Banner Header
+      doc.setFillColor(37, 99, 235);
+      doc.rect(0, 0, 210, 18, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.text("DIGICARD SERVICES • OFFICIAL TAX INVOICE & RECEIPT", 14, 12);
+
+      // Main Title
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(22);
+      doc.text("Payment Receipt", 14, 34);
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(100, 116, 139);
+      doc.text(`Generated on ${new Date().toLocaleString('en-IN')}`, 14, 40);
+
+      // Invoice metadata card
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(14, 46, 182, 32, 3, 3, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139);
+      doc.text("INVOICE NUMBER", 20, 56);
+      doc.text("BILLING DATE", 75, 56);
+      doc.text("PAYMENT STATUS", 130, 56);
+
+      doc.setFontSize(10);
+      doc.setTextColor(15, 23, 42);
+      doc.text(String(invNum), 20, 64);
+      doc.text(invDate, 75, 64);
+
+      if (sub?.isTrial && sub?.paymentStatus !== 'success') {
+        doc.setTextColor(217, 119, 6);
+        doc.text("TRIAL LICENSE", 130, 64);
+      } else {
+        doc.setTextColor(16, 185, 129);
+        doc.text("PAID & VERIFIED", 130, 64);
+      }
+
+      // Customer info
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Billed To:", 14, 90);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(51, 65, 85);
+      doc.text(`Customer: ${userName}`, 14, 97);
+      doc.text(`Email: ${userEmail}`, 14, 103);
+      if (sub?.paymentId) {
+        doc.text(`Transaction Reference: ${sub.paymentId}`, 14, 109);
+      }
+
+      // Items Table
+      const tableRows = [
+        [
+          `Subscription: ${planName} (${durationCycle})`,
+          "1",
+          `INR ${Number(amountPaid).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`,
+          `INR ${Number(amountPaid).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+        ]
+      ];
+
+      if (Array.isArray(sub?.purchasedAddons) && sub.purchasedAddons.length > 0) {
+        sub.purchasedAddons.forEach((addonKey) => {
+          const info = getAddonInfo(addonKey);
+          tableRows.push([
+            `Add-on Feature: ${info?.name || addonKey}`,
+            "1",
+            "Included",
+            "Included"
+          ]);
+        });
+      }
+
+      doc.autoTable({
+        startY: 118,
+        head: [['Description', 'Qty', 'Unit Price', 'Total']],
+        body: tableRows,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [37, 99, 235],
+          textColor: 255,
+          fontStyle: 'bold'
+        },
+        styles: {
+          fontSize: 9,
+          cellPadding: 4
+        },
+        columnStyles: {
+          0: { cellWidth: 100 },
+          1: { cellWidth: 20, halign: 'center' },
+          2: { cellWidth: 32, halign: 'right' },
+          3: { cellWidth: 30, halign: 'right' }
+        }
+      });
+
+      const finalY = doc.lastAutoTable.finalY + 10;
+
+      // Summary Box
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Total Paid:", 135, finalY);
+      doc.setTextColor(37, 99, 235);
+      doc.text(`INR ${Number(amountPaid).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 165, finalY);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(100, 116, 139);
+      doc.text("Includes applicable GST and platform service charges.", 14, finalY + 12);
+      doc.text("This is an electronically generated receipt and does not require a physical signature.", 14, finalY + 18);
+
+      doc.save(`DigiCard_Invoice_${invNum}.pdf`);
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      alert("Could not generate invoice. Please try again.");
+    }
+  };
+
   // Unified Subscription Handler: calculates total (base + addons), processes payment, and enables unlocked features
   const handleSubscribeNow = async (plan) => {
     const selectedAddons = getActiveAddonKeys(plan.name);
@@ -504,7 +761,7 @@ const SubscriptionPlans = () => {
     // Sync selected plan with backend immediately so dashboard reflects it
     try {
       const storedUserId = localStorage.getItem('user_id');
-      fetch(`${CHECK_URL}/update-user-plan`, {
+      await fetch(`${CHECK_URL}/update-user-plan`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -520,7 +777,7 @@ const SubscriptionPlans = () => {
           price: finalPrice,
           selectedAddons
         })
-      }).catch(e => console.warn("Plan sync notice:", e));
+      });
     } catch (e) {
       console.warn("Plan sync notice:", e);
     }
@@ -772,10 +1029,10 @@ const SubscriptionPlans = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Top Navigation */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <button
             onClick={() => navigate('/card-dashbord')}
-            className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            className="inline-flex items-center text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -783,17 +1040,383 @@ const SubscriptionPlans = () => {
             Back to Dashboard
           </button>
 
+          {/* Tab Controller: Manage Subscription vs Compare All Plans */}
           {activeSubscription && (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-              Active: {activeSubscription.planName || 'Current Plan'}
-            </span>
+            <div className="inline-flex p-1 rounded-xl bg-slate-200/80 dark:bg-slate-800 border border-slate-300/60 shadow-inner">
+              <button
+                type="button"
+                onClick={() => setActiveTab('manage')}
+                className={`flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 ${
+                  activeTab === 'manage'
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                <span>My Subscription & Billing</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('plans')}
+                className={`flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 ${
+                  activeTab === 'plans'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>Explore All Plans</span>
+              </button>
+            </div>
           )}
         </div>
+
+        {/* ========================================================================= */}
+        {/* ACTIVE SUBSCRIPTION & BILLING AREA (Professional SaaS Portal)             */}
+        {/* ========================================================================= */}
+        {activeSubscription && activeTab === 'manage' && (
+          <div className="mb-12 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in">
+            {/* Top Bar with Status & Quick Actions */}
+            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 px-6 sm:px-8 py-6 text-white flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-inner">
+                  <ShieldCheck className="w-7 h-7 text-emerald-400" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                      {activeSubscription.planDisplayName || activeSubscription.planName || 'Active Digital Identity Plan'}
+                    </h2>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold ${
+                      isSubExpired
+                        ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                        : isSubTrial
+                          ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30'
+                          : 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30'
+                    }`}>
+                      <span className={`w-2 h-2 rounded-full ${
+                        isSubExpired
+                          ? 'bg-rose-400 animate-ping'
+                          : isSubTrial
+                            ? 'bg-amber-400'
+                            : 'bg-emerald-400 animate-pulse'
+                      }`} />
+                      {isTrialExpired ? 'Free Trial Expired' : isPaidExpired ? 'Subscription Expired' : isSubTrial ? `Free Trial (${activeSubscription.daysLeft || 0}d left)` : 'Active Paid Plan'}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-slate-200 border border-white/15">
+                      {activeSubscription.duration === 'yearly' ? 'Billed Annually' : 'Billed Monthly'}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
+                    Official enterprise digital identity license with dynamic QR code generators, instant contact sharing, and active security compliance.
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 flex-wrap lg:justify-end">
+                {isSubExpired ? (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('plans')}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-semibold text-xs transition-all shadow-md hover:shadow-lg cursor-pointer"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span>Renew Plan Now</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => generatePDFInvoice(activeSubscription)}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-all shadow-md hover:shadow-lg cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download Tax Invoice (PDF)</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('plans')}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/20 transition-all cursor-pointer"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                  <span>{isSubExpired ? 'Explore All Plans' : 'Upgrade / Change Plan'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-medium border border-white/15 transition-all cursor-pointer"
+                  title="Refresh subscription status"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            </div>
+
+            {/* Expired Plan Notification Alert Banner */}
+            {isSubExpired && (
+              <div className="bg-rose-50 border-b border-rose-200 px-6 sm:px-8 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-rose-900 text-xs font-medium">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>
+                    {isTrialExpired
+                      ? 'Your 7-day free trial has expired. Renew your plan below to restore all digital card features, dynamic QR codes, and public profile sharing.'
+                      : 'Your subscription has expired. Please renew your plan below to continue managing and sharing your digital cards.'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('plans')}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shrink-0 cursor-pointer shadow-xs transition-colors"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Renew Plan Below</span>
+                </button>
+              </div>
+            )}
+
+            {/* 4-Column Metric Grid */}
+            <div className="p-6 sm:p-8 bg-slate-50/50 border-b border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Metric 1: Cycle & Expiry */}
+              <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                <div className="flex items-center justify-between text-slate-500 mb-2">
+                  <span className="text-xs font-medium">Billing Cycle</span>
+                  <Calendar className="w-4 h-4 text-blue-600" />
+                </div>
+                <div className="text-base font-bold text-slate-900">
+                  {isSubExpired ? (
+                    <span className="text-rose-600 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
+                      Expired (0 Days Left)
+                    </span>
+                  ) : (
+                    activeSubscription.daysLeft !== undefined ? `${activeSubscription.daysLeft} Days Remaining` : 'Active'
+                  )}
+                </div>
+                <div className="text-[11px] text-slate-500 mt-1">
+                  {isSubExpired ? (
+                    <span className="text-rose-500 font-medium">
+                      Ended: {activeSubscription.endDate ? new Date(activeSubscription.endDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recently'}
+                    </span>
+                  ) : (
+                    `Renews: ${activeSubscription.endDate ? new Date(activeSubscription.endDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Ongoing'}`
+                  )}
+                </div>
+                {/* Progress bar */}
+                <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mt-3">
+                  <div
+                    className={`h-full rounded-full ${isSubExpired ? 'bg-rose-500' : 'bg-blue-600'}`}
+                    style={{
+                      width: isSubExpired ? '100%' : `${Math.min(Math.max(((activeSubscription.daysLeft || 30) / (activeSubscription.duration === 'yearly' ? 365 : 30)) * 100, 5), 100)}%`
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Metric 2: Amount & Invoicing */}
+              <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                <div className="flex items-center justify-between text-slate-500 mb-2">
+                  <span className="text-xs font-medium">Subscription Rate</span>
+                  <Receipt className="w-4 h-4 text-emerald-600" />
+                </div>
+                <div className="text-base font-bold text-slate-900">
+                  ₹{Number(activeSubscription.amountPaid || activeSubscription.price || 500).toLocaleString('en-IN')}
+                  <span className="text-xs font-normal text-slate-500 ml-1">
+                    /{activeSubscription.duration === 'yearly' ? 'year' : 'mo'}
+                  </span>
+                </div>
+                <div className="text-[11px] text-emerald-700 font-semibold mt-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  {activeSubscription.isTrial && activeSubscription.paymentStatus !== 'success' ? '7-Day Free Trial' : 'Payment Verified (Success)'}
+                </div>
+                <div className="text-[10px] text-slate-400 mt-2">
+                  Official GST Invoice Ready
+                </div>
+              </div>
+
+              {/* Metric 3: Digital Cards Quota */}
+              <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                <div className="flex items-center justify-between text-slate-500 mb-2">
+                  <span className="text-xs font-medium">Digital Card Slots</span>
+                  <CreditCard className="w-4 h-4 text-purple-600" />
+                </div>
+                <div className="text-base font-bold text-slate-900">
+                  10 Cards Included
+                </div>
+                <div className="text-[11px] text-slate-500 mt-1">
+                  Multi-profile digital identity
+                </div>
+                <div className="text-[10px] text-purple-700 font-medium mt-2">
+                  ✓ Unlimited Scans & Shares
+                </div>
+              </div>
+
+              {/* Metric 4: Transaction & Reference */}
+              <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                <div className="flex items-center justify-between text-slate-500 mb-2">
+                  <span className="text-xs font-medium">Payment Reference</span>
+                  <ShieldCheck className="w-4 h-4 text-blue-600" />
+                </div>
+                <div className="text-xs font-mono font-bold text-slate-800 truncate" title={activeSubscription.paymentId || activeSubscription.razorpayOrderId || 'TRIAL-LICENSE'}>
+                  {activeSubscription.paymentId || activeSubscription.razorpayOrderId || 'TRIAL-LICENSE'}
+                </div>
+                <div className="text-[11px] text-slate-500 mt-1">
+                  Gateway: Razorpay Encrypted
+                </div>
+                <div className="text-[10px] text-emerald-600 font-medium mt-2 flex items-center gap-1">
+                  ✓ 256-bit SSL Protected
+                </div>
+              </div>
+            </div>
+
+            {/* Active Add-ons Strip */}
+            {Array.isArray(activeSubscription.purchasedAddons) && activeSubscription.purchasedAddons.length > 0 && (
+              <div className="px-6 sm:px-8 py-3.5 bg-purple-50/60 border-b border-purple-100 flex items-center gap-2 flex-wrap text-xs text-purple-900 font-medium">
+                <span className="font-bold flex items-center gap-1 text-purple-700">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Active Add-ons:
+                </span>
+                {activeSubscription.purchasedAddons.map((addon) => {
+                  const info = getAddonInfo(addon);
+                  return (
+                    <span key={addon} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white text-purple-800 border border-purple-200 shadow-xs">
+                      {info?.name || addon}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Billing & Invoice History Table */}
+            <div className="p-6 sm:p-8">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-blue-600" />
+                    Billing & Tax Invoices
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Download official tax receipts and track previous transactions.
+                  </p>
+                </div>
+              </div>
+
+              {/* Table */}
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+                    <tr>
+                      <th className="px-4 py-3">Invoice / Ref</th>
+                      <th className="px-4 py-3">Billing Date</th>
+                      <th className="px-4 py-3">Plan Description</th>
+                      <th className="px-4 py-3">Interval</th>
+                      <th className="px-4 py-3">Amount</th>
+                      <th className="px-4 py-3">Status</th>
+                      <th className="px-4 py-3 text-right">Invoice</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-slate-100">
+                    {subscriptionHistory.length > 0 ? (
+                      subscriptionHistory.map((item, idx) => {
+                        const invRef = item.paymentId || item.razorpayOrderId || `INV-${String(item._id).slice(-6)}`;
+                        const dateStr = item.startDate ? new Date(item.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recent';
+                        const amount = item.amountPaid || item.price || 0;
+                        const isSuccess = item.paymentStatus === 'success' || item.status === 'active';
+
+                        return (
+                          <tr key={item._id || idx} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="px-4 py-3 font-mono font-semibold text-slate-800">
+                              {invRef}
+                            </td>
+                            <td className="px-4 py-3 text-slate-600">
+                              {dateStr}
+                            </td>
+                            <td className="px-4 py-3 font-medium text-slate-900">
+                              {item.planName || item.planType || 'Digital Card Plan'}
+                              {Array.isArray(item.purchasedAddons) && item.purchasedAddons.length > 0 && (
+                                <span className="ml-1 text-[11px] text-purple-600">
+                                  (+{item.purchasedAddons.length} Add-on{item.purchasedAddons.length > 1 ? 's' : ''})
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-slate-600 capitalize">
+                              {item.duration || 'Monthly'}
+                            </td>
+                            <td className="px-4 py-3 font-bold text-slate-900">
+                              ₹{Number(amount).toLocaleString('en-IN')}
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                isSuccess
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : 'bg-amber-100 text-amber-800'
+                              }`}>
+                                {isSuccess ? 'Paid' : 'Trial'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <button
+                                type="button"
+                                onClick={() => generatePDFInvoice(item, invRef)}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-colors cursor-pointer"
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                                <span>PDF</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr className="hover:bg-slate-50/80 transition-colors">
+                        <td className="px-4 py-3 font-mono font-semibold text-slate-800">
+                          {activeSubscription.paymentId || activeSubscription.razorpayOrderId || `INV-${Date.now().toString().slice(-6)}`}
+                        </td>
+                        <td className="px-4 py-3 text-slate-600">
+                          {activeSubscription.startDate ? new Date(activeSubscription.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Current Cycle'}
+                        </td>
+                        <td className="px-4 py-3 font-medium text-slate-900">
+                          {activeSubscription.planDisplayName || activeSubscription.planName || 'Digital Card Plan'}
+                        </td>
+                        <td className="px-4 py-3 text-slate-600 capitalize">
+                          {activeSubscription.duration || 'Monthly'}
+                        </td>
+                        <td className="px-4 py-3 font-bold text-slate-900">
+                          ₹{Number(activeSubscription.amountPaid || activeSubscription.price || (activeSubscription.isTrial ? 0 : 500)).toLocaleString('en-IN')}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            activeSubscription.isTrial && activeSubscription.paymentStatus !== 'success'
+                              ? 'bg-amber-100 text-amber-800'
+                              : 'bg-emerald-100 text-emerald-800'
+                          }`}>
+                            {activeSubscription.isTrial && activeSubscription.paymentStatus !== 'success' ? 'Trial' : 'Paid'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() => generatePDFInvoice(activeSubscription)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-colors cursor-pointer"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>PDF</span>
+                          </button>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Section Header */}
         <div className="text-center mb-10">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
-            Choose Your Perfect Plan
+            {activeSubscription && activeTab === 'manage' ? 'Compare Available Tiers' : 'Choose Your Perfect Plan'}
           </h1>
           <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto mt-2 font-normal">
             Select from all 10 specialized digital card tiers. Select any optional add-ons as needed.
@@ -869,12 +1492,50 @@ const SubscriptionPlans = () => {
             const addonTotal = getPlanAddonTotal(plan);
             const activeAddonKeys = getActiveAddonKeys(plan.name);
             const totalPrice = plan.price + addonTotal;
+            const tierComp = getPlanTierComparison(plan);
+            const isCurrent = tierComp === 'current';
+
+            // Distinct border styling based on subscription health
+            const cardBorderClass = isCurrent
+              ? isTrialExpired || isPaidExpired
+                ? 'border-2 border-rose-500 ring-4 ring-rose-500/20 shadow-lg'
+                : isTrialActive
+                  ? 'border-2 border-amber-500 ring-4 ring-amber-500/20 shadow-md'
+                  : 'border-2 border-emerald-500 ring-4 ring-emerald-500/20 shadow-md'
+              : `${theme.border} hover:shadow-xl`;
 
             return (
               <div
                 key={plan._id || plan.name}
-                className={`relative rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border ${theme.border} bg-white flex flex-col h-[540px]`}
+                className={`relative rounded-xl shadow-md transition-all duration-300 overflow-hidden border ${cardBorderClass} bg-white flex flex-col h-[540px]`}
               >
+                {/* Current Plan Status Badge */}
+                {isCurrent && (
+                  <div className="absolute top-3 left-3 z-10">
+                    {isTrialExpired ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-rose-600 text-white px-2.5 py-0.5 text-[11px] font-bold shadow-md animate-pulse">
+                        <AlertCircle className="w-3 h-3" />
+                        Trial Expired
+                      </span>
+                    ) : isPaidExpired ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-rose-600 text-white px-2.5 py-0.5 text-[11px] font-bold shadow-md">
+                        <AlertCircle className="w-3 h-3" />
+                        Plan Expired
+                      </span>
+                    ) : isTrialActive ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 text-white px-2.5 py-0.5 text-[11px] font-bold shadow-md">
+                        <Sparkles className="w-3 h-3" />
+                        Free Trial ({activeSubscription.daysLeft || 0}d left)
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 text-white px-2.5 py-0.5 text-[11px] font-bold shadow-md">
+                        <CheckCircle2 className="w-3 h-3" />
+                        Active Plan
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 {/* Header Badge */}
                 {plan.badge && (
                   <div className="absolute top-3 right-3 z-10">
@@ -1000,21 +1661,112 @@ const SubscriptionPlans = () => {
 
                 {/* Card Footer (Fixed Bottom) */}
                 <div className="px-6 py-3 flex-shrink-0 border-t border-gray-100 bg-white space-y-1.5">
-                  <button
-                    type="button"
-                    onClick={() => handleSubscribeNow(plan)}
-                    disabled={isProcessing}
-                    className={`w-full py-2.5 px-4 rounded-lg text-xs font-bold text-white transition-all shadow-sm ${theme.btnBg} hover:shadow-md disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer`}
-                  >
-                    <span>
-                      Subscribe Now • ₹{totalPrice?.toLocaleString()}
-                      {activeAddonKeys.length > 0 ? ` (+${activeAddonKeys.length} Add-on${activeAddonKeys.length > 1 ? 's' : ''})` : ''}
-                    </span>
-                    <span>→</span>
-                  </button>
+                  {isCurrent ? (
+                    isTrialExpired ? (
+                      <button
+                        type="button"
+                        onClick={() => handleSubscribeNow(plan)}
+                        disabled={isProcessing}
+                        className="w-full py-2.5 px-4 rounded-lg text-xs font-bold text-white transition-all shadow-md bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>
+                          Renew Plan • ₹{totalPrice?.toLocaleString()}
+                          {activeAddonKeys.length > 0 ? ` (+${activeAddonKeys.length})` : ''}
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    ) : isPaidExpired ? (
+                      <button
+                        type="button"
+                        onClick={() => handleSubscribeNow(plan)}
+                        disabled={isProcessing}
+                        className="w-full py-2.5 px-4 rounded-lg text-xs font-bold text-white transition-all shadow-md bg-rose-600 hover:bg-rose-500 disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>
+                          Renew Subscription • ₹{totalPrice?.toLocaleString()}
+                          {activeAddonKeys.length > 0 ? ` (+${activeAddonKeys.length})` : ''}
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    ) : isTrialActive ? (
+                      <button
+                        type="button"
+                        onClick={() => handleSubscribeNow(plan)}
+                        disabled={isProcessing}
+                        className={`w-full py-2.5 px-4 rounded-lg text-xs font-bold text-white transition-all shadow-sm ${theme.btnBg} hover:shadow-md disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer`}
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>
+                          Activate Full Plan • ₹{totalPrice?.toLocaleString()}
+                          {activeAddonKeys.length > 0 ? ` (+${activeAddonKeys.length})` : ''}
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        className="w-full py-2.5 px-4 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center justify-center gap-1.5 cursor-default shadow-xs"
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span>Current Active Plan</span>
+                      </button>
+                    )
+                  ) : tierComp === 'upgrade' ? (
+                    <button
+                      type="button"
+                      onClick={() => handleSubscribeNow(plan)}
+                      disabled={isProcessing}
+                      className={`w-full py-2.5 px-4 rounded-lg text-xs font-bold text-white transition-all shadow-sm ${theme.btnBg} hover:shadow-md disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer`}
+                    >
+                      <span>
+                        Upgrade to {plan.displayName} • ₹{totalPrice?.toLocaleString()}
+                        {activeAddonKeys.length > 0 ? ` (+${activeAddonKeys.length})` : ''}
+                      </span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  ) : tierComp === 'downgrade' ? (
+                    <button
+                      type="button"
+                      onClick={() => handleSubscribeNow(plan)}
+                      disabled={isProcessing}
+                      className={`w-full py-2.5 px-4 rounded-lg text-xs font-bold text-white transition-all shadow-sm ${theme.btnBg} hover:shadow-md disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer opacity-90`}
+                    >
+                      <span>
+                        Switch to {plan.displayName} • ₹{totalPrice?.toLocaleString()}
+                        {activeAddonKeys.length > 0 ? ` (+${activeAddonKeys.length})` : ''}
+                      </span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleSubscribeNow(plan)}
+                      disabled={isProcessing}
+                      className={`w-full py-2.5 px-4 rounded-lg text-xs font-bold text-white transition-all shadow-sm ${theme.btnBg} hover:shadow-md disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer`}
+                    >
+                      <span>
+                        Subscribe Now • ₹{totalPrice?.toLocaleString()}
+                        {activeAddonKeys.length > 0 ? ` (+${activeAddonKeys.length} Add-on${activeAddonKeys.length > 1 ? 's' : ''})` : ''}
+                      </span>
+                      <span>→</span>
+                    </button>
+                  )}
 
-                  <p className="text-center text-[10px] text-gray-400">
-                    {billingCycle === 'yearly' ? '365 days access • Renews annually' : '30 days access • Renews monthly'}
+                  <p className="text-center text-[10px]">
+                    {isCurrent && isTrialExpired ? (
+                      <span className="text-rose-600 font-semibold">Free trial ended • Renew now to reactivate cards</span>
+                    ) : isCurrent && isPaidExpired ? (
+                      <span className="text-rose-600 font-semibold">Subscription expired • Click to renew</span>
+                    ) : isCurrent && isTrialActive ? (
+                      <span className="text-amber-600 font-medium">In free trial • Upgrade to full access anytime</span>
+                    ) : isCurrent && isPaidActive ? (
+                      <span className="text-emerald-700 font-medium">{billingCycle === 'yearly' ? '365 days access • Renews annually' : '30 days access • Renews monthly'}</span>
+                    ) : (
+                      <span className="text-gray-400">{billingCycle === 'yearly' ? '365 days access • Renews annually' : '30 days access • Renews monthly'}</span>
+                    )}
                   </p>
                 </div>
               </div>

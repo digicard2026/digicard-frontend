@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink as RouterNavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { CreditCard, Home, Settings, User, Zap, HelpCircle, Menu, X } from "lucide-react";
+import { CreditCard, Home, Settings, User, Zap, HelpCircle, Menu, X, Receipt } from "lucide-react";
 
 // Tailwind CSS utility function
 function cn(...inputs) {
@@ -54,6 +54,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     { title: "Dashboard", url: getDashboardUrl(), icon: Home },
     { title: "My Cards", url: "/cards", icon: CreditCard },
     { title: "Analytics", url: "/analytics", icon: Zap },
+    { title: "Billing & Plans", url: "/pricing", icon: Receipt },
     { title: "Profile", url: "/profile", icon: User },
     { title: "Settings", url: "/settings", icon: Settings },
   ];

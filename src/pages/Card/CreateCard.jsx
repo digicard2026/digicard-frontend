@@ -6386,6 +6386,24 @@ const WarningModal = ({ isOpen, onClose, message }) => {
   );
 };
 
+const PLAN_DISPLAY_NAMES = {
+  Personal: "DI - Individuals",
+  Business: "DI - Working Professionals",
+  BusinessPremium: "DI - Service Providers",
+  Professionals: "DI - Professionals",
+  ProfessionalPro: "DI - Professional Pro",
+  Entrepreneurials: "DI - Entrepreneurials",
+  EntrepreneurialsMulti: "DI - Entrepreneurials - Multi Activities",
+  CorporateBusiness: "DI - Business",
+  Team: "DI - Team",
+  MiniWebsite: "DP - Mini Website",
+};
+
+const getPlanDisplayName = (planKey) => {
+  if (!planKey) return "DI - Individuals";
+  return PLAN_DISPLAY_NAMES[planKey] || planKey;
+};
+
 const CreateCard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -6430,6 +6448,9 @@ const CreateCard = () => {
   }
 
   const userEmailFromSignIn = location.state?.userEmail || localStorage.getItem('user_email') || '';
+  const userNameFromSignIn = location.state?.userName || localStorage.getItem('user_name') || '';
+  const userFirstNameFromSignIn = location.state?.firstName || localStorage.getItem('user_first_name') || (userNameFromSignIn ? userNameFromSignIn.split(' ')[0] : '');
+  const userLastNameFromSignIn = location.state?.lastName || localStorage.getItem('user_last_name') || (userNameFromSignIn ? userNameFromSignIn.split(' ').slice(1).join(' ') : '');
   const editingCard = location.state?.card || null;
   const partnerIdFromState = location.state?.createdBy || '';
 
@@ -6579,8 +6600,8 @@ const CreateCard = () => {
   const initialFormState = {
     // Personal Info
     prefix: "",
-    firstName: "",
-    lastName: "",
+    firstName: userFirstNameFromSignIn || "",
+    lastName: userLastNameFromSignIn || "",
     suffix: "",
     profilePhoto: null,
 
@@ -6948,6 +6969,9 @@ const CreateCard = () => {
           const merged = {
             ...prev,
             ...parsedData,
+            firstName: parsedData.firstName || prev.firstName || userFirstNameFromSignIn || "",
+            lastName: parsedData.lastName || prev.lastName || userLastNameFromSignIn || "",
+            email: parsedData.email || prev.email || userEmailFromSignIn || "",
             phones: parsedData.phones || prev.phones,
             emails: parsedData.emails || prev.emails,
             websites: parsedData.websites || prev.websites,
@@ -8189,6 +8213,33 @@ const CreateCard = () => {
     }
   }, [userEmailFromSignIn, editingCard]);
 
+  // Pre-fill user details (name, email) if user is signed in/up
+  useEffect(() => {
+    if (!editingCard) {
+      setFormData(prev => {
+        let changed = false;
+        const updated = { ...prev };
+        if (!updated.email && userEmailFromSignIn) {
+          updated.email = userEmailFromSignIn;
+          changed = true;
+        }
+        if (!updated.firstName && userFirstNameFromSignIn) {
+          updated.firstName = userFirstNameFromSignIn;
+          changed = true;
+        }
+        if (!updated.lastName && userLastNameFromSignIn) {
+          updated.lastName = userLastNameFromSignIn;
+          changed = true;
+        }
+        if (changed) {
+          formDataRef.current = updated;
+          return updated;
+        }
+        return prev;
+      });
+    }
+  }, [userEmailFromSignIn, userFirstNameFromSignIn, userLastNameFromSignIn, editingCard]);
+
   // ✅ FIXED: Load editing card data properly
   useEffect(() => {
     if (editingCard) {
@@ -8493,6 +8544,11 @@ const CreateCard = () => {
                   </div>
                 )}
               </div>
+            )}
+            {(userFirstNameFromSignIn || userLastNameFromSignIn) && (
+              <p className="text-emerald-600 dark:text-emerald-400 text-xs flex items-center gap-1 mt-2">
+                <FaCheck className="w-3 h-3" /> Auto-filled from your authenticated account
+              </p>
             )}
           </div>
         )}
@@ -11569,12 +11625,17 @@ const CreateCard = () => {
             {/* Smartphone Device Frame Preview */}
             <div className="mb-6 flex justify-center">
               <div className="w-full max-w-sm sm:max-w-md bg-slate-900 rounded-[2.5rem] p-3 shadow-2xl border-4 border-slate-800 dark:border-slate-700 relative">
-                {/* Phone Notch/Island */}
-                <div className="w-24 h-4 bg-slate-800 rounded-full mx-auto mb-2 flex items-center justify-center">
-                  <div className="w-2.5 h-2.5 rounded-full bg-slate-900"></div>
+                {/* Authentic Smartphone Hardware Notch (Matches Mobile Structure) */}
+                <div className="w-full bg-[#0a1128] pt-2 pb-2 px-6 flex items-center justify-center relative rounded-t-[1.8rem] border-b border-slate-800/80 select-none z-20">
+                  <div className="w-36 sm:w-40 h-5 bg-[#050b18] rounded-full flex items-center justify-center border border-slate-700/60 shadow-inner px-2">
+                    <div className="w-14 h-1 bg-slate-700/90 rounded-full"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-slate-950 border border-slate-600 ml-2.5 flex items-center justify-center">
+                      <div className="w-1 h-1 rounded-full bg-blue-950"></div>
+                    </div>
+                  </div>
                 </div>
                 {/* Screen Container */}
-                <div className="bg-white dark:bg-boxdark rounded-[2rem] overflow-hidden min-h-[460px] max-h-[620px] overflow-y-auto no-scrollbar">
+                <div className="bg-white dark:bg-boxdark rounded-b-[1.8rem] overflow-hidden min-h-[460px] max-h-[620px] overflow-y-auto no-scrollbar">
                   {renderDesignPreview()}
                 </div>
               </div>
@@ -11599,7 +11660,7 @@ const CreateCard = () => {
                   Plan & Design Configuration
                 </h5>
                 <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
-                  <p><strong className="text-slate-900 dark:text-white">Plan:</strong> {formData.cardType || 'Personal'}</p>
+                  <p><strong className="text-slate-900 dark:text-white">Plan:</strong> {getPlanDisplayName(formData.cardType)}</p>
                   <p><strong className="text-slate-900 dark:text-white">Design:</strong> {formData.design ? designTemplates.find(t => t.id === formData.design)?.name : 'None selected'}</p>
                   <p className="text-[11px] text-blue-600 dark:text-blue-400 pt-1">
                     ℹ️ You can change your theme anytime after publishing without losing data.
@@ -11774,13 +11835,7 @@ const CreateCard = () => {
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
-            {formData.cardType === 'Personal'
-              ? 'DI - Individuals Plan'
-              : formData.cardType === 'Business'
-                ? 'DI - Working Professionals Plan'
-                : formData.cardType === 'BusinessPremium'
-                  ? 'DI - Service Providers Plan'
-                  : `${formData.cardType || 'Personal'} Plan`}
+            {`${getPlanDisplayName(formData.cardType)} Plan`}
           </span>
           {editingCard && (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">

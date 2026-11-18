@@ -81,43 +81,43 @@ const cardTypeConfig: Record<string, {
     price: "₹500/mo"
   },
   "Business": {
-    label: "DI - Working Pro",
+    label: "DI - Working Professionals",
     icon: Building,
     color: "bg-indigo-500/90",
     price: "₹800/mo"
   },
   "BusinessPremium": {
-    label: "DI - Service Provider",
+    label: "DI - Service Providers",
     icon: Gem,
     color: "bg-amber-500/90",
     price: "₹1,200/mo"
   },
   "Professionals": {
-    label: "DI - Professional",
+    label: "DI - Professionals",
     icon: Briefcase,
     color: "bg-purple-600/90",
     price: "₹1,500/mo"
   },
   "ProfessionalPro": {
-    label: "DI - Specialist",
+    label: "DI - Professional Pro",
     icon: Award,
     color: "bg-fuchsia-600/90",
     price: "₹1,800/mo"
   },
   "Entrepreneurials": {
-    label: "DI - Entrepreneur",
+    label: "DI - Entrepreneurials",
     icon: Rocket,
     color: "bg-emerald-600/90",
     price: "₹1,800/mo"
   },
   "EntrepreneurialsMulti": {
-    label: "DI - Multi-Activities",
+    label: "DI - Entrepreneurials - Multi Activities",
     icon: Layers,
     color: "bg-teal-600/90",
     price: "₹2,200/mo"
   },
   "CorporateBusiness": {
-    label: "DI - Corporate",
+    label: "DI - Business",
     icon: ShieldCheck,
     color: "bg-blue-700/90",
     price: "₹2,500/mo"

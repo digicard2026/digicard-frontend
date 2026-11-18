@@ -45,9 +45,6 @@ const PreviewCard = () => {
   const [isSharing, setIsSharing] = useState(false);
 
   const getActiveCardNode = () => {
-    if (typeof window !== "undefined" && window.innerWidth < 640 && mobileCardRef.current) {
-      return mobileCardRef.current;
-    }
     return desktopCardRef.current || mobileCardRef.current || cardRef.current;
   };
 
@@ -473,27 +470,28 @@ const PreviewCard = () => {
         </div>
       </div>
 
-      {/* DESKTOP SMARTPHONE MOCKUP FRAME (Desktop view) */}
-      <div className="hidden sm:block relative z-10 w-full max-w-[420px]">
-        <div className="relative rounded-[48px] p-3 bg-gradient-to-b from-slate-700/80 via-slate-800/80 to-slate-950/90 border border-slate-700/80 shadow-2xl shadow-blue-950/60 backdrop-blur-md">
-          {/* Simulated Dynamic Island / Speaker */}
-          <div className="w-24 h-4 bg-slate-950 rounded-full mx-auto mb-2 flex items-center justify-center border border-slate-800/80 shadow-inner">
-            <span className="w-2 h-2 rounded-full bg-slate-900 border border-slate-800"></span>
+      {/* SMARTPHONE MOCKUP FRAME (Unified for Desktop & Mobile with Authentic Notch) */}
+      <div className="relative z-10 w-full max-w-[420px] px-2 sm:px-0">
+        <div className="relative rounded-[40px] sm:rounded-[48px] p-2.5 sm:p-3 bg-gradient-to-b from-slate-700/80 via-slate-800/80 to-slate-950/90 border border-slate-700/80 shadow-2xl shadow-blue-950/60 backdrop-blur-md">
+          {/* Authentic Smartphone Hardware Top Notch Bar (Matches Mobile Structure) */}
+          <div className="w-full bg-[#0a1128] pt-2 pb-2 px-6 flex items-center justify-center relative rounded-t-[30px] sm:rounded-t-[36px] border-b border-slate-800/80 select-none z-20">
+            {/* Center Hardware Capsule: Speaker slit + Camera lens */}
+            <div className="w-36 sm:w-40 h-5 bg-[#050b18] rounded-full flex items-center justify-center border border-slate-700/60 shadow-inner px-2">
+              <div className="w-14 h-1 bg-slate-700/90 rounded-full"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-slate-950 border border-slate-600 ml-2.5 flex items-center justify-center">
+                <div className="w-1 h-1 rounded-full bg-blue-950"></div>
+              </div>
+            </div>
           </div>
 
           {/* Screen Content Wrapper */}
-          <div className="overflow-hidden rounded-[36px] bg-black shadow-inner" ref={desktopCardRef}>
+          <div className="overflow-hidden rounded-b-[30px] sm:rounded-b-[36px] bg-black shadow-inner" ref={desktopCardRef}>
             {renderCard()}
           </div>
 
           {/* Home Bar Indicator */}
           <div className="w-32 h-1 bg-white/20 rounded-full mx-auto mt-2.5"></div>
         </div>
-      </div>
-
-      {/* MOBILE FULL-BLEED VIEW (Mobile view) */}
-      <div className="sm:hidden w-full min-h-[100dvh] z-10" ref={mobileCardRef}>
-        {renderCard()}
       </div>
 
       {/* MOBILE FLOATING BOTTOM ACTION BAR */}
