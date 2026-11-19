@@ -62,8 +62,21 @@ const CardMain = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [cards, setCards] = useState<Card[]>([]);
-  const [loading, setLoading] = useState(true);
+  const getInitialCards = (): Card[] => {
+    try {
+      const email = localStorage.getItem("user_email");
+      if (email) {
+        const cached = sessionStorage.getItem(`digicard_cards_${email}`);
+        if (cached) return JSON.parse(cached);
+      }
+    } catch (e) {
+      console.warn("Could not read cached cards", e);
+    }
+    return [];
+  };
+
+  const [cards, setCards] = useState<Card[]>(getInitialCards);
+  const [loading, setLoading] = useState<boolean>(() => getInitialCards().length === 0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [userName, setUserName] = useState<string>("User");
   const [userEmail, setUserEmail] = useState<string>("");
@@ -276,8 +289,11 @@ const CardMain = () => {
     }
 
     try {
-      if (isManualRefresh) setIsRefreshing(true);
-      else setLoading(true);
+      if (isManualRefresh) {
+        setIsRefreshing(true);
+      } else if (cards.length === 0) {
+        setLoading(true);
+      }
 
       const subscription = await fetchSubscriptionStatus();
 
@@ -343,6 +359,11 @@ const CardMain = () => {
       });
 
       setCards(transformedCards);
+      try {
+        if (userInfo.email) {
+          sessionStorage.setItem(`digicard_cards_${userInfo.email}`, JSON.stringify(transformedCards));
+        }
+      } catch (e) {}
 
       setStats({
         totalCards: transformedCards.length,
@@ -574,8 +595,8 @@ const CardMain = () => {
     );
   }
 
-  // Loading Skeleton
-  if (loading) {
+  // Loading Skeleton (only when zero cached cards exist)
+  if (loading && cards.length === 0) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-8">
         <div className="w-14 h-14 rounded-full border-4 border-blue-500/20 border-t-blue-500 animate-spin mb-4" />

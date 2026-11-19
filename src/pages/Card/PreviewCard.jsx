@@ -35,9 +35,23 @@ const PreviewCard = () => {
   const mobileCardRef = useRef(null);
   const snapshotRef = useRef(null);
 
-  const [cardData, setCardData] = useState(null);
+  const getCachedCard = () => {
+    try {
+      if (location.state?.cardData) return location.state.cardData;
+      const targetSlug = urlSlug || location.state?.urlSlug;
+      if (targetSlug) {
+        const cached = sessionStorage.getItem(`digicard_cache_${targetSlug}`);
+        if (cached) return JSON.parse(cached);
+      }
+    } catch (e) {
+      console.warn("Could not read card from cache", e);
+    }
+    return null;
+  };
+
+  const [cardData, setCardData] = useState(getCachedCard);
   const [buttonsVisible, setButtonsVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(() => !getCachedCard());
   const [error, setError] = useState(null);
   const [showQrModal, setShowQrModal] = useState(false);
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
@@ -45,6 +59,9 @@ const PreviewCard = () => {
   const [isSharing, setIsSharing] = useState(false);
 
   const getActiveCardNode = () => {
+    if (typeof window !== "undefined" && window.innerWidth < 640 && mobileCardRef.current) {
+      return mobileCardRef.current;
+    }
     return desktopCardRef.current || mobileCardRef.current || cardRef.current;
   };
 
@@ -64,7 +81,11 @@ const PreviewCard = () => {
 
   const fetchCardFromDatabase = async (identifier, showButtons = false) => {
     try {
-      setLoading(true);
+      // Only set loading to true if there is no cached/current cardData
+      // This prevents the page from unmounting or showing a full-screen loading page on refresh
+      if (!cardData && !getCachedCard()) {
+        setLoading(true);
+      }
       setError(null);
 
       let url;
@@ -86,12 +107,22 @@ const PreviewCard = () => {
         console.log("🖼️ [PreviewCard] Current cardPreviewImage in DB:", data.card.cardPreviewImage || "None (will generate now)");
         setCardData(data.card);
         setButtonsVisible(showButtons);
+        // Persist to sessionStorage cache so refreshing or re-visiting never shows a loading screen
+        try {
+          const cacheKey = data.card.urlSlug || identifier;
+          sessionStorage.setItem(`digicard_cache_${cacheKey}`, JSON.stringify(data.card));
+          if (data.card._id) {
+            sessionStorage.setItem(`digicard_cache_${data.card._id}`, JSON.stringify(data.card));
+          }
+        } catch (e) {}
       } else {
         throw new Error("Card data not found in response");
       }
     } catch (err) {
       console.error("Error fetching card:", err);
-      setError(err.message);
+      if (!cardData && !getCachedCard()) {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -385,7 +416,7 @@ const PreviewCard = () => {
     }
   };
 
-  if (loading) {
+  if (loading && !cardData) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-white">
         <div className="relative w-16 h-16 mb-4">
@@ -422,12 +453,12 @@ const PreviewCard = () => {
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(shareUrl)}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-[#070b1a] to-slate-950 text-white flex flex-col items-center justify-center relative p-0 sm:py-8 sm:px-4 selection:bg-blue-500 selection:text-white">
-      {/* Ambient Radial Lighting Glows */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-blue-600/10 rounded-full blur-3xl z-0"></div>
-      <div className="pointer-events-none absolute -bottom-40 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-3xl z-0"></div>
+    <div className="min-h-screen w-full bg-slate-950 text-white flex flex-col items-center justify-start sm:justify-center relative p-0 sm:py-8 sm:px-4 overflow-x-hidden selection:bg-blue-500 selection:text-white">
+      {/* Ambient Radial Lighting Glows (Desktop only to prevent mobile viewport stretch & white gaps) */}
+      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-blue-600/10 rounded-full blur-3xl z-0 hidden sm:block"></div>
+      <div className="pointer-events-none absolute -bottom-40 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-3xl z-0 hidden sm:block"></div>
 
-      {/* DESKTOP TOP ACTION BAR (Hidden on small mobile) */}
+      {/* DESKTOP TOP ACTION BAR (Hidden on mobile) */}
       <div className="hidden sm:flex items-center justify-between w-full max-w-[420px] mb-4 z-10 px-2">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -470,22 +501,16 @@ const PreviewCard = () => {
         </div>
       </div>
 
-      {/* SMARTPHONE MOCKUP FRAME (Unified for Desktop & Mobile with Authentic Notch) */}
-      <div className="relative z-10 w-full max-w-[420px] px-2 sm:px-0">
-        <div className="relative rounded-[40px] sm:rounded-[48px] p-2.5 sm:p-3 bg-gradient-to-b from-slate-700/80 via-slate-800/80 to-slate-950/90 border border-slate-700/80 shadow-2xl shadow-blue-950/60 backdrop-blur-md">
-          {/* Authentic Smartphone Hardware Top Notch Bar (Matches Mobile Structure) */}
-          <div className="w-full bg-[#0a1128] pt-2 pb-2 px-6 flex items-center justify-center relative rounded-t-[30px] sm:rounded-t-[36px] border-b border-slate-800/80 select-none z-20">
-            {/* Center Hardware Capsule: Speaker slit + Camera lens */}
-            <div className="w-36 sm:w-40 h-5 bg-[#050b18] rounded-full flex items-center justify-center border border-slate-700/60 shadow-inner px-2">
-              <div className="w-14 h-1 bg-slate-700/90 rounded-full"></div>
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-950 border border-slate-600 ml-2.5 flex items-center justify-center">
-                <div className="w-1 h-1 rounded-full bg-blue-950"></div>
-              </div>
-            </div>
+      {/* DESKTOP SMARTPHONE MOCKUP FRAME (Web view only) */}
+      <div className="hidden sm:block relative z-10 w-full max-w-[420px]">
+        <div className="relative rounded-[48px] p-3 bg-gradient-to-b from-slate-700/80 via-slate-800/80 to-slate-950/90 border border-slate-700/80 shadow-2xl shadow-blue-950/60 backdrop-blur-md">
+          {/* Simulated Dynamic Island / Speaker */}
+          <div className="w-24 h-4 bg-slate-950 rounded-full mx-auto mb-2 flex items-center justify-center border border-slate-800/80 shadow-inner">
+            <span className="w-2 h-2 rounded-full bg-slate-900 border border-slate-800"></span>
           </div>
 
           {/* Screen Content Wrapper */}
-          <div className="overflow-hidden rounded-b-[30px] sm:rounded-b-[36px] bg-black shadow-inner" ref={desktopCardRef}>
+          <div className="overflow-hidden rounded-[36px] bg-black shadow-inner" ref={desktopCardRef}>
             {renderCard()}
           </div>
 
@@ -494,24 +519,11 @@ const PreviewCard = () => {
         </div>
       </div>
 
-      {/* MOBILE FLOATING BOTTOM ACTION BAR */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-slate-950/90 backdrop-blur-lg border-t border-slate-800/80 flex items-center justify-between gap-2 safe-area-pb">
-        <button
-          type="button"
-          onClick={() => generateVCard(cardData)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-3 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-xs font-semibold shadow-md active:scale-95 transition-transform"
-        >
-          <FaDownload className="w-3.5 h-3.5" />
-          <span>Save Contact</span>
-        </button>
-        <button
-          type="button"
-          onClick={handleNativeShare}
-          title="Share Card"
-          className="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/15 rounded-xl text-base active:scale-95 transition-transform flex-shrink-0 cursor-pointer"
-        >
-          <FaShareAlt className="w-4 h-4" />
-        </button>
+      {/* MOBILE FULL-BLEED VIEW (Mobile view - Clean native display: NO fake frame, NO notch, NO blank side area, NO redundant bottom bar) */}
+      <div className="sm:hidden w-full min-h-screen z-10 flex flex-col items-center justify-start" ref={mobileCardRef}>
+        <div className="w-full max-w-md mx-auto min-h-screen">
+          {renderCard()}
+        </div>
       </div>
 
       {/* ADMIN / EDIT MODE FLOATING BUTTONS (If arriving from Create wizard) */}
